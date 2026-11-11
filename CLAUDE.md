@@ -86,17 +86,43 @@ see it, and what is needed from the owner, then wait. Milestone specs live in `d
 8. "Drop your attempt": compare against target, explain differences step by step.
 
 ## Status
-- M1 done: `src/format/` (container, zstd with size cap, CBOR, Zod), drop-zone UI, tests.
-- Next: M2.
+All eight milestones have a first working version. The owner asked to build straight through, so the
+stop-after-each-milestone rule was waived for milestones 2-8; it applies again to new work.
+
+- M1 `src/format/` — container, zstd with size cap, CBOR, Zod.
+- M2 `src/patch/` — module model, diff against the Init baseline, activity (active/disabled/unused).
+- M3 `src/display/` — registry of 65 entries. **None verified.** `docs/PROBES.md` lists the probes to make.
+- M4 `src/flow/` — facts, ordered steps, flow graph. No AI.
+- M5 `src/lesson/` + `api/lesson.ts` — narrator call, validator, regenerate loop (3 attempts, then code-only).
+  **Not yet exercised against the live API** (no key in the build session); the loop is tested with a fake model.
+- M6 `src/lesson/render.ts` — beginner / intermediate / advanced from one fact graph.
+- M7 `knowledge-cards/` — template + 3 cards. Steps without a card get no "why" by design.
+- M8 `src/compare/` — attempt vs target, per step.
+
+Inferences that still need probes (all flagged "unverified" in the UI): on/off rule, mod source ids,
+FX rack order, module index-to-name labels, every display conversion. FX parameters are shown as stored.
 
 ## Commands
-- `npm run dev` — app at http://localhost:5173
-- `npm test` — Vitest; loops over every file under `fixtures/` (including gitignored `fixtures/local/`)
-- `npm run build` — typecheck + production build
+- `npm run dev` — app at http://localhost:5173; `/api/lesson` is served locally too. Put the key in `.env.local`.
+- `npm test` — Vitest. Tests that need the pack presets skip when `fixtures/local/` is absent.
+- `npm run build` — typecheck + production build.
+- `UPDATE_BASELINE=1 npx vitest run tests/baseline.test.ts` — regenerate `src/patch/init-baseline.json` from Init.
+
+## Deploy
+Vercel: import the repo (framework: Vite), set `ANTHROPIC_API_KEY` in Environment Variables. Without the key the
+app still works; "Explain why" reports that explanations are switched off.
 
 ## Layout
-See `docs/STRUCTURE.md`. Dependencies: `fzstd` (MIT) for zstd, `cborg` (Apache-2.0) for CBOR; `cborg` was chosen
-because it returns floats exactly as stored.
+See `docs/STRUCTURE.md`. Dependencies: `fzstd` (MIT) for zstd, `cborg` (Apache-2.0) for CBOR (returns floats
+exactly as stored), `@anthropic-ai/sdk` (server only). Files under `src/lesson/` that `api/lesson.ts` imports
+use explicit `.js` import suffixes so they load as plain Node ESM.
+
+## Conventions
+- A fact's `status` is `verified`, `unverified` (conversion applied, unconfirmed), `raw` (stored number shown),
+  or `structural` (copied from the file). `known: false` means the app has no interpretation (rule 6).
+- To verify a conversion: add the probe to `fixtures/probes/`, add a test asserting the on-screen reading,
+  set `status: "verified"` and `confirmedBy` in `src/display/registry.ts`.
+- New knowledge cards: copy `knowledge-cards/_template.md`. Avoid numbers in cards.
 
 ## Fixtures
 - `fixtures/init/` — Init, committed. Owner confirmed this is a personal build.

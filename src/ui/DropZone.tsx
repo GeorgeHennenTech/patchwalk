@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 
-export function DropZone({ onFile, compact }: { onFile: (file: File) => void; compact: boolean }) {
+export function DropZone({ onFile, compact, label }: { onFile: (file: File) => void; compact: boolean; label?: string }) {
   const [over, setOver] = useState(false);
   const input = useRef<HTMLInputElement>(null);
 
@@ -28,7 +28,7 @@ export function DropZone({ onFile, compact }: { onFile: (file: File) => void; co
         if (file) onFile(file);
       }}
     >
-      <strong>{compact ? "Drop another preset" : "Drop a .SerumPreset here"}</strong>
+      <strong>{label ?? (compact ? "Drop another preset" : "Drop a .SerumPreset here")}</strong>
       <span>or click to choose a file</span>
       <input
         ref={input}

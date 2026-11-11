@@ -9,7 +9,7 @@ function devApi(): Plugin {
     name: "dev-api",
     configureServer(server) {
       const env = loadEnv("development", process.cwd(), "");
-      if (env.ANTHROPIC_API_KEY && !process.env.ANTHROPIC_API_KEY) process.env.ANTHROPIC_API_KEY = env.ANTHROPIC_API_KEY;
+      for (const k of ["ANTHROPIC_API_KEY", "APP_PASSWORD"]) if (env[k] && !process.env[k]) process.env[k] = env[k];
       server.middlewares.use("/api/lesson", async (req: IncomingMessage, res) => {
         try {
           const chunks: Buffer[] = [];
@@ -17,7 +17,7 @@ function devApi(): Plugin {
           const mod = await server.ssrLoadModule("/api/lesson.ts");
           const handler = (mod as Record<string, (r: Request) => Promise<Response>>)[req.method ?? "GET"];
           if (!handler) { res.statusCode = 405; res.end(); return; }
-          const out = await handler(new Request("http://localhost/api/lesson", { method: req.method, body: Buffer.concat(chunks), headers: { "content-type": "application/json" } }));
+          const out = await handler(new Request("http://localhost/api/lesson", { method: req.method, body: Buffer.concat(chunks), headers: { "content-type": "application/json", ...(req.headers.authorization ? { authorization: req.headers.authorization } : {}) } }));
           res.statusCode = out.status;
           res.setHeader("content-type", "application/json");
           res.end(await out.text());

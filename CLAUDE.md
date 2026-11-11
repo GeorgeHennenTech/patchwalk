@@ -109,8 +109,14 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
 - `UPDATE_BASELINE=1 npx vitest run tests/baseline.test.ts` — regenerate `src/patch/init-baseline.json` from Init.
 
 ## Deploy
-Vercel: import the repo (framework: Vite), set `ANTHROPIC_API_KEY` in Environment Variables. Without the key the
-app still works; "Explain why" reports that explanations are switched off.
+Vercel: import the repo (framework: Vite) and set two Environment Variables: `APP_PASSWORD` and
+`ANTHROPIC_API_KEY`. Without the API key the app still works; "Explain why" reports that explanations are off.
+
+## Access control
+The product is private to the owner. `middleware.ts` (Vercel Routing Middleware) puts HTTP Basic Auth in front
+of every route, and `api/lesson.ts` repeats the check (`src/lesson/auth.ts`). It fails closed: on Vercel, with
+`APP_PASSWORD` unset, every request gets 503. Any user name is accepted; only the password matters.
+Never weaken this to "open when unset" for deployed builds.
 
 ## Layout
 See `docs/STRUCTURE.md`. Dependencies: `fzstd` (MIT) for zstd, `cborg` (Apache-2.0) for CBOR (returns floats

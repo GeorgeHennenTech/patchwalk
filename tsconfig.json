@@ -12,5 +12,5 @@
     "skipLibCheck": true,
     "types": ["node", "vite/client"]
   },
-  "include": ["src", "tests", "api", "vite.config.ts"]
+  "include": ["src", "tests", "api", "middleware.ts", "vite.config.ts"]
 }

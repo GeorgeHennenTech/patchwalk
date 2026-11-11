@@ -3,6 +3,7 @@
 // and knowledge cards — never the preset file.
 import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
+import { gate } from "../src/lesson/auth.js";
 import { LessonRequestSchema, ModelOutputSchema } from "../src/lesson/contract.js";
 import { SYSTEM_PROMPT, userPrompt } from "../src/lesson/prompt.js";
 import { generateLessons, type ModelCall } from "../src/lesson/server.js";
@@ -14,6 +15,10 @@ const json = (status: number, body: unknown) =>
   new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json", "cache-control": "no-store" } });
 
 export async function POST(request: Request): Promise<Response> {
+  // Checked here as well as in middleware.ts, so the paid call stays closed even if the middleware is misconfigured.
+  const access = gate(request.headers.get("authorization"), { APP_PASSWORD: process.env.APP_PASSWORD, VERCEL: process.env.VERCEL });
+  if (access === "locked") return json(503, { error: "locked", message: "This site is locked: APP_PASSWORD is not set on the server." });
+  if (access === "denied") return json(401, { error: "unauthorized", message: "Password required." });
   if (!process.env.ANTHROPIC_API_KEY) {
     return json(503, { error: "not-configured", message: "Explanations are switched off: no ANTHROPIC_API_KEY is set on the server." });
   }

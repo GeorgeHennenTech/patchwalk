@@ -1,4 +1,5 @@
 import type { FlowGraph } from "../flow/facts";
+import { ModMap } from "./Diagrams";
 
 function Lane({ title, items, empty }: { title: string; items: { id: string; label: string; sub?: string }[]; empty: string }) {
   return (
@@ -24,6 +25,7 @@ export function FlowView({ graph }: { graph: FlowGraph }) {
         <Lane title="Out" items={[{ id: "out", label: "Output" }]} empty="" />
       </div>
       <h3 className="sub">Modulation</h3>
+      <div className="scroll-x"><ModMap mods={graph.mods} /></div>
       {graph.mods.length ? (
         <table className="grid">
           <thead><tr><th>Source</th><th>Destination</th><th>Amount</th></tr></thead>

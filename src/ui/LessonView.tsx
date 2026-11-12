@@ -4,7 +4,10 @@ import { cardsFor, type Card } from "../lesson/cards";
 import { buildRequest, fetchLessons, type LessonOutcome } from "../lesson/client";
 import { DIFFICULTIES, type Difficulty } from "../lesson/contract";
 import { render, type RenderedStep } from "../lesson/render";
+import { diagramsFor, type Diagram } from "../flow/diagrams";
+import type { ModuleNode } from "../patch/model";
 import { Badge } from "./Badge";
+import { DiagramView } from "./Diagrams";
 
 const BLURB: Record<Difficulty, string> = {
   beginner: "Exact values, one idea per step.",
@@ -14,7 +17,7 @@ const BLURB: Record<Difficulty, string> = {
 
 type Fetch = { state: "idle" } | { state: "loading" } | { state: "done"; outcome: LessonOutcome };
 
-function StepCard({ step, n, cards, fetchState }: { step: RenderedStep; n: number; cards: Card[]; fetchState: Fetch }) {
+function StepCard({ step, n, cards, fetchState, diagrams }: { step: RenderedStep; n: number; cards: Card[]; fetchState: Fetch; diagrams: Diagram[] }) {
   const [reveal, setReveal] = useState(false);
   const hasHidden = step.lines.some((l) => l.hidden);
   const hasCard = cardsFor(step, cards).length > 0;
@@ -39,6 +42,7 @@ function StepCard({ step, n, cards, fetchState }: { step: RenderedStep; n: numbe
         </ul>
       )}
       {hasHidden && <button className="link" onClick={() => setReveal(!reveal)}>{reveal ? "Hide values" : `Show values (${step.lines.length})`}</button>}
+      {diagrams.map((d) => <DiagramView key={d.title} d={d} />)}
       {step.notes.map((note) => <p key={note} className="note">{note}</p>)}
       {step.lines.length > 0 && (
         <div className="why">
@@ -62,7 +66,7 @@ function StepCard({ step, n, cards, fetchState }: { step: RenderedStep; n: numbe
   );
 }
 
-export function LessonView({ steps, cards, presetKey }: { steps: Step[]; cards: Card[]; presetKey: string }) {
+export function LessonView({ steps, cards, presetKey, modules }: { steps: Step[]; cards: Card[]; presetKey: string; modules: ModuleNode[] }) {
   const [difficulty, setDifficulty] = useState<Difficulty>("beginner");
   const [fetches, setFetches] = useState<Partial<Record<Difficulty, Fetch>>>({});
   useEffect(() => setFetches({}), [presetKey]);
@@ -77,6 +81,20 @@ export function LessonView({ steps, cards, presetKey }: { steps: Step[]; cards: 
     const outcome = await fetchLessons(request);
     setFetches((f) => ({ ...f, [difficulty]: { state: "done", outcome } }));
   }
+
+  // A diagram belongs to a step in the fact graph; show it once, on the first card rendered from that step.
+  const diagrams = useMemo(() => {
+    const byId = new Map(modules.map((m) => [m.id, m]));
+    const out = new Map<string, Diagram[]>();
+    const seen = new Set<string>();
+    for (const r of rendered) {
+      if (seen.has(r.sourceId)) continue;
+      seen.add(r.sourceId);
+      const src = steps.find((s) => s.id === r.sourceId);
+      if (src) out.set(r.id, diagramsFor(src, byId));
+    }
+    return out;
+  }, [rendered, steps, modules]);
 
   let n = 0;
   return (
@@ -103,7 +121,7 @@ export function LessonView({ steps, cards, presetKey }: { steps: Step[]; cards: 
         return (
           <section key={stage.id} className="stage">
             <h3>{stage.title} <small>{stage.blurb}</small></h3>
-            {mine.map((s) => <StepCard key={s.id + difficulty} step={s} n={++n} cards={cards} fetchState={fetchState} />)}
+            {mine.map((s) => <StepCard key={s.id + difficulty} step={s} n={++n} cards={cards} fetchState={fetchState} diagrams={diagrams.get(s.id) ?? []} />)}
           </section>
         );
       })}

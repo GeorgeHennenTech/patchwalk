@@ -127,7 +127,7 @@ export function App() {
           </nav>
 
           <section className="panel tabpanel" role="tabpanel">
-            {tab === "lesson" && <LessonView steps={state.analysis.steps} cards={CARDS} presetKey={state.fileName + state.preset.stats.fileBytes} />}
+            {tab === "lesson" && <LessonView steps={state.analysis.steps} modules={state.analysis.modules} cards={CARDS} presetKey={state.fileName + state.preset.stats.fileBytes} />}
             {tab === "flow" && <FlowView graph={state.analysis.graph} />}
             {tab === "modules" && <ModulesView analysis={state.analysis} />}
             {tab === "compare" && <CompareView target={state.analysis} attempt={attempt.loaded?.analysis} attemptName={attempt.name} attemptError={attempt.error} onFile={onAttempt} />}

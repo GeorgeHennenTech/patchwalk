@@ -4,7 +4,7 @@ title: Mono, legato and portamento
 stages: []
 applies_to: [combo:glide]
 status: draft
-reading: 
+reading: Portamento (Wikipedia) | https://en.wikipedia.org/wiki/Portamento
 ---
 
 ## What it is

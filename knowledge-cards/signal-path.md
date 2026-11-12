@@ -4,7 +4,7 @@ title: The signal path: source, filter, amplifier, effects
 stages: []
 applies_to: []
 status: draft
-reading: Ableton Learning Synths | https://learningsynths.ableton.com/; Subtractive synthesis (Wikipedia) | https://en.wikipedia.org/wiki/Subtractive_synthesis
+reading: Ableton Learning Synths | https://learningsynths.ableton.com/; Subtractive synthesis (Wikipedia) | https://en.wikipedia.org/wiki/Subtractive_synthesis; Synth Secrets series (Sound On Sound) | https://www.soundonsound.com/series/synth-secrets-sound-sound
 ---
 
 ## What it is

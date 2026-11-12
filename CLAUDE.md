@@ -99,6 +99,20 @@ stop-after-each-milestone rule was waived for milestones 2-8; it applies again t
 - M7 `knowledge-cards/` — template + 3 cards. Steps without a card get no "why" by design.
 - M8 `src/compare/` — attempt vs target, per step.
 
+Added after the first eight milestones (owner asked for all four in one go):
+- `src/flow/soundtype.ts` — rule-based sound-type guess with the settings that led to it. Shown as a guess.
+- `src/flow/combos.ts` — "How it works together" stage: code detects combinations (detuned pair, macro-gated
+  effects, mod wheel chain, envelope/LFO routes with a recognisable result, modulated modulators, glide) and
+  states each as a fact; a card per pattern lets the narrator explain it. It never claims an artist's intent.
+- `src/flow/diagrams.ts` + `src/ui/Diagrams.tsx` — envelope, drawn-LFO-shape and modulation-map diagrams,
+  computed from stored values. Diagrams are always drawn by code, never by the narrator.
+- `src/learn/course.ts` + `src/ui/LearnView.tsx` — ten-lesson beginner course. Each exercise is checked from the
+  saved preset using stored values only. Progress lives in localStorage.
+- `knowledge-cards/` — 30 cards, all `status: draft` (written by Claude, not yet reviewed by the owner). Change
+  to `reviewed` after the owner has read one. Reading links were each loaded and title-checked in Nov 2026.
+- `src/skin.css` + `src/assets/skin/` — patchwork skin. Artwork generated with Higgsfield for this project; display
+  font is Shrikhand (OFL) from `@fontsource`, self-hosted. The page makes no third-party requests.
+
 Inferences that still need probes (all flagged "unverified" in the UI): on/off rule, mod source ids,
 FX rack order, module index-to-name labels, every display conversion. FX parameters are shown as stored.
 
@@ -128,7 +142,10 @@ use explicit `.js` import suffixes so they load as plain Node ESM.
   or `structural` (copied from the file). `known: false` means the app has no interpretation (rule 6).
 - To verify a conversion: add the probe to `fixtures/probes/`, add a test asserting the on-screen reading,
   set `status: "verified"` and `confirmedBy` in `src/display/registry.ts`.
-- New knowledge cards: copy `knowledge-cards/_template.md`. Avoid numbers in cards.
+- New knowledge cards: copy `knowledge-cards/_template.md`. Avoid numbers in cards. Only add reading links
+  that have been opened and checked.
+- Skin: content must stay on solid panels for legibility; fabric textures are for chrome only (header, tabs,
+  drop zones, page background). Keep both light and dark schemes working.
 
 ## Fixtures
 - `fixtures/init/` — Init, committed. Owner confirmed this is a personal build.

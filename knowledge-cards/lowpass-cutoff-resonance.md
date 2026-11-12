@@ -4,7 +4,7 @@ title: Low-pass cutoff and resonance
 stages: [filter]
 applies_to: [VoiceFilter]
 status: draft
-reading: 
+reading: Low-pass filter (Wikipedia) | https://en.wikipedia.org/wiki/Low-pass_filter
 ---
 
 ## What it is

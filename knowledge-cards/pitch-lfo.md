@@ -4,7 +4,7 @@ title: An LFO on pitch
 stages: []
 applies_to: [combo:pitch-lfo]
 status: draft
-reading: 
+reading: Vibrato (Wikipedia) | https://en.wikipedia.org/wiki/Vibrato
 ---
 
 ## What it is

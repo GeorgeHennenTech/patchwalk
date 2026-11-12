@@ -74,7 +74,7 @@ export function LearnView({ cards, loadFile }: { cards: Card[]; loadFile: (f: Fi
               <div className="reading">
                 <strong>Further reading</strong>
                 <ul>{c.reading.map((r) => <li key={r.url}><a href={r.url} target="_blank" rel="noopener noreferrer">{r.title}</a></li>)}</ul>
-                <small>Suggested links. They were not opened or checked when this card was written.</small>
+                <small>Each link loaded and matched its title when the card was written (November 2026).</small>
               </div>
             )}
           </section>

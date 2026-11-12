@@ -4,7 +4,7 @@ title: An envelope on the filter cutoff
 stages: []
 applies_to: [combo:filter-envelope]
 status: draft
-reading: 
+reading: Envelope (Wikipedia) | https://en.wikipedia.org/wiki/Envelope_(music)
 ---
 
 ## What it is

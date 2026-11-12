@@ -4,7 +4,7 @@ title: The amp envelope
 stages: [contour]
 applies_to: []
 status: draft
-reading: 
+reading: Envelope (Wikipedia) | https://en.wikipedia.org/wiki/Envelope_(music)
 ---
 
 ## What it is

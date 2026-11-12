@@ -4,7 +4,7 @@ title: An LFO on the filter cutoff
 stages: []
 applies_to: [combo:lfo-cutoff]
 status: draft
-reading: 
+reading: Low-frequency oscillation (Wikipedia) | https://en.wikipedia.org/wiki/Low-frequency_oscillation
 ---
 
 ## What it is

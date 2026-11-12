@@ -1,0 +1,149 @@
+/* Patchwork skin: thrifted, stitched-together fabrics. Loads after styles.css and overrides it.
+   Artwork in src/assets/skin was generated for this project; the display font is Shrikhand (OFL). */
+:root {
+  --bg: #2a1533;
+  --panel: #fff6e6;
+  --text: #2a1533;
+  --muted: #6b5670;
+  --line: #dcc8b4;
+  --accent: #c2186b;
+  --accent-soft: #ffe1ef;
+  --err: #b3261e; --err-soft: #fde4e1;
+  --str: #0b6b5d; --num: #5a2bb8; --bool: #b3540a;
+  --ok: #0b6b5d; --ok-soft: #d5f3e6; --warn: #7a4a00; --warn-soft: #ffe7a8; --info: #4b2bb0; --info-soft: #e7defc; --unk: #6a2aa8; --unk-soft: #efdcff;
+  --thread: #2a1533;
+  --teal: #0b7c7c; --orange: #e2671a; --lime: #5d8f00; --purple: #6f2dbd; --gold: #a86a12;
+  --display: "Shrikhand", "Cooper Black", "Bookman Old Style", Georgia, serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --panel: #24122c; --text: #fbeede; --muted: #c4abc9; --line: #4a2f55;
+    --accent: #ff7ab8; --accent-soft: #4a1838;
+    --err: #ff9d94; --err-soft: #4a1d1a;
+    --str: #7fe0c4; --num: #c3a6ff; --bool: #ffb877;
+    --ok: #7fe0c4; --ok-soft: #123b33; --warn: #ffd978; --warn-soft: #4a3608; --info: #c3a6ff; --info-soft: #2e2057; --unk: #e0b3ff; --unk-soft: #3d1f57;
+    --thread: #fbeede;
+    --teal: #5fd6d6; --orange: #ffa25e; --lime: #b9e85a; --purple: #c9a2ff; --gold: #f2c46a;
+    color-scheme: dark;
+  }
+}
+
+body { background: var(--bg) url("./assets/skin/quilt.webp") center top / cover fixed; }
+@media (prefers-color-scheme: dark) { body { background-image: linear-gradient(rgba(20, 8, 26, 0.62), rgba(20, 8, 26, 0.62)), url("./assets/skin/quilt.webp"); } }
+main { max-width: 980px; padding-top: 28px; }
+
+/* ---- stitched fabric panels ---- */
+.panel, .drop, .tabs button.on {
+  border: 3px solid var(--thread);
+  outline: 2px dashed var(--accent);
+  outline-offset: -9px;
+  box-shadow: 6px 6px 0 rgba(20, 8, 26, 0.55);
+}
+.panel { border-radius: 18px; padding: 24px 26px; }
+.panel.error { outline-color: var(--err); }
+.tabpanel { border-top-left-radius: 0; }
+
+/* ---- header: a name patch sewn onto the quilt ---- */
+.top { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; margin-bottom: 18px; }
+.top h1 {
+  font-family: var(--display); font-weight: 400; font-size: clamp(40px, 9vw, 68px); line-height: 1; letter-spacing: 0.01em;
+  color: #fff6e6; margin: 0; padding: 14px 30px 18px; transform: rotate(-2.5deg);
+  background: url("./assets/skin/tiger.webp") center / 260px;
+  border: 4px solid #2a1533; border-radius: 22px; outline: 3px dashed #fff6e6; outline-offset: -11px;
+  box-shadow: 7px 7px 0 rgba(20, 8, 26, 0.6);
+  text-shadow: 0 0 0 #2a1533, 3px 3px 0 #2a1533, -1px -1px 0 #2a1533, 1px -1px 0 #2a1533, -1px 1px 0 #2a1533;
+}
+.top p {
+  margin: 0; padding: 8px 14px; max-width: 62ch; background: var(--panel); color: var(--text);
+  border: 2px solid var(--thread); border-radius: 10px; box-shadow: 4px 4px 0 rgba(20, 8, 26, 0.5);
+}
+
+/* ---- fabric buttons: each mode and tab is its own patch ---- */
+.modes { gap: 12px; margin: 4px 0 0; flex-wrap: wrap; }
+.modes button, .tabs button {
+  font-family: var(--display); font-size: 17px; color: #fff6e6; letter-spacing: 0.02em;
+  border: 3px solid #2a1533; background-size: 200px; background-position: center;
+  text-shadow: 2px 2px 0 #2a1533, -1px -1px 0 #2a1533, 1px -1px 0 #2a1533, -1px 1px 0 #2a1533, 0 2px 0 #2a1533;
+  box-shadow: 4px 4px 0 rgba(20, 8, 26, 0.55); transition: transform 0.12s;
+}
+.modes button { border-radius: 14px; padding: 9px 20px 11px; }
+.modes button:nth-child(1) { background-image: url("./assets/skin/leopard.webp"); transform: rotate(-1.5deg); }
+.modes button:nth-child(2) { background-image: url("./assets/skin/mohair.webp"); transform: rotate(1.5deg); }
+.modes button.on { background-color: transparent; border-color: #2a1533; outline: 3px dashed #fff6e6; outline-offset: -8px; transform: rotate(0) scale(1.07); }
+.modes button:not(.on) { filter: saturate(0.75) brightness(0.85); }
+.modes button:hover, .tabs button:hover { transform: translateY(-2px) rotate(0); color: #fff6e6; filter: none; }
+
+.tabs { gap: 8px; margin-top: 22px; padding: 6px 4px 0; }
+.tabs button { border-radius: 12px 12px 0 0; border-bottom: none; padding: 7px 14px 9px; font-size: 15px; }
+.tabs button:nth-child(6n + 1) { background-image: url("./assets/skin/tiger.webp"); }
+.tabs button:nth-child(6n + 2) { background-image: url("./assets/skin/shag.webp"); }
+.tabs button:nth-child(6n + 3) { background-image: url("./assets/skin/leopard.webp"); }
+.tabs button:nth-child(6n + 4) { background-image: url("./assets/skin/mohair.webp"); }
+.tabs button:nth-child(6n + 5) { background-color: var(--orange); }
+.tabs button:nth-child(6n + 6) { background-color: var(--teal); }
+.tabs button:not(.on) { filter: saturate(0.8) brightness(0.82); box-shadow: none; }
+.tabs button.on { color: #fff6e6; border-color: #2a1533; outline: none; box-shadow: none; transform: translateY(-3px); font-weight: 400; }
+.tabpanel { margin-top: 0; }
+
+/* ---- drop zone: a shaggy pocket ---- */
+.drop {
+  margin-top: 18px; border-style: solid; border-radius: 20px; background: url("./assets/skin/shag.webp") center / 300px; outline-color: #fff6e6;
+}
+.drop strong, .drop span { background: var(--panel); color: var(--text); padding: 5px 12px; border-radius: 9px; border: 2px solid var(--thread); }
+.drop strong { font-family: var(--display); font-weight: 400; font-size: 20px; }
+.drop.compact strong { font-size: 16px; }
+.drop:hover, .drop:focus-visible, .drop.over { background: url("./assets/skin/tiger.webp") center / 300px; border-color: var(--thread); }
+.exercise .drop { background: url("./assets/skin/leopard.webp") center / 260px; box-shadow: none; }
+
+/* ---- headings and patches ---- */
+h2, .learn-body h2 { font-family: var(--display); font-weight: 400; font-size: 24px; letter-spacing: 0.01em; }
+.stage h3 {
+  display: inline-block; font-family: var(--display); font-weight: 400; font-size: 15px; letter-spacing: 0.04em; text-transform: none;
+  color: #fff6e6; padding: 4px 14px 6px; border-radius: 999px; border: 2px solid #2a1533; outline: 1.5px dashed #fff6e6; outline-offset: -5px;
+  background: var(--purple); transform: rotate(-1deg); box-shadow: 3px 3px 0 rgba(20, 8, 26, 0.4);
+}
+.stage:nth-of-type(5n + 1) h3 { background: #c2186b; }
+.stage:nth-of-type(5n + 2) h3 { background: #0b7c7c; }
+.stage:nth-of-type(5n + 3) h3 { background: #b4530a; }
+.stage:nth-of-type(5n + 4) h3 { background: #6f2dbd; }
+.stage:nth-of-type(5n + 5) h3 { background: #4a7a00; }
+.stage h3 small { color: #fff6e6; opacity: 0.9; font-family: system-ui, sans-serif; font-size: 12px; margin-left: 8px; }
+.stage { margin-top: 26px; }
+
+.step, .card { border: 2px solid var(--thread); border-radius: 14px; background: var(--panel); box-shadow: 3px 3px 0 rgba(20, 8, 26, 0.25); }
+.step h4 { font-size: 16px; }
+.step-n { background: var(--thread); color: var(--panel); font-family: var(--display); font-weight: 400; min-width: 26px; height: 26px; border-radius: 13px; }
+.card h5, .card h3 { color: var(--accent); }
+.card h3, .exercise h3 { font-family: var(--display); font-weight: 400; font-size: 19px; }
+.exercise { border: 2px solid var(--thread); outline: 2px dashed var(--accent); outline-offset: -8px; padding: 18px 20px; }
+
+.badge { border: 1.5px dashed currentColor; line-height: 17px; font-weight: 600; }
+.badge-muted { border-style: dashed; }
+
+/* ---- controls ---- */
+.seg { border: 2px solid var(--thread); border-radius: 12px; }
+.seg button { font-weight: 600; }
+.seg button + button { border-left: 2px solid var(--thread); }
+.seg button.on { background: var(--accent); color: #fff; }
+button.primary { border: 2px solid var(--thread); border-radius: 12px; font-weight: 700; box-shadow: 3px 3px 0 rgba(20, 8, 26, 0.5); background: var(--accent); color: #fff; }
+button.primary:not(:disabled):hover { transform: translate(-1px, -1px); }
+@media (prefers-color-scheme: dark) { .seg button.on, button.primary { color: #2a1533; } }
+.panel-head input { border: 2px solid var(--thread); background: var(--panel); }
+
+.node { border: 2px solid var(--thread); background: var(--accent-soft); border-radius: 10px; font-weight: 600; }
+.lane { border: 2px dashed var(--line); border-radius: 14px; }
+.lane:nth-child(1) .node { background: var(--warn-soft); }
+.lane:nth-child(3) .node { background: var(--info-soft); }
+.lane:nth-child(5) .node { background: var(--ok-soft); }
+.banner { border: 2px dashed var(--warn); }
+.learn-nav > button.on { outline: 2px dashed var(--accent); outline-offset: -3px; }
+.dot { border: 2px solid var(--thread); font-weight: 700; }
+.soundtype strong { font-family: var(--display); font-weight: 400; font-size: 18px; color: var(--accent); }
+
+@media (prefers-reduced-motion: reduce) { .modes button, .tabs button, button.primary { transition: none; } }
+@media (max-width: 640px) {
+  body { background-attachment: scroll; }
+  .panel { padding: 18px 16px; outline-offset: -7px; }
+  .tabs button { font-size: 13px; padding: 6px 10px 8px; }
+}

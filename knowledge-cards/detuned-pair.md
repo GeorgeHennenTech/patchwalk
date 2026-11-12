@@ -4,7 +4,7 @@ title: Two oscillators tuned slightly apart
 stages: []
 applies_to: [combo:detuned-pair]
 status: draft
-reading: 
+reading: Beat (Wikipedia) | https://en.wikipedia.org/wiki/Beat_(acoustics)
 ---
 
 ## What it is

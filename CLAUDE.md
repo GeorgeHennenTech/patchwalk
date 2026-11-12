@@ -116,6 +116,21 @@ Added after the first eight milestones (owner asked for all four in one go):
 Inferences that still need probes (all flagged "unverified" in the UI): on/off rule, mod source ids,
 FX rack order, module index-to-name labels, every display conversion. FX parameters are shown as stored.
 
+## Long-term direction (owner's stated goals; not yet scheduled or built)
+- **Private, single-user.** The owner has said this program is strictly for them and will never be distributed.
+  Design for one user; do not add accounts, sharing or public pages. Rule 4 still applies to the name and look.
+- **Course:** see `docs/COURSE_PLAN.md`. Guided lessons on a built-in practice synth; lessons can be taken in any
+  order; each lesson is its own data file so chapters are easy to add. Tracks are to grow well beyond synthesis
+  (acoustics, psychoacoustics, sound design, effects, ear training, mixing).
+- **Teacher/guide:** one consistent voice, remembers progress, comments on what the learner just did, answers
+  questions. Patch facts stay strict (rule 5). Concept answers come from a private library of the owner's texts
+  via retrieval, with citations. This is retrieval, not model training.
+- **Mini DAW (later):** tracks, a step sequencer / piano roll, drums and samples, a mixer, for genre-writing
+  lessons (glitch-hop, breakbeat, psydub...). Build the practice synth's audio engine with a shared tempo clock
+  and more than one instrument in mind so it can become the DAW's instrument instead of being rewritten.
+- The library's texts must never be committed to a repo that could become public, bundled into the browser
+  build, or shown in full in the UI; only short retrieved passages are sent to the model per question.
+
 ## Commands
 - `npm run dev` — app at http://localhost:5173; `/api/lesson` is served locally too. Put the key in `.env.local`.
 - `npm test` — Vitest. Tests that need the pack presets skip when `fixtures/local/` is absent.

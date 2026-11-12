@@ -17,7 +17,7 @@ The practice synth and lesson engine are described in `docs/COURSE_PLAN.md`.
   - **Serum**: an optional task in Serum checked by dropping the preset.
 - **Sources.** Each unit names the subjects the private library should cover so the guide can answer from texts.
 
-Counts: 16 tracks, about 400 lessons. Order of building is at the end.
+Counts: 16 tracks, about 425 lessons. Order of building is at the end.
 
 ---
 
@@ -59,10 +59,11 @@ How the ear and brain turn pressure into what you perceive. Library: psychoacous
 | B13 | Temporal effects | How short a sound can be and still have pitch; forward masking |
 | B14 | Listening fatigue and reference level | Why judgment drifts; how to keep your ears honest |
 
-## C. Synthesis foundations (49) — Uses: Synth, Serum
-The nine chapters in `docs/COURSE_PLAN.md`, kept as written there: sound itself (C0, 4), oscillators (C1, 8),
-filters (C2, 6), envelopes (C3, 5), LFOs (C4, 6), the modulation system (C5, 6), reshaping the source (C6, 4),
-effects (C7, 7), playing feel (C8, 3). Library: synthesizer fundamentals.
+## C. Synthesis foundations (64) — Uses: Synth, Serum
+The nine chapters in `docs/COURSE_PLAN.md`, kept as written there: sound itself (C0, 5), oscillators (C1, 10),
+filters (C2, 8), envelopes (C3, 7), LFOs (C4, 7), the modulation system (C5, 7), reshaping the source (C6, 6),
+effects (C7, 9), playing feel (C8, 5). Every chapter ends with a cumulative recreate-by-ear checkpoint.
+Coverage against the owner's Syntorial lesson titles is in `docs/COVERAGE_SYNTORIAL.md`. Library: synthesizer fundamentals.
 
 ## D. Synthesis methods (26) — Uses: Synth (extended), Lab
 Ways of making sound beyond filtering a bright wave. Library: computer music, synthesis techniques.
@@ -420,7 +421,7 @@ for them.
 ## Order of building
 Lessons can be taken in any order, but they have to be built in some order. Each step needs the tool named.
 
-1. Lesson engine and practice synth, then **C** (49) and the first twelve scripted lessons.
+1. Lesson engine and practice synth, then **C** (64) and the first twelve scripted lessons.
 2. Listening lab, then **A**, **B** and **G** (50). These need no synth beyond test tones.
 3. Extended synth, then **D**, **E**, **F** (109).
 4. Guide and library, alongside steps 2 and 3 as texts arrive.

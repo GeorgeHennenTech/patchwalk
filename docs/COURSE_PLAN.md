@@ -55,18 +55,20 @@ Every lesson has the same six parts.
 - **Reset and compare.** Each step can snap back to its starting state, and toggle between "start" and "now".
 
 ## Chapters and lessons
-62 lessons in 11 chapters. Each is meant to take five to ten minutes. "Reveals" is what appears on screen for
+77 lessons in 11 chapters. Each chapter from 0 to 8 ends with a checkpoint: a cumulative
+recreate-by-ear challenge. Each is meant to take five to ten minutes. "Reveals" is what appears on screen for
 the first time. Lessons marked (S) have a matching Serum task the app can already check.
 
-### 0. Sound itself (4)
+### 0. Sound itself (5)
 | # | Lesson | You learn | Reveals |
 |---|---|---|---|
 | 0.1 | Playing the synth | How to play notes here; what the keyboard and hold button do | Keyboard, volume |
 | 0.2 | Pitch is speed | A note is a repeating wave; faster means higher | Scope, a frequency slider |
 | 0.3 | Loud and quiet | Level versus perceived loudness; why to protect your ears | Level, meter |
 | 0.4 | Tone colour | Two sounds at one pitch differ by their harmonics | Spectrum view |
+| 0.C | Checkpoint | Recreate three hidden patches by ear using everything up to here: pitch, level and tone colour | Hidden target, compare button |
 
-### 1. Oscillators (8)
+### 1. Oscillators (10)
 | # | Lesson | You learn | Reveals |
 |---|---|---|---|
 | 1.1 | The four basic shapes | Sine, triangle, saw, square and what each contains | Wave selector |
@@ -77,8 +79,10 @@ the first time. Lessons marked (S) have a matching Serum task the app can alread
 | 1.6 | Unison (S) | Many voices from one oscillator; width versus blur | Voices, detune, spread |
 | 1.7 | Sub and noise | Weight underneath, air on top | Sub, noise |
 | 1.8 | Phase and the start of a note | Why the same note can click or not | Phase, random phase |
+| 1.9 | Pulse width | Narrowing a square wave thins and hollows it; sweeping the width as movement | Pulse width |
+| 1.C | Checkpoint | Recreate three hidden patches by ear using everything up to here: shapes, pitch, layering, detune, unison, sub and noise | Hidden target, compare button |
 
-### 2. Filters (6)
+### 2. Filters (8)
 | # | Lesson | You learn | Reveals |
 |---|---|---|---|
 | 2.1 | Low-pass cutoff (S) | Removing brightness from the top | Filter on/off, cutoff, filter curve |
@@ -87,8 +91,10 @@ the first time. Lessons marked (S) have a matching Serum task the app can alread
 | 2.4 | Slope | Gentle versus steep | Slope switch |
 | 2.5 | Drive | Saturating the filter | Drive |
 | 2.6 | Key tracking | Keeping brightness even across the keyboard | Key-track amount |
+| 2.7 | Self-oscillation | Resonance pushed until the filter rings as its own tone, and playing that tone with key tracking | (nothing new) |
+| 2.C | Checkpoint | Recreate three hidden patches by ear using everything up to here: cutoff, resonance, filter type and drive | Hidden target, compare button |
 
-### 3. Envelopes (5)
+### 3. Envelopes (7)
 | # | Lesson | You learn | Reveals |
 |---|---|---|---|
 | 3.1 | Attack, decay, sustain, release | The four stages on volume | Amp envelope, live drawing |
@@ -96,18 +102,21 @@ the first time. Lessons marked (S) have a matching Serum task the app can alread
 | 3.3 | Curves and hold | How the bend of a stage changes the feel | Curve, hold |
 | 3.4 | Envelope on the filter | Brightness that changes during a note | Envelope 2, first mod route |
 | 3.5 | Envelopes on other things | Pitch drops, wavetable sweeps | Destination picker |
+| 3.6 | Envelopes on high-pass and band-pass filters | The same envelope gives a different result on each filter type | (nothing new) |
+| 3.C | Checkpoint | Recreate three hidden patches by ear using everything up to here: amp and filter envelopes together | Hidden target, compare button |
 
-### 4. LFOs (6)
+### 4. LFOs (7)
 | # | Lesson | You learn | Reveals |
 |---|---|---|---|
 | 4.1 | A slow repeating shape | What an LFO is; rate and shape | LFO 1, its drawing |
 | 4.2 | Wobble: LFO on cutoff (S) | The classic moving filter | Route amount |
 | 4.3 | Tremolo and vibrato | LFO on level versus on pitch | Second destination |
 | 4.4 | In time with the music | Free rate versus tempo sync | Tempo, sync, divisions |
-| 4.5 | Restart or run free | Trigger modes; rise and delay | Trigger mode, rise |
+| 4.5 | Restart or run free | Trigger modes; rise and delay; one LFO for all notes versus one per note | Trigger mode, rise, per-voice switch |
 | 4.6 | Drawing a shape | An LFO as a repeating envelope | Shape editor |
+| 4.C | Checkpoint | Recreate three hidden patches by ear using everything up to here: LFO rate, shape, amount and destination | Hidden target, compare button |
 
-### 5. The modulation system (6)
+### 5. The modulation system (7)
 | # | Lesson | You learn | Reveals |
 |---|---|---|---|
 | 5.1 | Routes and amounts | Source, destination, amount; knob plus modulation | Mod matrix |
@@ -116,16 +125,19 @@ the first time. Lessons marked (S) have a matching Serum task the app can alread
 | 5.4 | Macros (S) | One knob for several settings | Macros, naming |
 | 5.5 | Scaling a route | A second source as a depth control; the mod wheel | Scaled-by, mod wheel |
 | 5.6 | Modulating a modulator | Movement that itself changes | LFO and envelope settings as destinations |
+| 5.C | Checkpoint | Recreate three hidden patches by ear using everything up to here: routes, macros, velocity and the mod wheel | Hidden target, compare button |
 
-### 6. Reshaping the source (4)
+### 6. Reshaping the source (6)
 | # | Lesson | You learn | Reveals |
 |---|---|---|---|
 | 6.1 | Warp: bend and mirror | Changing the wave's outline adds harmonics | Warp menu and amount |
 | 6.2 | Sync | The tearing, vowel-like sweep | Sync mode |
 | 6.3 | Phase distortion | Squeezing the wave | PD mode |
 | 6.4 | FM | One oscillator shaking another; bells and growls | FM amount, ratio |
+| 6.5 | Ring modulation | Multiplying two oscillators for clangorous, bell-like tones; how it differs from FM | Ring mod amount |
+| 6.C | Checkpoint | Recreate three hidden patches by ear using everything up to here: warp, sync, FM and ring modulation | Hidden target, compare button |
 
-### 7. Effects (7)
+### 7. Effects (9)
 | # | Lesson | You learn | Reveals |
 |---|---|---|---|
 | 7.1 | Distortion | New harmonics from clipping; before versus after the filter | Distortion |
@@ -135,13 +147,17 @@ the first time. Lessons marked (S) have a matching Serum task the app can alread
 | 7.5 | Delay | Echoes in time with the beat | Delay |
 | 7.6 | Reverb (S) | Size and distance | Reverb |
 | 7.7 | Order matters | The same effects in a different order | Reorderable rack |
+| 7.8 | Kinds of pulsation compared | Telling apart beating, unison, chorus, tremolo and a filter LFO by ear | (nothing new) |
+| 7.C | Checkpoint | Recreate three hidden patches by ear using everything up to here: the effects rack | Hidden target, compare button |
 
-### 8. Playing feel (3)
+### 8. Playing feel (5)
 | # | Lesson | You learn | Reveals |
 |---|---|---|---|
-| 8.1 | Mono, poly and legato (S) | One voice or many; when envelopes restart | Voicing |
+| 8.1 | Mono, poly and legato (S) | One voice or many; when envelopes restart; how long releases pile up in poly | Voicing |
 | 8.2 | Glide | Sliding between notes | Glide time |
 | 8.3 | Building a performance patch | Choosing what goes on macros and the wheel | (nothing new) |
+| 8.4 | Pitch bend | Setting the wheel's range for subtle bends or big dives | Bend range |
+| 8.C | Checkpoint | Recreate three hidden patches by ear using everything up to here: voicing, glide and performance controls | Hidden target, compare button |
 
 ### 9. Recipes (10)
 Each recipe starts from the blank patch and reaches a named sound in about ten steps, using only earlier
@@ -202,13 +218,13 @@ new lessons.
 - Browsers only start audio after a click, add a little delay between key and sound, and vary on phones.
 - Audio cannot be judged by automated tests. The synth's settings logic and every lesson's targets will be
   tested; how it sounds needs your ears at each stage.
-- 62 lessons need 62 sets of steps and roughly 25 more knowledge cards. I would draft them; they stay marked
+- 77 lessons need 77 sets of steps and roughly 25 more knowledge cards. I would draft them; they stay marked
   "draft" until you have reviewed them.
 - This is the largest piece of work in the project so far, several times the size of the current Learn tab.
 
 ## Decisions for the owner
 1. **Scope:** confirm that built-in audio is now in scope, so `CLAUDE.md` can be updated.
-2. **Length:** 62 lessons as listed, or a shorter first cut (chapters 0-5 and 9, 45 lessons)?
+2. **Length:** 77 lessons as listed, or a shorter first cut (chapters 0-5 and 9, 54 lessons)?
 3. **Order:** chapters as listed, or recipes earlier so there is a finished sound sooner?
 4. **Serum tasks:** keep the optional "Now in Serum" step in every lesson that can have one?
 5. **Teacher:** build the "ask" box during this work or after it?

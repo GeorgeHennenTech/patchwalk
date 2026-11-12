@@ -55,7 +55,7 @@ Every lesson has the same six parts.
 - **Reset and compare.** Each step can snap back to its starting state, and toggle between "start" and "now".
 
 ## Chapters and lessons
-52 lessons in 11 chapters. Each is meant to take five to ten minutes. "Reveals" is what appears on screen for
+62 lessons in 11 chapters. Each is meant to take five to ten minutes. "Reveals" is what appears on screen for
 the first time. Lessons marked (S) have a matching Serum task the app can already check.
 
 ### 0. Sound itself (4)
@@ -202,13 +202,13 @@ new lessons.
 - Browsers only start audio after a click, add a little delay between key and sound, and vary on phones.
 - Audio cannot be judged by automated tests. The synth's settings logic and every lesson's targets will be
   tested; how it sounds needs your ears at each stage.
-- 52 lessons need 52 sets of steps and roughly 25 more knowledge cards. I would draft them; they stay marked
+- 62 lessons need 62 sets of steps and roughly 25 more knowledge cards. I would draft them; they stay marked
   "draft" until you have reviewed them.
 - This is the largest piece of work in the project so far, several times the size of the current Learn tab.
 
 ## Decisions for the owner
 1. **Scope:** confirm that built-in audio is now in scope, so `CLAUDE.md` can be updated.
-2. **Length:** 52 lessons as listed, or a shorter first cut (chapters 0-5 and 9, about 39 lessons)?
+2. **Length:** 62 lessons as listed, or a shorter first cut (chapters 0-5 and 9, 45 lessons)?
 3. **Order:** chapters as listed, or recipes earlier so there is a finished sound sooner?
 4. **Serum tasks:** keep the optional "Now in Serum" step in every lesson that can have one?
 5. **Teacher:** build the "ask" box during this work or after it?

@@ -98,7 +98,8 @@ stop-after-each-milestone rule was waived for milestones 2-8; it applies again t
 - M3 `src/display/` — registry of 65 entries. **None verified.** `docs/PROBES.md` lists the probes to make.
 - M4 `src/flow/` — facts, ordered steps, flow graph. No AI.
 - M5 `src/lesson/` + `api/lesson.ts` — narrator call, validator, regenerate loop (3 attempts, then code-only).
-  **Not yet exercised against the live API** (no key in the build session); the loop is tested with a fake model.
+  Exercised live by the owner on 12 Nov 2026 via the System check: passed, on the second attempt (the
+  validator rejected the first reply and the regeneration loop recovered).
 - M6 `src/lesson/render.ts` — beginner / intermediate / advanced from one fact graph.
 - M7 `knowledge-cards/` — template + 3 cards. Steps without a card get no "why" by design.
 - M8 `src/compare/` — attempt vs target, per step.
@@ -126,7 +127,9 @@ Added after the first eight milestones (owner asked for all four in one go):
 - **Ask the guide** — `api/ask.ts`, `src/library/` (BM25 search, cited answers), `src/ui/AskView.tsx`. Retrieves
   up to six passages (guide pages and knowledge cards), sends only those to Claude with citations enabled, and
   shows each claim's page and quoted words. Says "not in the library" instead of answering from memory.
-  **Not yet exercised against the live API.** It does not yet see the learner's patch or remember progress.
+  Exercised live by the owner on 12 Nov 2026: a correct, cited answer from pages 135, 136 and 142. It does not
+  yet see the learner's patch or remember progress. The guide's text is extracted in reading order (plain
+  `pdftotext`, not `-layout`) so table cells stay together; table-of-contents pages are dropped.
 - `src/skin.css` + `src/assets/skin/` — patchwork skin. Artwork generated with Higgsfield for this project; display
   font is Shrikhand (OFL) from `@fontsource`, self-hosted. The page makes no third-party requests.
 

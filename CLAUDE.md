@@ -5,7 +5,10 @@ in the browser, works out which parts matter, and walks them through building th
 Each step says what to do, why it works, and what to listen for. A difficulty toggle changes the explanation.
 
 ## Scope for now
-Serum 2 `.SerumPreset` only, parsed entirely in the browser. No audio, screenshots, Serum 1 `.fxp`, or plugin.
+Preset reading: Serum 2 `.SerumPreset` only, parsed entirely in the browser. No screenshots, Serum 1 `.fxp`,
+or plugin, and no recording or analysis of audio from Serum.
+Audio: the owner has since asked for a built-in practice synth (and later a mini DAW) that makes sound in the
+browser for lessons. That is planned, not built: see `docs/COURSE_PLAN.md` and `docs/CURRICULUM.md`.
 
 ## Stack
 Vite + React + TypeScript, Zod, Vitest, Vercel. The lesson-generation call to Claude goes through a Vercel
@@ -110,6 +113,8 @@ Added after the first eight milestones (owner asked for all four in one go):
   saved preset using stored values only. Progress lives in localStorage.
 - `knowledge-cards/` — 30 cards, all `status: draft` (written by Claude, not yet reviewed by the owner). Change
   to `reviewed` after the owner has read one. Reading links were each loaded and title-checked in Nov 2026.
+- `src/lesson/selftest.ts` + "System check" tab — one-click end-to-end test of the explanation service with a
+  built-in step; reports in plain words where a failure is (network, password, API key, validator).
 - `src/skin.css` + `src/assets/skin/` — patchwork skin. Artwork generated with Higgsfield for this project; display
   font is Shrikhand (OFL) from `@fontsource`, self-hosted. The page makes no third-party requests.
 
@@ -119,7 +124,10 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
 ## Long-term direction (owner's stated goals; not yet scheduled or built)
 - **Private, single-user.** The owner has said this program is strictly for them and will never be distributed.
   Design for one user; do not add accounts, sharing or public pages. Rule 4 still applies to the name and look.
-- **Course:** see `docs/COURSE_PLAN.md`. Guided lessons on a built-in practice synth; lessons can be taken in any
+- **Course:** `docs/CURRICULUM.md` maps 16 tracks and about 400 lessons (one line each); `docs/lessons/` holds
+  fully scripted lessons in a fixed shape (12 so far, all drafts); `docs/COURSE_PLAN.md` describes the practice
+  synth and lesson engine. A university programme's topic list was used only as a coverage checklist.
+  See also `docs/COURSE_PLAN.md`. Guided lessons on a built-in practice synth; lessons can be taken in any
   order; each lesson is its own data file so chapters are easy to add. Tracks are to grow well beyond synthesis
   (acoustics, psychoacoustics, sound design, effects, ear training, mixing).
 - **Teacher/guide:** one consistent voice, remembers progress, comments on what the learner just did, answers

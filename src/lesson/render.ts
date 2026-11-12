@@ -48,10 +48,11 @@ export function rangeText(f: Fact): string | undefined {
 }
 
 function exactLine(f: Fact): string {
-  const who = `${f.moduleLabel} ${f.label}`;
+  const who = `${f.moduleLabel} ${f.label}`.trim();
   if (!f.known) return `${f.moduleLabel} stores "${f.label}" = ${f.display.text}. The app cannot interpret this setting yet.`;
   if (f.display.text === "factory default") return `Reset ${who} to its factory default.`;
   switch (f.key) {
+    case "combo": return f.display.text;
     case "route": return `Add a modulation route: ${f.display.text}.`;
     case "aux": return `Scale that route by ${f.display.text}.`;
     case "position": return `Add ${f.moduleLabel} to the rack at position ${f.display.text}.`;

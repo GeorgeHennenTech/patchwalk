@@ -7,6 +7,7 @@ import { diffModule, type Baseline, type ModuleDiff, type ParamChange } from "..
 import { fxName, isSubOsc, labelFor, nodeLabel } from "../patch/labels";
 import { byNaturalId, collectModules, type ModuleNode } from "../patch/model";
 import { resolveSource, type ModSource } from "../patch/sources";
+import { detectCombos } from "./combos";
 import type { Fact, FlowGraph, StageId, Step } from "./facts";
 
 export interface Analysis {
@@ -314,6 +315,9 @@ export function analyze(preset: DecodedPreset, baseline: Baseline): Analysis {
       facts: [...global.params.map((p) => paramFact(global.node, p)), ...leftoverExtraFacts(global)], notes: [] });
     used.add("Global0");
   }
+
+  // ---- combinations ------------------------------------------------------------------------
+  detectCombos({ diffs, byId, slots, label: (n) => L(n), dest, macroName }).forEach((s) => steps.push(s));
 
   // ---- anything left that changed and is in use -------------------------------------------
   const leftovers: Fact[] = [];

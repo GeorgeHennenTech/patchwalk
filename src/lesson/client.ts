@@ -9,7 +9,7 @@ export function toLessonStep(step: RenderedStep, cards: Card[]): LessonStep {
   return {
     id: step.id, stage: step.stage, title: step.title, goal: step.goal,
     lines: step.lines.map((l) => l.text), notes: step.notes,
-    facts: step.facts.map((f) => ({ id: f.id, label: `${f.moduleLabel} ${f.label}${f.known ? "" : " (not interpreted)"}`, value: f.display.text })),
+    facts: step.facts.map((f) => ({ id: f.id, label: `${f.moduleLabel} ${f.label}${f.known ? "" : " (not interpreted)"}`.trim(), value: f.display.text })),
     cards: cardsFor(step, cards).map((c) => ({ id: c.id, title: c.title, body: c.body })),
   };
 }

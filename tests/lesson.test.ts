@@ -119,7 +119,7 @@ describe("browser client", () => {
   });
   it("sends only steps that have a knowledge card", () => {
     // the LFO step gets the filter card too, because its route targets the filter cutoff
-    expect(req.steps.map((s) => s.id).sort()).toEqual(["contour:Env0", "filter:VoiceFilter0", "motion:source6", "thickness:Oscillator0"]);
+    expect(req.steps.map((s) => s.id).sort()).toEqual(["contour:Env0", "filter:VoiceFilter0", "interplay:lfo-cutoff", "motion:source6", "thickness:Oscillator0"]);
     expect(buildRequest(render(analyze(probe((r) => (r.Global0.plainParams = { kParamTranspose: -12 })), INIT_BASELINE).steps, "beginner"), cards, "beginner")).toBeUndefined();
   });
   it("re-validates what the server returns and drops anything invalid", async () => {
@@ -192,7 +192,7 @@ describe("knowledge cards", () => {
     for (const c of cards) {
       for (const h of ["## What it is", "## Why it works", "## Listen for", "## Goes with"]) expect(c.body, `${c.id} ${h}`).toContain(h);
       for (const s of c.stages) expect(stages.has(s), `${c.id} stage ${s}`).toBe(true);
-      for (const t of c.appliesTo) expect(t in REGISTRY || params.has(t.split(".").pop()!) || t.startsWith("FX"), `${c.id} tag ${t}`).toBe(true);
+      for (const t of c.appliesTo) expect(t in REGISTRY || params.has(t.split(".").pop()!) || t.startsWith("FX") || t.startsWith("combo:") || ["wavetable", "NoiseOsc", "SubOsc", "route", "position", "shape"].includes(t), `${c.id} tag ${t}`).toBe(true);
     }
     expect(new Set(cards.map((c) => c.id)).size).toBe(cards.length);
   });

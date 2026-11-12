@@ -2,7 +2,7 @@ import type { Display } from "../display/format";
 import type { DisplayStatus } from "../display/registry";
 import type { ParamValue } from "../patch/model";
 
-export type StageId = "init" | "core" | "thickness" | "character" | "filter" | "contour" | "motion" | "space" | "performance" | "other";
+export type StageId = "init" | "core" | "thickness" | "character" | "filter" | "contour" | "motion" | "space" | "performance" | "interplay" | "other";
 
 export const STAGES: { id: StageId; title: string; blurb: string }[] = [
   { id: "init", title: "Start", blurb: "Begin from a clean slate." },
@@ -14,6 +14,7 @@ export const STAGES: { id: StageId; title: string; blurb: string }[] = [
   { id: "motion", title: "Motion", blurb: "Envelopes, LFOs and the mod matrix." },
   { id: "space", title: "Space", blurb: "The FX rack, in order." },
   { id: "performance", title: "Performance", blurb: "Macros, voicing and global settings." },
+  { id: "interplay", title: "How it works together", blurb: "Settings that only make sense as a combination." },
   { id: "other", title: "Not interpreted", blurb: "Changes the app can see but cannot explain yet." },
 ];
 

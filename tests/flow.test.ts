@@ -42,6 +42,11 @@ describe("step list", () => {
       "performance|Macros",
       "performance|Mod wheel",
       "performance|Voicing and global settings",
+      "interplay|Macros bring the effects in",
+      "interplay|Mod wheel chain",
+      "interplay|Envelope on the filter cutoff",
+      "interplay|Modulating a modulator",
+      "interplay|Mono, legato and glide",
     ]);
   });
 

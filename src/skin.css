@@ -147,3 +147,7 @@ button.primary:not(:disabled):hover { transform: translate(-1px, -1px); }
   .panel { padding: 18px 16px; outline-offset: -7px; }
   .tabs button { font-size: 13px; padding: 6px 10px 8px; }
 }
+
+.modes button:nth-child(3) { background-image: url("./assets/skin/shag.webp"); transform: rotate(-1deg); }
+.selftest h2 { margin: 0; }
+.selftest-result ul { margin: 6px 0 10px; padding-left: 18px; color: var(--muted); font-size: 14px; }

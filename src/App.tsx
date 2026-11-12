@@ -13,6 +13,7 @@ import { JsonView } from "./ui/JsonView";
 import { LearnView } from "./ui/LearnView";
 import { LessonView } from "./ui/LessonView";
 import { ModulesView } from "./ui/ModulesView";
+import { SelfTest } from "./ui/SelfTest";
 
 // Knowledge cards are bundled at build time; files starting with "_" (the template) are skipped.
 const CARDS: Card[] = Object.entries(import.meta.glob("../knowledge-cards/*.md", { query: "?raw", import: "default", eager: true }))
@@ -62,7 +63,7 @@ function SoundType({ analysis }: { analysis: Analysis }) {
 
 export function App() {
   const [state, setState] = useState<State>({ kind: "empty" });
-  const [mode, setMode] = useState<"rebuild" | "learn">("rebuild");
+  const [mode, setMode] = useState<"rebuild" | "learn" | "check">("rebuild");
   const [tab, setTab] = useState<TabId>("lesson");
   const [filter, setFilter] = useState("");
   const [attempt, setAttempt] = useState<{ loaded?: Loaded; name?: string; error?: string }>({});
@@ -98,6 +99,7 @@ export function App() {
         <div className="modes" role="tablist" aria-label="Mode">
           <button role="tab" aria-selected={mode === "rebuild"} className={mode === "rebuild" ? "on" : ""} onClick={() => setMode("rebuild")}>Rebuild a patch</button>
           <button role="tab" aria-selected={mode === "learn"} className={mode === "learn" ? "on" : ""} onClick={() => setMode("learn")}>Learn synthesis</button>
+          <button role="tab" aria-selected={mode === "check"} className={mode === "check" ? "on" : ""} onClick={() => setMode("check")}>System check</button>
         </div>
       </header>
 
@@ -106,6 +108,8 @@ export function App() {
           <LearnView cards={CARDS} loadFile={async (f) => (await load(f)).analysis} />
         </section>
       )}
+
+      {mode === "check" && <SelfTest cards={CARDS} />}
 
       {mode === "rebuild" && <DropZone onFile={onFile} compact={state.kind !== "empty"} />}
 

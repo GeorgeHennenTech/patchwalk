@@ -30,6 +30,13 @@ progressive psytrance, Zenonesque, forest psytrance, Suomisaundi, Berlin school,
 - **Ambient and experimental:** ambient, lowercase / microsound.
 - **Other:** nu jazz, downtempo / chillout.
 
+## Selected from the third list (13)
+Nu-funk, funky breaks, electro-funk / boogie, boom bap, turntablism, electro breaks, hardcore breaks,
+jungle techno, footwork jungle, tribal ambient, dubtronica, digital dancehall, fourth world.
+
+The owner has said the genre list is now closed: 92 genres in total (63 + 16 + 13). Everything else offered in
+the third list was declined.
+
 ## Declined by the owner
 Riddim, brostep / tearout, melodic dubstep, drumstep, future bass, hybrid trap, phonk, grime, weightless,
 ghettotech, moombahton, deconstructed club; jump-up, dancefloor, darkstep and crossbreed drum and bass; all

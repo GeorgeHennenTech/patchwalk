@@ -301,7 +301,8 @@ Each genre gets the same eight lessons, so adding a genre is filling in a templa
 | 7 | Arrangement | How a track in this style unfolds |
 | 8 | Write one | A guided sixteen-bar sketch, then a full arrangement |
 
-Planned genres. Tempo ranges are typical figures to be confirmed against the library before lessons are written.
+The owner's selected genres and further proposals are in `docs/GENRES.md`. The table below is the first
+handful with tempo ranges. Tempo ranges are typical figures to be confirmed against the library before lessons are written.
 
 | Genre | Typical tempo (BPM) | Defining traits to teach |
 |---|---|---|

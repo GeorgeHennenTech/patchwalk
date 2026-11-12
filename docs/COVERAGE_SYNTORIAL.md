@@ -50,7 +50,7 @@ Lesson ids refer to `docs/COURSE_PLAN.md` (C chapters) and `docs/CURRICULUM.md` 
 | 32 | Pitch bend range | C8.4 | **Added** |
 | 33 | Final challenges | E9.1, P1, P2 | Covered |
 | 33 | Custom wavetables in Serum | D7.1 to D7.3 | Covered |
-| 33 | Serum filter, oscillator, noise and modulation extras | Not yet planned | **Open**: needs the Serum 2 manual |
+| 33 | Serum filter, oscillator, noise and modulation extras | Track S (`docs/SERUM_EXTRAS.md`): S2, S3, S4, S5 | **Planned** |
 | all | Quizzes | Ear check in every lesson | Covered |
 | all | Cumulative "group" challenges | Checkpoint at the end of chapters 0 to 8 | **Added** |
 
@@ -62,8 +62,8 @@ Lesson ids refer to `docs/COURSE_PLAN.md` (C chapters) and `docs/CURRICULUM.md` 
 - Track C goes from 49 to 64 lessons.
 
 ## Still open
-- **Serum-specific extras.** Their closing walkthroughs cover Serum features beyond the basics. Ours will be
-  planned from the Serum 2 manual once it is in the library, as a "Serum extras" unit.
+- **Serum-specific extras.** Now planned as track S in `docs/SERUM_EXTRAS.md` (50 lessons), from the Serum 2
+  User Guide.
 - **Ordering.** Their order interleaves subjects (delay and the sub oscillator arrive early) instead of
   finishing one module before the next. Our lessons can be taken in any order, so a second suggested path that
   interleaves in the same spirit can be offered beside the chapter-by-chapter one.

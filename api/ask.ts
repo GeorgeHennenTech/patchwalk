@@ -1,0 +1,102 @@
+// "Ask the guide": answers a question from the private library (the Serum 2 User Guide and the knowledge
+// cards) with citations. The library is read from disk on the server and is never sent to the browser in
+// bulk; only the few passages relevant to a question go to the Claude API.
+import { readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import Anthropic from "@anthropic-ai/sdk";
+import { gate } from "../src/lesson/auth.js";
+import { answerQuestion, AskRequestSchema, GUIDE_SYSTEM, type GuideModel } from "../src/library/answer.js";
+import { buildIndex, search, type Index, type Passage } from "../src/library/search.js";
+
+const MODEL = "claude-opus-5-5";
+
+const json = (status: number, body: unknown) =>
+  new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json", "cache-control": "no-store" } });
+
+let cached: Index | undefined;
+
+/** Loads every document under library/ and every knowledge card, once per server instance. */
+export function loadLibrary(root = process.cwd()): Index {
+  if (cached) return cached;
+  const passages: Passage[] = [];
+  const dir = join(root, "library");
+  for (const file of readdirSync(dir).filter((f) => f.endsWith(".json"))) {
+    const doc = JSON.parse(readFileSync(join(dir, file), "utf8")) as { id: string; title: string; pages: { page: number; chapter: string; text: string }[] };
+    for (const p of doc.pages) passages.push({ id: `${doc.id}#${p.page}`, source: doc.title, page: p.page, section: p.chapter, text: p.text });
+  }
+  const cards = join(root, "knowledge-cards");
+  for (const file of readdirSync(cards).filter((f) => f.endsWith(".md") && !f.startsWith("_"))) {
+    const m = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/.exec(readFileSync(join(cards, file), "utf8"));
+    if (!m) continue;
+    const title = /^title:\s*(.+)$/m.exec(m[1]!)?.[1]?.trim() ?? file;
+    passages.push({ id: `card:${file.replace(/\.md$/, "")}`, source: "Knowledge card (draft)", section: title, text: m[2]!.trim() });
+  }
+  cached = buildIndex(passages);
+  return cached;
+}
+
+export async function POST(request: Request): Promise<Response> {
+  const access = gate(request.headers.get("authorization"), { APP_PASSWORD: process.env.APP_PASSWORD, VERCEL: process.env.VERCEL });
+  if (access === "locked") return json(503, { error: "locked", message: "This site is locked: APP_PASSWORD is not set on the server." });
+  if (access === "denied") return json(401, { error: "unauthorized", message: "Password required." });
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return json(503, { error: "not-configured", message: "The guide is switched off: no ANTHROPIC_API_KEY is set on the server." });
+  }
+  const raw = await request.text();
+  if (raw.length > 10_000) return json(413, { error: "too-large", message: "Question is too long." });
+  let body: unknown;
+  try {
+    body = JSON.parse(raw);
+  } catch {
+    return json(400, { error: "bad-json", message: "Request body is not JSON." });
+  }
+  const parsed = AskRequestSchema.safeParse(body);
+  if (!parsed.success) return json(400, { error: "bad-request", message: "Ask a question between 3 and 600 characters." });
+
+  let index: Index;
+  try {
+    index = loadLibrary();
+  } catch (e) {
+    console.error(e);
+    return json(500, { error: "no-library", message: "The library could not be loaded on the server." });
+  }
+  const hits = search(index, `${parsed.data.question} ${parsed.data.context ?? ""}`, 6);
+
+  const client = new Anthropic();
+  const model: GuideModel = async ({ question, context, passages }) => {
+    const response = await client.messages.create({
+      model: MODEL,
+      max_tokens: 8000,
+      system: [{ type: "text", text: GUIDE_SYSTEM, cache_control: { type: "ephemeral" } }],
+      output_config: { effort: "medium" },
+      messages: [{
+        role: "user",
+        content: [
+          ...passages.map((p) => ({
+            type: "document" as const,
+            source: { type: "text" as const, media_type: "text/plain" as const, data: p.text },
+            title: p.page ? `${p.source}, page ${p.page} (${p.section})` : `${p.source}: ${p.section}`,
+            citations: { enabled: true },
+          })),
+          { type: "text" as const, text: `${context ? `The learner is currently looking at: ${context}\n\n` : ""}Question: ${question}` },
+        ],
+      }],
+    });
+    if (response.stop_reason === "refusal") throw new Error("The model declined to answer.");
+    return response.content.flatMap((block) =>
+      block.type === "text"
+        ? [{ text: block.text, citations: (block.citations ?? []).flatMap((c) => ("document_index" in c ? [{ passageIndex: c.document_index, quote: c.cited_text }] : [])) }]
+        : [],
+    );
+  };
+
+  try {
+    return json(200, await answerQuestion(parsed.data, hits, model));
+  } catch (e) {
+    if (e instanceof Anthropic.AuthenticationError) return json(503, { error: "not-configured", message: "The server's API key was rejected." });
+    if (e instanceof Anthropic.RateLimitError) return json(429, { error: "rate-limited", message: "The guide is busy. Try again shortly." });
+    if (e instanceof Anthropic.APIError) return json(502, { error: "upstream", message: `The Claude API returned an error (${e.status ?? "no status"}).` });
+    console.error(e);
+    return json(502, { error: "upstream", message: e instanceof Error ? e.message : "The guide failed." });
+  }
+}

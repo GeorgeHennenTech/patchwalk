@@ -40,6 +40,7 @@ Confirmed on all five:
 - `plainParams` is `"default"` or a map of `kParam*` values. Values are numbers, or strings for menus
   (`kParamType: "MgL24"`, `"LadderAcid"`; `kParamWarpMenu: "kBendPos"`; `kParamNoiseType: "White"`).
 - `version` is a float (7.0, 8.0, 9.0) in both the JSON header and the CBOR root.
+- Init's filter type is MG Low 6 according to the Serum 2 User Guide (p. 139), matching the `MgL6` token.
 - Factory wavetables are stored by path (`WTOsc0.relativePathToWT`, e.g. `"Analog/Sweep20.wav"`).
 - User/embedded wavetables: `WTOsc.embeddedWTData` is a CBOR array of floats (14336 and 2048 samples in
   `TSP_S2PNJ_Lead_g_funk`), with `tableDisplayName`; the header gains the tag `"Embedded-Data"`.
@@ -115,6 +116,17 @@ Added after the first eight milestones (owner asked for all four in one go):
   to `reviewed` after the owner has read one. Reading links were each loaded and title-checked in Nov 2026.
 - `src/lesson/selftest.ts` + "System check" tab — one-click end-to-end test of the explanation service with a
   built-in step; reports in plain words where a failure is (network, password, API key, validator).
+- **Serum 2 User Guide** (owner supplied the PDF, 354 pages). Used three ways:
+  1. `src/display/registry.ts`: a `documented` status for names taken from the guide (filter types, warp modes,
+     LFO types and modes, the filter Var knob's per-type name, OCT/SEM/FIN, ATK/DEC/SUS/REL). Shown with a
+     "from the manual" badge. `documented` is not `verified`: rule 7 still needs the owner's on-screen check, and
+     the link from stored token to guide name is by spelling.
+  2. `docs/SERUM_EXTRAS.md` (track S, 50 lessons) and guide page references in each scripted lesson.
+  3. `library/serum-2-user-guide.json`: the guide's text, page by page, for the guide's answers.
+- **Ask the guide** — `api/ask.ts`, `src/library/` (BM25 search, cited answers), `src/ui/AskView.tsx`. Retrieves
+  up to six passages (guide pages and knowledge cards), sends only those to Claude with citations enabled, and
+  shows each claim's page and quoted words. Says "not in the library" instead of answering from memory.
+  **Not yet exercised against the live API.** It does not yet see the learner's patch or remember progress.
 - `src/skin.css` + `src/assets/skin/` — patchwork skin. Artwork generated with Higgsfield for this project; display
   font is Shrikhand (OFL) from `@fontsource`, self-hosted. The page makes no third-party requests.
 
@@ -136,8 +148,12 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
 - **Mini DAW (later):** tracks, a step sequencer / piano roll, drums and samples, a mixer, for genre-writing
   lessons (glitch-hop, breakbeat, psydub...). Build the practice synth's audio engine with a shared tempo clock
   and more than one instrument in mind so it can become the DAW's instrument instead of being rewritten.
-- The library's texts must never be committed to a repo that could become public, bundled into the browser
-  build, or shown in full in the UI; only short retrieved passages are sent to the model per question.
+- **Library rules.** `library/` holds copyrighted text (currently Xfer's Serum 2 User Guide; the owner confirmed
+  this is OK for private use under rule 4). It is committed to this **private** repo because that is the only
+  route to the deployment. NEVER make this repo public, fork it publicly, or publish a build with `library/` in
+  it. Library text must never be imported by anything under `src/` (a test enforces this), bundled into the
+  browser build, or shown in full in the UI; only the few passages retrieved for a question go to the model.
+  To add a text: one JSON file in `library/` shaped `{ id, title, pages: [{ page, chapter, text }] }`.
 
 ## Commands
 - `npm run dev` — app at http://localhost:5173; `/api/lesson` is served locally too. Put the key in `.env.local`.

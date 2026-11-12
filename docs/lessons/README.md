@@ -12,7 +12,8 @@ Every file has the same sections:
 - **Steps**: a table. *Do* is the instruction; *On screen* is what the lesson reveals for that step; *Check* is
   what the app verifies from the practice synth's state; *You should hear* is the ear target.
 - **Ear check**: blind listening questions the app can generate and mark.
-- **In Serum**: the optional matching task, and what the app can check from the saved preset today.
+- **In Serum**: the optional matching task, what the app can check from the saved preset today, and where
+  the Serum 2 User Guide covers it (control names are the guide's).
 - **Recap**: three lines.
 - **Guide notes**: common mistakes, and what the guide should comment on. Guidance for the teacher, not shown.
 

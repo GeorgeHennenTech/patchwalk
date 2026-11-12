@@ -5,6 +5,7 @@ import { decodePreset, PresetError, type DecodedPreset } from "./format";
 import { parseCard, type Card } from "./lesson/cards";
 import { INIT_BASELINE } from "./patch/baseline";
 import { Badge } from "./ui/Badge";
+import { AskView } from "./ui/AskView";
 import { CompareView } from "./ui/CompareView";
 import { DisplayTable } from "./ui/DisplayTable";
 import { DropZone } from "./ui/DropZone";
@@ -63,7 +64,7 @@ function SoundType({ analysis }: { analysis: Analysis }) {
 
 export function App() {
   const [state, setState] = useState<State>({ kind: "empty" });
-  const [mode, setMode] = useState<"rebuild" | "learn" | "check">("rebuild");
+  const [mode, setMode] = useState<"rebuild" | "learn" | "ask" | "check">("rebuild");
   const [tab, setTab] = useState<TabId>("lesson");
   const [filter, setFilter] = useState("");
   const [attempt, setAttempt] = useState<{ loaded?: Loaded; name?: string; error?: string }>({});
@@ -99,6 +100,7 @@ export function App() {
         <div className="modes" role="tablist" aria-label="Mode">
           <button role="tab" aria-selected={mode === "rebuild"} className={mode === "rebuild" ? "on" : ""} onClick={() => setMode("rebuild")}>Rebuild a patch</button>
           <button role="tab" aria-selected={mode === "learn"} className={mode === "learn" ? "on" : ""} onClick={() => setMode("learn")}>Learn synthesis</button>
+          <button role="tab" aria-selected={mode === "ask"} className={mode === "ask" ? "on" : ""} onClick={() => setMode("ask")}>Ask the guide</button>
           <button role="tab" aria-selected={mode === "check"} className={mode === "check" ? "on" : ""} onClick={() => setMode("check")}>System check</button>
         </div>
       </header>
@@ -109,6 +111,7 @@ export function App() {
         </section>
       )}
 
+      {mode === "ask" && <AskView />}
       {mode === "check" && <SelfTest cards={CARDS} />}
 
       {mode === "rebuild" && <DropZone onFile={onFile} compact={state.kind !== "empty"} />}

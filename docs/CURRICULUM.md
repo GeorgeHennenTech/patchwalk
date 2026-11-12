@@ -17,7 +17,8 @@ The practice synth and lesson engine are described in `docs/COURSE_PLAN.md`.
   - **Serum**: an optional task in Serum checked by dropping the preset.
 - **Sources.** Each unit names the subjects the private library should cover so the guide can answer from texts.
 
-Counts: 16 tracks, about 425 lessons. Order of building is at the end.
+Counts: 17 tracks, about 475 lessons, including track S (Serum 2 specifics, 50 lessons) in
+`docs/SERUM_EXTRAS.md`. Order of building is at the end.
 
 ---
 

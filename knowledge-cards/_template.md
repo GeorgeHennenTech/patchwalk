@@ -3,6 +3,8 @@ id: short-kebab-case-id
 title: Plain title of the idea
 stages: []
 applies_to: []
+status: draft
+reading: 
 ---
 
 <!--
@@ -15,6 +17,9 @@ HOW CARDS WORK
 - `stages` is any of: core, thickness, character, filter, contour, motion, space, performance.
 - Write about the idea, not about one patch. Avoid specific numbers: the validator rejects any number
   the narrator repeats that is not in the patch, so numbers here only cause rejections.
+- `status: draft` means the owner has not reviewed the card yet; change it to `reviewed` once you have.
+- `reading` is an optional list of links for the Learn tab, written as `Title | URL; Title | URL`.
+  Only add links you have opened yourself.
 - Keep it under ~250 words. Delete this comment in real cards.
 -->
 

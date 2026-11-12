@@ -4,6 +4,7 @@ title: An LFO on pitch
 stages: []
 applies_to: [combo:pitch-lfo]
 status: draft
+reading: 
 ---
 
 ## What it is

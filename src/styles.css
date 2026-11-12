@@ -140,3 +140,38 @@ tr.dim td { opacity: 0.6; }
 .diagram .wire.neg { stroke: var(--info); }
 .scroll-x { overflow-x: auto; }
 .scroll-x .lbl { font-size: 12px; }
+
+/* ---- modes + learn ---- */
+.modes { display: inline-flex; gap: 6px; margin-bottom: 16px; }
+.modes button { all: unset; cursor: pointer; padding: 8px 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); color: var(--muted); }
+.modes button.on { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+.modes button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.learn { display: grid; grid-template-columns: 250px 1fr; gap: 24px; }
+.learn-nav { display: flex; flex-direction: column; gap: 2px; align-self: start; position: sticky; top: 12px; }
+.learn-progress { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.learn-nav > button:not(.link) { all: unset; cursor: pointer; display: flex; gap: 10px; padding: 7px 8px; border-radius: 8px; }
+.learn-nav > button:not(.link):hover { background: var(--bg); }
+.learn-nav > button.on { background: var(--accent-soft); }
+.learn-nav > button:focus-visible { outline: 2px solid var(--accent); }
+.learn-nav small { display: block; color: var(--muted); font-size: 12px; line-height: 1.3; }
+.learn-nav .reset { margin: 10px 8px 0; }
+.dot { flex: none; display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--line); font-size: 12px; color: var(--muted); }
+.dot.done { background: var(--ok-soft); border-color: transparent; color: var(--ok); }
+.learn-body h2 { font-size: 20px; margin-bottom: 8px; }
+.learn-body > p { margin: 0 0 10px; max-width: 62ch; }
+.card, .exercise { margin-top: 16px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; }
+.card h3, .exercise h3 { margin: 0 0 8px; font-size: 16px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.card h5 { margin: 12px 0 2px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); }
+.card p { margin: 0 0 6px; max-width: 64ch; }
+.reading { margin-top: 12px; padding-top: 8px; border-top: 1px dashed var(--line); font-size: 14px; }
+.reading ul { margin: 4px 0; padding-left: 18px; }
+.reading a { color: var(--accent); }
+.reading small { color: var(--muted); }
+.exercise { background: var(--accent-soft); border-color: transparent; }
+.exercise ol { margin: 6px 0 12px; padding-left: 20px; }
+.exercise .drop { background: var(--panel); }
+.checks { list-style: none; margin: 12px 0; padding: 0; }
+.checks li { padding: 3px 0; }
+.checks li.ok span { color: var(--ok); font-weight: 700; }
+.checks li.no span { color: var(--err); font-weight: 700; }
+@media (max-width: 760px) { .learn { grid-template-columns: 1fr; } .learn-nav { position: static; } .learn-nav small { display: none; } }

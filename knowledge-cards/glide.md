@@ -4,6 +4,7 @@ title: Mono, legato and portamento
 stages: []
 applies_to: [combo:glide]
 status: draft
+reading: 
 ---
 
 ## What it is

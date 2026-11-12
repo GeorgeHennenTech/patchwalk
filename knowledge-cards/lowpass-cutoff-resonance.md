@@ -3,6 +3,8 @@ id: lowpass-cutoff-resonance
 title: Low-pass cutoff and resonance
 stages: [filter]
 applies_to: [VoiceFilter]
+status: draft
+reading: 
 ---
 
 ## What it is

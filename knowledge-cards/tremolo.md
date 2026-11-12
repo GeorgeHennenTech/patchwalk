@@ -4,6 +4,7 @@ title: An LFO on level (tremolo)
 stages: []
 applies_to: [combo:tremolo]
 status: draft
+reading: 
 ---
 
 ## What it is

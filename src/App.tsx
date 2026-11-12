@@ -10,6 +10,7 @@ import { DisplayTable } from "./ui/DisplayTable";
 import { DropZone } from "./ui/DropZone";
 import { FlowView } from "./ui/FlowView";
 import { JsonView } from "./ui/JsonView";
+import { LearnView } from "./ui/LearnView";
 import { LessonView } from "./ui/LessonView";
 import { ModulesView } from "./ui/ModulesView";
 
@@ -61,6 +62,7 @@ function SoundType({ analysis }: { analysis: Analysis }) {
 
 export function App() {
   const [state, setState] = useState<State>({ kind: "empty" });
+  const [mode, setMode] = useState<"rebuild" | "learn">("rebuild");
   const [tab, setTab] = useState<TabId>("lesson");
   const [filter, setFilter] = useState("");
   const [attempt, setAttempt] = useState<{ loaded?: Loaded; name?: string; error?: string }>({});
@@ -92,19 +94,29 @@ export function App() {
     <main>
       <header className="top">
         <h1>Patchwalk</h1>
-        <p>Drop a Serum 2 preset and get a step-by-step walk-through for rebuilding it. The file stays in this browser tab.</p>
+        <p>Learn synthesis hands-on, or drop a Serum 2 preset and get a step-by-step walk-through for rebuilding it. Files stay in this browser tab.</p>
+        <div className="modes" role="tablist" aria-label="Mode">
+          <button role="tab" aria-selected={mode === "rebuild"} className={mode === "rebuild" ? "on" : ""} onClick={() => setMode("rebuild")}>Rebuild a patch</button>
+          <button role="tab" aria-selected={mode === "learn"} className={mode === "learn" ? "on" : ""} onClick={() => setMode("learn")}>Learn synthesis</button>
+        </div>
       </header>
 
-      <DropZone onFile={onFile} compact={state.kind !== "empty"} />
+      {mode === "learn" && (
+        <section className="panel">
+          <LearnView cards={CARDS} loadFile={async (f) => (await load(f)).analysis} />
+        </section>
+      )}
 
-      {state.kind === "error" && (
+      {mode === "rebuild" && <DropZone onFile={onFile} compact={state.kind !== "empty"} />}
+
+      {mode === "rebuild" && state.kind === "error" && (
         <section className="panel error" role="alert">
           <h2>Could not read {state.fileName}</h2>
           <p>{state.message}</p>
         </section>
       )}
 
-      {state.kind === "ok" && (
+      {mode === "rebuild" && state.kind === "ok" && (
         <>
           <section className="panel">
             <h2>{state.preset.header.presetName || state.fileName}</h2>

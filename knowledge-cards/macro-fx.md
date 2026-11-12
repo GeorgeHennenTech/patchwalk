@@ -4,6 +4,7 @@ title: Effects parked at zero and raised by a macro
 stages: []
 applies_to: [combo:macro-fx]
 status: draft
+reading: 
 ---
 
 ## What it is

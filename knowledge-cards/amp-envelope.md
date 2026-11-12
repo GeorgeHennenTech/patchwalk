@@ -3,6 +3,8 @@ id: amp-envelope
 title: The amp envelope
 stages: [contour]
 applies_to: []
+status: draft
+reading: 
 ---
 
 ## What it is

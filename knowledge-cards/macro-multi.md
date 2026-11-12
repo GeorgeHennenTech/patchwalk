@@ -4,6 +4,7 @@ title: One macro moving several settings
 stages: []
 applies_to: [combo:macro-multi]
 status: draft
+reading: 
 ---
 
 ## What it is

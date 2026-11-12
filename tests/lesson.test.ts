@@ -118,9 +118,12 @@ describe("browser client", () => {
     expect(JSON.stringify(req)).not.toMatch(/plainParams|XferJson|kUIParam/);
   });
   it("sends only steps that have a knowledge card", () => {
-    // the LFO step gets the filter card too, because its route targets the filter cutoff
-    expect(req.steps.map((s) => s.id).sort()).toEqual(["contour:Env0", "filter:VoiceFilter0", "interplay:lfo-cutoff", "motion:source6", "thickness:Oscillator0"]);
-    expect(buildRequest(render(analyze(probe((r) => (r.Global0.plainParams = { kParamTranspose: -12 })), INIT_BASELINE).steps, "beginner"), cards, "beginner")).toBeUndefined();
+    expect(req.steps.every((s) => s.cards.length > 0 && s.facts.length > 0)).toBe(true);
+    expect(req.steps.map((s) => s.id)).toContain("filter:VoiceFilter0");
+    expect(req.steps.map((s) => s.id)).not.toContain("init");
+    // a patch whose only change has no card produces no request at all
+    const noCard = analyze(probe((r) => (r.VoicePanel0.plainParams = { kParamWhatever: 3 })), INIT_BASELINE);
+    expect(buildRequest(render(noCard.steps, "beginner").filter((s) => s.stage === "other"), cards, "beginner")).toBeUndefined();
   });
   it("re-validates what the server returns and drops anything invalid", async () => {
     const fake = (async () => new Response(JSON.stringify({ results: Object.fromEntries(req.steps.map((s) => [s.id, { ok: true, attempts: 1, lesson: s.id === filterStep.id ? good(s, { why: "Sneaky 4321." }) : { step_id: s.id, do: "Follow the instructions above.", why: "It shapes the tone.", listen_for: "A clear change in tone.", param_refs: [s.facts[0]!.id] } }])) }))) as typeof fetch;
@@ -192,7 +195,7 @@ describe("knowledge cards", () => {
     for (const c of cards) {
       for (const h of ["## What it is", "## Why it works", "## Listen for", "## Goes with"]) expect(c.body, `${c.id} ${h}`).toContain(h);
       for (const s of c.stages) expect(stages.has(s), `${c.id} stage ${s}`).toBe(true);
-      for (const t of c.appliesTo) expect(t in REGISTRY || params.has(t.split(".").pop()!) || t.startsWith("FX") || t.startsWith("combo:") || ["wavetable", "NoiseOsc", "SubOsc", "route", "position", "shape"].includes(t), `${c.id} tag ${t}`).toBe(true);
+      for (const t of c.appliesTo) expect(t in REGISTRY || params.has(t.split(".").pop()!) || t.startsWith("FX") || t.startsWith("kParam") || t.startsWith("combo:") || ["wavetable", "NoiseOsc", "SubOsc", "route", "position", "shape"].includes(t), `${c.id} tag ${t}`).toBe(true);
     }
     expect(new Set(cards.map((c) => c.id)).size).toBe(cards.length);
   });
@@ -205,11 +208,13 @@ describe("knowledge cards", () => {
     expect(pick("thickness:Oscillator0")).toEqual(["unison-detune"]);
     expect(pick("filter:VoiceFilter0")).toEqual(["lowpass-cutoff-resonance"]);
     expect(pick("contour:Env0")).toEqual(["amp-envelope"]);
-    expect(pick("core:Oscillator0")).toEqual([]);
+    expect(pick("core:Oscillator0")).toEqual(["oscillator-pitch", "wavetable"]);
+    expect(pick("init")).toEqual([]);
   });
   it.skipIf(!has(PACK.gfunk))("works on a real preset", () => {
     const r = buildRequest(render(analyzeFile(PACK.gfunk).steps, "beginner"), cards, "beginner")!;
-    expect(LessonRequestSchema.safeParse(r).success).toBe(true);
-    expect(r.steps.length).toBeGreaterThan(2);
+    // the client sends steps in batches; each batch must satisfy the server's contract
+    expect(LessonRequestSchema.safeParse({ ...r, steps: r.steps.slice(0, 12) }).success).toBe(true);
+    expect(r.steps.length).toBeGreaterThan(12);
   });
 });

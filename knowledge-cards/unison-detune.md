@@ -3,6 +3,8 @@ id: unison-detune
 title: Unison and detune
 stages: [thickness]
 applies_to: [kParamUnison, kParamDetune, kParamUnisonStereo, kParamUnisonBlend]
+status: draft
+reading: 
 ---
 
 ## What it is

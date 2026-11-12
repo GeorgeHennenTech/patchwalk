@@ -4,6 +4,7 @@ title: Two oscillators tuned slightly apart
 stages: []
 applies_to: [combo:detuned-pair]
 status: draft
+reading: 
 ---
 
 ## What it is

@@ -52,6 +52,7 @@ Answer the learner's question using only the documents supplied with it. They ar
 - Do not add numbers, settings, menu items or behaviour that the documents do not state. If the documents only partly answer the question, answer that part and say what is missing.
 - If the documents do not answer the question at all, reply with exactly ${NOT_COVERED} and nothing else. Do not answer from memory.
 - Plain sentences. No headings, no bullet lists unless you are giving steps in order.
+- The question may come with a note on what the learner is looking at: a lesson step, the current settings of the practice synth, or instructions for a patch. Those are facts supplied by the app. You may refer to them to make the answer fit, but do not add to them or guess at settings they do not mention.
 - Knowledge cards are drafts written for this app; the User Guide is the authority on how Serum behaves.`;
 
 export async function answerQuestion(req: AskRequest, hits: Hit[], model: GuideModel): Promise<AskResponse> {

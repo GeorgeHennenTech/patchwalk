@@ -60,7 +60,8 @@ export async function POST(request: Request): Promise<Response> {
     console.error(e);
     return json(500, { error: "no-library", message: "The library could not be loaded on the server." });
   }
-  const hits = search(index, `${parsed.data.question} ${parsed.data.context ?? ""}`, 6);
+  // The first line of the context is the topic (a lesson or step title); the rest is detail for the model only.
+  const hits = search(index, `${parsed.data.question} ${(parsed.data.context ?? "").split("\n")[0]}`, 6);
 
   const client = new Anthropic();
   const model: GuideModel = async ({ question, context, passages }) => {

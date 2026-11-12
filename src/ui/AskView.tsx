@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { askGuide, type AskOutcome } from "../guide/ask";
-import { Badge } from "./Badge";
+import { Answer } from "./Answer";
 
 const EXAMPLES = ["What does the FAT knob do on the filter?", "How do I assign an LFO to a knob?", "What is the difference between FREE and RETRIG?", "Why do detuned oscillators sound like they are moving?"];
 
@@ -40,32 +40,7 @@ export function AskView() {
         <article key={turns.length - i} className="step turn">
           <h4>{t.question}</h4>
           {!t.outcome && <p className="muted">Looking through the library…</p>}
-          {t.outcome?.kind === "unavailable" && <p className="banner">{t.outcome.message}</p>}
-          {t.outcome?.kind === "ok" && !t.outcome.answer.covered && (
-            <p><Badge kind="unknown">not in the library</Badge> The library does not cover this yet, so the guide will not guess. Adding a text on the subject would let it answer.</p>
-          )}
-          {t.outcome?.kind === "ok" && t.outcome.answer.covered && (
-            <>
-              <p className="answer">
-                {t.outcome.answer.segments.map((s, j) => (
-                  <span key={j} className={s.sources.length ? "" : "uncited"} title={s.sources.length ? undefined : "This part was not drawn from a library passage."}>
-                    {s.text}{s.sources.map((n) => <sup key={n}>[{n}]</sup>)}
-                  </span>
-                ))}
-              </p>
-              {t.outcome.answer.segments.some((s) => !s.sources.length && s.text.trim().length > 40) && (
-                <p className="note">Greyed text is the guide’s own wording without a source passage. Treat it with more care than the cited parts.</p>
-              )}
-              <ol className="sources">
-                {t.outcome.answer.sources.map((s) => (
-                  <li key={s.n}>
-                    <strong>{s.source}</strong>{s.page ? `, page ${s.page}` : ""} · {s.section}
-                    {s.quotes.slice(0, 2).map((q) => <blockquote key={q}>{q.length > 260 ? q.slice(0, 260) + "…" : q}</blockquote>)}
-                  </li>
-                ))}
-              </ol>
-            </>
-          )}
+          {t.outcome && <Answer outcome={t.outcome} />}
         </article>
       ))}
     </section>

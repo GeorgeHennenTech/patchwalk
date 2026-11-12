@@ -130,6 +130,24 @@ Added after the first eight milestones (owner asked for all four in one go):
   Exercised live by the owner on 12 Nov 2026: a correct, cited answer from pages 135, 136 and 142. It does not
   yet see the learner's patch or remember progress. The guide's text is extracted in reading order (plain
   `pdftotext`, not `-layout`) so table cells stay together; table-of-contents pages are dropped.
+- **Practice synth and playable lessons** (first milestone of `docs/COURSE_PLAN.md`):
+  - `src/synth/` — `params.ts` (one typed state object with exact units), `engine.ts` (Web Audio: one oscillator
+    with four shapes from a shared harmonic table, pitch controls, master level, analyser, a guard compressor),
+    `tracker.ts` (what the learner did since a step began), `useSynth.ts` (React hook, computer-keyboard notes).
+  - `src/course/` — `types.ts` (a lesson is data: steps with `show`, `check(snapshot)`, optional code-written
+    `remark`), `lessons/index.ts` (six lessons: C0.1-C0.4, C1.1, C1.2, converted from `docs/lessons/`),
+    `progress.ts` (finished lessons in localStorage, next-lesson suggestion, context note for the guide).
+  - `src/ui/PlayView.tsx` ("Lessons" tab) and `src/ui/synth/` — spotlighted controls per step, live targets,
+    scope, spectrum, meter, on-screen keyboard, Hold, blind ear checks, recap, guide remarks and suggestion.
+  - Verified in a headless browser with real audio: a 12 dB volume change moves the meter 12 dB; the square
+    wave shows odd harmonics on the spectrum. **How it sounds has not been judged by a person yet.**
+  - Not built yet: second oscillator, unison, sub, noise, phase, wavetables, filter, envelopes, LFOs, effects,
+    MIDI input, a shared tempo clock. Lessons C1.3-C1.8 are scripted but need those.
+  - The old ten Serum-task lessons are now the "Serum tasks" tab.
+- **Guide in context** — `src/ui/Answer.tsx` (`AskBox`): an ask box inside each practice lesson (sends lesson,
+  step, current synth settings and finished lessons) and at the top of a rebuilt patch (sends only the
+  code-written instructions, per rule 5; never the preset). The first line of the context is the retrieval
+  topic. Code, not the model, writes step remarks and picks the suggested next lesson.
 - `src/skin.css` + `src/assets/skin/` — patchwork skin. Artwork generated with Higgsfield for this project; display
   font is Shrikhand (OFL) from `@fontsource`, self-hosted. The page makes no third-party requests.
 

@@ -6,6 +6,7 @@ import { DIFFICULTIES, type Difficulty } from "../lesson/contract";
 import { render, type RenderedStep } from "../lesson/render";
 import { diagramsFor, type Diagram } from "../flow/diagrams";
 import type { ModuleNode } from "../patch/model";
+import { AskBox } from "./Answer";
 import { Badge } from "./Badge";
 import { DiagramView } from "./Diagrams";
 
@@ -67,7 +68,7 @@ function StepCard({ step, n, cards, fetchState, diagrams }: { step: RenderedStep
   );
 }
 
-export function LessonView({ steps, cards, presetKey, modules }: { steps: Step[]; cards: Card[]; presetKey: string; modules: ModuleNode[] }) {
+export function LessonView({ steps, cards, presetKey, modules, patchName }: { steps: Step[]; cards: Card[]; presetKey: string; modules: ModuleNode[]; patchName: string }) {
   const [difficulty, setDifficulty] = useState<Difficulty>("beginner");
   const [fetches, setFetches] = useState<Partial<Record<Difficulty, Fetch>>>({});
   useEffect(() => setFetches({}), [presetKey]);
@@ -97,9 +98,17 @@ export function LessonView({ steps, cards, presetKey, modules }: { steps: Step[]
     return out;
   }, [rendered, steps, modules]);
 
+  // What the guide is told about this patch: only the code-written instructions (rule 5), never the file.
+  const patchContext = useMemo(() => [
+    `Rebuilding a Serum 2 preset called "${patchName}"`,
+    "These are the app's instructions for rebuilding it, derived from the preset's stored settings. Values marked in the app as unverified may not match Serum's screen exactly.",
+    ...render(steps, "beginner").flatMap((s) => [`${s.title}:`, ...s.lines.map((l) => `- ${l.text}`)]),
+  ].join("\n").slice(0, 1900), [steps, patchName]);
+
   let n = 0;
   return (
     <div>
+      <AskBox key={presetKey} context={patchContext} placeholder="Ask the guide about this patch or how to do a step in Serum" />
       <div className="toolbar">
         <div className="seg" role="radiogroup" aria-label="Difficulty">
           {DIFFICULTIES.map((d) => (

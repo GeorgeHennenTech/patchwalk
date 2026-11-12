@@ -14,6 +14,7 @@ import { JsonView } from "./ui/JsonView";
 import { LearnView } from "./ui/LearnView";
 import { LessonView } from "./ui/LessonView";
 import { ModulesView } from "./ui/ModulesView";
+import { PlayView } from "./ui/PlayView";
 import { SelfTest } from "./ui/SelfTest";
 
 // Knowledge cards are bundled at build time; files starting with "_" (the template) are skipped.
@@ -64,7 +65,7 @@ function SoundType({ analysis }: { analysis: Analysis }) {
 
 export function App() {
   const [state, setState] = useState<State>({ kind: "empty" });
-  const [mode, setMode] = useState<"rebuild" | "learn" | "ask" | "check">("rebuild");
+  const [mode, setMode] = useState<"rebuild" | "play" | "learn" | "ask" | "check">("rebuild");
   const [tab, setTab] = useState<TabId>("lesson");
   const [filter, setFilter] = useState("");
   const [attempt, setAttempt] = useState<{ loaded?: Loaded; name?: string; error?: string }>({});
@@ -99,11 +100,18 @@ export function App() {
         <p>Learn synthesis hands-on, or drop a Serum 2 preset and get a step-by-step walk-through for rebuilding it. Files stay in this browser tab.</p>
         <div className="modes" role="tablist" aria-label="Mode">
           <button role="tab" aria-selected={mode === "rebuild"} className={mode === "rebuild" ? "on" : ""} onClick={() => setMode("rebuild")}>Rebuild a patch</button>
-          <button role="tab" aria-selected={mode === "learn"} className={mode === "learn" ? "on" : ""} onClick={() => setMode("learn")}>Learn synthesis</button>
+          <button role="tab" aria-selected={mode === "play"} className={mode === "play" ? "on" : ""} onClick={() => setMode("play")}>Lessons</button>
+          <button role="tab" aria-selected={mode === "learn"} className={mode === "learn" ? "on" : ""} onClick={() => setMode("learn")}>Serum tasks</button>
           <button role="tab" aria-selected={mode === "ask"} className={mode === "ask" ? "on" : ""} onClick={() => setMode("ask")}>Ask the guide</button>
           <button role="tab" aria-selected={mode === "check"} className={mode === "check" ? "on" : ""} onClick={() => setMode("check")}>System check</button>
         </div>
       </header>
+
+      {mode === "play" && (
+        <section className="panel">
+          <PlayView cards={CARDS} />
+        </section>
+      )}
 
       {mode === "learn" && (
         <section className="panel">
@@ -146,7 +154,8 @@ export function App() {
           </nav>
 
           <section className="panel tabpanel" role="tabpanel">
-            {tab === "lesson" && <LessonView steps={state.analysis.steps} modules={state.analysis.modules} cards={CARDS} presetKey={state.fileName + state.preset.stats.fileBytes} />}
+            {tab === "lesson" && <LessonView steps={state.analysis.steps} modules={state.analysis.modules} cards={CARDS} presetKey={state.fileName + state.preset.stats.fileBytes}
+              patchName={state.preset.header.presetName || state.fileName} />}
             {tab === "flow" && <FlowView graph={state.analysis.graph} />}
             {tab === "modules" && <ModulesView analysis={state.analysis} />}
             {tab === "compare" && <CompareView target={state.analysis} attempt={attempt.loaded?.analysis} attemptName={attempt.name} attemptError={attempt.error} onFile={onAttempt} />}

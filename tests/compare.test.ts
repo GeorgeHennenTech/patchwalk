@@ -27,7 +27,7 @@ describe("drop your attempt", () => {
     const steps = compare(target, make({ kParamOctave: -2, kParamUnison: 5 }, { kParamEnable: 1, kParamFreq: 0.42, kParamReso: 30 }));
     const facts = steps.flatMap((s) => s.facts);
     expect(facts.find((f) => f.target?.id === "VoiceFilter0:kParamFreq")).toMatchObject({ verdict: "close", text: "Filter 1 Cutoff: target 0.4, yours 0.42." });
-    expect(facts.find((f) => f.target?.id === "Oscillator0:kParamOctave")).toMatchObject({ verdict: "different", text: "Osc A Octave: target -1 oct, yours -2 oct." });
+    expect(facts.find((f) => f.target?.id === "Oscillator0:kParamOctave")).toMatchObject({ verdict: "different", text: "Osc A Octave (OCT): target -1 oct, yours -2 oct." });
     expect(steps.find((s) => s.id === "core:Oscillator0")!.verdict).toBe("different");
   });
   it("reports settings and whole steps that only the attempt has", () => {

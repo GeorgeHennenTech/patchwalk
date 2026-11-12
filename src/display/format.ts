@@ -5,6 +5,8 @@ export interface Display {
   num?: number;
   unit?: string;
   decimals?: number;
+  /** Overrides the registry entry's status for this particular value (e.g. a menu choice named in the manual). */
+  status?: "verified" | "documented" | "unverified" | "raw";
 }
 
 /** Fixed decimals with trailing zeros removed; never prints "-0". */

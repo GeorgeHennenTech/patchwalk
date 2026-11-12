@@ -18,9 +18,9 @@ const CASES: [string, string, number | string, string][] = [
   ["Oscillator", "kParamUnisonBlend", 0.5, "0.5"],
   ["Oscillator", "kParamPan", 0.5, "0.5"],
   ["WTOsc", "kParamTablePos", 92.71052604913712, "92.7"], // rando (fixture)
-  ["WTOsc", "kParamWarpMenu", "kBendPos", "Bend Pos"], // rando (fixture)
+  ["WTOsc", "kParamWarpMenu", "kBendPos", "Bend +"], // rando (fixture)
   ["WTOsc", "kParamWarp", 0.5, "0.5"],
-  ["WTOsc", "kParamWarpMenu2", "kFilterHPF", "Filter HPF"], // rando (fixture)
+  ["WTOsc", "kParamWarpMenu2", "kFilterHPF", "HPF (Filter)"], // rando (fixture)
   ["WTOsc", "kParamWarp2", 0.20614035427570343, "0.206"], // rando (fixture)
   ["WTOsc", "kParamRandomPhase", 0, "0"],
   ["WTOsc", "kParamInitialPhase", 15.234375, "15.2"],
@@ -44,8 +44,8 @@ const CASES: [string, string, number | string, string][] = [
   ["Env", "kParamCurve3", 66.60000000000001, "66.6"], // Init (fixture)
   ["LFO", "kParamRate", 17.078820419579653, "17.08"], // rando (fixture)
   ["LFO", "kParamBeatSync", 0, "Off"],
-  ["LFO", "kParamMode", "Free", "Free"],
-  ["LFO", "kParamType", "RandomSH", "Random SH"], // rando (fixture)
+  ["LFO", "kParamMode", "Free", "FREE"],
+  ["LFO", "kParamType", "RandomSH", "S&H"], // rando (fixture)
   ["LFO", "kParamRise", 2.2280702590942383, "2.23"],
   ["LFO", "kParamDelay", 1, "1"],
   ["LFO", "kParamSmooth", 85.52631735801697, "86%"],
@@ -92,6 +92,24 @@ describe("display registry", () => {
     }
   });
 
+  it("names from the Serum 2 User Guide are marked documented, and only when the token is recognised", () => {
+    expect(resolveParam("VoiceFilter", "kParamType", "MgL24")).toMatchObject({ status: "documented", display: { text: "MG Low 24" } });
+    expect(resolveParam("VoiceFilter", "kParamType", "Mystery9")).toMatchObject({ status: "unverified", display: { text: "Mystery 9" } });
+    expect(resolveParam("WTOsc", "kParamWarpMenu", "kBendPos").status).toBe("documented");
+    expect(resolveParam("WTOsc", "kParamWarpMenu", "kSomethingElse").status).toBe("unverified");
+    expect(resolveParam("LFO", "kParamType", "Lorenz")).toMatchObject({ status: "documented", display: { text: "Chaos: Lorenz" } });
+    // a documented name never turns into "verified": that still needs the owner's probe
+    expect(allSpecs().every(({ spec }) => spec.status !== "verified")).toBe(true);
+  });
+
+  it("the filter's Var knob takes the guide's name for the selected filter type", () => {
+    expect(resolveParam("VoiceFilter", "kParamVar", 39, { kParamType: "LadderAcid" }).label).toBe("Var (SMOOTH)");
+    expect(resolveParam("VoiceFilter", "kParamVar", 39, { kParamType: "MgL24" }).label).toBe("Var (FAT)");
+    expect(resolveParam("VoiceFilter", "kParamVar", 39, {}).label).toBe("Var (FAT)"); // Init's default type is MG Low 6
+    expect(resolveParam("VoiceFilter", "kParamVar", 39, { kParamType: "Mystery9" }).label).toBe("Var");
+    expect(resolveParam("VoiceFilter", "kParamVar", 39).label).toBe("Var");
+  });
+
   it("an unknown param is shown as stored and flagged", () => {
     const r = resolveParam("Oscillator", "kParamSomethingNew", 0.123456);
     expect(r).toMatchObject({ known: false, status: "raw", label: "Something New" });
@@ -103,7 +121,8 @@ describe("display registry", () => {
     expect(time(0.0147).text).toBe("14.7 ms");
     expect(time(2).text).toBe("2 s");
     expect(humanize("kParamUnisonBlend")).toBe("Unison Blend");
-    expect(filterTypeName("LadderAcid").text).toBe("Ladder Acid");
+    expect(filterTypeName("LadderAcid")).toEqual({ text: "Acid Ladder", status: "documented" });
+    expect(filterTypeName("SomethingNew").status).toBeUndefined();
   });
 
   it.skipIf(!has(PACK.hype))("fixture facts carry their status through to the lesson", () => {

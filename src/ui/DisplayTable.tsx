@@ -7,7 +7,8 @@ export function DisplayTable() {
   return (
     <div>
       <p className="banner">
-        Nothing here has been confirmed against Serum’s screen yet. {count("unverified")} entries apply a conversion that is a reasoned guess;
+        Nothing here has been confirmed against Serum’s screen yet. {count("documented")} entries are named from the Serum 2 User Guide;
+        {" "}{count("unverified")} apply a conversion that is a reasoned guess (some of their menu choices are named from the guide);
         {" "}{count("raw")} show the stored number as-is because no conversion is known; {count("verified")} are verified.
         See <code>docs/PROBES.md</code> for the presets that would confirm each one.
       </p>
@@ -19,8 +20,8 @@ export function DisplayTable() {
               <td>{moduleType}</td>
               <td className="mono">{param}</td>
               <td>{spec.label}</td>
-              <td><Badge kind={spec.status === "verified" ? "ok" : spec.status === "unverified" ? "warn" : "unknown"}>{spec.status === "raw" ? "stored value" : spec.status}</Badge></td>
-              <td className="muted">{spec.basis}</td>
+              <td><Badge kind={spec.status === "verified" ? "ok" : spec.status === "documented" ? "info" : spec.status === "unverified" ? "warn" : "unknown"}>{spec.status === "raw" ? "stored value" : spec.status === "documented" ? "from the manual" : spec.status}</Badge></td>
+              <td className="muted">{spec.basis}{spec.manual && <> <em>Guide: {spec.manual}.</em></>}</td>
             </tr>
           ))}
         </tbody>

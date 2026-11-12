@@ -151,7 +151,7 @@ describe("difficulty rendering", () => {
     const b = render(patch.steps, "beginner");
     const lines = b.flatMap((s) => s.lines.map((l) => l.text));
     expect(lines).toContain("Set Filter 1 Drive to 42%.");
-    expect(lines).toContain("Set Env 1 Attack to 250 ms.");
+    expect(lines).toContain("Set Env 1 Attack (ATK) to 250 ms.");
     const curve = render(analyze(probe((r) => (r.Env0.plainParams = { ...r.Env0.plainParams, kParamCurve2: 40 })), INIT_BASELINE).steps, "beginner").flatMap((s) => s.lines.map((l) => l.text));
     expect(curve).toContain("Set Env 1 Decay curve to 40. (Init: 66.6)");
     expect(b.length).toBeGreaterThan(patch.steps.length);
@@ -160,7 +160,7 @@ describe("difficulty rendering", () => {
   it("intermediate: knob values become ranges, musical whole numbers stay exact", () => {
     const lines = render(patch.steps, "intermediate").flatMap((s) => s.lines.map((l) => l.text));
     expect(lines).toContain("Set Filter 1 Drive somewhere around 38 to 46%.");
-    expect(lines).toContain("Set Osc A Octave to -1 oct.");
+    expect(lines).toContain("Set Osc A Octave (OCT) to -1 oct.");
     expect(lines).toContain("Set Osc A Unison voices to 3.");
   });
   it("advanced: goal-only titles, every value line hidden until asked for", () => {

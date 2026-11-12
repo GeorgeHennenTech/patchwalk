@@ -43,7 +43,7 @@ function paramFact(node: ModuleNode, change: ParamChange): Fact {
       note: "This preset does not store a value here, so it is at the factory default. That number is not in the file.",
     };
   }
-  const r = resolveParam(node.type, change.param, change.value);
+  const r = resolveParam(node.type, change.param, change.value, node.params);
   return {
     ...base, label: r.label, concept: r.concept, raw: change.value, known: r.known, status: r.status, basis: r.basis,
     display: r.display,

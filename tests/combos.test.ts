@@ -36,7 +36,7 @@ describe("combination detection", () => {
     });
     expect(c["lfo-cutoff"]).toEqual(["LFO 1 moves Filter 1 Cutoff (amount 50%), a repeating filter sweep."]);
     expect(c["tremolo"]).toEqual(["LFO 2 moves Osc A Level (amount 20%), a repeating change in loudness (tremolo)."]);
-    expect(c["pitch-lfo"]).toEqual(["LFO 3 moves Osc A Fine (amount 5%), a repeating change in pitch."]);
+    expect(c["pitch-lfo"]).toEqual(["LFO 3 moves Osc A Fine (FIN) (amount 5%), a repeating change in pitch."]);
   });
   it("mono + legato + portamento", () => {
     expect(run((r) => (r.Global0.plainParams = { kParamMonoToggle: 1, kParamLegato: 1, kParamPortamentoTime: 0.1 }))["glide"]).toEqual(["Mono is on, Legato is on and Portamento time is 100 ms."]);

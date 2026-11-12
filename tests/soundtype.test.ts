@@ -16,7 +16,7 @@ describe("sound type guess", () => {
   it("low register + mono -> mono bass, citing the settings", () => {
     const g = guess((r) => { r.Oscillator0.plainParams = { kParamOctave: -2 }; r.Global0.plainParams = { kParamMonoToggle: 1, kParamLegato: 1 }; });
     expect(g.label).toBe("Mono bass");
-    expect(g.reasons).toEqual(["Osc A Octave: -2 oct", "Global Mono: On", "Global Legato: On"]);
+    expect(g.reasons).toEqual(["Osc A Octave (OCT): -2 oct", "Global Mono: On", "Global Legato: On"]);
   });
   it("transpose counts towards the register", () => {
     expect(guess((r) => (r.Global0.plainParams = { kParamTranspose: -12 })).label).toBe("Bass");

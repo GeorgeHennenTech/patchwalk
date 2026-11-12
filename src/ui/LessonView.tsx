@@ -35,7 +35,8 @@ function StepCard({ step, n, cards, fetchState, diagrams }: { step: RenderedStep
             <li key={l.factId}>
               <span>{l.text}</span>
               {l.uninterpreted ? <Badge kind="unknown" title="The app has no interpretation for this setting. It is shown exactly as stored.">not interpreted</Badge>
-                : l.unverified && <Badge kind="warn" title={l.basis ?? "This reading has not been confirmed against Serum's screen."}>unverified</Badge>}
+                : l.unverified ? <Badge kind="warn" title={l.basis ?? "This reading has not been confirmed against Serum's screen."}>unverified</Badge>
+                : l.documented && <Badge kind="info" title={(l.basis ?? "") + " Taken from the Serum 2 User Guide; not yet checked on screen."}>from the manual</Badge>}
               {l.note && <div className="line-note">{l.note}</div>}
             </li>
           ))}

@@ -9,6 +9,8 @@ export interface RenderedLine {
   /** Advanced only: the exact-value line, shown when the learner asks for values. */
   hidden: boolean;
   unverified: boolean;
+  /** Named from the Serum 2 User Guide, not yet checked on screen by the owner. */
+  documented: boolean;
   /** The app has no interpretation for this setting (rule 6). */
   uninterpreted: boolean;
   note?: string;
@@ -80,6 +82,7 @@ function line(f: Fact, difficulty: Difficulty): RenderedLine {
   return {
     factId: f.id, text, hidden: difficulty === "advanced",
     unverified: f.status === "unverified" || f.status === "raw",
+    documented: f.status === "documented",
     uninterpreted: !f.known, note: f.note, basis: f.basis,
   };
 }

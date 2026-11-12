@@ -1,8 +1,10 @@
 import { useMemo, useState } from "react";
 import { analyze, type Analysis } from "./flow/build";
+import { guessSoundType } from "./flow/soundtype";
 import { decodePreset, PresetError, type DecodedPreset } from "./format";
 import { parseCard, type Card } from "./lesson/cards";
 import { INIT_BASELINE } from "./patch/baseline";
+import { Badge } from "./ui/Badge";
 import { CompareView } from "./ui/CompareView";
 import { DisplayTable } from "./ui/DisplayTable";
 import { DropZone } from "./ui/DropZone";
@@ -42,6 +44,20 @@ const explain = (e: unknown) => {
   console.error(e);
   return "Something unexpected went wrong while reading this file.";
 };
+
+function SoundType({ analysis }: { analysis: Analysis }) {
+  const g = useMemo(() => guessSoundType(analysis), [analysis]);
+  return (
+    <div className="soundtype">
+      <div>
+        <span className="muted">Sound type: </span>
+        <strong>{g.label ? `probably a ${g.label.charAt(0).toLowerCase()}${g.label.slice(1)}` : "no guess"}</strong>{" "}
+        <Badge kind="warn" title={g.caveats.join(" ")}>guess from settings</Badge>
+      </div>
+      <ul>{g.reasons.map((r) => <li key={r}>{r}</li>)}</ul>
+    </div>
+  );
+}
 
 export function App() {
   const [state, setState] = useState<State>({ kind: "empty" });
@@ -101,6 +117,7 @@ export function App() {
               <div><dt>Size</dt><dd>{kb(state.preset.stats.fileBytes)} on disk, {kb(state.preset.stats.decompressedBytes)} decoded</dd></div>
             </dl>
             {state.preset.header.presetDescription && <p className="desc">{state.preset.header.presetDescription}</p>}
+            <SoundType analysis={state.analysis} />
           </section>
 
           <nav className="tabs" role="tablist">

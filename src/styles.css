@@ -121,3 +121,7 @@ table.grid td { padding: 7px 8px; border-bottom: 1px solid var(--line); vertical
 tr.dim td { opacity: 0.6; }
 .kv { display: grid; grid-template-columns: minmax(110px, 1fr) minmax(70px, 0.7fr) 2fr; gap: 8px; padding: 1px 0; }
 @media (max-width: 640px) { .kv { grid-template-columns: 1fr 1fr; } .kv > :last-child { display: none; } table.grid { display: block; overflow-x: auto; } }
+
+.soundtype { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--line); }
+.soundtype ul { margin: 6px 0 0; padding-left: 18px; color: var(--muted); font-size: 13px; columns: 2; column-gap: 28px; }
+@media (max-width: 640px) { .soundtype ul { columns: 1; } }

@@ -40,7 +40,7 @@ function SynthPanel({ synth, show, lesson, all, lastNote, extra = [], onExtra }:
   const beat = beatHz(synth.state, synth.held.at(-1) ?? lastNote ?? 57);
   return (
     <div className="synth">
-      {!synth.running && <button className="primary big" onClick={() => void synth.start()}>Start audio</button>}
+      {!synth.running && onExtra && <button className="primary big" onClick={() => void synth.start()}>Start audio</button>}
       {onExtra && (
         <div className="view-toggles" role="group" aria-label="Views of the sound">
           <span>Show:</span>

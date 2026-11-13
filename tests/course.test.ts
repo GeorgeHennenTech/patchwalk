@@ -599,7 +599,7 @@ import { CHAPTER_4 } from "../src/course/lessons/chapter4";
 describe("chapter 4 lessons", () => {
   const st = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
   it("the LFO chapter follows the envelopes and starts from real settings", () => {
-    expect(LESSONS.map((l) => l.id).slice(29, 33)).toEqual(["C4.1", "C4.2", "C4.3", "C4.C"]);
+    expect(LESSONS.map((l) => l.id).slice(29, 36)).toEqual(["C4.1", "C4.2", "C4.3", "C4.4", "C4.5", "C4.6", "C4.C"]);
     for (const l of CHAPTER_4) for (const k of Object.keys(l.initial ?? {})) expect(k in INITIAL, `${l.id}: ${k}`).toBe(true);
     expect(placeOf(LESSONS.find((l) => l.id === "C4.2")!).chapter).toBe("LFOs");
   });
@@ -626,7 +626,7 @@ import { CHAPTER_5 } from "../src/course/lessons/chapter5";
 describe("chapter 5: routes, direction, and modulating a modulator", () => {
   const st = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
   it("the modulation chapter follows the LFOs and starts from real settings", () => {
-    expect(LESSONS.map((l) => l.id).slice(33, 38)).toEqual(["C5.1", "C5.2", "C5.3", "C5.6", "C5.C"]);
+    expect(LESSONS.map((l) => l.id).slice(36, 41)).toEqual(["C5.1", "C5.2", "C5.3", "C5.6", "C5.C"]);
     for (const l of CHAPTER_5) for (const k of Object.keys(l.initial ?? {})) expect(k in INITIAL, `${l.id}: ${k}`).toBe(true);
   });
   it("an LFO set to one way pushes one side only, like an envelope; both ways is the default", () => {
@@ -765,5 +765,51 @@ describe("envelope hold and fall", () => {
     expect(st(1).check(base({ played: { mouse: 2, keys: 0, midi: 0 } }, { envBend: "straight" }))).toBe(true);
     expect(st(3).check(base({ played: { mouse: 2, keys: 0, midi: 0 } }, { envBend: "sharp", envH: 200 }))).toBe(true);
     expect(st(4).remark!(base({}, { envBend: "sharp", envH: 200 }))).toBe("You chose a sharp fall with 200 ms of hold.");
+  });
+});
+
+import { beatsOf, lfoCoefficients, lfoHz, lfoStartPhase } from "../src/synth/mod";
+
+describe("LFO tempo sync, start mode and drawn shapes", () => {
+  it("a synced LFO's speed comes from the tempo and the division, and ignores the Rate knob", () => {
+    const s: SynthState = { ...INITIAL, bpm: 120, lfo1Rate: 7, lfo1Sync: "beat", lfo1Div: "1" };
+    expect(lfoHz(s, "lfo1")).toBe(2);
+    expect(lfoHz({ ...s, lfo1Div: "1/2" }, "lfo1")).toBe(4);
+    expect(lfoHz({ ...s, lfo1Div: "4" }, "lfo1")).toBe(0.5);
+    expect(lfoHz({ ...s, bpm: 90, lfo1Div: "1/3" }, "lfo1")).toBeCloseTo(4.5, 9);
+    expect(lfoHz({ ...s, lfo1Sync: "hz" }, "lfo1")).toBe(7);
+    expect(beatsOf("1/4")).toBe(0.25);
+  });
+  it("Restart always begins the shape; Free begins wherever the clock has got to", () => {
+    const s: SynthState = { ...INITIAL, bpm: 60, lfo1Sync: "beat", lfo1Div: "1" };
+    expect(lfoStartPhase(s, "lfo1", 12.75)).toBe(0);
+    expect(lfoStartPhase({ ...s, lfo1Trig: "free" }, "lfo1", 12.75)).toBeCloseTo(0.75, 9);
+    expect(lfoStartPhase({ ...s, lfo1Trig: "free" }, "lfo1", 13)).toBeCloseTo(0, 9); // on the beat
+  });
+  it("a drawn shape plays its steps in order, and its harmonics rebuild exactly that staircase", () => {
+    const steps = [1, 1, -1, -1, 0.5, -1, 1, -1, 1, 1, -1, 0, 0.5, -0.5, 1, -1];
+    expect(lfoValue("drawn", 0, steps)).toBe(1);
+    expect(lfoValue("drawn", 2.5 / 16, steps)).toBe(-1);
+    expect(lfoValue("drawn", 1 + 4.5 / 16, steps)).toBe(0.5);
+    const c = lfoCoefficients("drawn", steps);
+    const rebuilt = (x: number) => { let y = c.mean; for (let n = 1; n < c.sin.length; n++) y += c.sin[n]! * Math.sin(2 * Math.PI * n * x) + c.cos[n]! * Math.cos(2 * Math.PI * n * x); return y; };
+    for (const k of [0, 2, 4, 11, 13]) expect(rebuilt((k + 0.5) / 16)).toBeCloseTo(steps[k]!, 1);
+    expect(c.mean).toBeCloseTo(steps.reduce((a, b) => a + b, 0) / 16, 9);
+    // the basic shapes rebuild too, at full height
+    const sq = lfoCoefficients("square");
+    let top = 0; for (let n = 1; n < sq.sin.length; n++) top += sq.sin[n]! * Math.sin(2 * Math.PI * n * 0.25);
+    expect(top).toBeCloseTo(1, 2);
+  });
+  it("the new LFO lessons check sync, start mode, rise and the drawing", () => {
+    const st = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
+    expect(st("C4.4", 1).check(base({}, { lfo1Sync: "beat", lfo1Div: "1" }))).toBe(true);
+    expect(st("C4.4", 4).check(base({ range: { bpm: { min: 80, max: 160 } } }, { lfo1Div: "1" }))).toBe(true);
+    expect(st("C4.4", 4).remark!(base({}, { bpm: 120 }))).toMatch(/^At 120 beats a minute, one beat lasts 0\.50 seconds, so the wobble is running at 2\.00 cycles a second\./);
+    expect(st("C4.5", 1).check(base({ played: { mouse: 4, keys: 0, midi: 0 } }, { lfo1Trig: "free" }))).toBe(true);
+    expect(st("C4.5", 3).check(base({ longestHeld: 2.5 }, { lfo1Rise: 1000 }))).toBe(true);
+    const drawn = [1, 1, -1, -1, 1, -1, 1, -1, 0, 0, -1, 0, 0.5, -0.5, 0, -1];
+    expect(st("C4.6", 3).check(base({}, { lfo1Shape: "drawn", lfo1Steps: drawn }))).toBe(true);
+    expect(st("C4.6", 3).check(base({}, { lfo1Shape: "drawn", lfo1Steps: drawn.map(() => 0) }))).toBe(false);
+    expect(st("C4.6", 3).remark!(base({}, { lfo1Shape: "drawn", lfo1Steps: drawn }))).toContain("x x . . x . x . . . . . . . . .");
   });
 });

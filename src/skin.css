@@ -428,3 +428,9 @@ label.mod-head { cursor: pointer; }
 .synth:not(.plain) .view.matrix table { background: #0c0510; }
 .synth:not(.plain) .view.matrix td i { box-shadow: 0 0 6px currentColor; }
 .synth:not(.plain) .macro-name { background: #0c0510; border-color: var(--glow); color: var(--glow); }
+
+/* Drawn LFO shape, tempo and click */
+.mod-wave.lfo-draw { height: 96px; touch-action: none; cursor: crosshair; }
+.lfo-bar { fill: var(--accent); }
+.synth:not(.plain) .mod.neon .lfo-bar { fill: var(--glow); filter: drop-shadow(0 0 2px var(--glow)); }
+.synth-main .ctl.toggle { border: 0; padding: 0; background: none; }

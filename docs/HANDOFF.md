@@ -21,7 +21,7 @@ Last updated: 13 November 2026, after commit "Add the filter chapter to the prac
    ```bash
    npm test
    ```
-   Expect 319 passing tests, none skipped.
+   Expect 323 passing tests, none skipped.
 3. **Run it.** `npm run dev` serves the app at http://localhost:5173 including the two server functions.
    The Claude calls report "no API key" locally unless `.env.local` has `ANTHROPIC_API_KEY`; that is expected.
 4. **Then continue with section 8** without waiting for instructions, unless the owner's message says otherwise.
@@ -63,7 +63,7 @@ synthesis course with its own practice synth and an AI guide that answers from a
 | Tab | What it does |
 |---|---|
 | **Rebuild a patch** | Reads a `.SerumPreset` in the browser (never uploaded). Shows a sound-type guess, a lesson in signal-flow order at three difficulty levels, "Explain why" (Claude writes why each step works), envelope and LFO diagrams, a signal-flow view with a modulation map, an active-modules view, "compare your attempt", a display-value table and raw data. An ask box lets the guide answer about the patch. |
-| **Lessons** | The practice synth (two oscillators, unison, sub, noise, phase, generated wavetables, a filter with a draggable curve, two envelopes, three LFOs, velocity and key position as sources, and four macros; shown as a rack of panels with knobs) and forty-seven playable lessons: chapters 0 to 5 (oscillators, filters, envelopes, LFOs, modulation) and a macro chapter, a match-by-ear lesson (C1.M) and the chapter checkpoints (C1.C, C2.C, C3.C, C4.C, C5.C). Each lesson: optional "Hear it first" demo, idea text, a knowledge card, guided steps with only the needed controls shown and live targets, guide remarks written by code, optional blind ear check, optional match-by-ear rounds, recap, suggested next lesson, read-aloud, and an ask box. Any order; progress saved in the browser. |
+| **Lessons** | The practice synth (two oscillators, unison, sub, noise, phase, generated wavetables, a filter with a draggable curve, two envelopes, three LFOs, velocity and key position as sources, and four macros; shown as a rack of panels with knobs) and fifty playable lessons: chapters 0 to 5 (oscillators, filters, envelopes, LFOs, modulation) and a macro chapter, a match-by-ear lesson (C1.M) and the chapter checkpoints (C1.C, C2.C, C3.C, C4.C, C5.C). Each lesson: optional "Hear it first" demo, idea text, a knowledge card, guided steps with only the needed controls shown and live targets, guide remarks written by code, optional blind ear check, optional match-by-ear rounds, recap, suggested next lesson, read-aloud, and an ask box. Any order; progress saved in the browser. |
 | **Serum tasks** | The older ten lessons: a task done in Serum, checked by dropping the saved preset. |
 | **Ask the guide** | Answers a typed question from the library (the Serum 2 User Guide, the Ableton Live 11 manual, and the knowledge cards) with page citations, quoted source text, the cited page's pictures, and links to matching lessons. Says "not in the library" instead of guessing. |
 | **System check** | One-click end-to-end test of the explanation service. |
@@ -163,7 +163,7 @@ box used with lesson or patch context; the match-by-ear difficulty.
 numbers, effect order, module name labels. `docs/PROBES.md` lists 43 one-change-from-Init presets the owner
 could make to settle them. None have been made. Effect parameters are shown exactly as stored.
 
-**Drafts awaiting the owner's review:** all 32 knowledge cards (`status: draft`), the forty lesson scripts in
+**Drafts awaiting the owner's review:** all 32 knowledge cards (`status: draft`), the forty-three lesson scripts in
 `docs/lessons/`, every lesson in the app.
 
 ---
@@ -181,7 +181,7 @@ could make to settle them. None have been made. Effect parameters are shown exac
 | `LITERATURE.md` | Every text in the library, on its way, or wanted, with what each is for. The owner asked for this list on the to-do page; keep the two in step. |
 | `GENRES.md` | The owner's closed list of 92 genres, each to use an eight-lesson template; also what they declined. |
 | `COVERAGE_SYNTORIAL.md` | Mapping of Syntorial's lesson titles onto our lessons, and what was added as a result. |
-| `lessons/` | Thirty fully scripted lessons (C0.1 to C0.4, C1.1 to C1.8, C2.1 to C2.7, C3.1 to C3.6, C4.1 to C4.3, C5.1 to C5.3, C5.6, and C5M.1 to C5M.8) in a fixed shape. |
+| `lessons/` | Thirty fully scripted lessons (C0.1 to C0.4, C1.1 to C1.8, C2.1 to C2.7, C3.1 to C3.6, C4.1 to C4.6, C5.1 to C5.3, C5.6, and C5M.1 to C5M.8) in a fixed shape. |
 | `PROBES.md` | Probe presets for verifying display values. |
 | `milestones/`, `STRUCTURE.md` | The original eight milestones and file layout. All eight are done. |
 
@@ -224,8 +224,8 @@ Take these in order. After each, test, check in a browser, commit, push, and rep
    new synth controls first** (envelope curves and hold; LFO tempo sync, trigger modes, drawn shapes; velocity,
    macros, mod wheel). Chapter 6 (warp, sync, FM, ring mod) needs new oscillator features. **The owner then chose the order (13 Nov
    2026): (1) macros and velocity, done, with a whole macro chapter because they want to teach "an absurd
-   amount of macro combinations" (add recipes to `src/course/lessons/macros.ts`); (2) envelope hold and fall, done; next,
-   tempo-synced, trigger-mode and drawable LFOs; (3) then warp, sync, FM and ring modulation; (4) then the two
+   amount of macro combinations" (add recipes to `src/course/lessons/macros.ts`); (2) envelope hold and fall, and tempo-synced,
+   restart-or-free, fading-in and drawable LFOs with a tempo and click: all done; (3) then warp, sync, FM and ring modulation; (4) then the two
    tracks they added the same day, physical modelling (`docs/PHYSICAL_MODELING.md`) and bioacoustics
    (`docs/BIOACOUSTICS.md`), and "whatever" as they find more literature.
    They also want a full editable Matrix tab "at some point"; a read-only Matrix view exists now.**

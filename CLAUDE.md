@@ -148,15 +148,14 @@ Added after the first eight milestones (owner asked for all four in one go):
     checkpoint C1.C), `match.ts`, `progress.ts`. `lessons/chapter2.ts` holds the filter chapter (C2.1-C2.7 and the checkpoint C2.C).
     `lessons/chapter3.ts` holds the envelope chapter (C3.1 to C3.6 and the checkpoint C3.C; C3.3, on hold and
     the shape of the fall, was added once the envelopes had those controls).
-    `lessons/chapter4.ts` holds the LFO chapter (C4.1 to C4.3 and the checkpoint C4.C; C4.4 tempo sync, C4.5
-    trigger modes and C4.6 drawn shapes wait for those controls).
+    `lessons/chapter4.ts` holds the LFO chapter (C4.1 to C4.6 and the checkpoint C4.C).
     `lessons/chapter5.ts` holds the modulation chapter (C5.1, C5.2, C5.6 and the checkpoint C5.C; C5.3 velocity
     and key position, C5.4 macros and C5.5 scaling a route wait for those controls).
     C5.3 (velocity and key position) was added to chapter 5 once those sources existed.
     `lessons/macros.ts` holds the macro chapter (C5M.1 to C5M.8 and the checkpoint C5M.C): most are "recipes",
     a few lines of data each that `recipe()` turns into a full lesson. **The owner wants many macro
     combinations: add to `RECIPES`.** Chapter order is `CHAPTER_ORDER`, not the key order of `CHAPTERS`.
-    **Forty-seven playable lessons.**
+    **Fifty playable lessons.**
   - `src/ui/PlayView.tsx` ("Lessons" tab) and `src/ui/synth/` — spotlighted controls per step, live targets,
     scope, spectrum, meter, on-screen keyboard, Hold, blind ear checks, recap, guide remarks and suggestion.
   - "Hear it first" demos (`demo` on a lesson), match-by-ear rounds (`rounds`, compared by `src/course/match.ts`:
@@ -257,10 +256,21 @@ Added after the first eight milestones (owner asked for all four in one go):
     level was 0.55 / 0.17 / 0.016 of full for straight / eased / sharp, and a 600 ms hold stayed at full level.
     When measuring envelope levels, compare against a separately measured steady note, not a reading taken
     just after the note starts (the analyser lags).
-  - Not built yet: effects, MIDI input, a shared tempo clock, LFO sync, trigger
-    modes and drawn shapes, a mod wheel, an editable matrix. **Owner's order for what comes next (13 Nov
-    2026): tempo-synced, trigger-mode and drawable LFOs (envelope hold and fall are done), then warp, sync, FM
-    and ring mod. After that the two new tracks: physical modelling and bioacoustics.** Next in the plan is chapter 6 (reshaping the
+  - **Tempo, click and the rest of the LFO (13 Nov 2026).** `bpm` and `clickOn` (Master). The click is
+    scheduled from the audio clock's zero (beat k is at k x 60/bpm) and goes to the speakers through
+    `engine.clickBus`, not through the analyser, so views show only the synth. Per LFO: speed in Hz or beats
+    (`lfoNSync`, `lfoNDiv`; `lfoHz` in `mod.ts`), Restart or Free (`lfoNTrig`; Free starts each note's LFO at
+    the phase the clock has reached, by rotating its harmonics, so a synced free LFO turns over on the click),
+    Rise (a fade-in through a `fade` gain every source now passes through), and a "drawn" shape of sixteen
+    steps (`lfoNSteps`, an array replaced on every edit; `LfoDraw` in `Rack.tsx`). `lfoCoefficients` gives
+    every shape's harmonics; a drawn shape's average is added through the bias source because an oscillator
+    cannot carry it. Measured: synced speeds 2, 4 and 4.5 a second at 120 bpm/1 beat, 120/half, 90/third; a
+    drawn shape on pitch gave 883 and 312 Hz for steps of +1 and -0.5; a free square LFO was high in the
+    first half of each clock second and low in the second; six clicks in three seconds at 120 bpm.
+    Not built: Serum's ENVELOPE mode (play the shape once), Delay, smooth drawn curves.
+  - Not built yet: effects, MIDI input, a mod wheel, an editable matrix. **Owner's order for what comes
+    next (13 Nov 2026): warp, sync, FM and ring mod; the first impact lessons (they need nothing new); then
+    physical modelling and bioacoustics.** Next in the plan is chapter 6 (reshaping the
     source: warp, sync, FM, ring modulation), all of which need new oscillator features first.
   - The old ten Serum-task lessons are now the "Serum tasks" tab.
 - **Pictures and lesson links in answers (13 Nov 2026, owner's rule).** When the guide cites a page that has
@@ -285,7 +295,7 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
 - **Private, single-user.** The owner has said this program is strictly for them and will never be distributed.
   Design for one user; do not add accounts, sharing or public pages. Rule 4 still applies to the name and look.
 - **Course:** `docs/CURRICULUM.md` maps 16 tracks and about 400 lessons (one line each); `docs/lessons/` holds
-  fully scripted lessons in a fixed shape (40 so far, all drafts); `docs/COURSE_PLAN.md` describes the practice
+  fully scripted lessons in a fixed shape (43 so far, all drafts); `docs/COURSE_PLAN.md` describes the practice
   synth and lesson engine. A university programme's topic list was used only as a coverage checklist.
   See also `docs/COURSE_PLAN.md`. Guided lessons on a built-in practice synth; lessons can be taken in any
   order; each lesson is its own data file so chapters are easy to add. Tracks are to grow well beyond synthesis

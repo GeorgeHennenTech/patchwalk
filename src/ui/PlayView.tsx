@@ -58,8 +58,10 @@ function SynthPanel({ synth, show, lesson, all, lastNote, extra = [], onExtra, p
             {onSkin && <button className="skin-toggle" aria-pressed={!plain} onClick={onSkin} title="Switch the synth's velvet-and-neon look on or off">Skin: {plain ? "off" : "on"}</button>}
           </div>
         )}
-        {(on("volumeDb") || on("meter")) && (
+        {(on("volumeDb") || on("meter") || on("bpm") || on("clickOn")) && (
           <div className="synth-main">
+            {on("clickOn") && <Control id="clickOn" synth={synth} spot={show.includes("clickOn")} />}
+            {on("bpm") && <Control id="bpm" synth={synth} spot={show.includes("bpm")} />}
             {on("meter") && <Meter synth={synth} />}
             {on("volumeDb") && <Control id="volumeDb" synth={synth} spot={show.includes("volumeDb")} />}
           </div>

@@ -152,7 +152,7 @@ export function useSynth() {
   }, [noteOn, noteOff]);
 
   // Silence on unmount so sound never outlives the lesson screen.
-  useEffect(() => () => { engine.current?.allNotesOff(); void engine.current?.ctx.suspend(); }, []);
+  useEffect(() => () => { engine.current?.dispose(); void engine.current?.ctx.suspend(); }, []);
 
   const snap = (): Snapshot => snapshot(track.current, stateRef.current, { audioRunning: running, held, holdOn, now: now() });
 

@@ -100,13 +100,63 @@ export function envLevel(e: Adsr, t: number, held: number): number {
   return during(held) * fallShape(e.bend, t - held, e.release);
 }
 
-/** One cycle of an LFO shape at position `t` (0..1), from -1 to 1. Matches the browser's oscillator shapes. */
-export function lfoValue(shape: SynthState["lfo1Shape"], t: number): number {
+/** How many beats one cycle of a tempo-synced LFO lasts. */
+export const beatsOf = (div: SynthState["lfo1Div"]) => (div.includes("/") ? 1 / Number(div.split("/")[1]) : Number(div));
+type LfoId = "lfo1" | "lfo2" | "lfo3";
+/** An LFO's speed in cycles a second: its Rate knob, or, when set in beats, worked out from the tempo. */
+export function lfoHz(s: SynthState, id: LfoId): number {
+  return s[`${id}Sync`] === "beat" ? s.bpm / 60 / beatsOf(s[`${id}Div`]) : s[`${id}Rate`];
+}
+/**
+ * Where in its cycle (0..1) an LFO starts for a note beginning at clock time `t`. "Restart" always begins at
+ * the start of the shape. "Free" behaves as if the LFO had been running since the clock began, so notes land
+ * wherever it happens to be, and a tempo-synced LFO stays lined up with the beat whenever you play.
+ */
+export function lfoStartPhase(s: SynthState, id: LfoId, t: number): number {
+  if (s[`${id}Trig`] === "retrig") return 0;
+  const cycles = t * lfoHz(s, id);
+  return cycles - Math.floor(cycles);
+}
+
+/** One cycle of an LFO shape at position `t` (0..1), from -1 to 1. `steps` are the drawn shape's values. */
+export function lfoValue(shape: SynthState["lfo1Shape"], t: number, steps?: number[]): number {
   const x = t - Math.floor(t);
   switch (shape) {
     case "sine": return Math.sin(2 * Math.PI * x);
     case "triangle": return x < 0.25 ? 4 * x : x < 0.75 ? 2 - 4 * x : 4 * x - 4;
     case "saw": return x < 0.5 ? 2 * x : 2 * x - 2;
     case "square": return x < 0.5 ? 1 : -1;
+    case "drawn": return steps?.length ? steps[Math.min(steps.length - 1, Math.floor(x * steps.length))]! : 0;
   }
+}
+
+/**
+ * An LFO shape as a sum of sine and cosine waves, which is how the browser's oscillator takes a custom shape.
+ * `sin[n]` and `cos[n]` are the sizes of harmonic n; `mean` is the shape's average, which an oscillator
+ * cannot carry and has to be added separately. Exact formulas for each shape; the drawn shape is a staircase.
+ */
+export function lfoCoefficients(shape: SynthState["lfo1Shape"], steps: number[] = [], harmonics = 512): { sin: Float32Array<ArrayBuffer>; cos: Float32Array<ArrayBuffer>; mean: number } {
+  const sin = new Float32Array(harmonics), cos = new Float32Array(harmonics);
+  let mean = 0;
+  if (shape === "drawn" && steps.length) {
+    const K = steps.length;
+    mean = steps.reduce((a, b) => a + b, 0) / K;
+    for (let n = 1; n < harmonics; n++) {
+      let a = 0, b = 0;
+      for (let k = 0; k < K; k++) {
+        const from = (2 * Math.PI * n * k) / K, to = (2 * Math.PI * n * (k + 1)) / K;
+        a += steps[k]! * (Math.sin(to) - Math.sin(from));
+        b += steps[k]! * (Math.cos(from) - Math.cos(to));
+      }
+      cos[n] = a / (Math.PI * n); sin[n] = b / (Math.PI * n);
+    }
+    return { sin, cos, mean };
+  }
+  for (let n = 1; n < harmonics; n++) {
+    sin[n] = shape === "sine" ? (n === 1 ? 1 : 0)
+      : shape === "square" ? (n % 2 ? 4 / (Math.PI * n) : 0)
+      : shape === "saw" ? ((n % 2 ? 1 : -1) * 2) / (Math.PI * n)
+      : n % 2 ? ((((n - 1) / 2) % 2 ? -1 : 1) * 8) / (Math.PI * Math.PI * n * n) : 0;
+  }
+  return { sin, cos, mean };
 }

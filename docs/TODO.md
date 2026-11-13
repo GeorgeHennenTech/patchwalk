@@ -6,10 +6,9 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 ## Build next
 - [x] Envelope lessons: five lessons and a checkpoint, with an envelope drawing you can drag
 - [x] Envelope hold and fall shape (straight, eased, sharp), with a lesson
-- [ ] Next: tempo-synced, trigger-mode and drawable LFOs, with their three lessons
+- [x] Tempo, a click, and LFOs that sync to the beat, restart or run free, fade in, and can be drawn; three lessons
 - [ ] Then: warp, sync, FM and ring modulation (chapter 6, "reshaping the source")
 - [x] LFO lessons: three lessons and a checkpoint
-- [ ] LFO lessons that need new controls: tempo sync, trigger modes with rise and delay, drawing a shape
 - [x] Modulation lessons: routes and amounts, one way or both ways, modulating a modulator, and a checkpoint
 - [x] Velocity and key position: as sources on the synth, and a lesson
 - [x] Macro chapter: seven macro recipes, two macros on one sound, and a by-ear checkpoint
@@ -17,7 +16,7 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 - [ ] Scaling a route with a second source (mod wheel) and its lesson
 - [ ] Blind ear checks for the filter, envelope, LFO and modulation lessons
 - [ ] Pulse-width lesson in the oscillator chapter
-- [ ] Remaining synthesis chapters from the course plan (47 lessons built)
+- [ ] Remaining synthesis chapters from the course plan (50 lessons built)
 
 ## Synth
 - [x] Filter with a draggable curve
@@ -32,7 +31,7 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 - [ ] A full Matrix tab you can edit, as in Serum (owner asked; also lifts the one-destination-per-source limit)
 - [ ] More than one destination per envelope or LFO
 - [ ] Drag a source onto a knob to connect it
-- [ ] Tempo clock, so LFOs can sync to a beat
+- [x] Tempo clock and click; LFOs can sync to the beat
 - [ ] Effects: distortion, chorus, delay, reverb, EQ, compressor
 - [ ] MIDI keyboard input
 - [ ] More views: stereo, tuner, loudness meter
@@ -82,6 +81,6 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 - [x] Upload the Ableton manual, pages 1 to 500
 - [x] Upload the rest of the Ableton manual
 - [ ] Find more books for the library (EPUB or text-based PDF)
-- [ ] Review the 32 knowledge cards and 40 lesson scripts (all drafts)
+- [ ] Review the 32 knowledge cards and 43 lesson scripts (all drafts)
 - [ ] Probe presets: start with the ten most useful (the assistant has explained what to do)
 - [ ] Keep reporting how things sound and feel

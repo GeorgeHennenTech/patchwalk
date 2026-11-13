@@ -14,6 +14,14 @@ const SLOPES = ["12", "24"] as const;
 export const MOD_DESTS = ["none", "cutoff", "fine", "bFine", "aLevelDb", "bLevelDb", "subLevelDb", "noiseLevelDb", "lfo1Rate", "noteLevel"] as const;
 const WAYS = ["both", "up"] as const;
 /** How an envelope falls during its decay and release: at an even rate, easing off, or dropping fast then lingering. */
+/** LFO shapes: the four basic waves, or sixteen steps the learner draws. */
+export const LFO_SHAPES = ["sine", "triangle", "square", "saw", "drawn"] as const;
+export type LfoShape = (typeof LFO_SHAPES)[number];
+export const LFO_STEPS = 16;
+/** An LFO synced to the tempo repeats once every this many beats. */
+export const DIVISIONS = ["4", "2", "1", "1/2", "1/3", "1/4"] as const;
+const SYNCS = ["hz", "beat"] as const;
+const TRIGS = ["retrig", "free"] as const;
 export const BENDS = ["straight", "eased", "sharp"] as const;
 export type Dest = (typeof MOD_DESTS)[number];
 export const DEST_NAMES: Record<Dest, string> = { none: "Nothing", cutoff: "Filter cutoff", fine: "Osc A pitch", bFine: "Osc B pitch", aLevelDb: "Osc A level", bLevelDb: "Osc B level", subLevelDb: "Sub level", noiseLevelDb: "Noise level", lfo1Rate: "LFO 1 rate", noteLevel: "Note level" };
@@ -89,9 +97,16 @@ export interface SynthState {
   /** How far the source moves its destination, -100..100. */
   env2Amount: number;
   // ---- three LFOs, each restarting with every note. Rate in Hz.
-  lfo1Rate: number; lfo1Shape: Shape; lfo1Dest: Dest; lfo1Amount: number;
-  lfo2Rate: number; lfo2Shape: Shape; lfo2Dest: Dest; lfo2Amount: number;
-  lfo3Rate: number; lfo3Shape: Shape; lfo3Dest: Dest; lfo3Amount: number;
+  lfo1Rate: number; lfo1Shape: LfoShape; lfo1Dest: Dest; lfo1Amount: number;
+  lfo2Rate: number; lfo2Shape: LfoShape; lfo2Dest: Dest; lfo2Amount: number;
+  lfo3Rate: number; lfo3Shape: LfoShape; lfo3Dest: Dest; lfo3Amount: number;
+  /** Tempo in beats per minute, and whether the click that marks the beat is sounding. */
+  bpm: number; clickOn: boolean;
+  /** Per LFO: speed set in Hz or in beats; which division of the beat; restart with each note or run free
+   *  against the tempo clock; a fade-in time in ms; and the sixteen drawn steps (-1..1) for the "drawn" shape. */
+  lfo1Sync: (typeof SYNCS)[number]; lfo1Div: (typeof DIVISIONS)[number]; lfo1Trig: (typeof TRIGS)[number]; lfo1Rise: number; lfo1Steps: number[];
+  lfo2Sync: (typeof SYNCS)[number]; lfo2Div: (typeof DIVISIONS)[number]; lfo2Trig: (typeof TRIGS)[number]; lfo2Rise: number; lfo2Steps: number[];
+  lfo3Sync: (typeof SYNCS)[number]; lfo3Div: (typeof DIVISIONS)[number]; lfo3Trig: (typeof TRIGS)[number]; lfo3Rise: number; lfo3Steps: number[];
   /** Whether each LFO pushes its destination both ways from the knob ("both") or one way only ("up"). */
   lfo1Way: (typeof WAYS)[number]; lfo2Way: (typeof WAYS)[number]; lfo3Way: (typeof WAYS)[number];
   // ---- two sources that are fixed for the length of a note: how hard it was struck, and which key it was
@@ -106,6 +121,9 @@ export interface SynthState {
   macro4: number; macro4Name: string; macro4Dest1: string; macro4Amt1: number; macro4Dest2: string; macro4Amt2: number; macro4Dest3: string; macro4Amt3: number;
 }
 
+/** The drawn shape starts as a staircase down, so it sounds different from the basic shapes straight away. */
+const DEFAULT_STEPS: number[] = Array.from({ length: LFO_STEPS }, (_, i) => Number((1 - (2 * Math.floor(i / 2)) / 7).toFixed(3)));
+
 export const INITIAL: SynthState = {
   volumeDb: -12, shape: "saw", table: "none", position: 0, octave: 0, semitone: 0, fine: 0, phase: 0, randomPhase: 0, freeHz: null, aLevelDb: 0,
   voices: 1, detune: 0, spread: 0,
@@ -118,6 +136,10 @@ export const INITIAL: SynthState = {
   lfo2Rate: 5, lfo2Shape: "triangle", lfo2Dest: "none", lfo2Amount: 30,
   lfo3Rate: 0.5, lfo3Shape: "saw", lfo3Dest: "none", lfo3Amount: 30,
   lfo1Way: "both", lfo2Way: "both", lfo3Way: "both",
+  bpm: 120, clickOn: false,
+  lfo1Sync: "hz", lfo1Div: "1", lfo1Trig: "retrig", lfo1Rise: 0, lfo1Steps: DEFAULT_STEPS,
+  lfo2Sync: "hz", lfo2Div: "1", lfo2Trig: "retrig", lfo2Rise: 0, lfo2Steps: DEFAULT_STEPS,
+  lfo3Sync: "hz", lfo3Div: "1", lfo3Trig: "retrig", lfo3Rise: 0, lfo3Steps: DEFAULT_STEPS,
   velDest: "none", velAmount: 60, keyDest: "none", keyAmount: 50,
   macro1: 0, macro1Name: "Macro 1", macro1Dest1: "none", macro1Amt1: 50, macro1Dest2: "none", macro1Amt2: 50, macro1Dest3: "none", macro1Amt3: 50,
   macro2: 0, macro2Name: "Macro 2", macro2Dest1: "none", macro2Amt1: 50, macro2Dest2: "none", macro2Amt2: 50, macro2Dest3: "none", macro2Amt3: 50,
@@ -147,6 +169,8 @@ const SHAPE_NAMES = { sine: "Sine", triangle: "Triangle", square: "Square", saw:
 
 const BASE_PARAMS: Record<string, ParamSpec> = {
   volumeDb: { id: "volumeDb", label: "Volume", group: "Master", kind: "range", min: -48, max: 0, step: 1, unit: "dB" },
+  bpm: { id: "bpm", label: "Tempo", group: "Master", kind: "range", min: 60, max: 200, step: 1, unit: "bpm" },
+  clickOn: { id: "clickOn", label: "Click", group: "Master", kind: "toggle" },
   shape: { id: "shape", label: "Wave shape", group: "Oscillator A", kind: "choice", choices: SHAPES, names: SHAPE_NAMES },
   table: { id: "table", label: "Wavetable", group: "Oscillator A", kind: "choice", choices: TABLES, names: { none: "Off", basic: "Basic morph", bright: "Bright sweep", vowel: "Vowel" } },
   position: { id: "position", label: "Position", group: "Oscillator A", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
@@ -237,7 +261,11 @@ function source(prefix: "env2" | "lfo1" | "lfo2" | "lfo3" | "vel" | "key", group
 function lfo(n: 1 | 2 | 3): Record<string, ParamSpec> {
   const prefix = `lfo${n}` as const, group = `LFO ${n}` as Group, name = `LFO ${n}`;
   return {
-    [`${prefix}Shape`]: { id: `${prefix}Shape`, label: `${name} shape`, group, kind: "choice", choices: SHAPES, names: SHAPE_NAMES },
+    [`${prefix}Shape`]: { id: `${prefix}Shape`, label: `${name} shape`, group, kind: "choice", choices: LFO_SHAPES, names: { ...SHAPE_NAMES, drawn: "Drawn" } },
+    [`${prefix}Sync`]: { id: `${prefix}Sync`, label: `${name} speed in`, group, kind: "choice", choices: SYNCS, names: { hz: "Hz", beat: "Beats" } },
+    [`${prefix}Div`]: { id: `${prefix}Div`, label: `${name} repeats every`, group, kind: "menu", choices: DIVISIONS, names: { "4": "4 beats (a bar)", "2": "2 beats", "1": "1 beat", "1/2": "Half a beat", "1/3": "A third of a beat", "1/4": "A quarter of a beat" } },
+    [`${prefix}Trig`]: { id: `${prefix}Trig`, label: `${name} start`, group, kind: "choice", choices: TRIGS, names: { retrig: "Restart", free: "Free" } },
+    [`${prefix}Rise`]: { id: `${prefix}Rise`, label: `${name} rise`, group, kind: "range", min: 0, max: 3000, step: 10, unit: "ms" },
     [`${prefix}Rate`]: { id: `${prefix}Rate`, label: `${name} rate`, group, kind: "range", min: 0.05, max: 30, step: 0.01, log: true, unit: "Hz" },
     ...source(prefix, group, name),
     [`${prefix}Way`]: { id: `${prefix}Way`, label: `${name} direction`, group, kind: "choice", choices: WAYS, names: { both: "Both ways", up: "One way" } },

@@ -1,11 +1,11 @@
 // The practice synth drawn as a rack of module panels, in the order the sound flows and the order most
 // wavetable synths (Serum included) lay them out: sub, oscillator A, oscillator B, noise, filter. Each panel
 // has its on/off switch and name on top, a picture of what it is doing, and its controls underneath.
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import type { Panel, PlayableLesson } from "../../course/types";
 import { MACRO_COLORS } from "../../synth/macros";
 import { adsr, ENV1_COLOR, envLevel, lfoValue, SOURCES, type Adsr, type ModSource } from "../../synth/mod";
-import { harmonic, harmonicsA, HARMONICS, MACRO_SLOTS, MACROS, PARAMS, type Group, type SynthState } from "../../synth/params";
+import { harmonic, harmonicsA, HARMONICS, LFO_STEPS, MACRO_SLOTS, MACROS, PARAMS, type Group, type SynthState } from "../../synth/params";
 import type { Synth } from "../../synth/useSynth";
 import { Control, isBox } from "./Controls";
 import { FilterCurve } from "./Views";
@@ -34,8 +34,8 @@ export function envPath(e: Adsr, w = 200, height = 64, points = 120): string {
 }
 /** Two cycles of an LFO shape. */
 /** `oneWay` draws it as it is used then: squeezed into the top half, never dipping below the middle line. */
-export function lfoPath(shape: SynthState["lfo1Shape"], oneWay = false, w = 200, height = 64, points = 160): string {
-  const at = (t: number) => { const v = lfoValue(shape, t); return oneWay ? (v + 1) / 2 : v; };
+export function lfoPath(shape: SynthState["lfo1Shape"], oneWay = false, steps?: number[], w = 200, height = 64, points = 160): string {
+  const at = (t: number) => { const v = lfoValue(shape, t, steps); return oneWay ? (v + 1) / 2 : v; };
   return Array.from({ length: points + 1 }, (_, i) => `${i === 0 ? "M" : "L"}${((i / points) * w).toFixed(1)} ${(height / 2 - at((i / points) * 2 - 1e-9) * (height / 2 - 6)).toFixed(1)}`).join(" ");
 }
 
@@ -66,11 +66,12 @@ function Display({ module, synth, note }: { module: Module; synth: Synth; note: 
     if (module.id === "env1") return envPath(adsr(s, 1));
     if (module.id === "env2") return envPath(adsr(s, 2));
     if (module.source === "vel" || module.source === "key") return "";
-    if (module.source) return lfoPath(s[`${module.source as "lfo1"}Shape`], s[`${module.source as "lfo1"}Way`] === "up");
+    if (module.source) return lfoPath(s[`${module.source as "lfo1"}Shape`], s[`${module.source as "lfo1"}Way`] === "up", s[`${module.source as "lfo1"}Steps`]);
     return NOISE_PATH;
-  }, [module, s.shape, s.table, s.position, s.phase, s.bShape, s.bPhase, s.envA, s.envD, s.envS, s.envR, s.env2A, s.env2D, s.env2S, s.env2R, s.lfo1Shape, s.lfo2Shape, s.lfo3Shape, s.lfo1Way, s.lfo2Way, s.lfo3Way]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [module, s.shape, s.table, s.position, s.phase, s.bShape, s.bPhase, s.envA, s.envD, s.envS, s.envR, s.env2A, s.env2D, s.env2S, s.env2R, s.lfo1Shape, s.lfo2Shape, s.lfo3Shape, s.lfo1Way, s.lfo2Way, s.lfo3Way, s.lfo1Steps, s.lfo2Steps, s.lfo3Steps]); // eslint-disable-line react-hooks/exhaustive-deps
   if (module.id === "filter") return <FilterCurve synth={synth} note={note} compact />;
   if (!d) return null;
+  if (module.source?.startsWith("lfo") && synth.state[`${module.source as "lfo1"}Shape`] === "drawn") return <LfoDraw id={module.source as "lfo1"} synth={synth} />;
   return <svg className="mod-wave" viewBox="0 0 200 64" preserveAspectRatio="none" role="img" aria-label={`${module.name} wave`}>{module.source?.startsWith("lfo") && <line className="mod-mid" x1="0" x2="200" y1="32" y2="32" />}<path d={d} /></svg>;
 }
 
@@ -152,5 +153,30 @@ function MacroPanel({ n, color, synth, show, all }: { n: number; color: string; 
         ))}
       </div>
     </section>
+  );
+}
+
+/**
+ * The drawn LFO shape: sixteen bars. Drag across them to set each one's height; the middle line is the
+ * knob's own setting, above it pushes the destination up and below it pushes it down.
+ */
+function LfoDraw({ id, synth }: { id: "lfo1" | "lfo2" | "lfo3"; synth: Synth }) {
+  const steps = synth.state[`${id}Steps`];
+  const drawing = useRef(false);
+  const W = 200, H = 96, bar = W / LFO_STEPS;
+  const paint = (e: React.PointerEvent<SVGSVGElement>) => {
+    const box = e.currentTarget.getBoundingClientRect();
+    const k = Math.min(LFO_STEPS - 1, Math.max(0, Math.floor(((e.clientX - box.left) / box.width) * LFO_STEPS)));
+    // snap to eighths so two bars can be set to exactly the same height
+    const v = Math.round(Math.min(1, Math.max(-1, 1 - (2 * (e.clientY - box.top)) / box.height)) * 8) / 8;
+    if (steps[k] !== v) synth.setState({ [`${id}Steps`]: steps.map((old, i) => (i === k ? v : old)) } as Partial<SynthState>);
+  };
+  return (
+    <svg className="mod-wave lfo-draw" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" role="img" aria-label="Drawn LFO shape: sixteen steps. Drag across the bars to set their heights."
+      onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); drawing.current = true; synth.flag("lfoDraw"); paint(e); }}
+      onPointerMove={(e) => { if (drawing.current) paint(e); }} onPointerUp={() => { drawing.current = false; }} onPointerCancel={() => { drawing.current = false; }}>
+      {steps.map((v, k) => <rect key={k} className="lfo-bar" x={k * bar + 0.8} width={bar - 1.6} y={v >= 0 ? H / 2 - (v * H) / 2 : H / 2} height={Math.max(1.5, (Math.abs(v) * H) / 2)} />)}
+      <line className="mod-mid" x1="0" x2={W} y1={H / 2} y2={H / 2} />
+    </svg>
   );
 }

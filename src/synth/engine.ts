@@ -2,7 +2,7 @@
 // Built around a shared AudioContext clock and a per-instrument voice list so more instruments and a
 // tempo clock (for the later mini DAW) can be added without rewriting it.
 import { applyMacros } from "./macros";
-import { adsr, fallConstant, isLevel, keyValue, modDepth, noteLevelBase, routes, velocityValue, type Adsr, type Route } from "./mod";
+import { adsr, fallConstant, isLevel, keyValue, lfoCoefficients, lfoHz, lfoStartPhase, modDepth, noteLevelBase, routes, velocityValue, type Adsr, type Route } from "./mod";
 import { DRIVE_RANGE, driveCurve, filterStages, resonanceTrim, type Stage } from "./filter";
 import { dbToGain, harmonic, harmonicsA, HARMONICS, playedHz, playedHzB, subHz, unisonOffsets, unisonPans, type Shape, type SynthState } from "./params";
 
@@ -23,13 +23,13 @@ interface Voice {
   noise?: { src: AudioBufferSourceNode; gain: GainNode };
   /** Every source feeds `mix`, then drive, then the two filter stages, then the resonance level trim. */
   /** One entry per connected envelope or LFO: its signal, and a depth control feeding the destination. */
-  mods: { route: Route; src: OscillatorNode | ConstantSourceNode; depth: GainNode; bias: ConstantSourceNode }[];
+  mods: { route: Route; src: OscillatorNode | ConstantSourceNode; depth: GainNode; bias: ConstantSourceNode; fade: GainNode; phase: number }[];
   filter: { mix: GainNode; shaper: WaveShaperNode; one: BiquadFilterNode; two: BiquadFilterNode; trim: GainNode; drive: number };
   amp: GainNode;
 }
 
 /** Settings whose change means rebuilding the sounding notes (the set of sound sources changes). */
-const STRUCTURAL: (keyof SynthState)[] = ["voices", "bOn", "subOn", "noiseOn", "noiseType", "randomPhase", "env2Dest", "lfo1Dest", "lfo2Dest", "lfo3Dest", "velDest", "keyDest"];
+const STRUCTURAL: (keyof SynthState)[] = ["voices", "bOn", "subOn", "noiseOn", "noiseType", "randomPhase", "env2Dest", "lfo1Dest", "lfo2Dest", "lfo3Dest", "velDest", "keyDest", "lfo1Trig", "lfo2Trig", "lfo3Trig"];
 /** Stop changing a value from `t` on, keeping whatever it has reached (older browsers: drop what was planned). */
 const holdAt = (p: AudioParam, t: number) => (p.cancelAndHoldAtTime ? p.cancelAndHoldAtTime(t) : p.cancelScheduledValues(t));
 
@@ -40,12 +40,19 @@ export class Engine {
   private voices: Voice[] = [];
   private state: SynthState;
   private noiseBuffers: Partial<Record<"white" | "pink", AudioBuffer>> = {};
-  private lfoWaves: Partial<Record<Shape, PeriodicWave>> = {};
+  private lfoCache: ({ shape: SynthState["lfo1Shape"]; steps: number[] } & ReturnType<typeof lfoCoefficients>) | undefined;
+  private clickTimer: ReturnType<typeof setInterval> | undefined;
+  private clickNext = 0;
+  /** The metronome goes straight to the speakers through this, so the scope and meter show only the synth. */
+  readonly clickBus: GainNode;
   private curve: { drive: number; data: Float32Array<ArrayBuffer> } | undefined;
 
   constructor(state: SynthState, ctx: AudioContext = new AudioContext()) {
     this.ctx = ctx;
     this.state = applyMacros(state);
+    this.clickBus = ctx.createGain();
+    this.clickBus.gain.value = 0.25;
+    this.clickBus.connect(ctx.destination);
     this.master = ctx.createGain();
     this.master.gain.value = dbToGain(state.volumeDb);
     // A limiter-style compressor protects ears and speakers if several notes stack up.
@@ -62,6 +69,7 @@ export class Engine {
   /** Browsers only allow sound after a click; call this from one. */
   async start(): Promise<void> {
     if (this.ctx.state !== "running") await this.ctx.resume();
+    this.syncClick(this.state);
   }
   get running(): boolean {
     return this.ctx.state === "running";
@@ -141,23 +149,26 @@ export class Engine {
   }
 
   /**
-   * LFO shapes that swing exactly from -1 to 1. The browser's built-in square and saw are scaled down (a
-   * square measured about 86% of full depth), which would leave a "one way" trill out of tune, so these are
-   * built from their harmonics with the browser's own scaling switched off. They match `lfoValue` in mod.ts.
+   * Give an LFO its shape, swinging exactly from -1 to 1 and starting `phase` of a cycle in. The browser's
+   * built-in square and saw are scaled down (a square measured about 86% of full depth), which would leave a
+   * "one way" trill out of tune, so every shape is built from its harmonics with the browser's own scaling
+   * switched off. The harmonics come from `lfoCoefficients` in mod.ts, which matches `lfoValue`.
    */
-  private setLfoShape(osc: OscillatorNode, shape: Shape): void {
-    if (shape === "sine") { osc.type = "sine"; return; }
-    let wave = this.lfoWaves[shape];
-    if (!wave) {
-      const N = 512, real = new Float32Array(N), imag = new Float32Array(N);
-      for (let n = 1; n < N; n++) {
-        imag[n] = shape === "square" ? (n % 2 ? 4 / (Math.PI * n) : 0)
-          : shape === "saw" ? ((n % 2 ? 1 : -1) * 2) / (Math.PI * n)
-          : n % 2 ? (((n - 1) / 2) % 2 ? -1 : 1) * 8 / (Math.PI * Math.PI * n * n) : 0;
-      }
-      wave = this.lfoWaves[shape] = this.ctx.createPeriodicWave(real, imag, { disableNormalization: true });
+  private setLfoShape(osc: OscillatorNode, s: SynthState, id: "lfo1" | "lfo2" | "lfo3", phase: number): void {
+    const shape = s[`${id}Shape`], steps = s[`${id}Steps`];
+    if (this.lfoCache?.shape !== shape || this.lfoCache.steps !== steps) this.lfoCache = { shape, steps, ...lfoCoefficients(shape, steps) };
+    const c = this.lfoCache, N = c.sin.length, real = new Float32Array(N), imag = new Float32Array(N);
+    // starting part-way through a cycle turns each harmonic by n times that much
+    for (let n = 1; n < N; n++) {
+      const angle = 2 * Math.PI * n * phase, co = Math.cos(angle), si = Math.sin(angle);
+      real[n] = c.cos[n]! * co + c.sin[n]! * si;
+      imag[n] = c.sin[n]! * co - c.cos[n]! * si;
     }
-    osc.setPeriodicWave(wave);
+    osc.setPeriodicWave(this.ctx.createPeriodicWave(real, imag, { disableNormalization: true }));
+  }
+  /** The average of an LFO's shape: zero for the basic shapes, but a drawn shape may sit mostly above or below. */
+  private lfoMean(s: SynthState, id: "lfo1" | "lfo2" | "lfo3"): number {
+    return s[`${id}Shape`] === "drawn" ? lfoCoefficients("drawn", s[`${id}Steps`], 2).mean : 0;
   }
 
   /** The level that a route's destination is set to, for scaling level modulation. */
@@ -188,12 +199,14 @@ export class Engine {
     const list = routes(s);
     // First make every source, then connect them: one source may be moving another (LFO 2 on LFO 1's rate).
     for (const route of list) {
-      let src: OscillatorNode | ConstantSourceNode;
+      let src: OscillatorNode | ConstantSourceNode, phase = 0, rise = 0;
       if (route.source.kind === "lfo") {
         const id = route.source.id as "lfo1" | "lfo2" | "lfo3";
         src = this.ctx.createOscillator();
-        this.setLfoShape(src, s[`${id}Shape`]);
-        src.frequency.value = s[`${id}Rate`];
+        phase = lfoStartPhase(s, id, t);
+        this.setLfoShape(src, s, id, phase);
+        src.frequency.value = lfoHz(s, id);
+        rise = s[`${id}Rise`] / 1000;
       } else if (route.source.kind === "note") {
         // fixed for the whole note: how hard it was struck, or where on the keyboard it is
         src = this.ctx.createConstantSource();
@@ -208,11 +221,15 @@ export class Engine {
       const [swing, lift] = this.swingAndLift(s, route);
       depth.gain.value = swing;
       bias.offset.value = lift;
-      src.connect(depth);
-      v.mods.push({ route, src, depth, bias });
+      // everything a source sends passes through `fade`, which is how an LFO's rise (fade-in) is done
+      const fade = this.ctx.createGain();
+      if (rise > 0) { fade.gain.setValueAtTime(0, t); fade.gain.linearRampToValueAtTime(1, t + rise); }
+      src.connect(depth).connect(fade);
+      bias.connect(fade);
+      v.mods.push({ route, src, depth, bias, fade, phase });
     }
     for (const m of v.mods) {
-      for (const p of this.targets(v, m.route.dest)) { m.depth.connect(p); m.bias.connect(p); }
+      for (const p of this.targets(v, m.route.dest)) m.fade.connect(p);
       m.src.start(t);
       m.bias.start(t);
     }
@@ -223,7 +240,10 @@ export class Engine {
    */
   private swingAndLift(s: SynthState, route: Route): [number, number] {
     const depth = this.depthOf(s, route);
-    return route.source.kind === "lfo" && route.oneWay ? [depth / 2, depth / 2] : [depth, 0];
+    if (route.source.kind !== "lfo") return [depth, 0];
+    // a drawn shape's average is added back here, because the oscillator itself cannot carry it
+    const mean = this.lfoMean(s, route.source.id as "lfo1");
+    return route.oneWay ? [depth / 2, depth / 2 + (depth / 2) * mean] : [depth, depth * mean];
   }
 
   /** Start an envelope on a setting at time `t`: up over the attack, held at the top, then down to sustain. */
@@ -332,6 +352,7 @@ export class Engine {
     next = applyMacros(next);
     const t = this.ctx.currentTime, prev = this.state;
     this.state = next;
+    if (next.clickOn !== prev.clickOn || next.bpm !== prev.bpm) this.syncClick(next);
     if (next.volumeDb !== prev.volumeDb) this.master.gain.setTargetAtTime(dbToGain(next.volumeDb), t, RAMP);
     if (STRUCTURAL.some((k) => next[k] !== prev[k])) {
       // The set of sources changed: restart the sounding notes with the new layout.
@@ -356,8 +377,8 @@ export class Engine {
         m.bias.offset.setTargetAtTime(lift, t, RAMP);
         if (m.src instanceof OscillatorNode) {
           const id = route.source.id as "lfo1" | "lfo2" | "lfo3";
-          if (next[`${id}Shape`] !== prev[`${id}Shape`]) this.setLfoShape(m.src, next[`${id}Shape`]);
-          m.src.frequency.setTargetAtTime(next[`${id}Rate`], t, RAMP);
+          if (next[`${id}Shape`] !== prev[`${id}Shape`] || next[`${id}Steps`] !== prev[`${id}Steps`]) this.setLfoShape(m.src, next, id, m.phase);
+          m.src.frequency.setTargetAtTime(lfoHz(next, id), t, RAMP);
         }
       }
       if (next.phase !== prev.phase) v.phaseA += (next.phase - prev.phase) / 360;
@@ -426,6 +447,35 @@ export class Engine {
     const v = this.build(note, patch.phase / 360, at, velocity);
     this.state = keep;
     this.releaseAt(v, patch, at + seconds - 0.08);
+  }
+
+  /**
+   * The click that marks the beat. Beats are counted from the moment the audio clock started, the same
+   * clock a "free" LFO runs against, so a tempo-synced free LFO always turns over on the click.
+   */
+  private syncClick(s: SynthState): void {
+    if (this.clickTimer) { clearInterval(this.clickTimer); this.clickTimer = undefined; }
+    if (!s.clickOn) return;
+    const beat = 60 / s.bpm;
+    this.clickNext = Math.ceil((this.ctx.currentTime + 0.03) / beat);
+    const schedule = () => {
+      while (this.clickNext * beat < this.ctx.currentTime + 0.2) {
+        const at = this.clickNext * beat, osc = this.ctx.createOscillator(), g = this.ctx.createGain();
+        osc.frequency.value = this.clickNext % 4 === 0 ? 1760 : 1175; // the first beat of each four is higher
+        g.gain.setValueAtTime(0, at); g.gain.linearRampToValueAtTime(1, at + 0.001); g.gain.setTargetAtTime(0, at + 0.012, 0.008);
+        osc.connect(g).connect(this.clickBus);
+        osc.start(at); osc.stop(at + 0.08);
+        this.clickNext++;
+      }
+    };
+    schedule();
+    this.clickTimer = setInterval(schedule, 50);
+  }
+  /** Stop everything that runs by itself. Call when the synth leaves the screen. */
+  dispose(): void {
+    if (this.clickTimer) clearInterval(this.clickTimer);
+    this.clickTimer = undefined;
+    this.allNotesOff();
   }
 
   get held(): number[] {

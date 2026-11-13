@@ -1,5 +1,4 @@
-// Chapter 4: LFOs. Scripts are in docs/lessons/. Not here yet, because the synth lacks the controls: tempo
-// sync (C4.4), trigger modes, rise and delay (C4.5), and drawing a shape (C4.6).
+// Chapter 4: LFOs. Scripts are in docs/lessons/.
 import { CUTOFF_OCTAVES, PITCH_SEMITONES } from "../../synth/mod";
 import type { DemoTone, PlayableLesson, Snapshot } from "../types";
 
@@ -72,6 +71,69 @@ export const CHAPTER_4: PlayableLesson[] = [
     ],
     recap: ["An LFO on level is tremolo; on pitch it is vibrato.", "Pitch needs a tiny amount; level needs a large one.", "Several LFOs can run at once, each on its own control and at its own speed."],
     inSerum: "Drag LFO 1 onto an oscillator’s LEVEL for tremolo, or onto its FIN (fine pitch) for vibrato, and keep the amount small. Listening only: how the amount reads on screen is not confirmed.",
+  },
+  {
+    id: "C4.4", title: "In time with the music", buildsOn: ["C4.2"], minutes: 8, cardIds: ["lfo-cutoff"], initial: { ...WOBBLE, lfo1Trig: "free" },
+    outcome: "Lock an LFO to a tempo, so its movement falls on the beat and follows the tempo when it changes.",
+    demo: { caption: "A wobble once a beat, then twice a beat, then three times a beat, all at the same tempo.", tones: patches([{ ...WOBBLE, lfo1Sync: "beat", lfo1Div: "1" }, { ...WOBBLE, lfo1Sync: "beat", lfo1Div: "1/2" }, { ...WOBBLE, lfo1Sync: "beat", lfo1Div: "1/3" }], 2.0) },
+    idea: [
+      "So far an LFO’s speed has been a number of cycles per second. Music is counted in beats, and a wobble at an arbitrary speed drifts against the beat. Setting the speed in beats ties it to the tempo: once a beat, twice a beat, once a bar.",
+      "Change the tempo and a synced LFO changes with it, staying in the same place in the bar. A third of a beat gives the rolling, three-against-the-beat feel called a triplet. This LFO is set to run free, which here means it keeps time with the click however late or early you press a key.",
+    ],
+    steps: [
+      { do: "Switch on the Click, then switch on Hold and play a low note.", show: [...K, "clickOn", "bpm", "lfo1Sync"], hear: "A wobble at its own speed, drifting against the click.", target: "Click on, speed in Hz, note held", check: (s) => s.state.clickOn && s.state.lfo1Sync === "hz" && s.held.length >= 1 },
+      { do: "Change LFO 1’s “Speed in” to Beats.", show: [...K, "clickOn", "lfo1Sync", "lfo1Div", "curve"], hear: "One wobble for every click, landing on it.", target: "Speed in beats, repeating every 1 beat", check: (s) => s.state.lfo1Sync === "beat" && s.state.lfo1Div === "1" },
+      { do: "Set “Repeats every” to half a beat.", show: [...K, "clickOn", "lfo1Div", "curve"], hear: "Two wobbles per click.", target: "Repeating every half a beat", check: (s) => s.state.lfo1Sync === "beat" && s.state.lfo1Div === "1/2" },
+      { do: "Now a third of a beat.", show: [...K, "clickOn", "lfo1Div", "curve"], hear: "Three wobbles per click: a rolling triplet feel.", target: "Repeating every third of a beat", check: (s) => s.state.lfo1Sync === "beat" && s.state.lfo1Div === "1/3" },
+      { do: "Go back to 1 beat, then turn the Tempo down below 100 and up above 140.", show: [...K, "clickOn", "bpm", "lfo1Div", "curve"], hear: "The click and the wobble slowing down and speeding up together.", target: "Repeating every 1 beat; tempo taken below 100 and above 140", check: (s) => s.state.lfo1Div === "1" && (s.range.bpm?.min ?? 999) < 100 && (s.range.bpm?.max ?? 0) > 140,
+        remark: (s) => `At ${s.state.bpm} beats a minute, one beat lasts ${(60 / s.state.bpm).toFixed(2)} seconds, so the wobble is running at ${(s.state.bpm / 60).toFixed(2)} cycles a second. You never had to work that out: that is the point of syncing.` },
+      { do: "Set “Repeats every” to 4 beats.", show: [...K, "clickOn", "lfo1Div", "curve"], hear: "One slow sweep per bar, turning over on the higher click.", target: "Repeating every 4 beats", check: (s) => s.state.lfo1Div === "4" },
+    ],
+    recap: ["An LFO can be set in beats instead of cycles per second.", "A synced LFO follows the tempo and stays in place in the bar.", "A third of a beat is a triplet."],
+    inSerum: "Each Serum LFO has a BPM switch beside RATE; with it on, RATE reads in beat divisions, with TRIP and DOT buttons for triplet and dotted values (guide, LFO section from p. 187). Serum follows your DAW’s tempo.",
+  },
+  {
+    id: "C4.5", title: "Restart or run free, and fading in", buildsOn: ["C4.1", "C4.3"], minutes: 8, cardIds: ["lfo-basics", "pitch-lfo"], initial: { filterOn: true, cutoff: 500, resonance: 40, lfo1Dest: "cutoff", lfo1Amount: 60, lfo1Rate: 0.5, lfo1Shape: "saw" },
+    outcome: "Choose whether an LFO starts again with every note or keeps running, and make its movement fade in.",
+    demo: { caption: "A vibrato that is there from the start of the note, then one that fades in after the note has begun.", tones: patches([{ lfo1Dest: "fine", lfo1Amount: 3, lfo1Rate: 6 }, { lfo1Dest: "fine", lfo1Amount: 3, lfo1Rate: 6, lfo1Rise: 1200 }], 2.6) },
+    idea: [
+      "An LFO set to Restart begins its shape again every time you strike a key, so every note moves the same way. Set to Free, it runs on regardless of your playing, and each note catches it wherever it happens to be. Restart is predictable, which suits basses and anything rhythmic. Free is varied, which suits pads and anything that should not sound mechanical.",
+      "Rise is a separate idea: a fade-in for the LFO’s effect. With a rise, each note starts steady and the movement grows in. Singers and string players do this with vibrato on long notes.",
+    ],
+    steps: [
+      { do: "LFO 1 is a slow ramp on the filter, set to Restart. Strike the same key four or five times, not in any rhythm.", show: ["keyboard", "lfo1Trig", "curve"], hear: "Every note begins the same way: dark, then opening.", target: "Restart, four notes played", check: (s) => s.state.lfo1Trig === "retrig" && s.played.mouse + s.played.keys + s.played.midi >= 4 },
+      { do: "Switch Start to Free and strike the key four or five times again.", show: ["keyboard", "lfo1Trig", "curve"], hear: "Each note begins somewhere different: some bright, some dark.", target: "Free, four notes played", check: (s) => s.state.lfo1Trig === "free" && s.played.mouse + s.played.keys + s.played.midi >= 4 },
+      { do: "Go back to Restart. Send LFO 1 to Osc A pitch instead, with Shape on Sine, Rate about 6 and Amount at 3%.", show: ["keyboard", "lfo1Trig", "lfo1Dest", "lfo1Shape", "lfo1Rate", "lfo1Amount"], hear: "A vibrato that is on from the first instant of every note.", target: "Restart, sent to Osc A pitch, sine, rate 5 to 8 Hz, amount 1% to 4%",
+        check: (s) => s.state.lfo1Trig === "retrig" && s.state.lfo1Dest === "fine" && s.state.lfo1Shape === "sine" && between(s.state.lfo1Rate, 5, 8) && between(s.state.lfo1Amount, 1, 4) },
+      { do: "Raise Rise to about one second, then hold a key for a few seconds.", show: ["keyboard", "lfo1Rise", "lfo1Amount"], hear: "A steady note at first, with the vibrato growing in.", target: "Rise between 700 ms and 1.5 s, a note held for two seconds", check: (s) => between(s.state.lfo1Rise, 700, 1500) && s.longestHeld >= 2,
+        remark: (s) => `With a rise of ${(s.state.lfo1Rise / 1000).toFixed(1)} seconds, short notes get almost no vibrato and long notes get all of it. The same patch now treats fast and slow playing differently, without you touching anything.` },
+      { do: "Play a mix of short and long notes.", show: ["keyboard", "lfo1Rise"], hear: "Short notes plain, long notes singing.", target: "Four notes played, one of them held for a second and a half", check: (s) => s.played.mouse + s.played.keys + s.played.midi >= 4 && s.longestHeld >= 1.5 },
+    ],
+    recap: ["Restart begins the LFO again with every note; Free lets it run on.", "Restart is consistent; Free is varied.", "Rise fades the movement in, so long notes get more of it than short ones."],
+    inSerum: "Serum’s LFO has three modes: RETRIG, FREE and ENVELOPE (guide p. 191), and RISE and DELAY knobs. ENVELOPE, where the shape plays once and stops, is not in the practice synth yet.",
+  },
+  {
+    id: "C4.6", title: "Drawing a shape", buildsOn: ["C4.4"], minutes: 9, cardIds: ["lfo-basics"], initial: { ...WOBBLE, lfo1Trig: "free", lfo1Sync: "beat", lfo1Div: "4", clickOn: true },
+    outcome: "Draw your own LFO shape, and use it as a repeating pattern in time with the beat.",
+    demo: { caption: "A wobble with a plain sine shape, then with a drawn pattern of steps.", tones: [
+      { patch: { ...WOBBLE, lfo1Sync: "beat", lfo1Div: "4", bpm: 120 }, note: 45, at: 0, seconds: 2.0 },
+      { patch: { ...WOBBLE, lfo1Sync: "beat", lfo1Div: "4", bpm: 120, lfo1Shape: "drawn", lfo1Steps: [1, 1, -1, -1, 0.5, -1, 1, -1, 1, 1, -1, 0, 0.5, -0.5, 1, -1] }, note: 45, at: 2.4, seconds: 2.0 },
+    ] },
+    idea: [
+      "The four basic shapes are only a start. A drawn shape is sixteen steps, each at a height you choose. The LFO plays through them in order and starts again, so what you draw is a repeating pattern.",
+      "Here the LFO is synced to four beats, so each of the sixteen steps lasts a quarter of a beat. That makes the drawing a rhythm: tall bars are moments when the filter is open, short ones when it is closed. One held note becomes a moving bassline of brightness.",
+    ],
+    steps: [
+      { do: "Switch on Hold and play a low note. LFO 1 is a slow sine, once per bar, with the click on.", show: [...K, "lfo1Shape", "curve"], hear: "A smooth sweep that takes a whole bar.", target: "Sine shape, note held", check: (s) => s.state.lfo1Shape === "sine" && s.held.length >= 1 },
+      { do: "Change the Shape to Drawn.", show: [...K, "lfo1Shape", "curve"], hear: "A staircase: the filter stepping down through the bar, two clicks of the sixteen at a time.", target: "Drawn shape selected", check: (s) => s.state.lfo1Shape === "drawn" },
+      { do: "Drag across the bars to draw a pattern of your own. Change at least six of them.", show: [...K, "lfo1Shape", "curve"], hear: "The filter jumping to your pattern, repeating every bar in time with the click.", target: "At least six bars changed by dragging", check: (s) => !!s.flags.lfoDraw && (s.changes.lfo1Steps ?? 0) >= 6 },
+      { do: "Make a rhythm: push four or more bars right down to the bottom and leave at least four at the top.", show: [...K, "lfo1Shape", "curve"], hear: "Bright bursts with dark gaps between them: the held note now has a rhythm.", target: "Four or more bars at the bottom and four or more at the top",
+        check: (s) => s.state.lfo1Shape === "drawn" && s.state.lfo1Steps.filter((v) => v <= -0.875).length >= 4 && s.state.lfo1Steps.filter((v) => v >= 0.875).length >= 4,
+        remark: (s) => `Your bar, with a tall step as x and anything else as a dot: ${s.state.lfo1Steps.map((v) => (v >= 0.875 ? "x" : ".")).join(" ")} (the same grid a drum machine uses).` },
+      { do: "Set “Repeats every” to 2 beats.", show: [...K, "lfo1Div", "curve"], hear: "The same pattern, twice as fast.", target: "Repeating every 2 beats", check: (s) => s.state.lfo1Shape === "drawn" && s.state.lfo1Div === "2" },
+    ],
+    recap: ["A drawn shape is a row of steps the LFO plays in order.", "Synced to the beat, the steps become a rhythm.", "One held note with a drawn LFO on the filter is already a pattern."],
+    inSerum: "Serum’s LFO display is a drawing surface: click to add points, drag to bend lines, and set a grid so points snap to divisions of the cycle (guide, LFO section from p. 187). It draws smooth curves as well as steps.",
   },
   {
     id: "C4.C", title: "Checkpoint: LFOs by ear", buildsOn: ["C4.2", "C4.3"], minutes: 10, cardIds: [],

@@ -24,7 +24,7 @@ export function AskView() {
     <section className="panel ask">
       <h2>Ask the guide</h2>
       <p className="muted">
-        Answers come from the library: the Serum 2 User Guide, the Ableton Live 11 manual (the first 500 pages so far) and this app’s knowledge cards. Every claim shows the page it came from, with that page’s pictures.
+        Answers come from the library: the Serum 2 User Guide, the Ableton Live 11 manual and this app’s knowledge cards. Every claim shows the page it came from, with that page’s pictures.
         If the library does not cover something, the guide says so instead of guessing. Each question is one paid Claude call.
       </p>
       <form onSubmit={(e) => { e.preventDefault(); void ask(question); }}>

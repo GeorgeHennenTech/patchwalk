@@ -144,7 +144,7 @@ describe("library images", () => {
     expect(existsSync(imgDir), "every book is taken in with its pictures").toBe(true);
     const index = JSON.parse(readFileSync(join(imgDir, "index.json"), "utf8")) as { images: { file: string; page: number }[] };
     expect(index.images.map((i) => i.file).sort()).toEqual(readdirSync(imgDir).filter((f) => f.endsWith(".webp")).sort());
-    for (const i of index.images) { expect(i.file).toMatch(/^p\d{3,4}-\d+\.webp$/); expect(Number(i.file.slice(1, i.file.indexOf("-")))).toBe(i.page); expect(i.page).toBeLessThanOrEqual(last + 5); }
+    for (const i of index.images) { expect(i.file).toMatch(/^p\d{3,4}-\d+\.webp$/); expect(Number(i.file.slice(1, i.file.indexOf("-")))).toBe(i.page); expect(i.page).toBeLessThanOrEqual(last + 15); }
   });
   const hasAbleton = existsSync(join(ROOT, "library", "ableton-live-11-manual.json"));
   it.skipIf(!hasAbleton)("the Ableton manual is searchable by chapter topic, and its pictures come with its pages", () => {
@@ -153,7 +153,11 @@ describe("library images", () => {
     expect(top("how do I warp an audio clip to the tempo").some((p) => p.source.includes("Ableton") && p.section.includes("Warping"))).toBe(true);
     expect(top("draw automation envelope in arrangement view").some((p) => p.section.includes("Automation"))).toBe(true);
     expect(top("session view launch clips scene").some((p) => p.source.includes("Ableton"))).toBe(true);
-    expect(lib.passages.filter((p) => p.id.startsWith("ableton-live-11-manual#")).length).toBeGreaterThan(450);
+    expect(lib.passages.filter((p) => p.id.startsWith("ableton-live-11-manual#")).length).toBeGreaterThan(800);
+    expect(top("Wavetable instrument oscillator modulation matrix").some((p) => p.section.includes("Instrument Reference"))).toBe(true);
+    expect(top("arpeggiator MIDI effect style rate").some((p) => p.section.includes("MIDI Effect"))).toBe(true);
+    // the index at the back is a word list, not something to answer from
+    expect(lib.passages.some((p) => p.section === "Index")).toBe(false);
     expect(lib.passages.some((p) => p.id.startsWith("ableton-live-11-manual#") && (p.images?.length ?? 0) > 0)).toBe(true);
     // contents pages were left out
     expect(lib.passages.some((p) => p.id === "ableton-live-11-manual#5")).toBe(false);

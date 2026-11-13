@@ -33,7 +33,7 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 - [x] Pictures from a cited page appear in the guide's answer, every time
 - [x] Answers link to the practice lesson that covers the topic
 - [x] Ableton Live 11 manual, pages 1 to 500: text and 428 pictures taken in
-- [ ] Ableton manual, pages 501 to the end (waiting for the owner's remaining sections)
+- [x] Ableton manual, pages 501 to 867: the whole manual is now in (814 pages of text, 743 pictures)
 - [ ] Place library pictures inside lessons where they help
 - [ ] Voice for the guide using Higgsfield (owner's choice): test quality, then generate each narration once and store it
 - [ ] Remember what the learner found hard, not only what they finished
@@ -55,7 +55,7 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 
 ## Owner
 - [x] Upload the Ableton manual, pages 1 to 500
-- [ ] Upload the rest of the Ableton manual (pages 501 onward)
+- [x] Upload the rest of the Ableton manual
 - [ ] Find more books for the library (EPUB or text-based PDF)
 - [ ] Review the 32 knowledge cards and 27 lesson scripts (all drafts)
 - [ ] Probe presets: start with the ten most useful (the assistant has explained what to do)

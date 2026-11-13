@@ -4635,6 +4635,3508 @@
 "Spectral Time’s Freezer Section.",
 "Fade In and Fade Out time of the frozen signal in milliseconds."
 ]
+},
+{
+"file": "p501-1.webp",
+"page": 501,
+"chapter": "Live Audio Effect Reference",
+"width": 1142,
+"height": 376,
+"captions_on_page": [
+"Spectral Time’s Delay Section."
+]
+},
+{
+"file": "p502-1.webp",
+"page": 502,
+"chapter": "Live Audio Effect Reference",
+"width": 1141,
+"height": 375,
+"captions_on_page": [
+"Stereo adjusts the width of the Tilt and Spray controls.",
+"Spectral Time’s Resolution Control."
+]
+},
+{
+"file": "p503-1.webp",
+"page": 503,
+"chapter": "Live Audio Effect Reference",
+"width": 1141,
+"height": 375,
+"captions_on_page": [
+"Spectral Time’s Global Controls.",
+"Input Send adjusts the gain of the input signal.",
+"The two radio buttons Frz > Dly and Dly > Frz reverse the effect order.",
+"The Spectrum Device."
+]
+},
+{
+"file": "p503-2.webp",
+"page": 503,
+"chapter": "Live Audio Effect Reference",
+"width": 810,
+"height": 376,
+"captions_on_page": [
+"Spectral Time’s Global Controls.",
+"Input Send adjusts the gain of the input signal.",
+"The two radio buttons Frz > Dly and Dly > Frz reverse the effect order.",
+"The Spectrum Device."
+]
+},
+{
+"file": "p505-1.webp",
+"page": 505,
+"chapter": "Live Audio Effect Reference",
+"width": 616,
+"height": 376,
+"captions_on_page": [
+"The Tuner Device."
+]
+},
+{
+"file": "p506-1.webp",
+"page": 506,
+"chapter": "Live Audio Effect Reference",
+"width": 301,
+"height": 201,
+"captions_on_page": [
+"Tuner’s View Switches.",
+"Tuner in Target Mode."
+]
+},
+{
+"file": "p506-2.webp",
+"page": 506,
+"chapter": "Live Audio Effect Reference",
+"width": 616,
+"height": 376,
+"captions_on_page": [
+"Tuner’s View Switches.",
+"Tuner in Target Mode."
+]
+},
+{
+"file": "p507-1.webp",
+"page": 507,
+"chapter": "Live Audio Effect Reference",
+"width": 616,
+"height": 376,
+"captions_on_page": [
+"Tuner in Strobe Mode.",
+"Tuner in Histogram View."
+]
+},
+{
+"file": "p507-2.webp",
+"page": 507,
+"chapter": "Live Audio Effect Reference",
+"width": 616,
+"height": 376,
+"captions_on_page": [
+"Tuner in Strobe Mode.",
+"Tuner in Histogram View."
+]
+},
+{
+"file": "p508-1.webp",
+"page": 508,
+"chapter": "Live Audio Effect Reference",
+"width": 616,
+"height": 376,
+"captions_on_page": [
+"Tuner’s Note Spellings.",
+"Tuner’s Reference Slider."
+]
+},
+{
+"file": "p508-2.webp",
+"page": 508,
+"chapter": "Live Audio Effect Reference",
+"width": 314,
+"height": 229,
+"captions_on_page": [
+"Tuner’s Note Spellings.",
+"Tuner’s Reference Slider."
+]
+},
+{
+"file": "p509-1.webp",
+"page": 509,
+"chapter": "Live Audio Effect Reference",
+"width": 278,
+"height": 376,
+"captions_on_page": [
+"The Utility Effect.",
+"Utility can perform some very useful tasks, especially in combination with other devices."
+]
+},
+{
+"file": "p511-1.webp",
+"page": 511,
+"chapter": "Live Audio Effect Reference",
+"width": 472,
+"height": 376,
+"captions_on_page": [
+"The Vinyl Distortion Effect."
+]
+},
+{
+"file": "p512-1.webp",
+"page": 512,
+"chapter": "Live Audio Effect Reference",
+"width": 872,
+"height": 376,
+"captions_on_page": [
+"Volume control adjusts the amount of gain applied to the noise.",
+"The Vocoder Effect."
+]
+},
+{
+"file": "p517-1.webp",
+"page": 517,
+"chapter": "Live MIDI Effect Reference",
+"width": 536,
+"height": 376,
+"captions_on_page": [
+"The Arpeggiator Effect."
+]
+},
+{
+"file": "p518-1.webp",
+"page": 518,
+"chapter": "Live MIDI Effect Reference",
+"width": 1153,
+"height": 199,
+"captions_on_page": [
+"Arpeggiator’s Style chooser determines the sequence of notes in the rhythmical pattern."
+]
+},
+{
+"file": "p518-2.webp",
+"page": 518,
+"chapter": "Live MIDI Effect Reference",
+"width": 1270,
+"height": 199,
+"captions_on_page": [
+"Arpeggiator’s Style chooser determines the sequence of notes in the rhythmical pattern."
+]
+},
+{
+"file": "p518-3.webp",
+"page": 518,
+"chapter": "Live MIDI Effect Reference",
+"width": 1378,
+"height": 199,
+"captions_on_page": [
+"Arpeggiator’s Style chooser determines the sequence of notes in the rhythmical pattern."
+]
+},
+{
+"file": "p518-4.webp",
+"page": 518,
+"chapter": "Live MIDI Effect Reference",
+"width": 1159,
+"height": 199,
+"captions_on_page": [
+"Arpeggiator’s Style chooser determines the sequence of notes in the rhythmical pattern."
+]
+},
+{
+"file": "p518-5.webp",
+"page": 518,
+"chapter": "Live MIDI Effect Reference",
+"width": 369,
+"height": 199,
+"captions_on_page": [
+"Arpeggiator’s Style chooser determines the sequence of notes in the rhythmical pattern."
+]
+},
+{
+"file": "p519-1.webp",
+"page": 519,
+"chapter": "Live MIDI Effect Reference",
+"width": 1381,
+"height": 199,
+"captions_on_page": []
+},
+{
+"file": "p519-2.webp",
+"page": 519,
+"chapter": "Live MIDI Effect Reference",
+"width": 1384,
+"height": 199,
+"captions_on_page": []
+},
+{
+"file": "p521-1.webp",
+"page": 521,
+"chapter": "Live MIDI Effect Reference",
+"width": 306,
+"height": 376,
+"captions_on_page": [
+"The Chord Effect."
+]
+},
+{
+"file": "p522-1.webp",
+"page": 522,
+"chapter": "Live MIDI Effect Reference",
+"width": 264,
+"height": 376,
+"captions_on_page": [
+"The Note Length Effect.",
+"MIDI Note Off messages, instead of the usual Note On messages."
+]
+},
+{
+"file": "p523-1.webp",
+"page": 523,
+"chapter": "Live MIDI Effect Reference",
+"width": 148,
+"height": 376,
+"captions_on_page": [
+"Note Off velocity, you can just set this to zero.",
+"The Pitch Effect.",
+"Pitch is a transposition tool that changes incoming note pitch by +/- 128 semitones."
+]
+},
+{
+"file": "p524-1.webp",
+"page": 524,
+"chapter": "Live MIDI Effect Reference",
+"width": 188,
+"height": 376,
+"captions_on_page": [
+"The Random Effect."
+]
+},
+{
+"file": "p525-1.webp",
+"page": 525,
+"chapter": "Live MIDI Effect Reference",
+"width": 468,
+"height": 376,
+"captions_on_page": [
+"The Scale Effect."
+]
+},
+{
+"file": "p526-1.webp",
+"page": 526,
+"chapter": "Live MIDI Effect Reference",
+"width": 336,
+"height": 376,
+"captions_on_page": [
+"The Velocity Effect.",
+"The resulting curve shows how velocity is being altered by the effect."
+]
+},
+{
+"file": "p529-1.webp",
+"page": 529,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 371,
+"captions_on_page": [
+"The Analog Instrument."
+]
+},
+{
+"file": "p531-1.webp",
+"page": 531,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 371,
+"captions_on_page": [
+"Display and Shell Parameters for the two Oscillators."
+]
+},
+{
+"file": "p532-1.webp",
+"page": 532,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 371,
+"captions_on_page": [
+"Analog’s Noise Generator."
+]
+},
+{
+"file": "p533-1.webp",
+"page": 533,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 371,
+"captions_on_page": [
+"Display and Shell Parameters for the two Filters."
+]
+},
+{
+"file": "p534-1.webp",
+"page": 534,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 371,
+"captions_on_page": [
+"Display and Shell Parameters for the two Amplifiers."
+]
+},
+{
+"file": "p535-1.webp",
+"page": 535,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 371,
+"captions_on_page": [
+"Analog’s Envelope Parameters.",
+"Decay slider."
+]
+},
+{
+"file": "p537-1.webp",
+"page": 537,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 371,
+"captions_on_page": [
+"Display and Shell Parameters for the two LFOs.",
+"As with the other sections, each LFO has independent parameters.",
+"Hertz and tempo-synced beat divisions.",
+"Note that Width is disabled when the LFO’s waveform is set to sine or the noise modes."
+]
+},
+{
+"file": "p538-1.webp",
+"page": 538,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 382,
+"captions_on_page": [
+"Display and Shell Parameters for the Global Options."
+]
+},
+{
+"file": "p540-1.webp",
+"page": 540,
+"chapter": "Live Instrument Reference",
+"width": 1130,
+"height": 363,
+"captions_on_page": [
+"The Collision Instrument."
+]
+},
+{
+"file": "p541-1.webp",
+"page": 541,
+"chapter": "Live Instrument Reference",
+"width": 1141,
+"height": 367,
+"captions_on_page": [
+"Note: deactivating unused sections and tabs can help to save CPU resources.",
+"Collision’s Mallet Section.",
+"You can toggle the Mallet button to switch the section on or off."
+]
+},
+{
+"file": "p542-1.webp",
+"page": 542,
+"chapter": "Live Instrument Reference",
+"width": 1132,
+"height": 364,
+"captions_on_page": [
+"Collision’s Noise Section.",
+"You can toggle the Noise button to switch the section on or off.",
+"Freq knob and Res slider.",
+"Key and Vel sliders in the MIDI tab or the Env Amt knob control."
+]
+},
+{
+"file": "p543-1.webp",
+"page": 543,
+"chapter": "Live Instrument Reference",
+"width": 1133,
+"height": 364,
+"captions_on_page": [
+"Collision’s Resonators."
+]
+},
+{
+"file": "p545-1.webp",
+"page": 545,
+"chapter": "Live Instrument Reference",
+"width": 1130,
+"height": 364,
+"captions_on_page": [
+"This parameter can also be modulated by velocity in the MIDI tab.",
+"At 100%, the resonance is muted immediately at note off, regardless of the Decay time.",
+"Resonator Tuning Parameters."
+]
+},
+{
+"file": "p546-1.webp",
+"page": 546,
+"chapter": "Live Instrument Reference",
+"width": 1132,
+"height": 364,
+"captions_on_page": [
+"Vel slider in the MIDI tab.",
+"Resonator Mixer.",
+"Gain adjusts the output level of the selected resonator."
+]
+},
+{
+"file": "p547-1.webp",
+"page": 547,
+"chapter": "Live Instrument Reference",
+"width": 1138,
+"height": 366,
+"captions_on_page": [
+"Collision’s LFOs."
+]
+},
+{
+"file": "p548-1.webp",
+"page": 548,
+"chapter": "Live Instrument Reference",
+"width": 1142,
+"height": 367,
+"captions_on_page": [
+"Collision’s MIDI Tab.",
+"Collision’s Global Section."
+]
+},
+{
+"file": "p548-2.webp",
+"page": 548,
+"chapter": "Live Instrument Reference",
+"width": 1127,
+"height": 363,
+"captions_on_page": [
+"Collision’s MIDI Tab.",
+"Collision’s Global Section."
+]
+},
+{
+"file": "p551-1.webp",
+"page": 551,
+"chapter": "Live Instrument Reference",
+"width": 746,
+"height": 376,
+"captions_on_page": [
+"The Electric Instrument."
+]
+},
+{
+"file": "p552-1.webp",
+"page": 552,
+"chapter": "Live Instrument Reference",
+"width": 743,
+"height": 374,
+"captions_on_page": [
+"Electric’s Hammer, Fork, and Damper/Pickup Icons.",
+"Electric’s Hammer Section.",
+"Key sliders in the bottom half of the display."
+]
+},
+{
+"file": "p552-2.webp",
+"page": 552,
+"chapter": "Live Instrument Reference",
+"width": 744,
+"height": 377,
+"captions_on_page": [
+"Electric’s Hammer, Fork, and Damper/Pickup Icons.",
+"Electric’s Hammer Section.",
+"Key sliders in the bottom half of the display."
+]
+},
+{
+"file": "p553-1.webp",
+"page": 553,
+"chapter": "Live Instrument Reference",
+"width": 742,
+"height": 372,
+"captions_on_page": [
+"Key slider controls how much the noise volume is determined by note pitch.",
+"Electric’s Fork Section.",
+"Tine controls the portion of the fork that is directly struck by the hammer.",
+"Tone controls the secondary resonance of the fork."
+]
+},
+{
+"file": "p554-1.webp",
+"page": 554,
+"chapter": "Live Instrument Reference",
+"width": 741,
+"height": 373,
+"captions_on_page": [
+"Electric’s Damper/Pickup Section.",
+"Note that the sound becomes more overdriven as the pickup approaches the tine."
+]
+},
+{
+"file": "p555-1.webp",
+"page": 555,
+"chapter": "Live Instrument Reference",
+"width": 742,
+"height": 372,
+"captions_on_page": [
+"Electric’s Global Section.",
+"The Volume knob sets Electric’s overall output level."
+]
+},
+{
+"file": "p556-1.webp",
+"page": 556,
+"chapter": "Live Instrument Reference",
+"width": 284,
+"height": 376,
+"captions_on_page": [
+"Pitch Bend sets the range in semitones of pitch bend modulation.",
+"The External Instrument."
+]
+},
+{
+"file": "p558-1.webp",
+"page": 558,
+"chapter": "Live Instrument Reference",
+"width": 904,
+"height": 376,
+"captions_on_page": [
+"The Impulse Instrument."
+]
+},
+{
+"file": "p561-1.webp",
+"page": 561,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 363,
+"captions_on_page": [
+"The Operator Instrument."
+]
+},
+{
+"file": "p562-1.webp",
+"page": 562,
+"chapter": "Live Instrument Reference",
+"width": 884,
+"height": 376,
+"captions_on_page": [
+"Operator Folded.",
+"Operator’s Global Display and Shell Parameters.",
+"FM without the filter at first, and adding it later if necessary."
+]
+},
+{
+"file": "p562-2.webp",
+"page": 562,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 363,
+"captions_on_page": [
+"Operator Folded.",
+"Operator’s Global Display and Shell Parameters.",
+"FM without the filter at first, and adding it later if necessary."
+]
+},
+{
+"file": "p563-1.webp",
+"page": 563,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 363,
+"captions_on_page": [
+"Oscillator A’s Display and Shell Parameters."
+]
+},
+{
+"file": "p566-1.webp",
+"page": 566,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 363,
+"captions_on_page": [
+"Operator’s LFO Display and Shell Parameters."
+]
+},
+{
+"file": "p569-1.webp",
+"page": 569,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 363,
+"captions_on_page": [
+"Operator’s Filter Display and Shell Parameters."
+]
+},
+{
+"file": "p572-1.webp",
+"page": 572,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 363,
+"captions_on_page": [
+"Operator’s Pitch Display and Shell Parameters.",
+"The pitch section also contains a global Transpose knob.",
+"Antialias modes in the global display can also be turned off to conserve CPU resources."
+]
+},
+{
+"file": "p583-1.webp",
+"page": 583,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 373,
+"captions_on_page": [
+"The Sampler Instrument."
+]
+},
+{
+"file": "p584-1.webp",
+"page": 584,
+"chapter": "Live Instrument Reference",
+"width": 815,
+"height": 631,
+"captions_on_page": [
+"Sampler’s Title Bar Context Menu."
+]
+},
+{
+"file": "p586-1.webp",
+"page": 586,
+"chapter": "Live Instrument Reference",
+"width": 465,
+"height": 170,
+"captions_on_page": [
+"Sampler’s Tabs in the Title Bar.",
+"The Zone Tab.",
+"Velocity Zone and Sample Select Editors, respectively.",
+"The Key Zone Editor."
+]
+},
+{
+"file": "p586-2.webp",
+"page": 586,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 328,
+"captions_on_page": [
+"Sampler’s Tabs in the Title Bar.",
+"The Zone Tab.",
+"Velocity Zone and Sample Select Editors, respectively.",
+"The Key Zone Editor."
+]
+},
+{
+"file": "p587-1.webp",
+"page": 587,
+"chapter": "Live Instrument Reference",
+"width": 621,
+"height": 141,
+"captions_on_page": [
+"Auto Select and Zone Fade Modes (Lin/Pow).",
+"Zone and Sample Select Editors.",
+"Key Zone, Velocity Zone and Sample Select Editors."
+]
+},
+{
+"file": "p587-2.webp",
+"page": 587,
+"chapter": "Live Instrument Reference",
+"width": 600,
+"height": 128,
+"captions_on_page": [
+"Auto Select and Zone Fade Modes (Lin/Pow).",
+"Zone and Sample Select Editors.",
+"Key Zone, Velocity Zone and Sample Select Editors."
+]
+},
+{
+"file": "p588-1.webp",
+"page": 588,
+"chapter": "Live Instrument Reference",
+"width": 649,
+"height": 365,
+"captions_on_page": [
+"The Sample Layer List."
+]
+},
+{
+"file": "p588-2.webp",
+"page": 588,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 839,
+"captions_on_page": [
+"The Sample Layer List."
+]
+},
+{
+"file": "p591-1.webp",
+"page": 591,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 316,
+"captions_on_page": [
+"The Velocity Zone Editor.",
+"The Sample Select Editor."
+]
+},
+{
+"file": "p591-2.webp",
+"page": 591,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 326,
+"captions_on_page": [
+"The Velocity Zone Editor.",
+"The Sample Select Editor."
+]
+},
+{
+"file": "p592-1.webp",
+"page": 592,
+"chapter": "Live Instrument Reference",
+"width": 789,
+"height": 264,
+"captions_on_page": [
+"The Sample Selector.",
+"The Sample Tab."
+]
+},
+{
+"file": "p593-1.webp",
+"page": 593,
+"chapter": "Live Instrument Reference",
+"width": 460,
+"height": 163,
+"captions_on_page": [
+"The Sample Chooser.",
+"Root Key (RootKey) — Defines the root key of the current sample.",
+"Detune — Sample tuning can be adjusted here by +/- 50 cents.",
+"Volume — A wide-range volume control, variable from full attenuation to a gain of +24 dB.",
+"Pan — Samples can be individually panned anywhere in the stereo panorama.",
+"Slope) parameter."
+]
+},
+{
+"file": "p596-1.webp",
+"page": 596,
+"chapter": "Live Instrument Reference",
+"width": 989,
+"height": 377,
+"captions_on_page": [
+"Sustain and Release Loops.",
+"The Release Loop Slider."
+]
+},
+{
+"file": "p596-2.webp",
+"page": 596,
+"chapter": "Live Instrument Reference",
+"width": 335,
+"height": 142,
+"captions_on_page": [
+"Sustain and Release Loops.",
+"The Release Loop Slider."
+]
+},
+{
+"file": "p597-1.webp",
+"page": 597,
+"chapter": "Live Instrument Reference",
+"width": 939,
+"height": 414,
+"captions_on_page": [
+"Sustain- and Release-Loop Crossfades.",
+"Sustain- and Release-Loop Detune Sliders.",
+"RAM Mode (RAM) — This is also a global control that loads the entire multisample into RAM."
+]
+},
+{
+"file": "p597-2.webp",
+"page": 597,
+"chapter": "Live Instrument Reference",
+"width": 488,
+"height": 171,
+"captions_on_page": [
+"Sustain- and Release-Loop Crossfades.",
+"Sustain- and Release-Loop Detune Sliders.",
+"RAM Mode (RAM) — This is also a global control that loads the entire multisample into RAM."
+]
+},
+{
+"file": "p598-1.webp",
+"page": 598,
+"chapter": "Live Instrument Reference",
+"width": 920,
+"height": 388,
+"captions_on_page": [
+"Loop Modes are selected.",
+"Waveform Context Menu.",
+"Finally, a few options remain on the far-right side of the Sample tab.",
+"The Sample Tab’s Vertical Zoom slider, and Channel Buttons."
+]
+},
+{
+"file": "p598-2.webp",
+"page": 598,
+"chapter": "Live Instrument Reference",
+"width": 556,
+"height": 323,
+"captions_on_page": [
+"Loop Modes are selected.",
+"Waveform Context Menu.",
+"Finally, a few options remain on the far-right side of the Sample tab.",
+"The Sample Tab’s Vertical Zoom slider, and Channel Buttons."
+]
+},
+{
+"file": "p599-1.webp",
+"page": 599,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 373,
+"captions_on_page": [
+"The Pitch/Osc Tab.",
+"Type — Choose the modulation oscillator’s waveform here.",
+"Volume — This determines the intensity of the modulation oscillator’s sample modulation."
+]
+},
+{
+"file": "p600-1.webp",
+"page": 600,
+"chapter": "Live Instrument Reference",
+"width": 349,
+"height": 168,
+"captions_on_page": [
+"Fixed is set to Off.",
+"The Lower Right-hand Corner of the Pitch/Osc Tab."
+]
+},
+{
+"file": "p601-1.webp",
+"page": 601,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 373,
+"captions_on_page": [
+"Transpose (Transp) — Global transpose amount, indicated in semitones.",
+"Detune — Global detune amount, indicated in cents.",
+"Good for getting interesting artifacts from multisamples.",
+"This parameter determines the length of the transition.",
+"The Filter/Global Tab."
+]
+},
+{
+"file": "p603-1.webp",
+"page": 603,
+"chapter": "Live Instrument Reference",
+"width": 516,
+"height": 388,
+"captions_on_page": [
+"The Global Volume Envelope."
+]
+},
+{
+"file": "p604-1.webp",
+"page": 604,
+"chapter": "Live Instrument Reference",
+"width": 625,
+"height": 202,
+"captions_on_page": [
+"Controls For Global Pan and Global Time.",
+"The Modulation Tab."
+]
+},
+{
+"file": "p604-2.webp",
+"page": 604,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 373,
+"captions_on_page": [
+"Controls For Global Pan and Global Time.",
+"The Modulation Tab."
+]
+},
+{
+"file": "p606-1.webp",
+"page": 606,
+"chapter": "Live Instrument Reference",
+"width": 812,
+"height": 379,
+"captions_on_page": []
+},
+{
+"file": "p607-1.webp",
+"page": 607,
+"chapter": "Live Instrument Reference",
+"width": 925,
+"height": 391,
+"captions_on_page": [
+"LFOs 2 and 3.",
+"The MIDI Tab."
+]
+},
+{
+"file": "p607-2.webp",
+"page": 607,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 373,
+"captions_on_page": [
+"LFOs 2 and 3.",
+"The MIDI Tab."
+]
+},
+{
+"file": "p608-1.webp",
+"page": 608,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 367,
+"captions_on_page": [
+"Sampler can use multisamples created by a number of other software and hardware samplers.",
+"The Simpler Instrument."
+]
+},
+{
+"file": "p609-1.webp",
+"page": 609,
+"chapter": "Live Instrument Reference",
+"width": 419,
+"height": 376,
+"captions_on_page": [
+"Hot-Swapping a Sample."
+]
+},
+{
+"file": "p610-1.webp",
+"page": 610,
+"chapter": "Live Instrument Reference",
+"width": 548,
+"height": 376,
+"captions_on_page": [
+"Mode Switch in the Sample Tab.",
+"Mode Switch in the Expanded View."
+]
+},
+{
+"file": "p610-2.webp",
+"page": 610,
+"chapter": "Live Instrument Reference",
+"width": 546,
+"height": 328,
+"captions_on_page": [
+"Mode Switch in the Sample Tab.",
+"Mode Switch in the Expanded View."
+]
+},
+{
+"file": "p611-1.webp",
+"page": 611,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 261,
+"captions_on_page": [
+"The Sample Tab in Classic Playback Mode.",
+"Loop switch is enabled.",
+"Zooming works the same in all three playback modes."
+]
+},
+{
+"file": "p612-1.webp",
+"page": 612,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 260,
+"captions_on_page": [
+"The Sample Tab in One-Shot Playback Mode.",
+"One-Shot Mode is strictly monophonic."
+]
+},
+{
+"file": "p613-1.webp",
+"page": 613,
+"chapter": "Live Instrument Reference",
+"width": 864,
+"height": 326,
+"captions_on_page": [
+"Fade In and Fade Out Controls.",
+"Out time determines how long it will take to fade to silence after release.",
+"The Sample Tab in Slicing Playback Mode."
+]
+},
+{
+"file": "p613-2.webp",
+"page": 613,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 260,
+"captions_on_page": [
+"Fade In and Fade Out Controls.",
+"Out time determines how long it will take to fade to silence after release.",
+"The Sample Tab in Slicing Playback Mode."
+]
+},
+{
+"file": "p615-1.webp",
+"page": 615,
+"chapter": "Live Instrument Reference",
+"width": 726,
+"height": 309,
+"captions_on_page": [
+"Simpler’s Warp Controls.",
+"Simpler’s Filter Controls."
+]
+},
+{
+"file": "p615-2.webp",
+"page": 615,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 375,
+"captions_on_page": [
+"Simpler’s Warp Controls.",
+"Simpler’s Filter Controls."
+]
+},
+{
+"file": "p617-1.webp",
+"page": 617,
+"chapter": "Live Instrument Reference",
+"width": 605,
+"height": 388,
+"captions_on_page": [
+"Simpler’s Filter Upgrade Button."
+]
+},
+{
+"file": "p618-1.webp",
+"page": 618,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 375,
+"captions_on_page": [
+"Simpler’s Filter and Amplitude Envelope Controls.",
+"Pitch Envelope Amount Control."
+]
+},
+{
+"file": "p618-2.webp",
+"page": 618,
+"chapter": "Live Instrument Reference",
+"width": 585,
+"height": 388,
+"captions_on_page": [
+"Simpler’s Filter and Amplitude Envelope Controls.",
+"Pitch Envelope Amount Control."
+]
+},
+{
+"file": "p619-1.webp",
+"page": 619,
+"chapter": "Live Instrument Reference",
+"width": 614,
+"height": 388,
+"captions_on_page": [
+"Simpler’s Amplitude Envelope Loop Chooser and Time Control.",
+"Simpler’s LFO Section."
+]
+},
+{
+"file": "p619-2.webp",
+"page": 619,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 375,
+"captions_on_page": [
+"Simpler’s Amplitude Envelope Loop Chooser and Time Control.",
+"Simpler’s LFO Section."
+]
+},
+{
+"file": "p620-1.webp",
+"page": 620,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 375,
+"captions_on_page": [
+"Simpler’s Global Parameters.",
+"Random>Pan slider) or modulated by the LFO.",
+"These notes will then play in stereo, while the others will play mono."
+]
+},
+{
+"file": "p623-1.webp",
+"page": 623,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 398,
+"captions_on_page": [
+"The Tension Instrument."
+]
+},
+{
+"file": "p624-1.webp",
+"page": 624,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 398,
+"captions_on_page": [
+"Tension’s Exciter Section."
+]
+},
+{
+"file": "p626-1.webp",
+"page": 626,
+"chapter": "Live Instrument Reference",
+"width": 827,
+"height": 202,
+"captions_on_page": [
+"Tension’s Exciter Velocity and Key Modulation."
+]
+},
+{
+"file": "p627-1.webp",
+"page": 627,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 398,
+"captions_on_page": [
+"Tension’s Damper Section."
+]
+},
+{
+"file": "p628-1.webp",
+"page": 628,
+"chapter": "Live Instrument Reference",
+"width": 827,
+"height": 208,
+"captions_on_page": [
+"Tension’s Damper Velocity and Key Modulation.",
+"Tension’s String Section."
+]
+},
+{
+"file": "p628-2.webp",
+"page": 628,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 398,
+"captions_on_page": [
+"Tension’s Damper Velocity and Key Modulation.",
+"Tension’s String Section."
+]
+},
+{
+"file": "p629-1.webp",
+"page": 629,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 398,
+"captions_on_page": [
+"The Vibrato section can be toggled on or off via the switch next to its name."
+]
+},
+{
+"file": "p630-1.webp",
+"page": 630,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 398,
+"captions_on_page": [
+"Tension’s Termination Section.",
+"The Termination section can be toggled on or off via the switch next to its name."
+]
+},
+{
+"file": "p631-1.webp",
+"page": 631,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 398,
+"captions_on_page": [
+"Tension’s Pickup Section.",
+"Tension’s Body Section.",
+"The Body section can be toggled on or off via the switch next to its name."
+]
+},
+{
+"file": "p631-2.webp",
+"page": 631,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 398,
+"captions_on_page": [
+"Tension’s Pickup Section.",
+"Tension’s Body Section.",
+"The Body section can be toggled on or off via the switch next to its name."
+]
+},
+{
+"file": "p632-1.webp",
+"page": 632,
+"chapter": "Live Instrument Reference",
+"width": 828,
+"height": 271,
+"captions_on_page": [
+"You can further modify the body’s frequency response with the Low Cut and High Cut knobs.",
+"Tension’s Volume Knob.",
+"Tension’s Filter/Global Tab."
+]
+},
+{
+"file": "p632-2.webp",
+"page": 632,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 398,
+"captions_on_page": [
+"You can further modify the body’s frequency response with the Low Cut and High Cut knobs.",
+"Tension’s Volume Knob.",
+"Tension’s Filter/Global Tab."
+]
+},
+{
+"file": "p633-1.webp",
+"page": 633,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 398,
+"captions_on_page": [
+"Tension’s Filter Section."
+]
+},
+{
+"file": "p634-1.webp",
+"page": 634,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 398,
+"captions_on_page": [
+"Higher values result in an increased sustain level as the velocity increases.",
+"Tension’s Keyboard Section.",
+"The Keyboard section contains all of Tension’s polyphony, tuning, MIDI parameters."
+]
+},
+{
+"file": "p635-1.webp",
+"page": 635,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 398,
+"captions_on_page": [
+"Tension’s Portamento Section.",
+"The Time slider sets the overall speed of the slide."
+]
+},
+{
+"file": "p636-1.webp",
+"page": 636,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 398,
+"captions_on_page": [
+"Tension’s Unison Section.",
+"Increasing the Delay amount adds lag before each stacked voice is activated.",
+"Tension’s Volume Knob."
+]
+},
+{
+"file": "p636-2.webp",
+"page": 636,
+"chapter": "Live Instrument Reference",
+"width": 828,
+"height": 271,
+"captions_on_page": [
+"Tension’s Unison Section.",
+"Increasing the Delay amount adds lag before each stacked voice is activated.",
+"Tension’s Volume Knob."
+]
+},
+{
+"file": "p637-1.webp",
+"page": 637,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 276,
+"captions_on_page": [
+"The Wavetable Instrument."
+]
+},
+{
+"file": "p638-1.webp",
+"page": 638,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 277,
+"captions_on_page": [
+"Wavetable’s Oscillators.",
+"Transposition slider."
+]
+},
+{
+"file": "p639-1.webp",
+"page": 639,
+"chapter": "Live Instrument Reference",
+"width": 724,
+"height": 388,
+"captions_on_page": [
+"Wavetable’s Raw Mode Switch."
+]
+},
+{
+"file": "p640-1.webp",
+"page": 640,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 277,
+"captions_on_page": [
+"Wavetable’s Sub Oscillator."
+]
+},
+{
+"file": "p641-1.webp",
+"page": 641,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 277,
+"captions_on_page": [
+"Wavetable’s Filters."
+]
+},
+{
+"file": "p642-1.webp",
+"page": 642,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 277,
+"captions_on_page": [
+"Wavetable’s Matrix Tab."
+]
+},
+{
+"file": "p644-1.webp",
+"page": 644,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 287,
+"captions_on_page": [
+"Note that this is a multiplicative modulation destination.",
+"Wavetable’s Mod Sources Tab.",
+"Slope and Value parameters by clicking and dragging the envelope display."
+]
+},
+{
+"file": "p645-1.webp",
+"page": 645,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 277,
+"captions_on_page": [
+"Wavetable’s LFOs."
+]
+},
+{
+"file": "p646-1.webp",
+"page": 646,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 277,
+"captions_on_page": [
+"Assigning MIDI to parameters can turn Wavetable into a dynamic performance instrument.",
+"Wavetable’s MIDI Tab."
+]
+},
+{
+"file": "p647-1.webp",
+"page": 647,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 276,
+"captions_on_page": [
+"Wavetable’s global controls affect the overall behavior and performance of the instrument.",
+"Wavetable’s Global Controls.",
+"Transpose adjusts the relative pitch of the Wavetable instrument in semitones."
+]
+},
+{
+"file": "p649-1.webp",
+"page": 649,
+"chapter": "Live Instrument Reference",
+"width": 1400,
+"height": 329,
+"captions_on_page": [
+"Wavetable’s Hi-Quality Option.",
+"Note: subtle sound differences may occur when Hi-Quality mode is enabled."
+]
+},
+{
+"file": "p652-1.webp",
+"page": 652,
+"chapter": "Max for Live",
+"width": 996,
+"height": 475,
+"captions_on_page": [
+"The Path to the Max Installation."
+]
+},
+{
+"file": "p653-1.webp",
+"page": 653,
+"chapter": "Max for Live",
+"width": 486,
+"height": 392,
+"captions_on_page": [
+"A Default Max Audio Effect.",
+"The Edit Button for a Max Device."
+]
+},
+{
+"file": "p653-2.webp",
+"page": 653,
+"chapter": "Max for Live",
+"width": 486,
+"height": 87,
+"captions_on_page": [
+"A Default Max Audio Effect.",
+"The Edit Button for a Max Device."
+]
+},
+{
+"file": "p654-1.webp",
+"page": 654,
+"chapter": "Max for Live",
+"width": 936,
+"height": 654,
+"captions_on_page": [
+"A Default Max Audio Effect in the Patcher."
+]
+},
+{
+"file": "p657-1.webp",
+"page": 657,
+"chapter": "Max for Live Devices",
+"width": 314,
+"height": 376,
+"captions_on_page": [
+"The DS Clang Instrument."
+]
+},
+{
+"file": "p658-1.webp",
+"page": 658,
+"chapter": "Max for Live Devices",
+"width": 314,
+"height": 376,
+"captions_on_page": [
+"The Tone A/B sliders let you set the volume for each cowbell tone independently.",
+"The Noise slider allows you to set the amount of white noise applied to the signal.",
+"The DS Clap Instrument."
+]
+},
+{
+"file": "p659-1.webp",
+"page": 659,
+"chapter": "Max for Live Devices",
+"width": 314,
+"height": 376,
+"captions_on_page": [
+"The DS Cymbal Instrument."
+]
+},
+{
+"file": "p660-1.webp",
+"page": 660,
+"chapter": "Max for Live Devices",
+"width": 314,
+"height": 376,
+"captions_on_page": [
+"The DS FM Instrument."
+]
+},
+{
+"file": "p661-1.webp",
+"page": 661,
+"chapter": "Max for Live Devices",
+"width": 314,
+"height": 376,
+"captions_on_page": [
+"The DS HH Instrument.",
+"The Noise toggle lets you choose between two noise types: white or pink."
+]
+},
+{
+"file": "p662-1.webp",
+"page": 662,
+"chapter": "Max for Live Devices",
+"width": 314,
+"height": 376,
+"captions_on_page": [
+"The DS Kick Instrument.",
+"DS Kick is a kick drum synth with a modulated sine wave."
+]
+},
+{
+"file": "p663-1.webp",
+"page": 663,
+"chapter": "Max for Live Devices",
+"width": 314,
+"height": 376,
+"captions_on_page": [
+"The DS Sampler Instrument.",
+"DS Sampler makes use of your own samples to create a drum synth module."
+]
+},
+{
+"file": "p664-1.webp",
+"page": 664,
+"chapter": "Max for Live Devices",
+"width": 314,
+"height": 376,
+"captions_on_page": [
+"The DS Snare Instrument."
+]
+},
+{
+"file": "p665-1.webp",
+"page": 665,
+"chapter": "Max for Live Devices",
+"width": 314,
+"height": 376,
+"captions_on_page": [
+"The DS Tom Instrument."
+]
+},
+{
+"file": "p666-1.webp",
+"page": 666,
+"chapter": "Max for Live Devices",
+"width": 223,
+"height": 376,
+"captions_on_page": [
+"Samples, and Distance."
+]
+},
+{
+"file": "p667-1.webp",
+"page": 667,
+"chapter": "Max for Live Devices",
+"width": 424,
+"height": 376,
+"captions_on_page": [
+"The Envelope Follower Effect.",
+"You can use the Gain knob to set the gain applied to the incoming signal."
+]
+},
+{
+"file": "p668-1.webp",
+"page": 668,
+"chapter": "Max for Live Devices",
+"width": 424,
+"height": 376,
+"captions_on_page": [
+"The LFO Effect."
+]
+},
+{
+"file": "p669-1.webp",
+"page": 669,
+"chapter": "Max for Live Devices",
+"width": 862,
+"height": 376,
+"captions_on_page": [
+"LFO, so that it begins at a different point in its cycle.",
+"The phase of the oscillator can be shifted using the Phase control.",
+"To hold the current output value, activate the Hold switch.",
+"The Shaper Effect."
+]
+},
+{
+"file": "p671-1.webp",
+"page": 671,
+"chapter": "Max for Live Devices",
+"width": 468,
+"height": 376,
+"captions_on_page": [
+"The Envelope MIDI Effect.",
+"Envelope MIDI is an ADSR device that you can control any Live parameter with."
+]
+},
+{
+"file": "p672-1.webp",
+"page": 672,
+"chapter": "Max for Live Devices",
+"width": 1064,
+"height": 376,
+"captions_on_page": [
+"The Time slider sets the global envelope time.",
+"The Expression Control Effect."
+]
+},
+{
+"file": "p673-1.webp",
+"page": 673,
+"chapter": "Max for Live Devices",
+"width": 416,
+"height": 376,
+"captions_on_page": [
+"Keytrack can each be mapped to one destination.",
+"The Log and Lin switches toggle between logarithmic and linear shapes.",
+"The Output displays show the output level for each mapping.",
+"The MPE Control Effect."
+]
+},
+{
+"file": "p675-1.webp",
+"page": 675,
+"chapter": "Max for Live Devices",
+"width": 602,
+"height": 376,
+"captions_on_page": [
+"MPE Control’s Expanded View.",
+"MPE messages."
+]
+},
+{
+"file": "p676-1.webp",
+"page": 676,
+"chapter": "Max for Live Devices",
+"width": 226,
+"height": 376,
+"captions_on_page": [
+"Pitch Bend messages.",
+"The Note Echo Effect.",
+"Pitch sets the transposition amount applied to the note with each repeat of the echo."
+]
+},
+{
+"file": "p677-1.webp",
+"page": 677,
+"chapter": "Max for Live Devices",
+"width": 949,
+"height": 373,
+"captions_on_page": [
+"The Shaper MIDI Effect."
+]
+},
+{
+"file": "p680-1.webp",
+"page": 680,
+"chapter": "MIDI and Key Remote Control",
+"width": 799,
+"height": 249,
+"captions_on_page": [
+"Setting Up Control Surfaces."
+]
+},
+{
+"file": "p681-1.webp",
+"page": 681,
+"chapter": "MIDI and Key Remote Control",
+"width": 1400,
+"height": 454,
+"captions_on_page": [
+"Control Surfaces Can Follow Device Selection."
+]
+},
+{
+"file": "p682-1.webp",
+"page": 682,
+"chapter": "MIDI and Key Remote Control",
+"width": 1400,
+"height": 568,
+"captions_on_page": [
+"Getting Hands-On: Control Surfaces Can Be Locked to Devices.",
+"A hand icon in the title bar of locked devices serves as a handy reminder of their status.",
+"Defining Control Surfaces Manually."
+]
+},
+{
+"file": "p682-2.webp",
+"page": 682,
+"chapter": "MIDI and Key Remote Control",
+"width": 784,
+"height": 302,
+"captions_on_page": [
+"Getting Hands-On: Control Surfaces Can Be Locked to Devices.",
+"A hand icon in the title bar of locked devices serves as a handy reminder of their status.",
+"Defining Control Surfaces Manually."
+]
+},
+{
+"file": "p683-1.webp",
+"page": 683,
+"chapter": "MIDI and Key Remote Control",
+"width": 778,
+"height": 166,
+"captions_on_page": [
+"Bar’s MIDI indicators will flash whenever Live recognizes an incoming MIDI message.",
+"Luckily, this is a simple task, and you only need to do it for one parameter at a time.",
+"MIDI Controller Takeover Mode."
+]
+},
+{
+"file": "p684-1.webp",
+"page": 684,
+"chapter": "MIDI and Key Remote Control",
+"width": 980,
+"height": 452,
+"captions_on_page": [
+"The Mapping Browser.",
+"Note that Instant Mappings are context based and are not displayed in the Mapping Browser."
+]
+},
+{
+"file": "p685-1.webp",
+"page": 685,
+"chapter": "MIDI and Key Remote Control",
+"width": 429,
+"height": 66,
+"captions_on_page": [
+"The MIDI Map Mode Switch."
+]
+},
+{
+"file": "p688-1.webp",
+"page": 688,
+"chapter": "MIDI and Key Remote Control",
+"width": 1116,
+"height": 314,
+"captions_on_page": [
+"The Relative Session Mapping Strip."
+]
+},
+{
+"file": "p691-1.webp",
+"page": 691,
+"chapter": "Using Push",
+"width": 907,
+"height": 679,
+"captions_on_page": [
+"Push’s controls are divided into a number of sections, as shown in the diagram below.",
+"Overview of Push’s Controls."
+]
+},
+{
+"file": "p691-2.webp",
+"page": 691,
+"chapter": "Using Push",
+"width": 569,
+"height": 425,
+"captions_on_page": [
+"Push’s controls are divided into a number of sections, as shown in the diagram below.",
+"Overview of Push’s Controls."
+]
+},
+{
+"file": "p692-1.webp",
+"page": 692,
+"chapter": "Using Push",
+"width": 181,
+"height": 190,
+"captions_on_page": [
+"The Browse Button."
+]
+},
+{
+"file": "p693-1.webp",
+"page": 693,
+"chapter": "Using Push",
+"width": 496,
+"height": 136,
+"captions_on_page": [
+"In and Out Buttons.",
+"Loading Devices or Device Presets in Browse Mode."
+]
+},
+{
+"file": "p695-1.webp",
+"page": 695,
+"chapter": "Using Push",
+"width": 643,
+"height": 480,
+"captions_on_page": []
+},
+{
+"file": "p697-1.webp",
+"page": 697,
+"chapter": "Using Push",
+"width": 141,
+"height": 147,
+"captions_on_page": [
+"Browse Mode can also be used to load or replace individual pads within a loaded Drum Rack.",
+"Device Button.",
+"Selecting an Individual Pad in a Drum Rack."
+]
+},
+{
+"file": "p697-2.webp",
+"page": 697,
+"chapter": "Using Push",
+"width": 879,
+"height": 235,
+"captions_on_page": [
+"Browse Mode can also be used to load or replace individual pads within a loaded Drum Rack.",
+"Device Button.",
+"Selecting an Individual Pad in a Drum Rack."
+]
+},
+{
+"file": "p699-1.webp",
+"page": 699,
+"chapter": "Using Push",
+"width": 166,
+"height": 263,
+"captions_on_page": [
+"Mute and Solo Buttons.",
+"Delete Button."
+]
+},
+{
+"file": "p700-1.webp",
+"page": 700,
+"chapter": "Using Push",
+"width": 652,
+"height": 262,
+"captions_on_page": [
+"When Triplets are Selected, the Red Steps are Unavailable."
+]
+},
+{
+"file": "p701-1.webp",
+"page": 701,
+"chapter": "Using Push",
+"width": 153,
+"height": 186,
+"captions_on_page": [
+"Metronome Button.",
+"Record Button."
+]
+},
+{
+"file": "p701-2.webp",
+"page": 701,
+"chapter": "Using Push",
+"width": 157,
+"height": 248,
+"captions_on_page": [
+"Metronome Button.",
+"Record Button."
+]
+},
+{
+"file": "p702-1.webp",
+"page": 702,
+"chapter": "Using Push",
+"width": 160,
+"height": 360,
+"captions_on_page": [
+"Press the Fixed Length button to set the size of new clips to a predetermined length."
+]
+},
+{
+"file": "p703-1.webp",
+"page": 703,
+"chapter": "Using Push",
+"width": 661,
+"height": 144,
+"captions_on_page": [
+"Fixed Length Button.",
+"Press and hold Fixed Length to set the recording length.",
+"Fixed Length Recording Options."
+]
+},
+{
+"file": "p704-1.webp",
+"page": 704,
+"chapter": "Using Push",
+"width": 145,
+"height": 215,
+"captions_on_page": [
+"Repeat Button."
+]
+},
+{
+"file": "p705-1.webp",
+"page": 705,
+"chapter": "Using Push",
+"width": 275,
+"height": 232,
+"captions_on_page": [
+"Pressing Push’s Quantize button will snap notes to the grid in the selected clip.",
+"Quantize Button."
+]
+},
+{
+"file": "p705-2.webp",
+"page": 705,
+"chapter": "Using Push",
+"width": 163,
+"height": 200,
+"captions_on_page": [
+"Pressing Push’s Quantize button will snap notes to the grid in the selected clip.",
+"Quantize Button."
+]
+},
+{
+"file": "p706-1.webp",
+"page": 706,
+"chapter": "Using Push",
+"width": 694,
+"height": 178,
+"captions_on_page": [
+"Quantization Options.",
+"Amount determines the amount that notes can be moved from their original positions.",
+"Add Track Button."
+]
+},
+{
+"file": "p707-1.webp",
+"page": 707,
+"chapter": "Using Push",
+"width": 661,
+"height": 363,
+"captions_on_page": [
+"C Major Scale."
+]
+},
+{
+"file": "p708-1.webp",
+"page": 708,
+"chapter": "Using Push",
+"width": 513,
+"height": 325,
+"captions_on_page": [
+"C Major Chord.",
+"Press Push’s Scales button to change the selected key and/or scale.",
+"Scales Button."
+]
+},
+{
+"file": "p708-2.webp",
+"page": 708,
+"chapter": "Using Push",
+"width": 142,
+"height": 216,
+"captions_on_page": [
+"C Major Chord.",
+"Press Push’s Scales button to change the selected key and/or scale.",
+"Scales Button."
+]
+},
+{
+"file": "p709-1.webp",
+"page": 709,
+"chapter": "Using Push",
+"width": 663,
+"height": 257,
+"captions_on_page": [
+"Key and Scale Selection."
+]
+},
+{
+"file": "p710-1.webp",
+"page": 710,
+"chapter": "Using Push",
+"width": 658,
+"height": 175,
+"captions_on_page": [
+"Additional Note Layout Options."
+]
+},
+{
+"file": "p711-1.webp",
+"page": 711,
+"chapter": "Using Push",
+"width": 644,
+"height": 482,
+"captions_on_page": [
+"The Pad Grid When Step Sequencing Pitches."
+]
+},
+{
+"file": "p712-1.webp",
+"page": 712,
+"chapter": "Using Push",
+"width": 335,
+"height": 89,
+"captions_on_page": [
+"The Display Shows the Range of Available Notes."
+]
+},
+{
+"file": "p713-1.webp",
+"page": 713,
+"chapter": "Using Push",
+"width": 645,
+"height": 487,
+"captions_on_page": [
+"Each Loop Length Pad Corresponds to One Page."
+]
+},
+{
+"file": "p717-1.webp",
+"page": 717,
+"chapter": "Using Push",
+"width": 398,
+"height": 274,
+"captions_on_page": [
+"Pink Track Arm Button.",
+"Device Button."
+]
+},
+{
+"file": "p718-1.webp",
+"page": 718,
+"chapter": "Using Push",
+"width": 696,
+"height": 189,
+"captions_on_page": [
+"Device Mode Settings.",
+"In and Out Buttons."
+]
+},
+{
+"file": "p719-1.webp",
+"page": 719,
+"chapter": "Using Push",
+"width": 146,
+"height": 141,
+"captions_on_page": [
+"Volume and Pan & Send Buttons.",
+"In Volume Mode, the encoders control track volume.",
+"Press Push’s Track button to enable Track Mode.",
+"Track Button.",
+"Selecting Tracks in Track Mode.",
+"Press the Master button to select the Master track."
+]
+},
+{
+"file": "p719-2.webp",
+"page": 719,
+"chapter": "Using Push",
+"width": 764,
+"height": 78,
+"captions_on_page": [
+"Volume and Pan & Send Buttons.",
+"In Volume Mode, the encoders control track volume.",
+"Press Push’s Track button to enable Track Mode.",
+"Track Button.",
+"Selecting Tracks in Track Mode.",
+"Press the Master button to select the Master track."
+]
+},
+{
+"file": "p720-1.webp",
+"page": 720,
+"chapter": "Using Push",
+"width": 159,
+"height": 347,
+"captions_on_page": [
+"Push’s Automation button.",
+"Automation Button."
+]
+},
+{
+"file": "p721-1.webp",
+"page": 721,
+"chapter": "Using Push",
+"width": 340,
+"height": 86,
+"captions_on_page": [
+"Automated and/or Overridden Parameters are Indicated in the Display.",
+"Hold a Step to Adjust Note and Automation Parameters."
+]
+},
+{
+"file": "p721-2.webp",
+"page": 721,
+"chapter": "Using Push",
+"width": 660,
+"height": 163,
+"captions_on_page": [
+"Automated and/or Overridden Parameters are Indicated in the Display.",
+"Hold a Step to Adjust Note and Automation Parameters."
+]
+},
+{
+"file": "p722-1.webp",
+"page": 722,
+"chapter": "Using Push",
+"width": 326,
+"height": 123,
+"captions_on_page": [
+"With Multiple Steps Selected, the Display Shows the Range of Parameter Values.",
+"Hold Select and Press a Drum Pad to Tweak All Notes Played by that Pad."
+]
+},
+{
+"file": "p722-2.webp",
+"page": 722,
+"chapter": "Using Push",
+"width": 662,
+"height": 89,
+"captions_on_page": [
+"With Multiple Steps Selected, the Display Shows the Range of Parameter Values.",
+"Hold Select and Press a Drum Pad to Tweak All Notes Played by that Pad."
+]
+},
+{
+"file": "p724-1.webp",
+"page": 724,
+"chapter": "Using Push",
+"width": 768,
+"height": 79,
+"captions_on_page": [
+"Stopping Clip Playback.",
+"To stop all clips, press and hold Shift, and then press Stop.",
+"The directional arrows and Shift button increase the scope of the eight-by-eight grid."
+]
+},
+{
+"file": "p725-1.webp",
+"page": 725,
+"chapter": "Using Push",
+"width": 658,
+"height": 164,
+"captions_on_page": []
+},
+{
+"file": "p730-1.webp",
+"page": 730,
+"chapter": "Using Push",
+"width": 177,
+"height": 179,
+"captions_on_page": [
+"Note Section.",
+"These buttons adjust how notes are played on Push.",
+"Drum Rack track is selected or when in Session Mode.",
+"Notes that are in the key are lit, while notes that are not in the key are unlit."
+]
+},
+{
+"file": "p732-1.webp",
+"page": 732,
+"chapter": "Using Push",
+"width": 1331,
+"height": 262,
+"captions_on_page": [
+"Display/Encoder Section.",
+"Volume Mode.",
+"In Volume Mode, the encoders control volume of the eight selected tracks.",
+"Pan & Send Mode."
+]
+},
+{
+"file": "p732-2.webp",
+"page": 732,
+"chapter": "Using Push",
+"width": 1033,
+"height": 137,
+"captions_on_page": [
+"Display/Encoder Section.",
+"Volume Mode.",
+"In Volume Mode, the encoders control volume of the eight selected tracks.",
+"Pan & Send Mode."
+]
+},
+{
+"file": "p732-3.webp",
+"page": 732,
+"chapter": "Using Push",
+"width": 1027,
+"height": 135,
+"captions_on_page": [
+"Display/Encoder Section.",
+"Volume Mode.",
+"In Volume Mode, the encoders control volume of the eight selected tracks.",
+"Pan & Send Mode."
+]
+},
+{
+"file": "p733-1.webp",
+"page": 733,
+"chapter": "Using Push",
+"width": 1030,
+"height": 138,
+"captions_on_page": [
+"Clip Mode With a MIDI Clip Selected.",
+"Clip Mode With an Audio Clip Selected."
+]
+},
+{
+"file": "p733-2.webp",
+"page": 733,
+"chapter": "Using Push",
+"width": 860,
+"height": 114,
+"captions_on_page": [
+"Clip Mode With a MIDI Clip Selected.",
+"Clip Mode With an Audio Clip Selected."
+]
+},
+{
+"file": "p733-3.webp",
+"page": 733,
+"chapter": "Using Push",
+"width": 1024,
+"height": 138,
+"captions_on_page": [
+"Clip Mode With a MIDI Clip Selected.",
+"Clip Mode With an Audio Clip Selected."
+]
+},
+{
+"file": "p734-1.webp",
+"page": 734,
+"chapter": "Using Push",
+"width": 1025,
+"height": 135,
+"captions_on_page": [
+"Device — The encoders control parameters for the selected device.",
+"Browse — The encoders scroll through the available devices and presets.",
+"Tempo Section."
+]
+},
+{
+"file": "p734-2.webp",
+"page": 734,
+"chapter": "Using Push",
+"width": 1028,
+"height": 139,
+"captions_on_page": [
+"Device — The encoders control parameters for the selected device.",
+"Browse — The encoders scroll through the available devices and presets.",
+"Tempo Section."
+]
+},
+{
+"file": "p734-3.webp",
+"page": 734,
+"chapter": "Using Push",
+"width": 200,
+"height": 250,
+"captions_on_page": [
+"Device — The encoders control parameters for the selected device.",
+"Browse — The encoders scroll through the available devices and presets.",
+"Tempo Section."
+]
+},
+{
+"file": "p738-1.webp",
+"page": 738,
+"chapter": "Using Push",
+"width": 751,
+"height": 561,
+"captions_on_page": [
+"Pad Section."
+]
+},
+{
+"file": "p741-1.webp",
+"page": 741,
+"chapter": "Using Push 2",
+"width": 1400,
+"height": 1130,
+"captions_on_page": [
+"Overview of Push 2’s Controls."
+]
+},
+{
+"file": "p743-1.webp",
+"page": 743,
+"chapter": "Using Push 2",
+"width": 270,
+"height": 252,
+"captions_on_page": [
+"The Browse Button.",
+"Arrow Buttons."
+]
+},
+{
+"file": "p743-2.webp",
+"page": 743,
+"chapter": "Using Push 2",
+"width": 281,
+"height": 144,
+"captions_on_page": [
+"The Browse Button.",
+"Arrow Buttons."
+]
+},
+{
+"file": "p744-1.webp",
+"page": 744,
+"chapter": "Using Push 2",
+"width": 1009,
+"height": 350,
+"captions_on_page": [
+"Navigate Up and Down in the Browser Hierarchy.",
+"Preview Button."
+]
+},
+{
+"file": "p744-2.webp",
+"page": 744,
+"chapter": "Using Push 2",
+"width": 1008,
+"height": 355,
+"captions_on_page": [
+"Navigate Up and Down in the Browser Hierarchy.",
+"Preview Button."
+]
+},
+{
+"file": "p745-1.webp",
+"page": 745,
+"chapter": "Using Push 2",
+"width": 294,
+"height": 188,
+"captions_on_page": [
+"Shift Button.",
+"Master Volume Encoder.",
+"To load the selected item, press the Load button.",
+"Loading Items in Browse Mode."
+]
+},
+{
+"file": "p745-2.webp",
+"page": 745,
+"chapter": "Using Push 2",
+"width": 180,
+"height": 150,
+"captions_on_page": [
+"Shift Button.",
+"Master Volume Encoder.",
+"To load the selected item, press the Load button.",
+"Loading Items in Browse Mode."
+]
+},
+{
+"file": "p745-3.webp",
+"page": 745,
+"chapter": "Using Push 2",
+"width": 1008,
+"height": 443,
+"captions_on_page": [
+"Shift Button.",
+"Master Volume Encoder.",
+"To load the selected item, press the Load button.",
+"Loading Items in Browse Mode."
+]
+},
+{
+"file": "p746-1.webp",
+"page": 746,
+"chapter": "Using Push 2",
+"width": 291,
+"height": 205,
+"captions_on_page": [
+"The Note Mode Button.",
+"Drum Rack presets from Live’s library."
+]
+},
+{
+"file": "p746-2.webp",
+"page": 746,
+"chapter": "Using Push 2",
+"width": 271,
+"height": 185,
+"captions_on_page": [
+"The Note Mode Button.",
+"Drum Rack presets from Live’s library."
+]
+},
+{
+"file": "p747-1.webp",
+"page": 747,
+"chapter": "Using Push 2",
+"width": 897,
+"height": 560,
+"captions_on_page": []
+},
+{
+"file": "p748-1.webp",
+"page": 748,
+"chapter": "Using Push 2",
+"width": 1080,
+"height": 672,
+"captions_on_page": [
+"Octave Up/Down Buttons.",
+"To unlock the 16 Velocities layout, press the Layout button again."
+]
+},
+{
+"file": "p748-2.webp",
+"page": 748,
+"chapter": "Using Push 2",
+"width": 274,
+"height": 182,
+"captions_on_page": [
+"Octave Up/Down Buttons.",
+"To unlock the 16 Velocities layout, press the Layout button again."
+]
+},
+{
+"file": "p749-1.webp",
+"page": 749,
+"chapter": "Using Push 2",
+"width": 269,
+"height": 160,
+"captions_on_page": [
+"Browse Mode can also be used to load or replace individual pads within a loaded Drum Rack.",
+"Device Button."
+]
+},
+{
+"file": "p750-1.webp",
+"page": 750,
+"chapter": "Using Push 2",
+"width": 983,
+"height": 421,
+"captions_on_page": [
+"Selecting an Individual Pad in a Drum Rack.",
+"Select Button."
+]
+},
+{
+"file": "p750-2.webp",
+"page": 750,
+"chapter": "Using Push 2",
+"width": 268,
+"height": 184,
+"captions_on_page": [
+"Selecting an Individual Pad in a Drum Rack.",
+"Select Button."
+]
+},
+{
+"file": "p751-1.webp",
+"page": 751,
+"chapter": "Using Push 2",
+"width": 960,
+"height": 423,
+"captions_on_page": [
+"Press the Drum Rack’s Lower Display Button to Access Individual Pads.",
+"Duplicate Button."
+]
+},
+{
+"file": "p751-2.webp",
+"page": 751,
+"chapter": "Using Push 2",
+"width": 265,
+"height": 260,
+"captions_on_page": [
+"Press the Drum Rack’s Lower Display Button to Access Individual Pads.",
+"Duplicate Button."
+]
+},
+{
+"file": "p752-1.webp",
+"page": 752,
+"chapter": "Using Push 2",
+"width": 939,
+"height": 328,
+"captions_on_page": [
+"Assign a Pad to a Choke Group or Transpose the Pad."
+]
+},
+{
+"file": "p753-1.webp",
+"page": 753,
+"chapter": "Using Push 2",
+"width": 796,
+"height": 607,
+"captions_on_page": [
+"Choose a Color for a Drum Pad.",
+"Tapping a pad selects it and also enables it for step sequencing."
+]
+},
+{
+"file": "p754-1.webp",
+"page": 754,
+"chapter": "Using Push 2",
+"width": 254,
+"height": 576,
+"captions_on_page": [
+"Scene/Grid Buttons.",
+"Adjust the Tempo with the Tempo Encoder."
+]
+},
+{
+"file": "p754-2.webp",
+"page": 754,
+"chapter": "Using Push 2",
+"width": 187,
+"height": 233,
+"captions_on_page": [
+"Scene/Grid Buttons.",
+"Adjust the Tempo with the Tempo Encoder."
+]
+},
+{
+"file": "p755-1.webp",
+"page": 755,
+"chapter": "Using Push 2",
+"width": 215,
+"height": 238,
+"captions_on_page": [
+"Mute and Solo Buttons.",
+"Delete Button."
+]
+},
+{
+"file": "p755-2.webp",
+"page": 755,
+"chapter": "Using Push 2",
+"width": 170,
+"height": 232,
+"captions_on_page": [
+"Mute and Solo Buttons.",
+"Delete Button."
+]
+},
+{
+"file": "p756-1.webp",
+"page": 756,
+"chapter": "Using Push 2",
+"width": 907,
+"height": 319,
+"captions_on_page": [
+"When Triplets are Selected, the Unlit Steps are Unavailable.",
+"Metronome Button."
+]
+},
+{
+"file": "p756-2.webp",
+"page": 756,
+"chapter": "Using Push 2",
+"width": 188,
+"height": 232,
+"captions_on_page": [
+"When Triplets are Selected, the Unlit Steps are Unavailable.",
+"Metronome Button."
+]
+},
+{
+"file": "p757-1.webp",
+"page": 757,
+"chapter": "Using Push 2",
+"width": 185,
+"height": 256,
+"captions_on_page": [
+"Record Button.",
+"Enable Accent to Play or Record at Full Velocity."
+]
+},
+{
+"file": "p757-2.webp",
+"page": 757,
+"chapter": "Using Push 2",
+"width": 960,
+"height": 160,
+"captions_on_page": [
+"Record Button.",
+"Enable Accent to Play or Record at Full Velocity."
+]
+},
+{
+"file": "p757-3.webp",
+"page": 757,
+"chapter": "Using Push 2",
+"width": 271,
+"height": 165,
+"captions_on_page": [
+"Record Button.",
+"Enable Accent to Play or Record at Full Velocity."
+]
+},
+{
+"file": "p758-1.webp",
+"page": 758,
+"chapter": "Using Push 2",
+"width": 191,
+"height": 187,
+"captions_on_page": [
+"Press the Fixed Length button to set the size of new clips to a predetermined length.",
+"Fixed Length Button.",
+"Press and hold Fixed Length to set the recording length."
+]
+},
+{
+"file": "p758-2.webp",
+"page": 758,
+"chapter": "Using Push 2",
+"width": 180,
+"height": 186,
+"captions_on_page": [
+"Press the Fixed Length button to set the size of new clips to a predetermined length.",
+"Fixed Length Button.",
+"Press and hold Fixed Length to set the recording length."
+]
+},
+{
+"file": "p759-1.webp",
+"page": 759,
+"chapter": "Using Push 2",
+"width": 1400,
+"height": 388,
+"captions_on_page": [
+"Fixed Length Recording Options."
+]
+},
+{
+"file": "p760-1.webp",
+"page": 760,
+"chapter": "Using Push 2",
+"width": 268,
+"height": 162,
+"captions_on_page": [
+"Repeat Button.",
+"Pressing Push 2’s Quantize button will snap notes to the grid in the selected clip."
+]
+},
+{
+"file": "p760-2.webp",
+"page": 760,
+"chapter": "Using Push 2",
+"width": 739,
+"height": 517,
+"captions_on_page": [
+"Repeat Button.",
+"Pressing Push 2’s Quantize button will snap notes to the grid in the selected clip."
+]
+},
+{
+"file": "p761-1.webp",
+"page": 761,
+"chapter": "Using Push 2",
+"width": 177,
+"height": 187,
+"captions_on_page": [
+"Quantize Button.",
+"Quantization Options.",
+"Amount determines the amount that notes can be moved from their original positions."
+]
+},
+{
+"file": "p761-2.webp",
+"page": 761,
+"chapter": "Using Push 2",
+"width": 912,
+"height": 159,
+"captions_on_page": [
+"Quantize Button.",
+"Quantization Options.",
+"Amount determines the amount that notes can be moved from their original positions."
+]
+},
+{
+"file": "p762-1.webp",
+"page": 762,
+"chapter": "Using Push 2",
+"width": 966,
+"height": 261,
+"captions_on_page": [
+"Switch Between Tracks with the Lower Display Buttons.",
+"Or you can add a new track by pressing the Add Track button.",
+"Add Track Button."
+]
+},
+{
+"file": "p762-2.webp",
+"page": 762,
+"chapter": "Using Push 2",
+"width": 239,
+"height": 238,
+"captions_on_page": [
+"Switch Between Tracks with the Lower Display Buttons.",
+"Or you can add a new track by pressing the Add Track button.",
+"Add Track Button."
+]
+},
+{
+"file": "p763-1.webp",
+"page": 763,
+"chapter": "Using Push 2",
+"width": 959,
+"height": 157,
+"captions_on_page": [
+"Choose a Track Type and Optionally Load A Device.",
+"C Major Scale."
+]
+},
+{
+"file": "p763-2.webp",
+"page": 763,
+"chapter": "Using Push 2",
+"width": 626,
+"height": 340,
+"captions_on_page": [
+"Choose a Track Type and Optionally Load A Device.",
+"C Major Scale."
+]
+},
+{
+"file": "p764-1.webp",
+"page": 764,
+"chapter": "Using Push 2",
+"width": 461,
+"height": 296,
+"captions_on_page": [
+"C Major Chord.",
+"Press Push 2’s Scale button to change the selected key and/or scale.",
+"Scale Button."
+]
+},
+{
+"file": "p764-2.webp",
+"page": 764,
+"chapter": "Using Push 2",
+"width": 264,
+"height": 183,
+"captions_on_page": [
+"C Major Chord.",
+"Press Push 2’s Scale button to change the selected key and/or scale.",
+"Scale Button."
+]
+},
+{
+"file": "p765-1.webp",
+"page": 765,
+"chapter": "Using Push 2",
+"width": 956,
+"height": 406,
+"captions_on_page": [
+"Key, Scale, and Layout Options.",
+"Layout of “4ths,” each pad is a 4th higher than the pad to its left."
+]
+},
+{
+"file": "p766-1.webp",
+"page": 766,
+"chapter": "Using Push 2",
+"width": 775,
+"height": 481,
+"captions_on_page": [
+"The Pad Grid When Step Sequencing Pitches."
+]
+},
+{
+"file": "p768-1.webp",
+"page": 768,
+"chapter": "Using Push 2",
+"width": 760,
+"height": 478,
+"captions_on_page": [
+"Each Loop Length Pad Corresponds to One Page.",
+"The Page Left/Right Buttons."
+]
+},
+{
+"file": "p768-2.webp",
+"page": 768,
+"chapter": "Using Push 2",
+"width": 261,
+"height": 125,
+"captions_on_page": [
+"Each Loop Length Pad Corresponds to One Page.",
+"The Page Left/Right Buttons."
+]
+},
+{
+"file": "p769-1.webp",
+"page": 769,
+"chapter": "Using Push 2",
+"width": 371,
+"height": 282,
+"captions_on_page": [
+"To remove notes first, hold Delete and tap the loop length pad for that page.",
+"The Pad Grid with the Melodic Sequencer + 32 Notes Layout."
+]
+},
+{
+"file": "p771-1.webp",
+"page": 771,
+"chapter": "Using Push 2",
+"width": 371,
+"height": 281,
+"captions_on_page": [
+"Loop Length Pads in the Melodic Sequencer + 32 Notes Layout."
+]
+},
+{
+"file": "p773-1.webp",
+"page": 773,
+"chapter": "Using Push 2",
+"width": 960,
+"height": 169,
+"captions_on_page": [
+"Press Browse to Load a Sample in an Empty Simpler.",
+"Simpler’s Main Parameter Bank in the Display.",
+"Simpler’s Mode Parameter."
+]
+},
+{
+"file": "p773-2.webp",
+"page": 773,
+"chapter": "Using Push 2",
+"width": 955,
+"height": 169,
+"captions_on_page": [
+"Press Browse to Load a Sample in an Empty Simpler.",
+"Simpler’s Main Parameter Bank in the Display.",
+"Simpler’s Mode Parameter."
+]
+},
+{
+"file": "p773-3.webp",
+"page": 773,
+"chapter": "Using Push 2",
+"width": 955,
+"height": 169,
+"captions_on_page": [
+"Press Browse to Load a Sample in an Empty Simpler.",
+"Simpler’s Main Parameter Bank in the Display.",
+"Simpler’s Mode Parameter."
+]
+},
+{
+"file": "p774-1.webp",
+"page": 774,
+"chapter": "Using Push 2",
+"width": 964,
+"height": 168,
+"captions_on_page": [
+"Simpler’s Main Bank in Classic Mode.",
+"Note that this parameter is only active if Loop is enabled."
+]
+},
+{
+"file": "p775-1.webp",
+"page": 775,
+"chapter": "Using Push 2",
+"width": 963,
+"height": 409,
+"captions_on_page": [
+"Additional Parameters Available in Edit Mode."
+]
+},
+{
+"file": "p776-1.webp",
+"page": 776,
+"chapter": "Using Push 2",
+"width": 939,
+"height": 401,
+"captions_on_page": [
+"Simpler’s Main Bank in One-Shot Mode With Additional Edit Mode Controls.",
+"Out time determines how long it will take to fade to silence after release."
+]
+},
+{
+"file": "p777-1.webp",
+"page": 777,
+"chapter": "Using Push 2",
+"width": 1400,
+"height": 640,
+"captions_on_page": [
+"Simpler’s Main Bank in Slicing Mode With Additional Edit Mode Controls."
+]
+},
+{
+"file": "p779-1.webp",
+"page": 779,
+"chapter": "Using Push 2",
+"width": 742,
+"height": 475,
+"captions_on_page": [
+"Up to 64 Slices Can Be Created.",
+"Nudge for extremely small adjustments.",
+"Manual mode, in conjunction with Nudge, for fine-tuning slices created via Pad Slicing."
+]
+},
+{
+"file": "p781-1.webp",
+"page": 781,
+"chapter": "Using Push 2",
+"width": 369,
+"height": 179,
+"captions_on_page": [
+"Icon for a Manually Armed Track.",
+"Device Button."
+]
+},
+{
+"file": "p782-1.webp",
+"page": 782,
+"chapter": "Using Push 2",
+"width": 976,
+"height": 337,
+"captions_on_page": [
+"Device Mode Settings.",
+"Device Parameter Pages in Edit Mode.",
+"Press the Leftmost Upper Display Button to Exit Edit Mode."
+]
+},
+{
+"file": "p782-2.webp",
+"page": 782,
+"chapter": "Using Push 2",
+"width": 978,
+"height": 270,
+"captions_on_page": [
+"Device Mode Settings.",
+"Device Parameter Pages in Edit Mode.",
+"Press the Leftmost Upper Display Button to Exit Edit Mode."
+]
+},
+{
+"file": "p782-3.webp",
+"page": 782,
+"chapter": "Using Push 2",
+"width": 981,
+"height": 257,
+"captions_on_page": [
+"Device Mode Settings.",
+"Device Parameter Pages in Edit Mode.",
+"Press the Leftmost Upper Display Button to Exit Edit Mode."
+]
+},
+{
+"file": "p783-1.webp",
+"page": 783,
+"chapter": "Using Push 2",
+"width": 983,
+"height": 264,
+"captions_on_page": [
+"Scroll to Additional Pages of Parameters.",
+"Add Device Button."
+]
+},
+{
+"file": "p783-2.webp",
+"page": 783,
+"chapter": "Using Push 2",
+"width": 294,
+"height": 163,
+"captions_on_page": [
+"Scroll to Additional Pages of Parameters.",
+"Add Device Button."
+]
+},
+{
+"file": "p784-1.webp",
+"page": 784,
+"chapter": "Using Push 2",
+"width": 1110,
+"height": 250,
+"captions_on_page": [
+"Deleting a Device.",
+"A MIDI Effect Rack, an Instrument Rack, and an Audio Effect Rack."
+]
+},
+{
+"file": "p784-2.webp",
+"page": 784,
+"chapter": "Using Push 2",
+"width": 511,
+"height": 176,
+"captions_on_page": [
+"Deleting a Device.",
+"A MIDI Effect Rack, an Instrument Rack, and an Audio Effect Rack."
+]
+},
+{
+"file": "p785-1.webp",
+"page": 785,
+"chapter": "Using Push 2",
+"width": 445,
+"height": 167,
+"captions_on_page": [
+"A Drum Rack.",
+"Expand a Rack to Access Its Devices."
+]
+},
+{
+"file": "p785-2.webp",
+"page": 785,
+"chapter": "Using Push 2",
+"width": 612,
+"height": 249,
+"captions_on_page": [
+"A Drum Rack.",
+"Expand a Rack to Access Its Devices."
+]
+},
+{
+"file": "p786-1.webp",
+"page": 786,
+"chapter": "Using Push 2",
+"width": 974,
+"height": 336,
+"captions_on_page": [
+"The Encoders Adjust Parameters for the Selected Device.",
+"Selecting a Chain Within a Rack.",
+"To control volumes, pans, or sends with the encoders, press the Mix button."
+]
+},
+{
+"file": "p786-2.webp",
+"page": 786,
+"chapter": "Using Push 2",
+"width": 490,
+"height": 346,
+"captions_on_page": [
+"The Encoders Adjust Parameters for the Selected Device.",
+"Selecting a Chain Within a Rack.",
+"To control volumes, pans, or sends with the encoders, press the Mix button."
+]
+},
+{
+"file": "p787-1.webp",
+"page": 787,
+"chapter": "Using Push 2",
+"width": 269,
+"height": 241,
+"captions_on_page": [
+"The Mix Controls in Track Mix Mode."
+]
+},
+{
+"file": "p787-2.webp",
+"page": 787,
+"chapter": "Using Push 2",
+"width": 1400,
+"height": 639,
+"captions_on_page": [
+"The Mix Controls in Track Mix Mode."
+]
+},
+{
+"file": "p788-1.webp",
+"page": 788,
+"chapter": "Using Push 2",
+"width": 1400,
+"height": 380,
+"captions_on_page": [
+"Scroll to View Additional Sends.",
+"The Input and Output Settings in Track Mix Mode.",
+"Controlling the Pans for Eight Tracks."
+]
+},
+{
+"file": "p788-2.webp",
+"page": 788,
+"chapter": "Using Push 2",
+"width": 960,
+"height": 160,
+"captions_on_page": [
+"Scroll to View Additional Sends.",
+"The Input and Output Settings in Track Mix Mode.",
+"Controlling the Pans for Eight Tracks."
+]
+},
+{
+"file": "p788-3.webp",
+"page": 788,
+"chapter": "Using Push 2",
+"width": 969,
+"height": 417,
+"captions_on_page": [
+"Scroll to View Additional Sends.",
+"The Input and Output Settings in Track Mix Mode.",
+"Controlling the Pans for Eight Tracks."
+]
+},
+{
+"file": "p789-1.webp",
+"page": 789,
+"chapter": "Using Push 2",
+"width": 394,
+"height": 242,
+"captions_on_page": [
+"The Master Track Button."
+]
+},
+{
+"file": "p790-1.webp",
+"page": 790,
+"chapter": "Using Push 2",
+"width": 972,
+"height": 253,
+"captions_on_page": [
+"A Group Track and Tracks Containing an Instrument Rack and a Drum Rack.",
+"Expand a Group Track or Track Containing a Rack to Mix its Contents."
+]
+},
+{
+"file": "p790-2.webp",
+"page": 790,
+"chapter": "Using Push 2",
+"width": 979,
+"height": 266,
+"captions_on_page": [
+"A Group Track and Tracks Containing an Instrument Rack and a Drum Rack.",
+"Expand a Group Track or Track Containing a Rack to Mix its Contents."
+]
+},
+{
+"file": "p791-1.webp",
+"page": 791,
+"chapter": "Using Push 2",
+"width": 182,
+"height": 182,
+"captions_on_page": [
+"Push 2’s Automation button so that it turns red.",
+"Automation Button.",
+"Automated and/or Overridden Parameters are Indicated in the Display."
+]
+},
+{
+"file": "p791-2.webp",
+"page": 791,
+"chapter": "Using Push 2",
+"width": 976,
+"height": 173,
+"captions_on_page": [
+"Push 2’s Automation button so that it turns red.",
+"Automation Button.",
+"Automated and/or Overridden Parameters are Indicated in the Display."
+]
+},
+{
+"file": "p792-1.webp",
+"page": 792,
+"chapter": "Using Push 2",
+"width": 268,
+"height": 174,
+"captions_on_page": [
+"Clip Button."
+]
+},
+{
+"file": "p793-1.webp",
+"page": 793,
+"chapter": "Using Push 2",
+"width": 944,
+"height": 249,
+"captions_on_page": [
+"Loading a Sample into an Empty Clip Slot in an Audio Track.",
+"MIDI tracks, the velocity of each note is indicated by its opacity.",
+"Clip Mode With a MIDI Clip Selected."
+]
+},
+{
+"file": "p793-2.webp",
+"page": 793,
+"chapter": "Using Push 2",
+"width": 977,
+"height": 415,
+"captions_on_page": [
+"Loading a Sample into an Empty Clip Slot in an Audio Track.",
+"MIDI tracks, the velocity of each note is indicated by its opacity.",
+"Clip Mode With a MIDI Clip Selected."
+]
+},
+{
+"file": "p794-1.webp",
+"page": 794,
+"chapter": "Using Push 2",
+"width": 967,
+"height": 410,
+"captions_on_page": [
+"Hold Shift while adjusting any of these controls to adjust by 16th-note subdivisions.",
+"Clip Mode With an Audio Clip Selected.",
+"MIDI from Push 2.",
+"The display will change depending on the currently selected pad layout."
+]
+},
+{
+"file": "p795-1.webp",
+"page": 795,
+"chapter": "Using Push 2",
+"width": 1254,
+"height": 217,
+"captions_on_page": [
+"Clip Mode’s Folded Display.",
+"Clip Mode’s Sequenceable Area.",
+"Pitch ranges with a higher density of notes are represented by thicker lines."
+]
+},
+{
+"file": "p795-2.webp",
+"page": 795,
+"chapter": "Using Push 2",
+"width": 1287,
+"height": 227,
+"captions_on_page": [
+"Clip Mode’s Folded Display.",
+"Clip Mode’s Sequenceable Area.",
+"Pitch ranges with a higher density of notes are represented by thicker lines."
+]
+},
+{
+"file": "p796-1.webp",
+"page": 796,
+"chapter": "Using Push 2",
+"width": 1287,
+"height": 227,
+"captions_on_page": [
+"Pitch Range and Note Indicators in Clip Mode.",
+"Loop Length Pads in the Melodic Sequencer + 32 Notes Layout."
+]
+},
+{
+"file": "p797-1.webp",
+"page": 797,
+"chapter": "Using Push 2",
+"width": 1280,
+"height": 221,
+"captions_on_page": [
+"Hold a Step to Zoom its Page and Access Clip Mode’s Note Parameters."
+]
+},
+{
+"file": "p798-1.webp",
+"page": 798,
+"chapter": "Using Push 2",
+"width": 269,
+"height": 189,
+"captions_on_page": [
+"Session Button."
+]
+},
+{
+"file": "p799-1.webp",
+"page": 799,
+"chapter": "Using Push 2",
+"width": 179,
+"height": 132,
+"captions_on_page": [
+"Solo again to unlock it.",
+"Clip and press any track’s lower display button to stop the playing clip in that track.",
+"Mute, Solo, and Stop Clip Buttons.",
+"To stop all clips, press and hold Shift, and then press Stop Clip.",
+"The arrows and Shift button increase the scope of the eight-by-eight grid.",
+"Octave Up or Down buttons moves eight scenes up or down."
+]
+},
+{
+"file": "p801-1.webp",
+"page": 801,
+"chapter": "Using Push 2",
+"width": 171,
+"height": 225,
+"captions_on_page": [
+"Setup Button.",
+"Setup Options."
+]
+},
+{
+"file": "p801-2.webp",
+"page": 801,
+"chapter": "Using Push 2",
+"width": 970,
+"height": 336,
+"captions_on_page": [
+"Setup Button.",
+"Setup Options."
+]
+},
+{
+"file": "p812-1.webp",
+"page": 812,
+"chapter": "Synchronizing with Link, Tempo Follower, and MIDI",
+"width": 988,
+"height": 422,
+"captions_on_page": [
+"Showing the Link Toggle in Live’s Preferences.",
+"The Start Stop Sync Toggle in Live’s Preferences.",
+"Link Toggle."
+]
+},
+{
+"file": "p812-2.webp",
+"page": 812,
+"chapter": "Synchronizing with Link, Tempo Follower, and MIDI",
+"width": 988,
+"height": 422,
+"captions_on_page": [
+"Showing the Link Toggle in Live’s Preferences.",
+"The Start Stop Sync Toggle in Live’s Preferences.",
+"Link Toggle."
+]
+},
+{
+"file": "p812-3.webp",
+"page": 812,
+"chapter": "Synchronizing with Link, Tempo Follower, and MIDI",
+"width": 621,
+"height": 64,
+"captions_on_page": [
+"Showing the Link Toggle in Live’s Preferences.",
+"The Start Stop Sync Toggle in Live’s Preferences.",
+"Link Toggle."
+]
+},
+{
+"file": "p813-1.webp",
+"page": 813,
+"chapter": "Synchronizing with Link, Tempo Follower, and MIDI",
+"width": 621,
+"height": 64,
+"captions_on_page": [
+"Live that are on the same network.",
+"Link Indicator Showing Another Connection.",
+"Arrangement Position Shows Relation to Link Timeline."
+]
+},
+{
+"file": "p813-2.webp",
+"page": 813,
+"chapter": "Synchronizing with Link, Tempo Follower, and MIDI",
+"width": 624,
+"height": 66,
+"captions_on_page": [
+"Live that are on the same network.",
+"Link Indicator Showing Another Connection.",
+"Arrangement Position Shows Relation to Link Timeline."
+]
+},
+{
+"file": "p814-1.webp",
+"page": 814,
+"chapter": "Synchronizing with Link, Tempo Follower, and MIDI",
+"width": 990,
+"height": 435,
+"captions_on_page": [
+"Tempo Follower Settings in Live’s Preferences.",
+"The Follow Button in the Control Bar."
+]
+},
+{
+"file": "p816-1.webp",
+"page": 816,
+"chapter": "Synchronizing with Link, Tempo Follower, and MIDI",
+"width": 784,
+"height": 184,
+"captions_on_page": [
+"Choosing a MIDI Device for Live.",
+"Setting up Live as a MIDI Device.",
+"When an external sync source has been enabled, the EXT button appears in the Control Bar.",
+"Live receives useable sync messages.",
+"The External Sync Switch."
+]
+},
+{
+"file": "p816-2.webp",
+"page": 816,
+"chapter": "Synchronizing with Link, Tempo Follower, and MIDI",
+"width": 784,
+"height": 184,
+"captions_on_page": [
+"Choosing a MIDI Device for Live.",
+"Setting up Live as a MIDI Device.",
+"When an external sync source has been enabled, the EXT button appears in the Control Bar.",
+"Live receives useable sync messages.",
+"The External Sync Switch."
+]
+},
+{
+"file": "p816-3.webp",
+"page": 816,
+"chapter": "Synchronizing with Link, Tempo Follower, and MIDI",
+"width": 670,
+"height": 62,
+"captions_on_page": [
+"Choosing a MIDI Device for Live.",
+"Setting up Live as a MIDI Device.",
+"When an external sync source has been enabled, the EXT button appears in the Control Bar.",
+"Live receives useable sync messages.",
+"The External Sync Switch."
+]
+},
+{
+"file": "p817-1.webp",
+"page": 817,
+"chapter": "Synchronizing with Link, Tempo Follower, and MIDI",
+"width": 765,
+"height": 240,
+"captions_on_page": [
+"MIDI Preferences’ MIDI Ports list to access the settings.",
+"Adjusting Sync Delay."
+]
+},
+{
+"file": "p820-1.webp",
+"page": 820,
+"chapter": "Computer Audio Resources and Strategies",
+"width": 443,
+"height": 62,
+"captions_on_page": [
+"The CPU Load Meter.",
+"You can click on the CPU meter to display the various options.",
+"The CPU Load Meter Options."
+]
+},
+{
+"file": "p820-2.webp",
+"page": 820,
+"chapter": "Computer Audio Resources and Strategies",
+"width": 493,
+"height": 384,
+"captions_on_page": [
+"The CPU Load Meter.",
+"You can click on the CPU meter to display the various options.",
+"The CPU Load Meter Options."
+]
+},
+{
+"file": "p822-1.webp",
+"page": 822,
+"chapter": "Computer Audio Resources and Strategies",
+"width": 464,
+"height": 387,
+"captions_on_page": [
+"The Show/Hide Performance Impact selector.",
+"The Session View’s Performance Impact Section."
+]
+},
+{
+"file": "p822-2.webp",
+"page": 822,
+"chapter": "Computer Audio Resources and Strategies",
+"width": 1400,
+"height": 664,
+"captions_on_page": [
+"The Show/Hide Performance Impact selector.",
+"The Session View’s Performance Impact Section."
+]
+},
+{
+"file": "p824-1.webp",
+"page": 824,
+"chapter": "Computer Audio Resources and Strategies",
+"width": 1196,
+"height": 316,
+"captions_on_page": [
+"A Frozen Arrangement Track with a Reverb Tail."
+]
+},
+{
+"file": "p825-1.webp",
+"page": 825,
+"chapter": "Computer Audio Resources and Strategies",
+"width": 468,
+"height": 116,
+"captions_on_page": [
+"The Disk Overload Indicator."
+]
 }
 ]
 }

@@ -272,13 +272,13 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   it. Library text must never be imported by anything under `src/` (a test enforces this), bundled into the
   browser build, or shown in full in the UI; only the few passages retrieved for a question go to the model.
   To add a text: one JSON file in `library/` shaped `{ id, title, pages: [{ page, chapter, text }] }`.
-- **Ableton Live 11 Reference Manual (owner supplied pages 1-500 of it on 13 Nov 2026, in five 100-page PDFs).**
-  `library/ableton-live-11-manual.json` (466 pages of text; contents pages 1-22 and blank separator pages left
-  out; chapters read from each page's running header, 24 chapters so far, ending partway through "Live Audio
-  Effect Reference") and `library/images/ableton-live-11-manual/` (428 pictures on 317 pages, 6.9 MB). The
+- **Ableton Live 11 Reference Manual (owner supplied all 867 pages on 13 Nov 2026, in nine PDFs).**
+  `library/ableton-live-11-manual.json` (814 pages of text; contents pages 1-22, blank separator pages and the
+  index at the back left out; chapters read from each page's running header, 37 chapters including the audio
+  effect, MIDI effect and instrument references, Max for Live and Push) and
+  `library/images/ableton-live-11-manual/` (743 pictures on 543 pages, 12.3 MB). The
   guide searches it alongside the Serum guide and is told not to carry one product's facts over to another.
-  **The rest of the manual (page 501 on) has not been supplied.** To add it:
-  `python3 scripts/ingest_pdf.py ableton-live-11-manual "Ableton Live 11 Reference Manual" <parts...> --append 500`.
+  The owner tried it live and reported that it works well.
 - **`scripts/ingest_pdf.py`** is the standard way to take in any PDF book, text and pictures together, from one
   or more parts numbered straight through (`--skip-pages` for contents pages, `--append <last page>` to add
   later parts). A test checks every book's text and picture index agree.

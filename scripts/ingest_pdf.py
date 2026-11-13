@@ -30,6 +30,8 @@ def main():
                 lo, _, hi = part.partition("-")
                 skip.update(range(int(lo), int(hi or lo) + 1))
             args.remove(sys.argv[i + 1])
+    if "--append" in sys.argv:
+        args.remove(sys.argv[sys.argv.index("--append") + 1])
     book, title, parts = args[0], args[1], args[2:]
     out_json, out_img = f"library/{book}.json", f"library/images/{book}"
     os.makedirs(out_img, exist_ok=True)
@@ -38,7 +40,8 @@ def main():
     if os.path.exists(out_json) and "--append" in sys.argv:
         old = json.load(open(out_json)); pages = old["pages"]
         images = json.load(open(f"{out_img}/index.json"))["images"]
-        offset = int(sys.argv[sys.argv.index("--append") + 1]) if sys.argv[sys.argv.index("--append") + 1].isdigit() else max(p["page"] for p in pages)
+        offset = int(sys.argv[sys.argv.index("--append") + 1])
+        assert offset >= max(p["page"] for p in pages), "these pages are already in the book"
         chapter = pages[-1]["chapter"]
         seen = {hashlib.sha1(open(f"{out_img}/{im['file']}", "rb").read()).hexdigest() for im in images}
     for pdf in parts:

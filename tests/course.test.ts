@@ -553,7 +553,7 @@ describe("chapter 3 lessons", () => {
   const st = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
   const hit = { played: { mouse: 2, keys: 0, midi: 0 } };
   it("the envelope chapter follows the filters and starts from real settings", () => {
-    expect(LESSONS.map((l) => l.id).slice(22)).toEqual(["C3.1", "C3.2", "C3.4", "C3.5", "C3.6", "C3.C"]);
+    expect(LESSONS.map((l) => l.id).slice(22, 28)).toEqual(["C3.1", "C3.2", "C3.4", "C3.5", "C3.6", "C3.C"]);
     for (const l of CHAPTER_3) for (const k of Object.keys(l.initial ?? {})) expect(k in INITIAL, `${l.id}: ${k}`).toBe(true);
     expect(placeOf(LESSONS.find((l) => l.id === "C3.4")!)).toEqual({ chapter: "Envelopes", number: 3, of: 6 });
   });
@@ -591,5 +591,32 @@ describe("chapter 3 lessons", () => {
     expect(slow.d.y).toBe(slow.bottom); // no sustain: the middle point sits on the floor
     expect(quick.d.y).toBe(quick.top);
     for (const p of [quick, slow]) { expect(p.a.x).toBeLessThanOrEqual(p.d.x); expect(p.d.x).toBeLessThan(p.held.x); expect(p.held.x).toBeLessThanOrEqual(p.r.x); expect(p.r.x).toBeLessThanOrEqual(320); }
+  });
+});
+
+import { CHAPTER_4 } from "../src/course/lessons/chapter4";
+
+describe("chapter 4 lessons", () => {
+  const st = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
+  it("the LFO chapter follows the envelopes and starts from real settings", () => {
+    expect(LESSONS.map((l) => l.id).slice(28)).toEqual(["C4.1", "C4.2", "C4.3", "C4.C"]);
+    for (const l of CHAPTER_4) for (const k of Object.keys(l.initial ?? {})) expect(k in INITIAL, `${l.id}: ${k}`).toBe(true);
+    expect(placeOf(LESSONS.find((l) => l.id === "C4.2")!).chapter).toBe("LFOs");
+  });
+  it("steps check where the LFO is sent as well as its settings, and remarks do the arithmetic", () => {
+    expect(st("C4.1", 2).check(base({}, { lfo1Dest: "aLevelDb", lfo1Rate: 0.5 }))).toBe(true);
+    expect(st("C4.1", 2).check(base({}, { lfo1Dest: "none", lfo1Rate: 0.5 }))).toBe(false);
+    expect(st("C4.1", 4).check(base({ changes: { lfo1Shape: 3 } }, { lfo1Shape: "saw", lfo1Rate: 2 }))).toBe(true);
+    expect(st("C4.1", 4).check(base({ changes: { lfo1Shape: 1 } }, { lfo1Shape: "saw", lfo1Rate: 2 }))).toBe(false);
+    expect(st("C4.2", 2).remark!(base({}, { lfo1Dest: "cutoff", lfo1Amount: 60 }))).toBe("At 60% the cutoff swings about 3.0 octaves either side of where the knob is set.");
+    expect(st("C4.3", 2).check(base({}, { lfo1Dest: "fine", lfo1Amount: 3 }))).toBe(true);
+    expect(st("C4.3", 2).check(base({}, { lfo1Dest: "fine", lfo1Amount: 30 }))).toBe(false);
+    expect(st("C4.3", 2).remark!(base({}, { lfo1Dest: "fine", lfo1Amount: 3 }))).toMatch(/^3% is about 36 cents each way/);
+    expect(st("C4.3", 4).check(base({}, { lfo1Dest: "fine", lfo1Amount: 2, lfo2Dest: "aLevelDb" }))).toBe(true);
+  });
+  it("rates are matched as ratios and destinations exactly", () => {
+    expect(compareSetting("lfo1Rate", { ...INITIAL, lfo1Rate: 4 }, { lfo1Rate: 6 })).toBe("match");
+    expect(compareSetting("lfo1Rate", { ...INITIAL, lfo1Rate: 1 }, { lfo1Rate: 6 })).toBe("too low");
+    expect(compareSetting("lfo1Dest", { ...INITIAL, lfo1Dest: "aLevelDb" }, { lfo1Dest: "fine" })).toBe("different");
   });
 });

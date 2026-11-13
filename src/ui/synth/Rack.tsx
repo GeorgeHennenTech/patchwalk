@@ -91,7 +91,8 @@ export function Rack({ synth, show, all, lesson, note }: { synth: Synth; show: P
               </label>
             ) : <div className="mod-head"><span>{m.name}</span></div>}
             <div className="mod-body">
-              {all && <Display module={m} synth={synth} note={note} />}
+              {/* an LFO's shape is shown whenever its controls are, so a lesson can point at it */}
+              {(all || m.source?.startsWith("lfo")) && <Display module={m} synth={synth} note={note} />}
               {curve && <FilterCurve synth={synth} note={note} spot />}
               {kind("menu").map((id) => <Control key={id} id={id} synth={synth} spot={show.includes(id)} />)}
               {kind("choice").map((id) => <Control key={id} id={id} synth={synth} spot={show.includes(id)} only={!all && id === "shape" ? lesson.shapes : undefined} />)}

@@ -121,7 +121,8 @@ function MatchRounds({ rounds, synth, lesson, onPass, plain }: { rounds: MatchRo
     if (!finished) { synth.setState(round.from); setVerdicts(undefined); setChecks(0); }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index]);
-  const hear = (state: SynthState) => synth.engine.current?.auditionPatch(state, NOTE, 1.3);
+  // a sound that moves needs longer to show its movement
+  const hear = (state: SynthState) => synth.engine.current?.auditionPatch(state, NOTE, routes(state).some((r) => r.source.kind === "lfo") ? 2.8 : 1.3);
   const target = { ...INITIAL, ...round.from, ...round.target };
   const check = () => { setVerdicts(compareToTarget(synth.state, round.target, round.match)); setChecks(checks + 1); };
   const matched = !!verdicts && allMatch(verdicts);

@@ -6,10 +6,12 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 ## Build next
 - [x] Envelope lessons: five lessons and a checkpoint, with an envelope drawing you can drag
 - [ ] Envelope curves and hold (needs new envelope controls first)
-- [ ] LFO and modulation lessons
-- [ ] Blind ear checks for the filter and envelope lessons
+- [x] LFO lessons: three lessons and a checkpoint
+- [ ] LFO lessons that need new controls: tempo sync, trigger modes with rise and delay, drawing a shape
+- [ ] Modulation-system lessons (chapter 5 of the plan)
+- [ ] Blind ear checks for the filter, envelope and LFO lessons
 - [ ] Pulse-width lesson in the oscillator chapter
-- [ ] Remaining synthesis chapters from the course plan (28 of about 77 lessons built)
+- [ ] Remaining synthesis chapters from the course plan (32 of about 77 lessons built)
 
 ## Synth
 - [x] Filter with a draggable curve
@@ -55,6 +57,6 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 - [x] Upload the Ableton manual, pages 1 to 500
 - [ ] Upload the rest of the Ableton manual (pages 501 onward)
 - [ ] Find more books for the library (EPUB or text-based PDF)
-- [ ] Review the 32 knowledge cards and 24 lesson scripts (all drafts)
+- [ ] Review the 32 knowledge cards and 27 lesson scripts (all drafts)
 - [ ] Probe presets: start with the ten most useful (the assistant has explained what to do)
 - [ ] Keep reporting how things sound and feel

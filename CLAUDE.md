@@ -148,7 +148,9 @@ Added after the first eight milestones (owner asked for all four in one go):
     checkpoint C1.C), `match.ts`, `progress.ts`. `lessons/chapter2.ts` holds the filter chapter (C2.1-C2.7 and the checkpoint C2.C).
     `lessons/chapter3.ts` holds the envelope chapter (C3.1, C3.2, C3.4, C3.5, C3.6 and the checkpoint C3.C; the
     plan's C3.3 on curves and hold is not built because the envelopes have neither).
-    **Twenty-eight playable lessons; chapters 0 to 3 are built.**
+    `lessons/chapter4.ts` holds the LFO chapter (C4.1 to C4.3 and the checkpoint C4.C; C4.4 tempo sync, C4.5
+    trigger modes and C4.6 drawn shapes wait for those controls).
+    **Thirty-two playable lessons; chapters 0 to 4 are built.**
   - `src/ui/PlayView.tsx` ("Lessons" tab) and `src/ui/synth/` — spotlighted controls per step, live targets,
     scope, spectrum, meter, on-screen keyboard, Hold, blind ear checks, recap, guide remarks and suggestion.
   - "Hear it first" demos (`demo` on a lesson), match-by-ear rounds (`rounds`, compared by `src/course/match.ts`:
@@ -215,8 +217,10 @@ Added after the first eight milestones (owner asked for all four in one go):
     and its caption says so. Envelope lessons strike notes and do not use Hold, so the snapshot gained
     `longestHeld` (a "hold for two seconds" step must still count after the key is let go). Match-by-ear
     judges times and rates as ratios (within double or half). No blind ear checks for chapter 3 yet.
-  - Not built yet: effects, MIDI input, a shared tempo clock, lessons for LFOs, envelope curves and hold.
-    Chapter 4 (LFOs) is next and has no scripts yet; the controls it needs exist except tempo sync.
+  - **LFO chapter (13 Nov 2026).** LFO lessons use Hold. An LFO panel shows its shape whenever its controls
+    are on screen. In match-by-ear, a sound with an LFO plays for 2.8 s so its movement can be heard.
+  - Not built yet: effects, MIDI input, a shared tempo clock, envelope curves and hold, LFO sync, trigger
+    modes and drawn shapes. Chapter 5 (the modulation system) is next in the plan and has no scripts yet.
   - The old ten Serum-task lessons are now the "Serum tasks" tab.
 - **Pictures and lesson links in answers (13 Nov 2026, owner's rule).** When the guide cites a page that has
   pictures, the pictures are shown with the answer **every time**: code attaches them (`images` on a passage,
@@ -240,7 +244,7 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
 - **Private, single-user.** The owner has said this program is strictly for them and will never be distributed.
   Design for one user; do not add accounts, sharing or public pages. Rule 4 still applies to the name and look.
 - **Course:** `docs/CURRICULUM.md` maps 16 tracks and about 400 lessons (one line each); `docs/lessons/` holds
-  fully scripted lessons in a fixed shape (24 so far, all drafts); `docs/COURSE_PLAN.md` describes the practice
+  fully scripted lessons in a fixed shape (27 so far, all drafts); `docs/COURSE_PLAN.md` describes the practice
   synth and lesson engine. A university programme's topic list was used only as a coverage checklist.
   See also `docs/COURSE_PLAN.md`. Guided lessons on a built-in practice synth; lessons can be taken in any
   order; each lesson is its own data file so chapters are easy to add. Tracks are to grow well beyond synthesis
@@ -321,7 +325,7 @@ use explicit `.js` import suffixes so they load as plain Node ESM.
 - New knowledge cards: copy `knowledge-cards/_template.md`. Avoid numbers in cards. Only add reading links
   that have been opened and checked.
 - **Lesson labels.** Codes such as `C2.5` are for code, scripts and plans only. The learner sees lessons grouped
-  under chapter names ("Sound itself", "Oscillators", "Filters", "Envelopes"; `CHAPTERS` in `src/course/lessons/index.ts`),
+  under chapter names ("Sound itself", "Oscillators", "Filters", "Envelopes", "LFOs"; `CHAPTERS` in `src/course/lessons/index.ts`),
   numbered within the chapter, with "Filters · lesson 5 of 8" above the title. A test stops lesson text from
   citing another lesson by code. Add the chapter's name to `CHAPTERS` when starting a new chapter.
 - Skin: content must stay on solid panels for legibility; fabric textures are for chrome only (header, tabs,

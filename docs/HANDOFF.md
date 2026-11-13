@@ -138,6 +138,8 @@ Things that are easy to get wrong:
   handles that. An earlier version did not and rendered whole cards as headings.
 - Browser audio only starts after a click. Computer-keyboard notes must still work while a checkbox or slider
   has focus (this was a bug once).
+- Lesson codes (`C2.5`) are never shown to the learner (owner asked, 13 Nov 2026). The list is grouped by named
+  chapter and numbered within it. A new chapter needs its name added to `CHAPTERS` in `src/course/lessons/index.ts`.
 - React keys must be unique among siblings (a duplicate-key bug came from two components keyed by lesson id).
 - Environment variables on Vercel: `APP_PASSWORD` and `ANTHROPIC_API_KEY`. Both are set.
 

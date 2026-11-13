@@ -403,3 +403,20 @@ describe("chapter 2 lessons", () => {
     expect(compareSetting("slope", { ...INITIAL, slope: "12" }, { slope: "24" })).toBe("different");
   });
 });
+
+import { CHAPTERS, chapterOf, placeOf } from "../src/course/lessons";
+
+describe("how lessons are labelled for the learner", () => {
+  it("every lesson belongs to a named chapter and has a place in it", () => {
+    for (const l of LESSONS) expect(CHAPTERS[chapterOf(l)], l.id).toBeTruthy();
+    expect(placeOf(LESSONS.find((l) => l.id === "C0.1")!)).toEqual({ chapter: "Sound itself", number: 1, of: 4 });
+    expect(placeOf(LESSONS.find((l) => l.id === "C2.5")!)).toEqual({ chapter: "Filters", number: 5, of: 8 });
+    expect(placeOf(LESSONS.find((l) => l.id === "C1.C")!)).toEqual({ chapter: "Oscillators", number: 10, of: 10 });
+  });
+  it("no lesson text shown to the learner refers to another lesson by its code", () => {
+    for (const l of LESSONS) {
+      const shown = [l.title, l.outcome, ...l.idea, ...l.recap, l.inSerum ?? "", l.demo?.caption ?? "", ...l.steps.flatMap((s) => [s.do, s.hear, s.target])].join(" ");
+      expect(shown, l.id).not.toMatch(/\bC\d\.[\dMC]\b/);
+    }
+  });
+});

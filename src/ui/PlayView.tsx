@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { LESSONS } from "../course/lessons";
+import { CHAPTERS, chapterOf, LESSONS, placeOf } from "../course/lessons";
 import { allMatch, compareToTarget, type MatchVerdict } from "../course/match";
 import { guideContext, loadDone, saveDone, suggestNext } from "../course/progress";
 import type { MatchRound, Panel, PlayableLesson } from "../course/types";
@@ -260,23 +260,32 @@ export function PlayView({ cards }: { cards: Card[] }) {
 
   const lessonCards = lesson.cardIds.map((id) => cards.find((c) => c.id === id)).filter((c): c is Card => !!c);
   const suggestion = suggestNext(LESSONS, done);
+  const place = placeOf(lesson);
+  const unmet = LESSONS.filter((l) => lesson.buildsOn.includes(l.id) && !done.includes(l.id));
   const context = useMemo(() => guideContext(lesson, stepIndex, describe(synth.state), LESSONS, done), [lesson, stepIndex, synth.state, done]);
 
   return (
     <div className="learn">
       <nav className="learn-nav" aria-label="Lessons">
         <div className="learn-progress">{done.length} of {LESSONS.length} done. Take them in any order.</div>
-        {LESSONS.map((l) => (
-          <button key={l.id} className={l.id === lessonId ? "on" : ""} onClick={() => setLessonId(l.id)} aria-current={l.id === lessonId}>
-            <span className={`dot${done.includes(l.id) ? " done" : ""}`}>{done.includes(l.id) ? "✓" : l.id.replace("C", "")}</span>
-            <span><strong>{l.title}</strong><small>{l.minutes} min{l.buildsOn.length ? ` · builds on ${l.buildsOn.join(", ")}` : ""}{suggestion?.id === l.id && !done.includes(l.id) ? " · suggested next" : ""}</small></span>
-          </button>
+        {Object.keys(CHAPTERS).map((c) => (
+          <div key={c} className="learn-chapter" role="group" aria-label={CHAPTERS[c]}>
+            <div className="learn-chapter-name">{CHAPTERS[c]}</div>
+            {LESSONS.filter((l) => chapterOf(l) === c).map((l, i) => (
+              <button key={l.id} className={l.id === lessonId ? "on" : ""} onClick={() => setLessonId(l.id)} aria-current={l.id === lessonId}>
+                <span className={`dot${done.includes(l.id) ? " done" : ""}`}>{done.includes(l.id) ? "✓" : i + 1}</span>
+                <span><strong>{l.title}</strong><small>{l.minutes} min{suggestion?.id === l.id && !done.includes(l.id) ? " · suggested next" : ""}</small></span>
+              </button>
+            ))}
+          </div>
         ))}
         {done.length > 0 && <button className="link reset" onClick={() => setDone([])}>Reset progress</button>}
       </nav>
 
       <article className="learn-body">
-        <h2>{lesson.id} {lesson.title}</h2>
+        <p className="learn-place">{place.chapter} · lesson {place.number} of {place.of}</p>
+        <h2>{lesson.title}</h2>
+        {unmet.length > 0 && <p className="muted">Builds on {unmet.map((l, i) => <span key={l.id}>{i > 0 && (i === unmet.length - 1 ? " and " : ", ")}<button className="link" onClick={() => setLessonId(l.id)}>{l.title}</button></span>)}, which you have not finished yet. You can still take this one now.</p>}
         <p><strong>You will be able to:</strong> {lesson.outcome}</p>
         {lesson.demo && (
           <p className="hear-first"><button className="primary" onClick={() => void playDemo()}>Hear it first</button> <span className="muted">{lesson.demo.caption}</span></p>
@@ -317,7 +326,7 @@ export function PlayView({ cards }: { cards: Card[] }) {
             <h3>Recap {complete && <Badge kind="ok">lesson done</Badge>}</h3>
             <ul>{lesson.recap.map((r) => <li key={r}>{r}</li>)}</ul>
             {lesson.inSerum && <p><strong>Now in Serum (optional).</strong> {lesson.inSerum}</p>}
-            {complete && suggestion && <p><strong>Guide:</strong> Next I’d take <button className="link" onClick={() => setLessonId(suggestion.id)}>{suggestion.id} {suggestion.title}</button>{suggestion.buildsOn.includes(lesson.id) ? ", which builds directly on this one." : "."}</p>}
+            {complete && suggestion && <p><strong>Guide:</strong> Next I’d take <button className="link" onClick={() => setLessonId(suggestion.id)}>{suggestion.title}</button>{suggestion.buildsOn.includes(lesson.id) ? ", which builds directly on this one." : "."}</p>}
             {complete && !suggestion && <p><strong>Guide:</strong> That is every lesson built so far.</p>}
           </section>
         )}

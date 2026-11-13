@@ -147,4 +147,16 @@ const BASE: PlayableLesson[] = [
 /** Every playable lesson, in suggested order. */
 export const LESSONS: PlayableLesson[] = [...BASE, ...CHAPTER_1, ...CHAPTER_2];
 
+/**
+ * Chapter names, by the number in a lesson's id ("C2.5" is in chapter 2). Ids are for code, scripts and
+ * plans; the learner sees the chapter name, the lesson's place in it, and its title.
+ */
+export const CHAPTERS: Record<string, string> = { "0": "Sound itself", "1": "Oscillators", "2": "Filters" };
+export const chapterOf = (lesson: PlayableLesson) => lesson.id.slice(1, lesson.id.indexOf("."));
+/** Where a lesson sits: its chapter's name, its number within the chapter, and how many the chapter has. */
+export function placeOf(lesson: PlayableLesson, lessons: PlayableLesson[] = LESSONS): { chapter: string; number: number; of: number } {
+  const mates = lessons.filter((l) => chapterOf(l) === chapterOf(lesson));
+  return { chapter: CHAPTERS[chapterOf(lesson)] ?? `Chapter ${chapterOf(lesson)}`, number: mates.indexOf(lesson) + 1, of: mates.length };
+}
+
 export { anyNote };

@@ -137,7 +137,7 @@ button.primary:not(:disabled):hover { transform: translate(-1px, -1px); }
 .lane:nth-child(3) .node { background: var(--info-soft); }
 .lane:nth-child(5) .node { background: var(--ok-soft); }
 .banner { border: 2px dashed var(--warn); }
-.learn-nav > button.on { outline: 2px dashed var(--accent); outline-offset: -3px; }
+.learn-nav button.on { outline: 2px dashed var(--accent); outline-offset: -3px; }
 .dot { border: 2px solid var(--thread); font-weight: 700; }
 .soundtype strong { font-family: var(--display); font-weight: 400; font-size: 18px; color: var(--accent); }
 
@@ -211,7 +211,7 @@ details.card summary { cursor: pointer; font-weight: 700; }
 @media (max-width: 640px) { .keys { height: 90px; } .key span { display: none; } .step-detail, .remark { margin-left: 0; } }
 
 .learn > * { min-width: 0; }
-.learn-nav > button:not(.link) > span:last-child { min-width: 0; overflow-wrap: anywhere; }
+.learn-nav button:not(.link) > span:last-child { min-width: 0; overflow-wrap: anywhere; }
 .ctl { flex-wrap: wrap; max-width: 100%; min-width: 0; }
 .synth-ctls .seg { flex-wrap: wrap; max-width: 100%; }
 @media (max-width: 640px) { .synth-ctls .seg button { padding: 6px 9px; } .ctl { flex-basis: 100%; } .stage-box { padding: 12px 10px; } }
@@ -244,3 +244,9 @@ details.card[open] summary { margin-bottom: 4px; border-bottom: 1px dashed var(-
 .view-toggles button[aria-pressed="true"] { border-color: var(--thread); color: inherit; box-shadow: 2px 2px 0 var(--accent); }
 .view-toggles button:disabled { cursor: default; opacity: 0.7; }
 .view-toggles button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Lesson list grouped by chapter; codes like "C2.5" are not shown to the learner */
+.learn-chapter { display: flex; flex-direction: column; }
+.learn-chapter-name { margin: 14px 0 4px; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.learn-place { margin: 0 0 2px; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+.learn-place + h2 { margin-top: 0; }

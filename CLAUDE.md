@@ -261,6 +261,10 @@ use explicit `.js` import suffixes so they load as plain Node ESM.
   set `status: "verified"` and `confirmedBy` in `src/display/registry.ts`.
 - New knowledge cards: copy `knowledge-cards/_template.md`. Avoid numbers in cards. Only add reading links
   that have been opened and checked.
+- **Lesson labels.** Codes such as `C2.5` are for code, scripts and plans only. The learner sees lessons grouped
+  under chapter names ("Sound itself", "Oscillators", "Filters"; `CHAPTERS` in `src/course/lessons/index.ts`),
+  numbered within the chapter, with "Filters · lesson 5 of 8" above the title. A test stops lesson text from
+  citing another lesson by code. Add the chapter's name to `CHAPTERS` when starting a new chapter.
 - Skin: content must stay on solid panels for legibility; fabric textures are for chrome only (header, tabs,
   drop zones, page background). Keep both light and dark schemes working.
 

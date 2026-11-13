@@ -237,3 +237,48 @@ describe("answer text", () => {
     expect(plain("2 * 3 = 6")).toBe("2 * 3 = 6");
   });
 });
+
+import { cleanMarks, MAX_MARKS, PointRequestSchema } from "../src/library/point";
+import { POST as pointPost } from "../api/point";
+import { pointAt } from "../src/guide/point";
+describe("show me where", () => {
+  it("marks are kept inside the picture, as fractions of it, numbered in order", () => {
+    const marks = cleanMarks({ marks: [{ label: "  DRIVE   knob ", left: 100, top: 50, width: 200, height: 100 }, { label: "Menu", left: 900, top: 400, width: 300, height: 300 }] }, 1000, 500);
+    expect(marks.map((m) => [m.n, m.label])).toEqual([[1, "DRIVE knob"], [2, "Menu"]]);
+    const near = (m: (typeof marks)[number]) => [m.x, m.y, m.w, m.h].map((v) => Number(v.toFixed(6)));
+    expect(near(marks[0]!)).toEqual([0.1, 0.1, 0.2, 0.2]);
+    expect(near(marks[1]!)).toEqual([0.9, 0.8, 0.1, 0.2]); // cut off at the picture's edge
+  });
+  it("drops marks with no label, no size, nonsense numbers, or that cover nearly the whole picture; keeps at most five", () => {
+    const box = { left: 10, top: 10, width: 50, height: 50 };
+    expect(cleanMarks({ marks: [{ label: "", ...box }, { label: "a", ...box, width: 0 }, { label: "b", ...box, left: NaN }, { label: "everything", left: 0, top: 0, width: 1000, height: 480 }, { label: "outside", left: 2000, top: 10, width: 50, height: 50 }] }, 1000, 500)).toEqual([]);
+    expect(cleanMarks({ marks: Array.from({ length: 9 }, (_, i) => ({ label: `m${i}`, ...box })) }, 1000, 500)).toHaveLength(MAX_MARKS);
+  });
+  it("a tiny target gets a box big enough to see, centred on the same spot", () => {
+    const [m] = cleanMarks({ marks: [{ label: "dot", left: 500, top: 250, width: 2, height: 2 }] }, 1000, 500);
+    expect(m!.w * 1000).toBeCloseTo(14, 6); expect((m!.x + m!.w / 2) * 1000).toBeCloseTo(501, 6);
+  });
+  it("only exact library picture names are accepted", () => {
+    expect(PointRequestSchema.safeParse({ book: "rift-manual", file: "p047-2.webp", question: "where is randomize?" }).success).toBe(true);
+    for (const bad of [{ book: "../x", file: "p047-2.webp" }, { book: "rift-manual", file: "../../.env" }, { book: "rift-manual", file: "p047-2.png" }]) expect(PointRequestSchema.safeParse({ ...bad, question: "where?" }).success).toBe(false);
+  });
+  it("the endpoint is behind the password and needs an API key", async () => {
+    const env = { ...process.env };
+    const call = (headers: Record<string, string> = {}) => pointPost(new Request("http://x/api/point", { method: "POST", headers, body: JSON.stringify({ book: "rift-manual", file: "p047-2.webp", question: "where is randomize?" }) }));
+    try {
+      process.env.VERCEL = "1"; delete process.env.APP_PASSWORD; delete process.env.ANTHROPIC_API_KEY;
+      expect((await call()).status).toBe(503);
+      process.env.APP_PASSWORD = "pw";
+      expect((await call()).status).toBe(401);
+      const res = await call({ authorization: `Basic ${Buffer.from("me:pw").toString("base64")}` });
+      expect(res.status).toBe(503);
+      expect((await res.json()).error).toBe("not-configured");
+    } finally { process.env = env; }
+  });
+  it("the browser side reports a failure in plain words and passes marks through", async () => {
+    const ok = await pointAt("b", "p001-1.webp", "q", async () => new Response(JSON.stringify({ marks: [{ n: 1, label: "x", x: 0, y: 0, w: 0.1, h: 0.1 }] }), { status: 200 }));
+    expect(ok).toEqual({ kind: "ok", marks: [{ n: 1, label: "x", x: 0, y: 0, w: 0.1, h: 0.1 }] });
+    expect(await pointAt("b", "p001-1.webp", "q", async () => new Response(JSON.stringify({ message: "The guide is busy. Try again shortly." }), { status: 429 }))).toEqual({ kind: "unavailable", message: "The guide is busy. Try again shortly." });
+    expect((await pointAt("b", "p001-1.webp", "q", async () => { throw new Error("offline"); })).kind).toBe("unavailable");
+  });
+});

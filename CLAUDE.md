@@ -316,6 +316,13 @@ Added after the first eight milestones (owner asked for all four in one go):
   the browser build. Under each answer, `src/course/related.ts` (code, not the model) offers up to two practice
   lessons whose subject matches the question; clicking one opens it. Not yet verified on the live site: that
   Vercel packages `library/images/**` with the image function (`vercel.json`).
+- **"Show me where" (13 Nov 2026, owner's request).** Each picture in an answer has a "Show me where" link:
+  `api/point.ts` sends that one picture, its page's text and the question to Claude (vision, structured
+  output) and gets back up to five boxes with labels; `cleanMarks` in `src/library/point.ts` clamps and
+  filters them; `SourceImage` in `Answer.tsx` draws numbered boxes over the picture and lists the labels,
+  with a note that they are the guide's pointing, not the manual's. One paid call per click; nothing is
+  cached. **Not yet run against the real API** (no key in the build session): the drawing was checked in a
+  browser with a stand-in reply, so how well the model aims is unknown until the owner tries it.
 - **Guide in context** — `src/ui/Answer.tsx` (`AskBox`): an ask box inside each practice lesson (sends lesson,
   step, current synth settings and finished lessons) and at the top of a rebuilt patch (sends only the
   code-written instructions, per rule 5; never the preset). The first line of the context is the retrieval

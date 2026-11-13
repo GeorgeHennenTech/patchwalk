@@ -10,7 +10,7 @@ function devApi(): Plugin {
     configureServer(server) {
       const env = loadEnv("development", process.cwd(), "");
       for (const k of ["ANTHROPIC_API_KEY", "APP_PASSWORD"]) if (env[k] && !process.env[k]) process.env[k] = env[k];
-      for (const route of ["lesson", "ask", "image"]) server.middlewares.use(`/api/${route}`, async (req: IncomingMessage, res) => {
+      for (const route of ["lesson", "ask", "image", "point"]) server.middlewares.use(`/api/${route}`, async (req: IncomingMessage, res) => {
         try {
           const chunks: Buffer[] = [];
           for await (const c of req) chunks.push(c as Buffer);

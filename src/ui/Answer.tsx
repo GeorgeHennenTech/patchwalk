@@ -2,6 +2,7 @@ import { createContext, useContext, useState } from "react";
 import { LESSONS, placeOf } from "../course/lessons";
 import { relatedLessons } from "../course/related";
 import { askGuide, type AskOutcome } from "../guide/ask";
+import { pointAt, type PointOutcome } from "../guide/point";
 import { Badge } from "./Badge";
 
 /** The answer is shown as plain text, so any Markdown marks the model slips in are removed. */
@@ -31,14 +32,7 @@ export function Answer({ outcome, question }: { outcome: AskOutcome; question?: 
           <li key={s.n}><strong>{s.source}</strong>{s.page ? `, page ${s.page}` : ""} · {s.section}
             {s.quotes.slice(0, 2).map((q) => <blockquote key={q}>{q.length > 260 ? q.slice(0, 260) + "…" : q}</blockquote>)}
             {/* Every cited page that has pictures shows them: code decides this, not the model. */}
-            {s.images?.map((im) => (
-              <figure key={im.file} className="source-image">
-                <a href={`/api/image?book=${im.book}&file=${im.file}`} target="_blank" rel="noreferrer">
-                  <img src={`/api/image?book=${im.book}&file=${im.file}`} width={im.width} height={im.height} loading="lazy" alt={`Picture from ${s.source}${s.page ? `, page ${s.page}` : ""}`} />
-                </a>
-                <figcaption>From {s.source}{s.page ? `, page ${s.page}` : ""}. Click to enlarge.</figcaption>
-              </figure>
-            ))}
+            {s.images?.map((im) => <SourceImage key={im.file} im={im} from={`${s.source}${s.page ? `, page ${s.page}` : ""}`} question={question} />)}
           </li>
         ))}
       </ol>
@@ -48,6 +42,32 @@ export function Answer({ outcome, question }: { outcome: AskOutcome; question?: 
         </p>
       )}
     </>
+  );
+}
+
+/**
+ * One picture from a cited page. "Show me where" asks the guide to mark the places in it that matter for the
+ * question (one paid call). The marks are the guide's pointing, not the manual's, and are labelled as such.
+ */
+function SourceImage({ im, from, question }: { im: { book: string; file: string; width: number; height: number }; from: string; question?: string }) {
+  const [state, setState] = useState<PointOutcome | "busy">();
+  const src = `/api/image?book=${im.book}&file=${im.file}`;
+  const marks = state && state !== "busy" && state.kind === "ok" ? state.marks : [];
+  return (
+    <figure className="source-image">
+      <div className="marked">
+        <a href={src} target="_blank" rel="noreferrer"><img src={src} width={im.width} height={im.height} loading="lazy" alt={`Picture from ${from}`} /></a>
+        {marks.map((m) => <span key={m.n} className="mark" style={{ left: `${m.x * 100}%`, top: `${m.y * 100}%`, width: `${m.w * 100}%`, height: `${m.h * 100}%` }} aria-hidden="true"><b>{m.n}</b></span>)}
+      </div>
+      <figcaption>From {from}. Click to enlarge.{" "}
+        {question && (!state || (state !== "busy" && state.kind === "unavailable")) && <button className="link" onClick={async () => { setState("busy"); setState(await pointAt(im.book, im.file, question)); }}>Show me where</button>}
+        {state === "busy" && <span>Looking at the picture…</span>}
+      </figcaption>
+      {state && state !== "busy" && state.kind === "unavailable" && <p className="note">{state.message}</p>}
+      {state && state !== "busy" && state.kind === "ok" && (marks.length
+        ? <><ol className="mark-list">{marks.map((m) => <li key={m.n}>{m.label}</li>)}</ol><p className="note">The numbered boxes are the guide’s own pointing, not part of the manual. They can be slightly off: check them against the page text.</p></>
+        : <p className="note">The guide found nothing in this picture that bears on your question.</p>)}
+    </figure>
   );
 }
 

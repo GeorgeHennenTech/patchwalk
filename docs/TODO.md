@@ -48,6 +48,7 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 - [x] Ableton Live 11 manual, pages 1 to 500: text and 428 pictures taken in
 - [x] Ableton manual, pages 501 to 867: the whole manual is now in (814 pages of text, 743 pictures)
 - [x] Rift manual (Minimal Audio): 64 pages of text and 137 pictures taken in
+- [x] "Show me where": the guide boxes and labels the relevant places in a cited picture (owner to test how well it aims)
 - [ ] Place library pictures inside lessons where they help
 - [ ] Voice for the guide using Higgsfield (owner's choice): test quality, then generate each narration once and store it
 - [ ] Remember what the learner found hard, not only what they finished

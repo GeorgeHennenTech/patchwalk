@@ -947,7 +947,7 @@ describe("effects", () => {
 import { routeLayout } from "../src/synth/mod";
 import { MATRIX_MAX } from "../src/synth/params";
 describe("the matrix", () => {
-  const row = (source: "env2" | "lfo1" | "vel" | "key", dest: SynthState["lfo1Dest"], amount = 30, way: "both" | "up" = "both") => ({ source, dest, amount, way });
+  const row = (source: "env2" | "lfo1" | "lfo2" | "vel" | "key", dest: SynthState["lfo1Dest"], amount = 30, way: "both" | "up" = "both") => ({ source, dest, amount, way });
   it("starts empty, and a row adds a second connection for the same source", () => {
     expect(INITIAL.matrix).toEqual([]);
     expect(MATRIX_MAX).toBe(8);

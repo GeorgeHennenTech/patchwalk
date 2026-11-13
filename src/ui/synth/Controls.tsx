@@ -1,17 +1,21 @@
 import { useEffect, useRef } from "react";
 import { INITIAL, PARAMS, type ParamSpec, type SynthState } from "../../synth/params";
+import { routesTo } from "../../synth/mod";
 import { KEY_MAP, type Synth } from "../../synth/useSynth";
 
 const fmt = (id: string, v: number) => {
   const unit = PARAMS[id]!.unit ?? "";
   if (id === "freeHz") return `${Math.round(v)} Hz`;
+  if (unit === "ms") return v >= 1000 ? `${(v / 1000).toFixed(2)} s` : `${Math.round(v)} ms`;
+  if (id.endsWith("Rate")) return `${v.toFixed(2)} Hz`;
+  if (id.endsWith("Amount") && v > 0) return `+${v}%`;
   if (id === "cutoff") return v >= 1000 ? `${(v / 1000).toFixed(v >= 10000 ? 1 : 2)} kHz` : `${Math.round(v)} Hz`;
   const signed = ["octave", "semitone", "fine", "bOctave", "bSemitone", "bFine"].includes(id) && v > 0 ? "+" : "";
   return `${signed}${v}${unit === "%" || unit === "°" ? unit : unit ? ` ${unit}` : ""}`;
 };
 
 /** The name printed under a control. Its module panel already says which oscillator or section it belongs to. */
-export const shortLabel = (label: string) => label.replace(/^(A|B|Sub|Noise|Filter|Wave) /, "");
+export const shortLabel = (label: string) => label.replace(/^(A|B|Sub|Noise|Filter|Wave|Env \d|LFO \d) /, "");
 
 /** Settings shown as a small number box (a few whole steps) and not as a knob. */
 const BOXES = new Set<keyof SynthState>(["octave", "semitone", "bOctave", "bSemitone", "voices", "subOctave"]);
@@ -25,17 +29,25 @@ export function toTravel(spec: ParamSpec, v: number): number {
 export function fromTravel(spec: ParamSpec, t: number): number {
   const raw = spec.log ? spec.min! * (spec.max! / spec.min!) ** clamp01(t) : spec.min! + clamp01(t) * (spec.max! - spec.min!);
   const step = spec.step ?? 1;
-  return Math.min(spec.max!, Math.max(spec.min!, Math.round(raw / step) * step));
+  return tidy(Math.min(spec.max!, Math.max(spec.min!, Math.round(raw / step) * step)));
 }
 /** One press of an arrow key: the smallest step, or about 1% for wide-ranging settings. `big` is ten times that. */
 export function nudge(spec: ParamSpec, v: number, dir: 1 | -1, big: boolean): number {
   const step = spec.step ?? 1;
   const size = spec.log ? Math.max(step, Math.round((v * (big ? 0.1 : 0.01)) / step) * step) : step * (big ? 10 : 1);
-  return Math.min(spec.max!, Math.max(spec.min!, v + dir * size));
+  return tidy(Math.min(spec.max!, Math.max(spec.min!, v + dir * size)));
 }
+/** Steps smaller than one (an LFO's rate) must not pick up stray digits from floating-point sums. */
+const tidy = (v: number) => Number(v.toFixed(4));
 
 const SWEEP = 270; // degrees a knob turns from minimum to maximum
 const point = (deg: number, r: number) => { const a = ((deg - 90) * Math.PI) / 180; return `${(24 + r * Math.cos(a)).toFixed(2)} ${(24 + r * Math.sin(a)).toFixed(2)}`; };
+const degrees = (travel: number) => -SWEEP / 2 + clamp01(travel) * SWEEP;
+/** The stretch of a knob's travel one source sweeps it across: both ways for an LFO, one way for an envelope. */
+export function ringSpan(travel: number, amount: number, kind: "env" | "lfo"): [number, number] {
+  const reach = amount / 200;
+  return kind === "lfo" ? [clamp01(travel - Math.abs(reach)), clamp01(travel + Math.abs(reach))] : [clamp01(Math.min(travel, travel + reach)), clamp01(Math.max(travel, travel + reach))];
+}
 const arc = (from: number, to: number, r: number) => {
   const [a, b] = from <= to ? [from, to] : [to, from];
   return `M ${point(a, r)} A ${r} ${r} 0 ${b - a > 180 ? 1 : 0} 1 ${point(b, r)}`;
@@ -67,11 +79,12 @@ function Knob({ id, synth, spot }: { id: keyof SynthState; synth: Synth; spot: b
   const reset = () => { const v = INITIAL[id]; if (typeof v === "number") set(v); };
   const t = toTravel(spec, value);
   const angle = -SWEEP / 2 + t * SWEEP;
+  const mods = routesTo(synth.state, id);
   const zero = spec.min! < 0 && spec.max! > 0 ? -SWEEP / 2 + toTravel(spec, 0) * SWEEP : -SWEEP / 2;
   return (
-    <div className={`${box ? "nbox" : "knob"}${spot ? " spot" : ""}`} role="slider" tabIndex={0} aria-label={spec.label} aria-orientation="vertical"
+    <div className={`${box ? "nbox" : "knob"}${spot ? " spot" : ""}${mods.length ? " moved" : ""}`} style={mods.length ? ({ "--glow": mods[0]!.source.color } as React.CSSProperties) : undefined} role="slider" tabIndex={0} aria-label={spec.label} aria-orientation="vertical"
       aria-valuemin={spec.min} aria-valuemax={spec.max} aria-valuenow={value} aria-valuetext={fmt(id, value)}
-      title={`${spec.label}: drag up or down, or click and use the arrow keys. Double-click to reset.`}
+      title={`${spec.label}: drag up or down, or click and use the arrow keys. Double-click to reset.${mods.length ? ` Moved by ${mods.map((m) => m.source.name).join(" and ")}.` : ""}`}
       onKeyDown={onKey} onDoubleClick={reset}
       onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); e.currentTarget.focus(); drag.current = { y: e.clientY, travel: t }; }}
       onPointerMove={(e) => {
@@ -81,7 +94,11 @@ function Knob({ id, synth, spot }: { id: keyof SynthState; synth: Synth; spot: b
       }}
       onPointerUp={() => { drag.current = null; }} onPointerCancel={() => { drag.current = null; }}>
       {!box && (
-        <svg viewBox="0 0 48 48" aria-hidden>
+        <svg viewBox="-6 -6 60 60" aria-hidden>
+          {mods.map((m, i) => {
+            const [from, to] = ringSpan(t, m.amount, m.source.kind);
+            return <path key={m.source.id} className="knob-ring" style={{ stroke: m.source.color, filter: `drop-shadow(0 0 2.5px ${m.source.color})` }} d={arc(degrees(from), Math.max(degrees(to), degrees(from) + 1), 24.5 + i * 3.4)}><title>{`${m.source.name} moves this`}</title></path>;
+          })}
           <path className="knob-track" d={arc(-SWEEP / 2, SWEEP / 2, 20)} />
           {angle !== zero && <path className="knob-value" d={arc(zero, angle, 20)} />}
           <circle className="knob-cap" cx="24" cy="24" r="14" />
@@ -102,6 +119,17 @@ export function Control({ id, synth, spot, only }: { id: keyof SynthState; synth
       <label className={`ctl toggle${spot ? " spot" : ""}`}>
         <input type="checkbox" checked={!!synth.state[id]} onChange={(e) => synth.setState({ [id]: e.target.checked } as Partial<SynthState>)} />
         <span className="ctl-name">{spec.label}</span>
+      </label>
+    );
+  }
+  if (spec.kind === "menu") {
+    return (
+      <label className={`pick menu${spot ? " spot" : ""}`}>
+        <span className="knob-name">{shortLabel(spec.label)}</span>
+        {/* blur after choosing so the letter keys go back to playing notes */}
+        <select value={String(synth.state[id])} aria-label={spec.label} onChange={(e) => { synth.setState({ [id]: e.target.value } as Partial<SynthState>); e.target.blur(); }}>
+          {spec.choices!.map((c) => <option key={c} value={c}>{spec.names?.[c] ?? c}</option>)}
+        </select>
       </label>
     );
   }

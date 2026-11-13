@@ -21,7 +21,7 @@ Last updated: 13 November 2026, after commit "Add the filter chapter to the prac
    ```bash
    npm test
    ```
-   Expect 275 passing tests, none skipped.
+   Expect 287 passing tests, none skipped.
 3. **Run it.** `npm run dev` serves the app at http://localhost:5173 including the two server functions.
    The Claude calls report "no API key" locally unless `.env.local` has `ANTHROPIC_API_KEY`; that is expected.
 4. **Then continue with section 8** without waiting for instructions, unless the owner's message says otherwise.
@@ -63,7 +63,7 @@ synthesis course with its own practice synth and an AI guide that answers from a
 | Tab | What it does |
 |---|---|
 | **Rebuild a patch** | Reads a `.SerumPreset` in the browser (never uploaded). Shows a sound-type guess, a lesson in signal-flow order at three difficulty levels, "Explain why" (Claude writes why each step works), envelope and LFO diagrams, a signal-flow view with a modulation map, an active-modules view, "compare your attempt", a display-value table and raw data. An ask box lets the guide answer about the patch. |
-| **Lessons** | The practice synth (two oscillators, unison, sub, noise, phase, generated wavetables, and a filter with a draggable curve) and twenty-two playable lessons: all of chapters 0, 1 and 2, a match-by-ear lesson (C1.M) and the chapter checkpoints (C1.C, C2.C). Each lesson: optional "Hear it first" demo, idea text, a knowledge card, guided steps with only the needed controls shown and live targets, guide remarks written by code, optional blind ear check, optional match-by-ear rounds, recap, suggested next lesson, read-aloud, and an ask box. Any order; progress saved in the browser. |
+| **Lessons** | The practice synth (two oscillators, unison, sub, noise, phase, generated wavetables, a filter with a draggable curve, two envelopes and three LFOs; shown as a rack of panels with knobs) and twenty-two playable lessons: all of chapters 0, 1 and 2, a match-by-ear lesson (C1.M) and the chapter checkpoints (C1.C, C2.C). Each lesson: optional "Hear it first" demo, idea text, a knowledge card, guided steps with only the needed controls shown and live targets, guide remarks written by code, optional blind ear check, optional match-by-ear rounds, recap, suggested next lesson, read-aloud, and an ask box. Any order; progress saved in the browser. |
 | **Serum tasks** | The older ten lessons: a task done in Serum, checked by dropping the saved preset. |
 | **Ask the guide** | Answers a typed question from the library (the Serum 2 User Guide and the knowledge cards) with page citations and quoted source text. Says "not in the library" instead of guessing. |
 | **System check** | One-click end-to-end test of the explanation service. |
@@ -155,7 +155,7 @@ the guide" (a correct, cited answer about the filter's FAT knob from pages 135, 
 **Proven by measurement only:** the practice synth makes signal; a 12 dB volume change moves the meter 12 dB;
 the square wave shows odd harmonics; two squares half a cycle apart nearly cancel; beat rate doubles an octave up. The filter's output matches its drawn curve within 0.1 dB at every harmonic checked, for all types, slopes, resonance and key tracking. All lessons were played through in a headless browser.
 
-**Not yet judged by a person:** how the practice synth sounds, the filter especially (resonance loudness, how
+**Not yet judged by a person:** how the knobs feel; the envelopes and LFOs by ear; how the practice synth sounds, the filter especially (resonance loudness, how
 harsh full drive is, whether the noise whistle in C2.7 is clear); how the filter curve feels to drag; whether the lesson format feels right; the ask
 box used with lesson or patch context; the match-by-ear difficulty.
 
@@ -206,11 +206,14 @@ Take these in order. After each, test, check in a browser, commit, push, and rep
    spectrogram, the level meter and the filter curve on at any step (remembered; hidden in match-by-ear). The
    Also at the owner's request: lesson codes are hidden (chapters are named), and the synth is now a rack of
    module panels with knobs in Serum's arrangement (Sub, Osc A, Osc B, Noise, Filter; main volume top right).
-   Only the arrangement follows Serum; the look stays our own skin. Details in `CLAUDE.md`. New modules
-   (envelopes, LFOs) should go below the rack, where Serum puts them, as panels with knobs. The
+   Only the arrangement follows Serum; the look stays our own skin. Details in `CLAUDE.md`. Then, also on
+   request: two envelopes and three LFOs in a row under the rack (Env 1 is the note's level; Env 2 and the LFOs
+   each send to one destination), a glowing ring in the source's own neon colour on every knob it moves, and a
+   dark "velvet and neon" skin for the synth. **There are no lessons for envelopes or LFOs yet**; the controls
+   only show in "Show the whole synth". The
    owner wants the same toggles in the piano roll when the mini DAW exists; ideas not built yet are a stereo
    (left/right) view, a tuner/pitch readout and a loudness meter.
-3. **Next: envelopes (C3)** with a draggable envelope drawing, then **LFOs and modulation (C4, C5)**.
+3. **Next: envelope lessons (C3)**. The envelopes exist in the synth now; script and build the lessons, with a draggable envelope drawing, then **LFOs and modulation (C4, C5)**.
 4. **Guide improvements** alongside: remember more than finished lessons (for example what the learner found
    hard), and add more texts to the library as the owner supplies them.
 5. Later, in the order in `CURRICULUM.md`: listening lab for acoustics, psychoacoustics and ear training;

@@ -101,7 +101,7 @@ export function useSynth() {
     // Letters typed into a text box must not play notes; sliders and checkboxes do not count as typing.
     const typing = (e: KeyboardEvent) => {
       const el = e.target;
-      if (el instanceof HTMLTextAreaElement || (el instanceof HTMLElement && el.isContentEditable)) return true;
+      if (el instanceof HTMLTextAreaElement || el instanceof HTMLSelectElement || (el instanceof HTMLElement && el.isContentEditable)) return true;
       return el instanceof HTMLInputElement && !["range", "checkbox", "radio", "button"].includes(el.type);
     };
     const onDown = (e: KeyboardEvent) => {

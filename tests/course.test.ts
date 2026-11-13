@@ -422,7 +422,7 @@ describe("how lessons are labelled for the learner", () => {
 });
 
 import { fromTravel, isBox, nudge, shortLabel, toTravel } from "../src/ui/synth/Controls";
-import { MODULES, wavePath } from "../src/ui/synth/Rack";
+import { MOD_MODULES, MODULES, wavePath } from "../src/ui/synth/Rack";
 
 describe("knobs and the module rack", () => {
   it("a knob's travel covers its whole range, in octaves for wide-ranging settings, and snaps to steps", () => {
@@ -447,7 +447,7 @@ describe("knobs and the module rack", () => {
     expect(nudge(cutoff, 5000, -1, true)).toBe(4500);
   });
   it("every setting has a home: one module panel, or the main volume", () => {
-    const groups = MODULES.flatMap((m) => m.groups);
+    const groups = [...MODULES, ...MOD_MODULES].flatMap((m) => m.groups);
     expect(new Set(groups).size).toBe(groups.length);
     for (const spec of Object.values(PARAMS)) expect(spec.group === "Master" || groups.includes(spec.group), spec.label).toBe(true);
     for (const m of MODULES) if (m.toggle) expect(PARAMS[m.toggle]!.kind).toBe("toggle");
@@ -463,5 +463,62 @@ describe("knobs and the module rack", () => {
     expect(y(sine, 6)).toBeGreaterThan(54);
     const shifted = wavePath([0, 1], 0.5, 200, 64, 8);
     expect(y(shifted, 2)).toBeGreaterThan(54); // half a cycle later it is upside down
+  });
+});
+
+import { adsr, envLevel, lfoValue, modDepth, routes, routesTo, SOURCES } from "../src/synth/mod";
+import { ringSpan } from "../src/ui/synth/Controls";
+import { envPath, lfoPath } from "../src/ui/synth/Rack";
+
+describe("envelopes and LFOs", () => {
+  it("the starting patch is unchanged by them: full sustain, nothing connected", () => {
+    expect(adsr(INITIAL, 1).sustain).toBe(1);
+    expect(routes(INITIAL)).toEqual([]);
+    for (const l of LESSONS) for (const r of l.rounds ?? []) expect(routes({ ...INITIAL, ...r.from, ...r.target })).toEqual([]);
+  });
+  it("an envelope rises over the attack, eases to the sustain level, and fades after the note is let go", () => {
+    const e = { attack: 0.1, decay: 0.4, sustain: 0.25, release: 0.2 };
+    expect(envLevel(e, 0, 2)).toBe(0);
+    expect(envLevel(e, 0.05, 2)).toBeCloseTo(0.5, 9);
+    expect(envLevel(e, 0.1, 2)).toBeCloseTo(1, 9);
+    expect(envLevel(e, 0.5, 2)).toBeGreaterThan(0.25);
+    expect(envLevel(e, 0.5, 2)).toBeLessThan(0.27); // effectively at sustain once the decay time has passed
+    expect(envLevel(e, 1.5, 2)).toBeCloseTo(0.25, 3);
+    expect(envLevel(e, 2.2, 2)).toBeLessThan(0.01);
+    expect(envLevel({ ...e, sustain: 1 }, 1, 2)).toBe(1);
+  });
+  it("LFO shapes swing between -1 and 1 and repeat every cycle", () => {
+    expect(lfoValue("sine", 0.25)).toBeCloseTo(1, 9);
+    expect(lfoValue("triangle", 0.25)).toBeCloseTo(1, 9);
+    expect(lfoValue("triangle", 0.75)).toBeCloseTo(-1, 9);
+    expect(lfoValue("square", 0.2)).toBe(1);
+    expect(lfoValue("square", 0.7)).toBe(-1);
+    expect(lfoValue("saw", 0.25)).toBeCloseTo(0.5, 9);
+    for (const shape of ["sine", "triangle", "saw", "square"] as const) expect(lfoValue(shape, 1.3)).toBeCloseTo(lfoValue(shape, 0.3), 9);
+  });
+  it("a connection is a source with a destination; the amount sets how far it moves it", () => {
+    const s: SynthState = { ...INITIAL, lfo1Dest: "cutoff", lfo1Amount: 50, lfo3Dest: "cutoff", lfo3Amount: 0, env2Dest: "fine", env2Amount: -100 };
+    expect(routes(s).map((r) => `${r.source.id}>${r.dest}`)).toEqual(["env2>fine", "lfo1>cutoff", "lfo3>cutoff"]);
+    expect(routesTo(s, "cutoff").map((r) => r.source.id)).toEqual(["lfo1"]); // a zero amount draws no ring
+    expect(modDepth("cutoff", 50)).toBe(3000); // 2.5 octaves, in cents
+    expect(modDepth("fine", -100)).toBe(-1200);
+    expect(modDepth("aLevelDb", 80)).toBeCloseTo(0.8, 9);
+    expect(new Set(SOURCES.map((x) => x.color)).size).toBe(SOURCES.length);
+  });
+  it("a knob's ring shows the stretch its source sweeps: both ways for an LFO, one way for an envelope", () => {
+    expect(ringSpan(0.5, 40, "lfo")).toEqual([0.3, 0.7]);
+    expect(ringSpan(0.5, -40, "lfo")).toEqual([0.3, 0.7]);
+    expect(ringSpan(0.5, 40, "env")).toEqual([0.5, 0.7]);
+    expect(ringSpan(0.5, -40, "env")).toEqual([0.3, 0.5]);
+    expect(ringSpan(0.9, 100, "lfo")).toEqual([0.4, 1]);
+  });
+  it("the envelope and LFO pictures are drawn from the settings", () => {
+    const ys = (path: string) => path.split(/[ML]/).filter(Boolean).map((p) => Number(p.trim().split(" ")[1]));
+    const env = ys(envPath({ attack: 0.2, decay: 0.2, sustain: 0.5, release: 0.3 }));
+    expect(env[0]).toBe(59); // starts at the bottom
+    expect(Math.min(...env)).toBeLessThan(8); // reaches the top
+    expect(env.at(-1)!).toBeGreaterThan(55); // and returns
+    const sq = ys(lfoPath("square"));
+    expect(new Set(sq).size).toBe(2);
   });
 });

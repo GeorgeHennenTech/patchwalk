@@ -1,6 +1,7 @@
 // Web Audio engine for the practice synth. It renders SynthState and reports what is sounding.
 // Built around a shared AudioContext clock and a per-instrument voice list so more instruments and a
 // tempo clock (for the later mini DAW) can be added without rewriting it.
+import { adsr, isLevel, modDepth, routes, type Route } from "./mod";
 import { DRIVE_RANGE, driveCurve, filterStages, resonanceTrim, type Stage } from "./filter";
 import { dbToGain, harmonic, harmonicsA, HARMONICS, playedHz, playedHzB, subHz, unisonOffsets, unisonPans, type Shape, type SynthState } from "./params";
 
@@ -16,12 +17,17 @@ interface Voice {
   sub?: { osc: OscillatorNode; gain: GainNode };
   noise?: { src: AudioBufferSourceNode; gain: GainNode };
   /** Every source feeds `mix`, then drive, then the two filter stages, then the resonance level trim. */
+  /** One entry per connected envelope or LFO: its signal, and a depth control feeding the destination. */
+  mods: { route: Route; src: OscillatorNode | ConstantSourceNode; depth: GainNode }[];
   filter: { mix: GainNode; shaper: WaveShaperNode; one: BiquadFilterNode; two: BiquadFilterNode; trim: GainNode; drive: number };
   amp: GainNode;
 }
 
 /** Settings whose change means rebuilding the sounding notes (the set of sound sources changes). */
-const STRUCTURAL: (keyof SynthState)[] = ["voices", "bOn", "subOn", "noiseOn", "noiseType", "randomPhase"];
+const STRUCTURAL: (keyof SynthState)[] = ["voices", "bOn", "subOn", "noiseOn", "noiseType", "randomPhase", "env2Dest", "lfo1Dest", "lfo2Dest", "lfo3Dest"];
+const LFO_TYPE = { sine: "sine", triangle: "triangle", saw: "sawtooth", square: "square" } as const;
+/** Stop changing a value from `t` on, keeping whatever it has reached (older browsers: drop what was planned). */
+const holdAt = (p: AudioParam, t: number) => (p.cancelAndHoldAtTime ? p.cancelAndHoldAtTime(t) : p.cancelScheduledValues(t));
 
 export class Engine {
   readonly ctx: AudioContext;
@@ -113,8 +119,8 @@ export class Engine {
   }
 
   /** Make one note's drive and filter match the settings. `jump` sets values at once (for a new note). */
-  private applyFilter(v: Voice, s: SynthState, jump: boolean): void {
-    const t = this.ctx.currentTime, f = v.filter;
+  private applyFilter(v: Voice, s: SynthState, jump: boolean, t = this.ctx.currentTime): void {
+    const f = v.filter;
     const curve = this.driveFor(s);
     if (f.drive !== curve.drive) {
       f.drive = curve.drive;
@@ -129,11 +135,73 @@ export class Engine {
     else f.trim.gain.setTargetAtTime(resonanceTrim(s), t, RAMP);
   }
 
-  private build(note: number, phaseA: number): Voice {
-    const s = this.state, t = this.ctx.currentTime;
+  /** The level that a route's destination is set to, for scaling level modulation. */
+  private baseLevel(s: SynthState, dest: Route["dest"]): number {
+    return dest === "aLevelDb" ? (OSC_GAIN / Math.sqrt(s.voices)) * dbToGain(s.aLevelDb) : dest === "bLevelDb" ? OSC_GAIN * dbToGain(s.bLevelDb)
+      : dest === "subLevelDb" ? OSC_GAIN * dbToGain(s.subLevelDb) : dest === "noiseLevelDb" ? dbToGain(s.noiseLevelDb) : 1;
+  }
+  private depthOf(s: SynthState, r: Route): number {
+    return modDepth(r.dest, r.amount) * (isLevel(r.dest) ? this.baseLevel(s, r.dest) : 1);
+  }
+  /** The audio settings a destination stands for on one note. */
+  private targets(v: Voice, dest: Route["dest"]): AudioParam[] {
+    switch (dest) {
+      case "cutoff": return [v.filter.one.detune, v.filter.two.detune];
+      case "fine": return v.a.map((x) => x.osc.detune);
+      case "bFine": return v.b ? [v.b.osc.detune] : [];
+      case "aLevelDb": return v.a.map((x) => x.gain.gain);
+      case "bLevelDb": return v.b ? [v.b.gain.gain] : [];
+      case "subLevelDb": return v.sub ? [v.sub.gain.gain] : [];
+      case "noiseLevelDb": return v.noise ? [v.noise.gain.gain] : [];
+    }
+  }
+  /** Start this note's connected envelopes and LFOs at time `t`. LFOs restart with each note. */
+  private buildMods(v: Voice, s: SynthState, t: number): void {
+    for (const route of routes(s)) {
+      let src: OscillatorNode | ConstantSourceNode;
+      if (route.source.kind === "lfo") {
+        const id = route.source.id as "lfo1" | "lfo2" | "lfo3";
+        src = this.ctx.createOscillator();
+        src.type = LFO_TYPE[s[`${id}Shape`]];
+        src.frequency.value = s[`${id}Rate`];
+      } else {
+        const e = adsr(s, 2);
+        src = this.ctx.createConstantSource();
+        src.offset.setValueAtTime(0, t);
+        src.offset.linearRampToValueAtTime(1, t + e.attack);
+        src.offset.setTargetAtTime(e.sustain, t + e.attack, Math.max(0.001, e.decay / 4));
+      }
+      const depth = this.ctx.createGain();
+      depth.gain.value = this.depthOf(s, route);
+      src.connect(depth);
+      for (const p of this.targets(v, route.dest)) depth.connect(p);
+      src.start(t);
+      v.mods.push({ route, src, depth });
+    }
+  }
+
+  /** Let a note go at time `t`: envelope 1's release fades it, then everything stops. */
+  private releaseAt(v: Voice, s: SynthState, t: number): void {
+    const release = adsr(s, 1).release, tc = Math.max(0.003, release / 4);
+    holdAt(v.amp.gain, t);
+    v.amp.gain.setTargetAtTime(0, t, tc);
+    for (const m of v.mods) if (m.src instanceof ConstantSourceNode) { holdAt(m.src.offset, t); m.src.offset.setTargetAtTime(0, t, Math.max(0.003, adsr(s, 2).release / 4)); }
+    const stopAt = t + tc * 7 + 0.03;
+    for (const x of v.a) x.osc.stop(stopAt);
+    v.b?.osc.stop(stopAt);
+    v.sub?.osc.stop(stopAt);
+    v.noise?.src.stop(stopAt);
+    for (const m of v.mods) m.src.stop(stopAt);
+  }
+
+  private build(note: number, phaseA: number, t = this.ctx.currentTime): Voice {
+    const s = this.state;
     const amp = this.ctx.createGain();
+    // Envelope 1: a straight rise over the attack, then easing down to the sustain level.
+    const env = adsr(s, 1);
     amp.gain.setValueAtTime(0, t);
-    amp.gain.linearRampToValueAtTime(1, t + 0.005);
+    amp.gain.linearRampToValueAtTime(1, t + env.attack);
+    if (env.sustain < 1) amp.gain.setTargetAtTime(env.sustain, t + env.attack, Math.max(0.001, env.decay / 4));
     amp.connect(this.master);
     const filter = { mix: this.ctx.createGain(), shaper: this.ctx.createWaveShaper(), one: this.ctx.createBiquadFilter(), two: this.ctx.createBiquadFilter(), trim: this.ctx.createGain(), drive: -1 };
     filter.mix.gain.value = 1 / DRIVE_RANGE; // the shaper's curve covers inputs of -1..1
@@ -156,8 +224,8 @@ export class Engine {
       return { osc, gain, pan };
     });
 
-    const voice: Voice = { note, phaseA, a, filter, amp };
-    this.applyFilter(voice, s, true);
+    const voice: Voice = { note, phaseA, a, mods: [], filter, amp };
+    this.applyFilter(voice, s, true, t);
     if (s.bOn) {
       const osc = this.ctx.createOscillator();
       osc.setPeriodicWave(this.wave(this.shapeHarmonics(s.bShape), s.bPhase / 360));
@@ -188,18 +256,12 @@ export class Engine {
       src.start(t, Math.random());
       voice.noise = { src, gain };
     }
+    this.buildMods(voice, s, t);
     return voice;
   }
 
   private release(v: Voice): void {
-    const t = this.ctx.currentTime;
-    v.amp.gain.cancelScheduledValues(t);
-    v.amp.gain.setTargetAtTime(0, t, 0.01);
-    const stopAt = t + 0.08;
-    for (const x of v.a) x.osc.stop(stopAt);
-    v.b?.osc.stop(stopAt);
-    v.sub?.osc.stop(stopAt);
-    v.noise?.src.stop(stopAt);
+    this.releaseAt(v, this.state, this.ctx.currentTime);
   }
 
   /** Apply new settings to everything that is sounding. */
@@ -219,6 +281,18 @@ export class Engine {
     const offsets = unisonOffsets(next.voices, next.detune), pans = unisonPans(next.voices, next.spread);
     for (const v of this.voices) {
       this.applyFilter(v, next, false);
+      for (const m of v.mods) {
+        // amounts and LFO settings follow the controls; a changed destination rebuilds the note (see STRUCTURAL)
+        const route = routes(next).find((r) => r.source.id === m.route.source.id);
+        if (!route) continue;
+        m.route = route;
+        m.depth.gain.setTargetAtTime(this.depthOf(next, route), t, RAMP);
+        if (m.src instanceof OscillatorNode) {
+          const id = route.source.id as "lfo1" | "lfo2" | "lfo3";
+          if (m.src.type !== LFO_TYPE[next[`${id}Shape`]]) m.src.type = LFO_TYPE[next[`${id}Shape`]];
+          m.src.frequency.setTargetAtTime(next[`${id}Rate`], t, RAMP);
+        }
+      }
       if (next.phase !== prev.phase) v.phaseA += (next.phase - prev.phase) / 360;
       const base = playedHz(next, v.note);
       v.a.forEach((x, i) => {
@@ -278,19 +352,11 @@ export class Engine {
 
   /** Play a whole patch for a moment, without disturbing held notes or the learner's settings. */
   auditionPatch(patch: SynthState, note: number, seconds = 1.2, when = 0): void {
-    const keep = this.state;
+    const keep = this.state, at = this.ctx.currentTime + when;
     this.state = patch;
-    const v = this.build(note, patch.phase / 360);
+    const v = this.build(note, patch.phase / 360, at);
     this.state = keep;
-    const t = this.ctx.currentTime;
-    // build() ramps in "now"; shift the whole thing if a delay was asked for
-    if (when > 0) { v.amp.gain.cancelScheduledValues(t); v.amp.gain.setValueAtTime(0, t); v.amp.gain.setValueAtTime(0, t + when); v.amp.gain.linearRampToValueAtTime(1, t + when + 0.01); }
-    v.amp.gain.setTargetAtTime(0, t + when + seconds - 0.08, 0.02);
-    const stopAt = t + when + seconds + 0.15;
-    for (const x of v.a) x.osc.stop(stopAt);
-    v.b?.osc.stop(stopAt);
-    v.sub?.osc.stop(stopAt);
-    v.noise?.src.stop(stopAt);
+    this.releaseAt(v, patch, at + seconds - 0.08);
   }
 
   get held(): number[] {

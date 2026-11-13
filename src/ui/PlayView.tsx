@@ -4,7 +4,8 @@ import { allMatch, compareToTarget, type MatchVerdict } from "../course/match";
 import { guideContext, loadDone, saveDone, suggestNext } from "../course/progress";
 import type { MatchRound, Panel, PlayableLesson } from "../course/types";
 import type { Card } from "../lesson/cards";
-import { beatHz, INITIAL, noteToHz, PARAMS, SHAPES, type Shape, type SynthState } from "../synth/params";
+import { routes } from "../synth/mod";
+import { beatHz, DEST_NAMES, INITIAL, noteToHz, PARAMS, SHAPES, type Shape, type SynthState } from "../synth/params";
 import { useSynth, type Synth } from "../synth/useSynth";
 import { AskBox } from "./Answer";
 import { Badge } from "./Badge";
@@ -23,6 +24,8 @@ const describe = (s: SynthState) => [
   s.subOn ? `sub on (${s.subOctave} octave, ${s.subLevelDb} dB)` : "sub off",
   s.noiseOn ? `${s.noiseType} noise on (${s.noiseLevelDb} dB)` : "noise off",
   s.filterOn ? `filter on (${PARAMS.filterType!.names![s.filterType]}, cutoff ${s.cutoff} Hz, resonance ${s.resonance}%, slope ${s.slope} dB per octave, drive ${s.drive}%, key tracking ${s.keyTrack}%)` : "filter off",
+  `envelope 1 (level): attack ${s.envA} ms, decay ${s.envD} ms, sustain ${s.envS}%, release ${s.envR} ms`,
+  ...routes(s).map((r) => `${r.source.name} sent to ${DEST_NAMES[r.dest].toLowerCase()} at ${r.amount}%${r.source.kind === "lfo" ? ` (${s[`${r.source.id as "lfo1"}Shape`]}, ${s[`${r.source.id as "lfo1"}Rate`]} Hz)` : ""}`),
 ].join("; ");
 
 /** Views of the sound the learner can switch on at any time, whatever the current step shows. */

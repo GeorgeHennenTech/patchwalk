@@ -187,8 +187,24 @@ Added after the first eight milestones (owner asked for all four in one go):
     steps (Shift or Page Up/Down = ten steps; cutoff moves about 1% per press), Home/End, double-click to reset.
     Knobs are `role="slider"` elements, not inputs, so computer-keyboard notes still play while one has focus.
     Labels drop the module prefix ("B level" shows as LEVEL inside the Osc B panel).
-  - Not built yet: envelopes, LFOs, modulation, effects, MIDI input, a shared tempo clock. Chapter 3
-    (envelopes) is next and has no scripts yet.
+  - **Envelopes, LFOs and neon rings (13 Nov 2026, owner's request).** `src/synth/mod.ts` holds the sources
+    and their maths. Envelope 1 always shapes each note's level (attack, decay, sustain, release; the defaults
+    keep the old instant on/off behaviour). Envelope 2 and LFOs 1-3 each have a "sends to" menu (filter cutoff,
+    Osc A or B pitch, the four source levels; one destination each) and a -100..100% amount; at 100% cutoff
+    moves 5 octaves, pitch 12 semitones, a level between silence and double. LFOs restart with each note.
+    Changing a destination restarts sounding notes; everything else updates in place. Each source has a neon
+    colour (Env 2 yellow, LFO 1 cyan, LFO 2 green, LFO 3 orange; Env 1 pink): its panel is lit in it, and any
+    knob it moves wears a glowing ring of that colour showing the stretch it sweeps (`ringSpan`), one ring per
+    source. Panels sit in a row under the oscillators and filter, as in Serum. Measured in a headless browser:
+    attack/decay/sustain/release shape the level as set, a 4 Hz LFO on level gives 4 swells a second, and
+    LFOs and Env 2 move pitch and cutoff. In Chromium a square LFO reached about 85% of the set depth; other
+    shapes were not measured for depth. Not done: wavetable position and resonance as destinations, more than
+    one destination per source, drag-to-assign, tempo sync, and any lessons (chapters 3-5 are not scripted).
+  - **Synth skin (13 Nov 2026).** The synth is a velvet-black instrument in both colour schemes (variables are
+    re-scoped on `.synth`): fabric name patches on the module headers with the name on a solid tab, neon-pink
+    lines and value rings, dashed stitching. CSS only; no new artwork.
+  - Not built yet: effects, MIDI input, a shared tempo clock, lessons for envelopes and LFOs. Chapter 3
+    (envelopes) is next and has no scripts yet; the controls it needs now exist.
   - The old ten Serum-task lessons are now the "Serum tasks" tab.
 - **Guide in context** — `src/ui/Answer.tsx` (`AskBox`): an ask box inside each practice lesson (sends lesson,
   step, current synth settings and finished lessons) and at the top of a rebuilt patch (sends only the

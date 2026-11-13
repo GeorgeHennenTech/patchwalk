@@ -10,6 +10,10 @@ export const NOISES = ["white", "pink"] as const;
 // Kept here (not in filter.ts) so this file stays free of imports from the modules that depend on it.
 const FILTER_TYPES = ["low", "high", "band", "notch"] as const;
 const SLOPES = ["12", "24"] as const;
+/** Settings an envelope or LFO can move. "none" means it is not connected. */
+export const MOD_DESTS = ["none", "cutoff", "fine", "bFine", "aLevelDb", "bLevelDb", "subLevelDb", "noiseLevelDb"] as const;
+export type Dest = (typeof MOD_DESTS)[number];
+export const DEST_NAMES: Record<Dest, string> = { none: "Nothing", cutoff: "Filter cutoff", fine: "Osc A pitch", bFine: "Osc B pitch", aLevelDb: "Osc A level", bLevelDb: "Osc B level", subLevelDb: "Sub level", noiseLevelDb: "Noise level" };
 
 export interface SynthState {
   /** Master level in dB. 0 is the loudest the lesson synth goes. */
@@ -71,6 +75,17 @@ export interface SynthState {
   drive: number;
   /** How far the cutoff follows the key played, 0..100. At 100 it moves an octave per octave. */
   keyTrack: number;
+  // ---- envelope 1: the level of every note (see mod.ts). Times in milliseconds, sustain in percent.
+  envA: number; envD: number; envS: number; envR: number;
+  // ---- envelope 2: free to send to one destination
+  env2A: number; env2D: number; env2S: number; env2R: number;
+  env2Dest: Dest;
+  /** How far the source moves its destination, -100..100. */
+  env2Amount: number;
+  // ---- three LFOs, each restarting with every note. Rate in Hz.
+  lfo1Rate: number; lfo1Shape: Shape; lfo1Dest: Dest; lfo1Amount: number;
+  lfo2Rate: number; lfo2Shape: Shape; lfo2Dest: Dest; lfo2Amount: number;
+  lfo3Rate: number; lfo3Shape: Shape; lfo3Dest: Dest; lfo3Amount: number;
 }
 
 export const INITIAL: SynthState = {
@@ -79,15 +94,20 @@ export const INITIAL: SynthState = {
   bOn: false, bShape: "saw", bOctave: 0, bSemitone: 0, bFine: 0, bPhase: 0, bLevelDb: 0,
   subOn: false, subOctave: -1, subLevelDb: -6, noiseOn: false, noiseType: "white", noiseLevelDb: -18,
   filterOn: false, filterType: "low", cutoff: 20000, resonance: 0, slope: "12", drive: 0, keyTrack: 0,
+  envA: 5, envD: 300, envS: 100, envR: 30,
+  env2A: 5, env2D: 400, env2S: 0, env2R: 100, env2Dest: "none", env2Amount: 50,
+  lfo1Rate: 2, lfo1Shape: "sine", lfo1Dest: "none", lfo1Amount: 30,
+  lfo2Rate: 5, lfo2Shape: "triangle", lfo2Dest: "none", lfo2Amount: 30,
+  lfo3Rate: 0.5, lfo3Shape: "saw", lfo3Dest: "none", lfo3Amount: 30,
 };
 
-export type Group = "Master" | "Oscillator A" | "Unison" | "Oscillator B" | "Sub" | "Noise" | "Filter";
+export type Group = "Master" | "Oscillator A" | "Unison" | "Oscillator B" | "Sub" | "Noise" | "Filter" | "Envelope 1" | "Envelope 2" | "LFO 1" | "LFO 2" | "LFO 3";
 
 export interface ParamSpec {
   id: keyof SynthState;
   label: string;
   group: Group;
-  kind: "range" | "choice" | "toggle";
+  kind: "range" | "choice" | "toggle" | "menu";
   min?: number;
   max?: number;
   step?: number;
@@ -136,7 +156,34 @@ export const PARAMS: Record<string, ParamSpec> = {
   slope: { id: "slope", label: "Slope", group: "Filter", kind: "choice", choices: SLOPES, names: { "12": "Gentle (12)", "24": "Steep (24)" } },
   drive: { id: "drive", label: "Drive", group: "Filter", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
   keyTrack: { id: "keyTrack", label: "Key track", group: "Filter", kind: "range", min: 0, max: 100, step: 5, unit: "%" },
+  ...envelope("env", "Envelope 1", "Env 1"),
+  ...envelope("env2", "Envelope 2", "Env 2"),
+  ...source("env2", "Envelope 2", "Env 2"),
+  ...lfo(1), ...lfo(2), ...lfo(3),
 };
+
+function envelope(prefix: "env" | "env2", group: Group, name: string): Record<string, ParamSpec> {
+  const time = (key: string, label: string): ParamSpec => ({ id: `${prefix}${key}` as keyof SynthState, label: `${name} ${label}`, group, kind: "range", min: 1, max: 5000, step: 1, log: true, unit: "ms" });
+  return {
+    [`${prefix}A`]: time("A", "attack"), [`${prefix}D`]: time("D", "decay"),
+    [`${prefix}S`]: { id: `${prefix}S` as keyof SynthState, label: `${name} sustain`, group, kind: "range", min: 0, max: 100, step: 1, unit: "%" },
+    [`${prefix}R`]: time("R", "release"),
+  };
+}
+function source(prefix: "env2" | "lfo1" | "lfo2" | "lfo3", group: Group, name: string): Record<string, ParamSpec> {
+  return {
+    [`${prefix}Dest`]: { id: `${prefix}Dest`, label: `${name} sends to`, group, kind: "menu", choices: MOD_DESTS, names: DEST_NAMES },
+    [`${prefix}Amount`]: { id: `${prefix}Amount`, label: `${name} amount`, group, kind: "range", min: -100, max: 100, step: 1, unit: "%" },
+  };
+}
+function lfo(n: 1 | 2 | 3): Record<string, ParamSpec> {
+  const prefix = `lfo${n}` as const, group = `LFO ${n}` as Group, name = `LFO ${n}`;
+  return {
+    [`${prefix}Shape`]: { id: `${prefix}Shape`, label: `${name} shape`, group, kind: "choice", choices: SHAPES, names: SHAPE_NAMES },
+    [`${prefix}Rate`]: { id: `${prefix}Rate`, label: `${name} rate`, group, kind: "range", min: 0.05, max: 30, step: 0.01, log: true, unit: "Hz" },
+    ...source(prefix, group, name),
+  };
+}
 
 export const A4 = 440;
 /** MIDI note number to Hz. 69 is the A above middle C. */

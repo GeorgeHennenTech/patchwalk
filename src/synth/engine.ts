@@ -2,7 +2,7 @@
 // Built around a shared AudioContext clock and a per-instrument voice list so more instruments and a
 // tempo clock (for the later mini DAW) can be added without rewriting it.
 import { applyMacros } from "./macros";
-import { adsr, fallConstant, isLevel, keyValue, lfoCoefficients, lfoHz, lfoStartPhase, modDepth, noteLevelBase, routes, velocityValue, type Adsr, type Route } from "./mod";
+import { adsr, fallConstant, isLevel, keyValue, lfoCoefficients, lfoHz, lfoStartPhase, modDepth, noteLevelBase, routeLayout, routes, velocityValue, type Adsr, type Route } from "./mod";
 import { FxChain } from "./fx";
 import { DRIVE_RANGE, driveCurve, filterStages, resonanceTrim, type Stage } from "./filter";
 import { dbToGain, fmIndex, FM_MAX_INDEX, harmonic, spectrumA, HARMONICS, playedHz, playedHzB, subHz, unisonOffsets, unisonPans, type Shape, type SynthState } from "./params";
@@ -387,7 +387,7 @@ export class Engine {
     if (next.clickOn !== prev.clickOn || next.bpm !== prev.bpm) this.syncClick(next);
     if (next.volumeDb !== prev.volumeDb) this.master.gain.setTargetAtTime(dbToGain(next.volumeDb), t, RAMP);
     if (!this.fxRestore) this.fx.apply(next);
-    if (STRUCTURAL.some((k) => next[k] !== prev[k])) {
+    if (STRUCTURAL.some((k) => next[k] !== prev[k]) || (next.matrix !== prev.matrix && routeLayout(next) !== routeLayout(prev))) {
       // The set of sources changed: restart the sounding notes with the new layout.
       const notes = this.voices.map((v) => [v.note, v.velocity] as const);
       this.voices.forEach((v) => this.release(v));
@@ -402,7 +402,7 @@ export class Engine {
       v.out.gain.setTargetAtTime(noteLevelBase(next), t, RAMP);
       for (const m of v.mods) {
         // amounts and LFO settings follow the controls; a changed destination rebuilds the note (see STRUCTURAL)
-        const route = routes(next).find((r) => r.source.id === m.route.source.id);
+        const route = routes(next).find((r) => r.key === m.route.key);
         if (!route) continue;
         m.route = route;
         const [swing, lift] = this.swingAndLift(next, route, v.note);

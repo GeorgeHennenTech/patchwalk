@@ -271,8 +271,7 @@ same page.
 
 **The page is ranked (owner asked, 13 Nov 2026).** Open build items carry a `rank` number and items waiting
 on the owner an `ownerRank`; the page's "Order: priority" view lists them first, lowest number first. Current
-build order: (done: warp, sync, FM and ring modulation, chapter 6) (done: the first seven impact lessons) (done: effects rack and its seven lessons) (4) an
-editable Matrix tab; (5) wavetable position and resonance as destinations; (6) formant filters and the first
+build order: (done: warp, sync, FM and ring modulation, chapter 6) (done: the first seven impact lessons) (done: effects rack and its seven lessons) (done: the editable matrix and its lesson, C5.4); (5) wavetable position and resonance as destinations; (6) formant filters and the first
 bioacoustics lessons; (7) the string engine for physical modelling; (8) more macro recipes; (9) blind ear
 checks; then Rift lessons, groove lessons, the mini DAW and the rest. When a new item is added, give it a
 rank that fits, or leave it unranked to sit in its section.

@@ -164,7 +164,8 @@ Added after the first eight milestones (owner asked for all four in one go):
     Measured: at 25% a 440 Hz note started near 880 Hz and landed on 440; at 50%, near 1760 Hz.
     `lessons/chapter7.ts` holds "Effects" (C7.1 distortion, C7.2 EQ, C7.3 compression, C7.4 chorus, C7.5
     delay, C7.6 reverb, and the checkpoint C7.C), listed between "Reshaping the wave" and "Impacts".
-    **Seventy playable lessons.**
+    C5.4, "The matrix: one source, several places", was added to chapter 5 once the matrix could be edited.
+    **Seventy-one playable lessons.**
   - `src/ui/PlayView.tsx` ("Lessons" tab) and `src/ui/synth/` — spotlighted controls per step, live targets,
     scope, spectrum, meter, on-screen keyboard, Hold, blind ear checks, recap, guide remarks and suggestion.
   - "Hear it first" demos (`demo` on a lesson), match-by-ear rounds (`rounds`, compared by `src/course/match.ts`:
@@ -304,7 +305,17 @@ Added after the first eight milestones (owner asked for all four in one go):
     gave 12 dB back; a 300 ms delay at 50% feedback echoed about 6 dB down each time; reverb tails fell at
     roughly 60 dB per "size". Not built: reordering, sidechain/ducking, multiband, effects as modulation
     destinations, more reverb controls.
-  - Not built yet: MIDI input, a mod wheel, an editable matrix. **Owner's order (13 Nov 2026), after
+  - **Editable matrix (13 Nov 2026, owner's request).** `Matrix` in `Views.tsx` (the "Matrix" toggle in the
+    Show row, and the `matrix` panel a lesson step can show) is now a table you edit: each source's own
+    connection (the same settings as its panel), then up to eight extra rows (`state.matrix`, an array of
+    `{ source, dest, amount, way }` replaced on every edit) that send a source somewhere else as well. Rows
+    can be added and removed; macro slots are listed read-only. `routes()` returns both kinds, each with a
+    `key` (the source id, or `m0`, `m1`...), and `routeLayout` says when sounding notes must be rebuilt (a
+    connection appears, moves or goes; never for an amount). Editing in the matrix sets the `matrix` flag.
+    Measured: a square LFO with its own route on level and a matrix row on pitch moved both together
+    (883/215 Hz with the level swing); halving the row's amount in place halved the pitch swing; removing
+    the row left the level route alone. Its labels start "Matrix:" so they do not clash with the knobs'.
+  - Not built yet: MIDI input, a mod wheel. **Owner's order (13 Nov 2026), after
     warp/FM/ring which is done: the first impact lessons (they need nothing new); then physical modelling
     and bioacoustics.**
   - The old ten Serum-task lessons are now the "Serum tasks" tab.

@@ -626,7 +626,7 @@ import { CHAPTER_5 } from "../src/course/lessons/chapter5";
 describe("chapter 5: routes, direction, and modulating a modulator", () => {
   const st = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
   it("the modulation chapter follows the LFOs and starts from real settings", () => {
-    expect(LESSONS.map((l) => l.id).slice(36, 41)).toEqual(["C5.1", "C5.2", "C5.3", "C5.6", "C5.C"]);
+    expect(LESSONS.map((l) => l.id).slice(36, 42)).toEqual(["C5.1", "C5.2", "C5.3", "C5.4", "C5.6", "C5.C"]);
     for (const l of CHAPTER_5) for (const k of Object.keys(l.initial ?? {})) expect(k in INITIAL, `${l.id}: ${k}`).toBe(true);
   });
   it("an LFO set to one way pushes one side only, like an envelope; both ways is the default", () => {
@@ -941,5 +941,39 @@ describe("effects", () => {
     expect(CHAPTER_7[4]!.steps[2]!.remark!(snap({ delayOn: true, delayFeedback: 75, delayTime: 300 }))).toContain("25 echoes, 7.5 seconds");
     expect(CHAPTER_7[2]!.steps[1]!.check(snap({ compOn: true, compThreshold: -40, compRatio: 8 }, { velocity: { min: 30, max: 120 } }))).toBe(true);
     expect(CHAPTER_7[2]!.steps[1]!.check(snap({ compOn: true, compThreshold: -40, compRatio: 8 }, { velocity: { min: 100, max: 120 } }))).toBe(false);
+  });
+});
+
+import { routeLayout } from "../src/synth/mod";
+import { MATRIX_MAX } from "../src/synth/params";
+describe("the matrix", () => {
+  const row = (source: "env2" | "lfo1" | "vel" | "key", dest: SynthState["lfo1Dest"], amount = 30, way: "both" | "up" = "both") => ({ source, dest, amount, way });
+  it("starts empty, and a row adds a second connection for the same source", () => {
+    expect(INITIAL.matrix).toEqual([]);
+    expect(MATRIX_MAX).toBe(8);
+    const s = { ...INITIAL, lfo1Dest: "cutoff" as const, matrix: [row("lfo1", "fine", 5), row("lfo1", "none")] };
+    expect(routes(s).map((r) => [r.key, r.source.id, r.dest, r.amount])).toEqual([["lfo1", "lfo1", "cutoff", 30], ["m0", "lfo1", "fine", 5]]);
+    expect(routesTo(s, "fine").map((r) => r.key)).toEqual(["m0"]);
+  });
+  it("a row's direction follows its own switch for an LFO, and the source's nature otherwise", () => {
+    const s = { ...INITIAL, matrix: [row("lfo1", "fine", 30, "up"), row("lfo1", "cutoff"), row("env2", "cutoff", 30, "both"), row("vel", "cutoff"), row("key", "cutoff")] };
+    expect(routes(s).map((r) => r.oneWay)).toEqual([true, false, true, true, false]);
+  });
+  it("notes are rebuilt when a connection appears, moves or goes, but not when only an amount changes", () => {
+    const a = { ...INITIAL, matrix: [row("lfo1", "fine", 5)] };
+    expect(routeLayout({ ...a, matrix: [row("lfo1", "fine", 60)] })).toBe(routeLayout(a));
+    expect(routeLayout({ ...a, matrix: [row("lfo1", "cutoff", 5)] })).not.toBe(routeLayout(a));
+    expect(routeLayout({ ...a, matrix: [row("lfo2", "fine", 5)] })).not.toBe(routeLayout(a));
+    expect(routeLayout({ ...a, matrix: [] })).not.toBe(routeLayout(a));
+  });
+  it("the matrix lesson checks the rows it asks for", () => {
+    const lesson = LESSONS.find((l) => l.id === "C5.4")!;
+    const snap = (state: Partial<SynthState>, extra: Partial<Snapshot> = {}) => ({ ...snapshot(newTrack(INITIAL), { ...INITIAL, ...lesson.initial, ...state }, { audioRunning: true, held: [45], holdOn: true, now: 0 }), ...extra }) as Snapshot;
+    expect(lesson.steps[1]!.check(snap({ lfo1Amount: 50 }))).toBe(false); // must be changed in the matrix
+    expect(lesson.steps[1]!.check(snap({ lfo1Amount: 50 }, { flags: { matrix: true } }))).toBe(true);
+    expect(lesson.steps[2]!.check(snap({ matrix: [row("lfo1", "fine", 5)] }))).toBe(true);
+    expect(lesson.steps[2]!.check(snap({ matrix: [row("lfo2", "fine", 5)] }))).toBe(false);
+    expect(lesson.steps[2]!.remark!(snap({ matrix: [row("lfo1", "fine", 5)] }))).toContain("2 jobs");
+    expect(lesson.steps[4]!.check(snap({ matrix: [row("lfo1", "aLevelDb", -50)] }))).toBe(true);
   });
 });

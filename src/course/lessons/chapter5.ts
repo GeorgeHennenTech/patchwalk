@@ -81,6 +81,26 @@ export const CHAPTER_5: PlayableLesson[] = [
     inSerum: "Serum has VELO and NOTE sources beside the LFOs; drag either onto a knob. A new preset already sends velocity to level.",
   },
   {
+    id: "C5.4", title: "The matrix: one source, several places", buildsOn: ["C5.1", "C5.3"], minutes: 9, cardIds: ["mod-routing"], initial: { ...WOBBLE, lfo1Amount: 25 },
+    outcome: "Read and edit every connection in one table, and send a single source to more than one knob.",
+    demo: { caption: "A wobble on the filter alone, then the same LFO also bending the pitch, then also pulsing the level.", tones: patches([{ ...WOBBLE }, { ...WOBBLE, matrix: [{ source: "lfo1", dest: "fine", amount: 6, way: "both" }] }, { ...WOBBLE, matrix: [{ source: "lfo1", dest: "fine", amount: 6, way: "both" }, { source: "lfo1", dest: "aLevelDb", amount: 50, way: "both" }] }], 2.3) },
+    idea: [
+      "Each source’s panel connects it to one knob. The matrix is a table of every connection in the sound: one row each, with the source, what it moves, how far, and which way. Changing a row here is the same as changing it on the panel.",
+      "The matrix can also do something the panels cannot. Add a row and the same source goes somewhere else as well. One LFO moving the filter, the pitch and the level together makes them move as one gesture, which sounds very different from three separate LFOs.",
+    ],
+    steps: [
+      { do: "Switch on Hold and play a low note. LFO 1 is wobbling the filter. Find its row in the matrix.", show: [...K, "matrix", "cutoff"], hear: "A gentle wobble.", target: "A note held", check: (s) => s.held.length >= 1 },
+      { do: "In the matrix, change LFO 1’s amount to about 50.", show: [...K, "matrix", "lfo1Amount", "cutoff"], hear: "A deeper wobble. The Amount knob on the LFO 1 panel has moved too: it is the same setting.", target: "LFO 1 amount between 40% and 60%, changed in the matrix", check: (s) => between(s.state.lfo1Amount, 40, 60) && !!s.flags.matrix },
+      { do: "Click Add a row. Leave its source as LFO 1, set it to move Osc A pitch, with an amount of about 5.", show: [...K, "matrix", "cutoff", "fine"], hear: "The pitch now dips and rises in step with the filter: one movement, felt in two places. Fine wears a cyan ring as well.", target: "A row sending LFO 1 to Osc A pitch at 2% to 10%", check: (s) => s.state.matrix.some((r) => r.source === "lfo1" && r.dest === "fine" && between(r.amount, 2, 10)),
+        remark: (s) => `LFO 1 is now doing ${routes(s.state).filter((r) => r.source.id === "lfo1").length} jobs: ${routes(s.state).filter((r) => r.source.id === "lfo1").map((r) => `${DEST_NAMES[r.dest].toLowerCase()} at ${r.amount}%`).join(" and ")}.` },
+      { do: "Add another row: LFO 1 to Osc A level, amount about 50.", show: [...K, "matrix", "cutoff", "fine", "aLevelDb"], hear: "Brighter, higher and louder together, then darker, lower and quieter. The sound seems to breathe.", target: "Rows sending LFO 1 to Osc A pitch and to Osc A level (30% to 70%)", check: (s) => s.state.matrix.some((r) => r.source === "lfo1" && r.dest === "fine" && r.amount !== 0) && s.state.matrix.some((r) => r.source === "lfo1" && r.dest === "aLevelDb" && between(r.amount, 30, 70)) },
+      { do: "Turn the level row upside down: make its amount about -50.", show: [...K, "matrix", "aLevelDb"], hear: "Now the sound is quietest when it is brightest. Same source, opposite direction on one of its jobs.", target: "The LFO 1 to Osc A level row between -70% and -30%", check: (s) => s.state.matrix.some((r) => r.source === "lfo1" && r.dest === "aLevelDb" && between(r.amount, -70, -30)) },
+      { do: "Remove the pitch row.", show: [...K, "matrix", "fine"], hear: "The pitch is steady again; the filter and level still move together.", target: "No row sends LFO 1 to Osc A pitch; the level row remains", check: (s) => !s.state.matrix.some((r) => r.dest === "fine") && s.state.matrix.some((r) => r.dest === "aLevelDb") && (s.changes.matrix ?? 0) >= 1 },
+    ],
+    recap: ["The matrix lists every connection: source, destination, amount, direction.", "A row in the matrix and the control on the panel are the same setting.", "Extra rows send one source to several knobs, so they move as one gesture."],
+    inSerum: "Serum’s MATRIX tab works the same way: one row per connection, and a source can appear in as many rows as you like. Its column names and how amounts read are not confirmed here, so nothing is checked.",
+  },
+  {
     id: "C5.6", title: "Modulating a modulator", buildsOn: ["C5.1"], minutes: 7, cardIds: ["mod-of-mod"], initial: { ...WOBBLE },
     outcome: "Send one source to another source’s settings, so the movement itself changes over time.",
     demo: { caption: "A steady wobble, then a wobble whose speed is itself being moved.", tones: patches([{ ...WOBBLE }, { ...WOBBLE, lfo2Dest: "lfo1Rate", lfo2Amount: 80, lfo2Rate: 0.4, lfo2Shape: "sine" }], 3.0) },

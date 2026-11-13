@@ -31,6 +31,11 @@ export const BENDS = ["straight", "eased", "sharp"] as const;
 export type Dest = (typeof MOD_DESTS)[number];
 export const DEST_NAMES: Record<Dest, string> = { none: "Nothing", cutoff: "Filter cutoff", fine: "Osc A pitch", bFine: "Osc B pitch", aLevelDb: "Osc A level", bLevelDb: "Osc B level", subLevelDb: "Sub level", noiseLevelDb: "Noise level", lfo1Rate: "LFO 1 rate", noteLevel: "Note level", fmAmount: "FM from B", aPitchWide: "Osc A pitch, wide" };
 
+/** One extra connection made in the matrix: a source, what it moves, how far, and (for an LFO) which way. */
+export interface MatrixRow { source: "env2" | "lfo1" | "lfo2" | "lfo3" | "vel" | "key"; dest: Dest; amount: number; way: "both" | "up" }
+/** The most rows the matrix holds, on top of each source's own first connection. */
+export const MATRIX_MAX = 8;
+
 export interface SynthState {
   /** Master level in dB. 0 is the loudest the lesson synth goes. */
   volumeDb: number;
@@ -123,6 +128,8 @@ export interface SynthState {
   // ---- two sources that are fixed for the length of a note: how hard it was struck, and which key it was
   velDest: Dest; velAmount: number;
   keyDest: Dest; keyAmount: number;
+  /** Extra connections added in the matrix, so one source can move several things. Replaced on every edit. */
+  matrix: MatrixRow[];
   // ---- effects, in the order the sound passes through them (see fx.ts)
   distOn: boolean; distType: (typeof DIST_TYPES)[number];
   /** Distortion drive 0..100 (how hard the signal is pushed into the shaping) and how much of the result is mixed in. */
@@ -166,6 +173,7 @@ export const INITIAL: SynthState = {
   lfo2Sync: "hz", lfo2Div: "1", lfo2Trig: "retrig", lfo2Rise: 0, lfo2Steps: DEFAULT_STEPS,
   lfo3Sync: "hz", lfo3Div: "1", lfo3Trig: "retrig", lfo3Rise: 0, lfo3Steps: DEFAULT_STEPS,
   velDest: "none", velAmount: 60, keyDest: "none", keyAmount: 50,
+  matrix: [],
   distOn: false, distType: "soft", distDrive: 30, distMix: 100,
   eqOn: false, eqLow: 0, eqMid: 0, eqMidHz: 1000, eqHigh: 0,
   compOn: false, compThreshold: -24, compRatio: 4, compAttack: 10, compRelease: 150, compMakeup: 0,

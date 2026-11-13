@@ -25,6 +25,8 @@ export const ENV1_COLOR = "#ff5cb4";
 export type ModDest = Dest;
 
 export interface Route {
+  /** Which connection this is: the source's id for the one set on its own panel, "m0", "m1"... for matrix rows. */
+  key: string;
   source: SourceInfo; dest: Exclude<ModDest, "none">; amount: number;
   /** True when the source only pushes one way from the knob: every envelope, and an LFO set to "one way". */
   oneWay: boolean;
@@ -32,12 +34,21 @@ export interface Route {
 
 /** The connections that are in use: a source with a destination chosen. */
 export function routes(s: SynthState): Route[] {
-  return SOURCES.flatMap((source) => {
+  const fixedWay = (source: SourceInfo) => source.kind === "env" || source.id === "vel";
+  const own = SOURCES.flatMap((source) => {
     const dest = s[`${source.id}Dest`], amount = s[`${source.id}Amount`];
-    const oneWay = source.kind === "env" || source.id === "vel" || (source.kind === "lfo" && s[`${source.id as "lfo1"}Way`] === "up");
-    return dest === "none" ? [] : [{ source, dest, amount, oneWay }];
+    const oneWay = fixedWay(source) || (source.kind === "lfo" && s[`${source.id as "lfo1"}Way`] === "up");
+    return dest === "none" ? [] : [{ key: source.id as string, source, dest, amount, oneWay }];
   });
+  // rows added in the matrix: the same source again, sent somewhere else
+  const extra = (s.matrix ?? []).flatMap((row, i) => {
+    const source = SOURCES.find((x) => x.id === row.source);
+    return !source || row.dest === "none" ? [] : [{ key: `m${i}`, source, dest: row.dest, amount: row.amount, oneWay: fixedWay(source) || (source.kind === "lfo" && row.way === "up") }];
+  });
+  return [...own, ...extra];
 }
+/** Which sources are connected to which destinations, as one string: when it changes, sounding notes are rebuilt. */
+export const routeLayout = (s: SynthState) => routes(s).map((r) => `${r.key}:${r.source.id}>${r.dest}`).join("|");
 /** The sources moving one setting, for drawing its rings. Sources with an amount of zero do nothing. */
 export const routesTo = (s: SynthState, id: keyof SynthState) => routes(s).filter((r) => r.dest === id && r.amount !== 0);
 

@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { effectiveCutoff, filterResponseDb } from "../../synth/filter";
 import { macroSlots, slotPush } from "../../synth/macros";
-import { adsr, ENV1_COLOR, fallShape, routes, SOURCES } from "../../synth/mod";
-import { DEST_NAMES } from "../../synth/params";
-import { PARAMS, type SynthState } from "../../synth/params";
+import { adsr, ENV1_COLOR, fallShape, SOURCES } from "../../synth/mod";
+import { DEST_NAMES, MATRIX_MAX, MOD_DESTS, PARAMS, type MatrixRow, type SynthState } from "../../synth/params";
 import type { Synth } from "../../synth/useSynth";
 import { fromTravel, toTravel } from "./Controls";
 
@@ -272,20 +271,42 @@ export function EnvCurve({ synth, which, spot }: { synth: Synth; which: 1 | 2; s
  */
 export function Matrix({ synth }: { synth: Synth }) {
   const s = synth.state;
+  const set = (patch: Partial<SynthState>) => { synth.flag("matrix"); synth.setState(patch); };
+  const setRow = (i: number, change: Partial<MatrixRow>) => set({ matrix: s.matrix.map((r, k) => (k === i ? { ...r, ...change } : r)) });
+  const kind = (id: string) => SOURCES.find((x) => x.id === id)!.kind;
+  // every source's own connection (also set on its panel), then the extra rows added here
   const rows = [
-    ...routes(s).map((r) => ({ key: r.source.id, color: r.source.color, source: r.source.name, dest: DEST_NAMES[r.dest], amount: r.amount, note: r.source.kind === "note" ? "fixed for each note" : r.oneWay ? "one way" : "both ways" })),
-    ...macroSlots(s).map((m) => ({ key: `m${m.macro}-${m.slot}`, color: m.color, source: m.name || `Macro ${m.macro}`, dest: PARAMS[m.dest]!.label, amount: m.amount, note: `macro at ${m.value}%: pushing ${Math.round(slotPush(m) * 100)}% of the knob's travel` })),
+    ...SOURCES.map((x) => ({ key: x.id as string, source: x.id, dest: s[`${x.id}Dest`], amount: s[`${x.id}Amount`], way: x.kind === "lfo" ? s[`${x.id as "lfo1"}Way`] : undefined, own: true, index: -1 })),
+    ...s.matrix.map((r, i) => ({ key: `m${i}`, source: r.source, dest: r.dest, amount: r.amount, way: kind(r.source) === "lfo" ? r.way : undefined, own: false, index: i })),
   ];
+  const slots = macroSlots(s);
   return (
     <figure className="view matrix">
       <table>
-        <thead><tr><th>Source</th><th>Moves</th><th>Amount</th><th>How</th></tr></thead>
+        <thead><tr><th>Source</th><th>Moves</th><th>Amount</th><th>Direction</th><th /></tr></thead>
         <tbody>
-          <tr><td><i style={{ background: ENV1_COLOR }} />Env 1</td><td>Note level</td><td>always</td><td>one way</td></tr>
-          {rows.map((r) => <tr key={r.key} className={r.amount === 0 ? "off" : ""}><td><i style={{ background: r.color }} />{r.source}</td><td>{r.dest}</td><td>{r.amount > 0 ? "+" : ""}{r.amount}%</td><td>{r.amount === 0 ? "does nothing at zero" : r.note}</td></tr>)}
+          <tr className="fixed"><td><i style={{ background: ENV1_COLOR }} />Env 1</td><td>Note level</td><td>always</td><td>one way</td><td /></tr>
+          {rows.map((r) => {
+            const info = SOURCES.find((x) => x.id === r.source)!, name = `${info.name}${r.own ? "" : ` (row ${r.index + 1})`}`;
+            return (
+              <tr key={r.key} className={r.dest === "none" || r.amount === 0 ? "off" : ""}>
+                <td><i style={{ background: info.color }} />
+                  {r.own ? info.name : <select value={r.source} aria-label={`Matrix: row ${r.index + 1} source`} onChange={(e) => setRow(r.index, { source: e.target.value as MatrixRow["source"] })}>{SOURCES.map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}</select>}
+                </td>
+                <td><select value={r.dest} aria-label={`Matrix: ${name} moves`} onChange={(e) => (r.own ? set({ [`${r.source}Dest`]: e.target.value } as Partial<SynthState>) : setRow(r.index, { dest: e.target.value as MatrixRow["dest"] }))}>{MOD_DESTS.map((d) => <option key={d} value={d}>{DEST_NAMES[d]}</option>)}</select></td>
+                <td><input type="number" min={-100} max={100} step={1} value={r.amount} aria-label={`Matrix: ${name} amount`} onChange={(e) => { const v = Math.max(-100, Math.min(100, Math.round(Number(e.target.value) || 0))); if (r.own) set({ [`${r.source}Amount`]: v } as Partial<SynthState>); else setRow(r.index, { amount: v }); }} /> %</td>
+                <td>{r.way === undefined ? (info.kind === "note" && info.id === "key" ? "both ways" : "one way")
+                  : <select value={r.way} aria-label={`Matrix: ${name} direction`} onChange={(e) => (r.own ? set({ [`${r.source}Way`]: e.target.value } as Partial<SynthState>) : setRow(r.index, { way: e.target.value as MatrixRow["way"] }))}><option value="both">Both ways</option><option value="up">One way</option></select>}</td>
+                <td>{!r.own && <button className="link" aria-label={`Remove row ${r.index + 1}`} onClick={() => set({ matrix: s.matrix.filter((_, k) => k !== r.index) })}>Remove</button>}</td>
+              </tr>
+            );
+          })}
+          {slots.map((m) => <tr key={`s${m.macro}-${m.slot}`} className="fixed"><td><i style={{ background: m.color }} />{m.name || `Macro ${m.macro}`}</td><td>{PARAMS[m.dest]!.label}</td><td>{m.amount > 0 ? "+" : ""}{m.amount}%</td><td colSpan={2}>macro at {m.value}%: pushing {Math.round(slotPush(m) * 100)}% of the knob’s travel</td></tr>)}
         </tbody>
       </table>
-      <figcaption>Matrix: every connection in this sound. {rows.length === 0 ? "Nothing is connected yet except Envelope 1, which always shapes the level." : "Each row is one ring on a knob."}</figcaption>
+      <p className="matrix-add"><button className="link" disabled={s.matrix.length >= MATRIX_MAX} onClick={() => set({ matrix: [...s.matrix, { source: "lfo1", dest: "none", amount: 30, way: "both" }] })}>Add a row</button>
+        {s.matrix.length >= MATRIX_MAX ? ` The matrix is full (${MATRIX_MAX} extra rows).` : " A row sends a source somewhere else as well, so one source can move several things."}</p>
+      <figcaption>Matrix: every connection in this sound, and the place to change them. Each row with a destination and an amount is one ring on a knob. Macro slots are set on the macro panels.</figcaption>
     </figure>
   );
 }

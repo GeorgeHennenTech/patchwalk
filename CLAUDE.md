@@ -339,6 +339,10 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   `library/images/ableton-live-11-manual/` (743 pictures on 543 pages, 12.3 MB). The
   guide searches it alongside the Serum guide and is told not to carry one product's facts over to another.
   The owner tried it live and reported that it works well.
+- **Rift manual (Minimal Audio; owner supplied 13 Nov 2026).** `library/rift-manual.json` (64 pages; cover and
+  contents left out; chapters such as "Advanced View: Feedback" read from the letter-spaced headings with the
+  script's `--running` and `--headings` options) and `library/images/rift-manual/` (137 pictures, 1 MB). The
+  owner wants lessons on Rift; none written yet.
 - **`scripts/ingest_pdf.py`** is the standard way to take in any PDF book, text and pictures together, from one
   or more parts numbered straight through (`--skip-pages` for contents pages, `--append <last page>` to add
   later parts). A test checks every book's text and picture index agree.

@@ -9,6 +9,7 @@ maker or author gives away; copies from piracy sites are not taken in.
 |---|---|
 | Serum 2 User Guide (Xfer) | 343 pages of text, 413 pictures |
 | Ableton Live 11 Reference Manual | 814 pages of text, 743 pictures |
+| Rift manual (Minimal Audio) | 64 pages of text, 137 pictures. For the Rift lessons and distortion |
 | This app's 32 knowledge cards | Drafts written for the app |
 
 ## Listed by the owner; files not received yet
@@ -20,7 +21,6 @@ maker or author gives away; copies from piracy sites are not taken in.
 | Hove et al., "Superior time perception for lower musical pitch explains why bass-ranged instruments lay down musical rhythms" (PNAS, 2014) | Bass and rhythm; impact track |
 | Frühauf, Kopiez and Platz, "Music on the timing grid: the influence of microtiming on the perceived groove quality of a simple drum pattern performance" | Microtiming lessons |
 | "The Effect of Expert Performance Microtiming on Listeners' Experience of Groove in Swing or Funk Music" | Microtiming lessons |
-| Rift manual (Minimal Audio) | Lessons on Rift; distortion |
 
 ## Wanted; needs a bought or borrowed copy
 | Text | For |

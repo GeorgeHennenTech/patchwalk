@@ -1,0 +1,1436 @@
+{
+"source": "Rift Manual (Minimal Audio)",
+"note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text.",
+"images": [
+{
+"file": "p004-1.webp",
+"page": 4,
+"chapter": "Installation & Activation",
+"width": 848,
+"height": 1096,
+"captions_on_page": [
+"Now that Rift has been installed, start your DAW and open the plugin."
+]
+},
+{
+"file": "p004-2.webp",
+"page": 4,
+"chapter": "Installation & Activation",
+"width": 995,
+"height": 1350,
+"captions_on_page": [
+"Now that Rift has been installed, start your DAW and open the plugin."
+]
+},
+{
+"file": "p005-1.webp",
+"page": 5,
+"chapter": "Welcome to Rift: What is Rift?",
+"width": 1396,
+"height": 1164,
+"captions_on_page": [
+"This manual should answer any questions you have about using it.",
+"ADVANCED VIEW."
+]
+},
+{
+"file": "p005-2.webp",
+"page": 5,
+"chapter": "Welcome to Rift: What is Rift?",
+"width": 1400,
+"height": 1186,
+"captions_on_page": [
+"This manual should answer any questions you have about using it.",
+"ADVANCED VIEW."
+]
+},
+{
+"file": "p006-1.webp",
+"page": 6,
+"chapter": "Welcome to Rift: Why Multipolar?",
+"width": 1324,
+"height": 892,
+"captions_on_page": []
+},
+{
+"file": "p006-2.webp",
+"page": 6,
+"chapter": "Welcome to Rift: Why Multipolar?",
+"width": 1400,
+"height": 947,
+"captions_on_page": []
+},
+{
+"file": "p007-1.webp",
+"page": 7,
+"chapter": "Welcome to Rift: Views",
+"width": 1400,
+"height": 915,
+"captions_on_page": []
+},
+{
+"file": "p008-1.webp",
+"page": 8,
+"chapter": "Welcome to Rift: Dark Mode",
+"width": 1400,
+"height": 912,
+"captions_on_page": [
+"Choose between two different UI skins in Rift - LIGHT MODE and DARK MODE."
+]
+},
+{
+"file": "p008-2.webp",
+"page": 8,
+"chapter": "Welcome to Rift: Dark Mode",
+"width": 1400,
+"height": 915,
+"captions_on_page": [
+"Choose between two different UI skins in Rift - LIGHT MODE and DARK MODE."
+]
+},
+{
+"file": "p008-3.webp",
+"page": 8,
+"chapter": "Welcome to Rift: Dark Mode",
+"width": 1400,
+"height": 137,
+"captions_on_page": [
+"Choose between two different UI skins in Rift - LIGHT MODE and DARK MODE."
+]
+},
+{
+"file": "p008-4.webp",
+"page": 8,
+"chapter": "Welcome to Rift: Dark Mode",
+"width": 1360,
+"height": 95,
+"captions_on_page": [
+"Choose between two different UI skins in Rift - LIGHT MODE and DARK MODE."
+]
+},
+{
+"file": "p010-1.webp",
+"page": 10,
+"chapter": "Presets: Pack Browser",
+"width": 512,
+"height": 185,
+"captions_on_page": []
+},
+{
+"file": "p010-2.webp",
+"page": 10,
+"chapter": "Presets: Pack Browser",
+"width": 533,
+"height": 170,
+"captions_on_page": []
+},
+{
+"file": "p010-3.webp",
+"page": 10,
+"chapter": "Presets: Pack Browser",
+"width": 1260,
+"height": 828,
+"captions_on_page": []
+},
+{
+"file": "p010-4.webp",
+"page": 10,
+"chapter": "Presets: Pack Browser",
+"width": 1400,
+"height": 919,
+"captions_on_page": []
+},
+{
+"file": "p011-1.webp",
+"page": 11,
+"chapter": "Presets: Pack Browser",
+"width": 1045,
+"height": 79,
+"captions_on_page": [
+"Randomly select a preset from the entire preset library.",
+"Be sure to save your current preset before randomizing."
+]
+},
+{
+"file": "p012-1.webp",
+"page": 12,
+"chapter": "Presets: Tag Browser",
+"width": 852,
+"height": 174,
+"captions_on_page": [
+"To clear all selected TAGS, choose CLEAR ALL."
+]
+},
+{
+"file": "p012-2.webp",
+"page": 12,
+"chapter": "Presets: Tag Browser",
+"width": 420,
+"height": 70,
+"captions_on_page": [
+"To clear all selected TAGS, choose CLEAR ALL."
+]
+},
+{
+"file": "p012-3.webp",
+"page": 12,
+"chapter": "Presets: Tag Browser",
+"width": 624,
+"height": 214,
+"captions_on_page": [
+"To clear all selected TAGS, choose CLEAR ALL."
+]
+},
+{
+"file": "p012-4.webp",
+"page": 12,
+"chapter": "Presets: Tag Browser",
+"width": 384,
+"height": 111,
+"captions_on_page": [
+"To clear all selected TAGS, choose CLEAR ALL."
+]
+},
+{
+"file": "p012-5.webp",
+"page": 12,
+"chapter": "Presets: Tag Browser",
+"width": 1084,
+"height": 624,
+"captions_on_page": [
+"To clear all selected TAGS, choose CLEAR ALL."
+]
+},
+{
+"file": "p012-6.webp",
+"page": 12,
+"chapter": "Presets: Tag Browser",
+"width": 1400,
+"height": 806,
+"captions_on_page": [
+"To clear all selected TAGS, choose CLEAR ALL."
+]
+},
+{
+"file": "p013-1.webp",
+"page": 13,
+"chapter": "Presets: Saving Presets",
+"width": 704,
+"height": 336,
+"captions_on_page": []
+},
+{
+"file": "p013-2.webp",
+"page": 13,
+"chapter": "Presets: Saving Presets",
+"width": 424,
+"height": 196,
+"captions_on_page": []
+},
+{
+"file": "p013-3.webp",
+"page": 13,
+"chapter": "Presets: Saving Presets",
+"width": 1032,
+"height": 416,
+"captions_on_page": []
+},
+{
+"file": "p013-4.webp",
+"page": 13,
+"chapter": "Presets: Saving Presets",
+"width": 1125,
+"height": 436,
+"captions_on_page": []
+},
+{
+"file": "p013-5.webp",
+"page": 13,
+"chapter": "Presets: Saving Presets",
+"width": 160,
+"height": 128,
+"captions_on_page": []
+},
+{
+"file": "p015-1.webp",
+"page": 15,
+"chapter": "Play View: Basics",
+"width": 248,
+"height": 259,
+"captions_on_page": [
+"Enable a soft-clipping “glue” limiter that prevents output levels above 0 dB.",
+"OFF: The limiter is disabled."
+]
+},
+{
+"file": "p015-2.webp",
+"page": 15,
+"chapter": "Play View: Basics",
+"width": 253,
+"height": 261,
+"captions_on_page": [
+"Enable a soft-clipping “glue” limiter that prevents output levels above 0 dB.",
+"OFF: The limiter is disabled."
+]
+},
+{
+"file": "p015-3.webp",
+"page": 15,
+"chapter": "Play View: Basics",
+"width": 267,
+"height": 265,
+"captions_on_page": [
+"Enable a soft-clipping “glue” limiter that prevents output levels above 0 dB.",
+"OFF: The limiter is disabled."
+]
+},
+{
+"file": "p015-4.webp",
+"page": 15,
+"chapter": "Play View: Basics",
+"width": 1400,
+"height": 95,
+"captions_on_page": [
+"Enable a soft-clipping “glue” limiter that prevents output levels above 0 dB.",
+"OFF: The limiter is disabled."
+]
+},
+{
+"file": "p016-1.webp",
+"page": 16,
+"chapter": "Play View: Basics",
+"width": 389,
+"height": 122,
+"captions_on_page": [
+"Mix Rift’s processed wet signal with the dry input signal.",
+"On either side of the interface are INPUT and OUTPUT meters.",
+"INPUT show the incoming audio’s level before any processing occurs.",
+"OUTPUT shows the level of the audio after all of Rift’s processing."
+]
+},
+{
+"file": "p016-2.webp",
+"page": 16,
+"chapter": "Play View: Basics",
+"width": 374,
+"height": 119,
+"captions_on_page": [
+"Mix Rift’s processed wet signal with the dry input signal.",
+"On either side of the interface are INPUT and OUTPUT meters.",
+"INPUT show the incoming audio’s level before any processing occurs.",
+"OUTPUT shows the level of the audio after all of Rift’s processing."
+]
+},
+{
+"file": "p016-3.webp",
+"page": 16,
+"chapter": "Play View: Basics",
+"width": 569,
+"height": 186,
+"captions_on_page": [
+"Mix Rift’s processed wet signal with the dry input signal.",
+"On either side of the interface are INPUT and OUTPUT meters.",
+"INPUT show the incoming audio’s level before any processing occurs.",
+"OUTPUT shows the level of the audio after all of Rift’s processing."
+]
+},
+{
+"file": "p017-1.webp",
+"page": 17,
+"chapter": "Play View: Macros",
+"width": 1400,
+"height": 534,
+"captions_on_page": []
+},
+{
+"file": "p018-1.webp",
+"page": 18,
+"chapter": "Play View: Distortion",
+"width": 592,
+"height": 569,
+"captions_on_page": [
+"Rift’s PLAY VIEW includes controls for the most important parts of the distortion engine.",
+"Select which effect will be applied to the top part of the waveform."
+]
+},
+{
+"file": "p019-1.webp",
+"page": 19,
+"chapter": "Play View: Distortion",
+"width": 596,
+"height": 563,
+"captions_on_page": []
+},
+{
+"file": "p019-2.webp",
+"page": 19,
+"chapter": "Play View: Distortion",
+"width": 597,
+"height": 576,
+"captions_on_page": []
+},
+{
+"file": "p020-1.webp",
+"page": 20,
+"chapter": "Play View: Distortion",
+"width": 239,
+"height": 140,
+"captions_on_page": []
+},
+{
+"file": "p021-1.webp",
+"page": 21,
+"chapter": "Play View: Scope",
+"width": 1012,
+"height": 511,
+"captions_on_page": [
+"The OSCILLOSCOPE shows Rift’s final output."
+]
+},
+{
+"file": "p021-2.webp",
+"page": 21,
+"chapter": "Play View: Scope",
+"width": 979,
+"height": 490,
+"captions_on_page": [
+"The OSCILLOSCOPE shows Rift’s final output."
+]
+},
+{
+"file": "p022-1.webp",
+"page": 22,
+"chapter": "Play View: Multi-Band",
+"width": 1400,
+"height": 915,
+"captions_on_page": [
+"Navigate between SCOPE view and MULTI-BAND view."
+]
+},
+{
+"file": "p023-1.webp",
+"page": 23,
+"chapter": "Play View: Multi-Band",
+"width": 932,
+"height": 561,
+"captions_on_page": [
+"Turn the multi-band processing on or off for the distortion section.",
+"Turn the multi-band processing on or off for the feedback section.",
+"Turn the multi-band processing on or off for the filter section."
+]
+},
+{
+"file": "p024-1.webp",
+"page": 24,
+"chapter": "Play View: Multi-Band",
+"width": 608,
+"height": 316,
+"captions_on_page": [
+"Adjust the gain of the low and high-bands."
+]
+},
+{
+"file": "p024-2.webp",
+"page": 24,
+"chapter": "Play View: Multi-Band",
+"width": 805,
+"height": 403,
+"captions_on_page": [
+"Adjust the gain of the low and high-bands."
+]
+},
+{
+"file": "p024-3.webp",
+"page": 24,
+"chapter": "Play View: Multi-Band",
+"width": 616,
+"height": 316,
+"captions_on_page": [
+"Adjust the gain of the low and high-bands."
+]
+},
+{
+"file": "p024-4.webp",
+"page": 24,
+"chapter": "Play View: Multi-Band",
+"width": 816,
+"height": 408,
+"captions_on_page": [
+"Adjust the gain of the low and high-bands."
+]
+},
+{
+"file": "p024-5.webp",
+"page": 24,
+"chapter": "Play View: Multi-Band",
+"width": 616,
+"height": 316,
+"captions_on_page": [
+"Adjust the gain of the low and high-bands."
+]
+},
+{
+"file": "p024-6.webp",
+"page": 24,
+"chapter": "Play View: Multi-Band",
+"width": 816,
+"height": 408,
+"captions_on_page": [
+"Adjust the gain of the low and high-bands."
+]
+},
+{
+"file": "p025-1.webp",
+"page": 25,
+"chapter": "Advanced View",
+"width": 1400,
+"height": 911,
+"captions_on_page": []
+},
+{
+"file": "p026-1.webp",
+"page": 26,
+"chapter": "Advanced View: Basics",
+"width": 266,
+"height": 265,
+"captions_on_page": []
+},
+{
+"file": "p026-2.webp",
+"page": 26,
+"chapter": "Advanced View: Basics",
+"width": 1400,
+"height": 110,
+"captions_on_page": []
+},
+{
+"file": "p028-1.webp",
+"page": 28,
+"chapter": "Advanced View: Basics",
+"width": 140,
+"height": 175,
+"captions_on_page": [
+"Mix Rift’s processed wet signal with the dry input signal.",
+"On either side of the interface are INPUT and OUTPUT meters.",
+"INPUT show the incoming audio’s level before any processing occurs.",
+"OUTPUT shows the level of the audio after all of Rift’s processing."
+]
+},
+{
+"file": "p029-1.webp",
+"page": 29,
+"chapter": "Advanced View: Distortion",
+"width": 501,
+"height": 444,
+"captions_on_page": [
+"Select which effect will be applied to the top part of the waveform."
+]
+},
+{
+"file": "p030-1.webp",
+"page": 30,
+"chapter": "Advanced View: Distortion",
+"width": 502,
+"height": 453,
+"captions_on_page": []
+},
+{
+"file": "p030-2.webp",
+"page": 30,
+"chapter": "Advanced View: Distortion",
+"width": 501,
+"height": 461,
+"captions_on_page": []
+},
+{
+"file": "p031-1.webp",
+"page": 31,
+"chapter": "Advanced View: Distortion",
+"width": 366,
+"height": 426,
+"captions_on_page": [
+"STEREO: Normal stereo operation.",
+"MID SIDE: Processes both the mid and side signals independently.",
+"MID: Processes the mid signal and bypasses the side.",
+"SIDES: Processes the stereo sides and bypasses the mid."
+]
+},
+{
+"file": "p032-1.webp",
+"page": 32,
+"chapter": "Advanced View: Feedback",
+"width": 356,
+"height": 96,
+"captions_on_page": [
+"STEREO: Standard stereo mode."
+]
+},
+{
+"file": "p032-2.webp",
+"page": 32,
+"chapter": "Advanced View: Feedback",
+"width": 966,
+"height": 855,
+"captions_on_page": [
+"STEREO: Standard stereo mode."
+]
+},
+{
+"file": "p033-1.webp",
+"page": 33,
+"chapter": "Advanced View: Feedback",
+"width": 553,
+"height": 267,
+"captions_on_page": [
+"FREQUENCY transposes these notes by semitones.",
+"TUNE: Set FREQUENCY to specific notes.",
+"COMB: Set FREQUENCY in Hz for comb filter effects."
+]
+},
+{
+"file": "p033-2.webp",
+"page": 33,
+"chapter": "Advanced View: Feedback",
+"width": 547,
+"height": 319,
+"captions_on_page": [
+"FREQUENCY transposes these notes by semitones.",
+"TUNE: Set FREQUENCY to specific notes.",
+"COMB: Set FREQUENCY in Hz for comb filter effects."
+]
+},
+{
+"file": "p033-3.webp",
+"page": 33,
+"chapter": "Advanced View: Feedback",
+"width": 167,
+"height": 175,
+"captions_on_page": [
+"FREQUENCY transposes these notes by semitones.",
+"TUNE: Set FREQUENCY to specific notes.",
+"COMB: Set FREQUENCY in Hz for comb filter effects."
+]
+},
+{
+"file": "p034-1.webp",
+"page": 34,
+"chapter": "Advanced View: Feedback",
+"width": 142,
+"height": 162,
+"captions_on_page": []
+},
+{
+"file": "p034-2.webp",
+"page": 34,
+"chapter": "Advanced View: Feedback",
+"width": 154,
+"height": 233,
+"captions_on_page": []
+},
+{
+"file": "p034-3.webp",
+"page": 34,
+"chapter": "Advanced View: Feedback",
+"width": 141,
+"height": 182,
+"captions_on_page": []
+},
+{
+"file": "p035-1.webp",
+"page": 35,
+"chapter": "Advanced View: Feedback",
+"width": 157,
+"height": 161,
+"captions_on_page": []
+},
+{
+"file": "p035-2.webp",
+"page": 35,
+"chapter": "Advanced View: Feedback",
+"width": 151,
+"height": 170,
+"captions_on_page": []
+},
+{
+"file": "p035-3.webp",
+"page": 35,
+"chapter": "Advanced View: Feedback",
+"width": 401,
+"height": 111,
+"captions_on_page": []
+},
+{
+"file": "p036-1.webp",
+"page": 36,
+"chapter": "Advanced View: Feedback",
+"width": 928,
+"height": 336,
+"captions_on_page": [
+"FEEDBACK FREQUENCY will snap to the notes that are toggled ON.",
+"FEEDBACK FREQUENCY will NOT snap to the notes that are toggled OFF."
+]
+},
+{
+"file": "p036-2.webp",
+"page": 36,
+"chapter": "Advanced View: Feedback",
+"width": 742,
+"height": 249,
+"captions_on_page": [
+"FEEDBACK FREQUENCY will snap to the notes that are toggled ON.",
+"FEEDBACK FREQUENCY will NOT snap to the notes that are toggled OFF."
+]
+},
+{
+"file": "p036-3.webp",
+"page": 36,
+"chapter": "Advanced View: Feedback",
+"width": 176,
+"height": 148,
+"captions_on_page": [
+"FEEDBACK FREQUENCY will snap to the notes that are toggled ON.",
+"FEEDBACK FREQUENCY will NOT snap to the notes that are toggled OFF."
+]
+},
+{
+"file": "p036-4.webp",
+"page": 36,
+"chapter": "Advanced View: Feedback",
+"width": 176,
+"height": 150,
+"captions_on_page": [
+"FEEDBACK FREQUENCY will snap to the notes that are toggled ON.",
+"FEEDBACK FREQUENCY will NOT snap to the notes that are toggled OFF."
+]
+},
+{
+"file": "p037-1.webp",
+"page": 37,
+"chapter": "Advanced View: Feedback",
+"width": 164,
+"height": 136,
+"captions_on_page": [
+"Choose from a variety of useful scales for the PITCH SNAP."
+]
+},
+{
+"file": "p037-2.webp",
+"page": 37,
+"chapter": "Advanced View: Feedback",
+"width": 160,
+"height": 145,
+"captions_on_page": [
+"Choose from a variety of useful scales for the PITCH SNAP."
+]
+},
+{
+"file": "p037-3.webp",
+"page": 37,
+"chapter": "Advanced View: Feedback",
+"width": 160,
+"height": 128,
+"captions_on_page": [
+"Choose from a variety of useful scales for the PITCH SNAP."
+]
+},
+{
+"file": "p038-1.webp",
+"page": 38,
+"chapter": "Advanced View: Filter",
+"width": 324,
+"height": 98,
+"captions_on_page": [
+"Choose if the filter comes before or after both the distortion and feedback.",
+"PRE is ideal for more distorted effects.",
+"POST is great for filtering rich harmonics from the distortion and feedback."
+]
+},
+{
+"file": "p038-2.webp",
+"page": 38,
+"chapter": "Advanced View: Filter",
+"width": 336,
+"height": 288,
+"captions_on_page": [
+"Choose if the filter comes before or after both the distortion and feedback.",
+"PRE is ideal for more distorted effects.",
+"POST is great for filtering rich harmonics from the distortion and feedback."
+]
+},
+{
+"file": "p038-3.webp",
+"page": 38,
+"chapter": "Advanced View: Filter",
+"width": 228,
+"height": 210,
+"captions_on_page": [
+"Choose if the filter comes before or after both the distortion and feedback.",
+"PRE is ideal for more distorted effects.",
+"POST is great for filtering rich harmonics from the distortion and feedback."
+]
+},
+{
+"file": "p038-4.webp",
+"page": 38,
+"chapter": "Advanced View: Filter",
+"width": 964,
+"height": 860,
+"captions_on_page": [
+"Choose if the filter comes before or after both the distortion and feedback.",
+"PRE is ideal for more distorted effects.",
+"POST is great for filtering rich harmonics from the distortion and feedback."
+]
+},
+{
+"file": "p039-1.webp",
+"page": 39,
+"chapter": "Advanced View: Filter",
+"width": 199,
+"height": 232,
+"captions_on_page": [
+"Controls the FILTER frequency in Hz or TUNED notes.",
+"Set the amount of FILTER RESONANCE."
+]
+},
+{
+"file": "p039-2.webp",
+"page": 39,
+"chapter": "Advanced View: Filter",
+"width": 283,
+"height": 91,
+"captions_on_page": [
+"Controls the FILTER frequency in Hz or TUNED notes.",
+"Set the amount of FILTER RESONANCE."
+]
+},
+{
+"file": "p039-3.webp",
+"page": 39,
+"chapter": "Advanced View: Filter",
+"width": 305,
+"height": 110,
+"captions_on_page": [
+"Controls the FILTER frequency in Hz or TUNED notes.",
+"Set the amount of FILTER RESONANCE."
+]
+},
+{
+"file": "p039-4.webp",
+"page": 39,
+"chapter": "Advanced View: Filter",
+"width": 418,
+"height": 109,
+"captions_on_page": [
+"Controls the FILTER frequency in Hz or TUNED notes.",
+"Set the amount of FILTER RESONANCE."
+]
+},
+{
+"file": "p039-5.webp",
+"page": 39,
+"chapter": "Advanced View: Filter",
+"width": 148,
+"height": 163,
+"captions_on_page": [
+"Controls the FILTER frequency in Hz or TUNED notes.",
+"Set the amount of FILTER RESONANCE."
+]
+},
+{
+"file": "p039-6.webp",
+"page": 39,
+"chapter": "Advanced View: Filter",
+"width": 166,
+"height": 167,
+"captions_on_page": [
+"Controls the FILTER frequency in Hz or TUNED notes.",
+"Set the amount of FILTER RESONANCE."
+]
+},
+{
+"file": "p040-1.webp",
+"page": 40,
+"chapter": "Advanced View: Filter",
+"width": 176,
+"height": 150,
+"captions_on_page": [
+"Create musical scales by selecting which notes CUTOFF will snap to.",
+"CUTOFF will snap to the notes that are toggled ON.",
+"CUTOFF will NOT snap to the notes that are toggled OFF."
+]
+},
+{
+"file": "p040-2.webp",
+"page": 40,
+"chapter": "Advanced View: Filter",
+"width": 928,
+"height": 336,
+"captions_on_page": [
+"Create musical scales by selecting which notes CUTOFF will snap to.",
+"CUTOFF will snap to the notes that are toggled ON.",
+"CUTOFF will NOT snap to the notes that are toggled OFF."
+]
+},
+{
+"file": "p040-3.webp",
+"page": 40,
+"chapter": "Advanced View: Filter",
+"width": 180,
+"height": 156,
+"captions_on_page": [
+"Create musical scales by selecting which notes CUTOFF will snap to.",
+"CUTOFF will snap to the notes that are toggled ON.",
+"CUTOFF will NOT snap to the notes that are toggled OFF."
+]
+},
+{
+"file": "p043-1.webp",
+"page": 43,
+"chapter": "Advanced View: Multi-Band",
+"width": 1400,
+"height": 918,
+"captions_on_page": [
+"Navigate between SCOPE view and MULTI-BAND view."
+]
+},
+{
+"file": "p045-1.webp",
+"page": 45,
+"chapter": "Advanced View: Multi-Band",
+"width": 608,
+"height": 316,
+"captions_on_page": [
+"Adjust the gain of the low and high-bands."
+]
+},
+{
+"file": "p045-2.webp",
+"page": 45,
+"chapter": "Advanced View: Multi-Band",
+"width": 616,
+"height": 316,
+"captions_on_page": [
+"Adjust the gain of the low and high-bands."
+]
+},
+{
+"file": "p047-1.webp",
+"page": 47,
+"chapter": "Modulation: Randomization",
+"width": 456,
+"height": 264,
+"captions_on_page": [
+"Click to RANDOMIZE or right-click to show RANDOMIZATION options.",
+"You can lock most parameters to prevent them from being randomized.",
+"Right-click on a parameter to bring up the lock option."
+]
+},
+{
+"file": "p047-2.webp",
+"page": 47,
+"chapter": "Modulation: Randomization",
+"width": 311,
+"height": 179,
+"captions_on_page": [
+"Click to RANDOMIZE or right-click to show RANDOMIZATION options.",
+"You can lock most parameters to prevent them from being randomized.",
+"Right-click on a parameter to bring up the lock option."
+]
+},
+{
+"file": "p049-1.webp",
+"page": 49,
+"chapter": "Modulation: Modulation System",
+"width": 648,
+"height": 229,
+"captions_on_page": [
+"ADD MOD options.",
+"SOURCE will appear next to the parameter."
+]
+},
+{
+"file": "p049-2.webp",
+"page": 49,
+"chapter": "Modulation: Modulation System",
+"width": 686,
+"height": 219,
+"captions_on_page": [
+"ADD MOD options.",
+"SOURCE will appear next to the parameter."
+]
+},
+{
+"file": "p049-3.webp",
+"page": 49,
+"chapter": "Modulation: Modulation System",
+"width": 524,
+"height": 354,
+"captions_on_page": [
+"ADD MOD options.",
+"SOURCE will appear next to the parameter."
+]
+},
+{
+"file": "p049-4.webp",
+"page": 49,
+"chapter": "Modulation: Modulation System",
+"width": 457,
+"height": 317,
+"captions_on_page": [
+"ADD MOD options.",
+"SOURCE will appear next to the parameter."
+]
+},
+{
+"file": "p049-5.webp",
+"page": 49,
+"chapter": "Modulation: Modulation System",
+"width": 218,
+"height": 203,
+"captions_on_page": [
+"ADD MOD options.",
+"SOURCE will appear next to the parameter."
+]
+},
+{
+"file": "p050-1.webp",
+"page": 50,
+"chapter": "Modulation: Modulation System",
+"width": 222,
+"height": 208,
+"captions_on_page": [
+"SLIDER upwards for positive modulation and downwards for negative."
+]
+},
+{
+"file": "p050-2.webp",
+"page": 50,
+"chapter": "Modulation: Modulation System",
+"width": 233,
+"height": 183,
+"captions_on_page": [
+"SLIDER upwards for positive modulation and downwards for negative."
+]
+},
+{
+"file": "p050-3.webp",
+"page": 50,
+"chapter": "Modulation: Modulation System",
+"width": 295,
+"height": 233,
+"captions_on_page": [
+"SLIDER upwards for positive modulation and downwards for negative."
+]
+},
+{
+"file": "p051-1.webp",
+"page": 51,
+"chapter": "Modulation: Modulation System",
+"width": 208,
+"height": 179,
+"captions_on_page": [
+"PRIMARY MODULATOR."
+]
+},
+{
+"file": "p051-2.webp",
+"page": 51,
+"chapter": "Modulation: Modulation System",
+"width": 239,
+"height": 205,
+"captions_on_page": [
+"PRIMARY MODULATOR."
+]
+},
+{
+"file": "p051-3.webp",
+"page": 51,
+"chapter": "Modulation: Modulation System",
+"width": 188,
+"height": 174,
+"captions_on_page": [
+"PRIMARY MODULATOR."
+]
+},
+{
+"file": "p051-4.webp",
+"page": 51,
+"chapter": "Modulation: Modulation System",
+"width": 215,
+"height": 186,
+"captions_on_page": [
+"PRIMARY MODULATOR."
+]
+},
+{
+"file": "p054-1.webp",
+"page": 54,
+"chapter": "Modulation: Follow",
+"width": 243,
+"height": 92,
+"captions_on_page": [
+"Enable BPM sync for the envelope follower’s RELEASE.",
+"Enable BPM sync for the envelope follower’s ATTACK."
+]
+},
+{
+"file": "p054-2.webp",
+"page": 54,
+"chapter": "Modulation: Follow",
+"width": 355,
+"height": 327,
+"captions_on_page": [
+"Enable BPM sync for the envelope follower’s RELEASE.",
+"Enable BPM sync for the envelope follower’s ATTACK."
+]
+},
+{
+"file": "p055-1.webp",
+"page": 55,
+"chapter": "Modulation: LFO",
+"width": 240,
+"height": 84,
+"captions_on_page": [
+"Adjust the LFO RATE.",
+"Enable BPM sync for the LFO RATE.",
+"SNAP off, these shapes can be continuously morphed."
+]
+},
+{
+"file": "p055-2.webp",
+"page": 55,
+"chapter": "Modulation: LFO",
+"width": 183,
+"height": 229,
+"captions_on_page": [
+"Adjust the LFO RATE.",
+"Enable BPM sync for the LFO RATE.",
+"SNAP off, these shapes can be continuously morphed."
+]
+},
+{
+"file": "p055-3.webp",
+"page": 55,
+"chapter": "Modulation: LFO",
+"width": 225,
+"height": 92,
+"captions_on_page": [
+"Adjust the LFO RATE.",
+"Enable BPM sync for the LFO RATE.",
+"SNAP off, these shapes can be continuously morphed."
+]
+},
+{
+"file": "p055-4.webp",
+"page": 55,
+"chapter": "Modulation: LFO",
+"width": 208,
+"height": 243,
+"captions_on_page": [
+"Adjust the LFO RATE.",
+"Enable BPM sync for the LFO RATE.",
+"SNAP off, these shapes can be continuously morphed."
+]
+},
+{
+"file": "p056-1.webp",
+"page": 56,
+"chapter": "Modulation: LFO",
+"width": 321,
+"height": 344,
+"captions_on_page": [
+"LFO repeats or is retriggered.",
+"OFF: Standard looping LFO with no retriggering.",
+"PURPLE: Incoming MIDI notes retrigger the looping LFO.",
+"ORANGE: Incoming MIDI notes retrigger the LFO as a one-shot envelope."
+]
+},
+{
+"file": "p057-1.webp",
+"page": 57,
+"chapter": "Modulation: Curve",
+"width": 243,
+"height": 224,
+"captions_on_page": [
+"Adjust the CURVE RATE.",
+"Enable BPM sync for the CURVE RATE.",
+"Save the current CURVE shape as a user preset."
+]
+},
+{
+"file": "p057-2.webp",
+"page": 57,
+"chapter": "Modulation: Curve",
+"width": 476,
+"height": 437,
+"captions_on_page": [
+"Adjust the CURVE RATE.",
+"Enable BPM sync for the CURVE RATE.",
+"Save the current CURVE shape as a user preset."
+]
+},
+{
+"file": "p057-3.webp",
+"page": 57,
+"chapter": "Modulation: Curve",
+"width": 433,
+"height": 422,
+"captions_on_page": [
+"Adjust the CURVE RATE.",
+"Enable BPM sync for the CURVE RATE.",
+"Save the current CURVE shape as a user preset."
+]
+},
+{
+"file": "p057-4.webp",
+"page": 57,
+"chapter": "Modulation: Curve",
+"width": 1064,
+"height": 454,
+"captions_on_page": [
+"Adjust the CURVE RATE.",
+"Enable BPM sync for the CURVE RATE.",
+"Save the current CURVE shape as a user preset."
+]
+},
+{
+"file": "p058-1.webp",
+"page": 58,
+"chapter": "Modulation: Curve",
+"width": 172,
+"height": 124,
+"captions_on_page": [
+"OFF: Standard looping CURVE with no retriggering.",
+"BLUE: Incoming MIDI notes retrigger the looping CURVE.",
+"ORANGE: Incoming MIDI notes retrigger the CURVE as a one-shot envelope.",
+"Generate different types of modulation shapes.",
+"Try changing the CURVE’s grid sizes to adjust how the shapes are generated."
+]
+},
+{
+"file": "p058-2.webp",
+"page": 58,
+"chapter": "Modulation: Curve",
+"width": 156,
+"height": 152,
+"captions_on_page": [
+"OFF: Standard looping CURVE with no retriggering.",
+"BLUE: Incoming MIDI notes retrigger the looping CURVE.",
+"ORANGE: Incoming MIDI notes retrigger the CURVE as a one-shot envelope.",
+"Generate different types of modulation shapes.",
+"Try changing the CURVE’s grid sizes to adjust how the shapes are generated."
+]
+},
+{
+"file": "p059-1.webp",
+"page": 59,
+"chapter": "Modulation: Curve",
+"width": 748,
+"height": 244,
+"captions_on_page": [
+"Control-shift-click (Windows) on a line and drag it."
+]
+},
+{
+"file": "p060-1.webp",
+"page": 60,
+"chapter": "Modulation: Curve View",
+"width": 738,
+"height": 85,
+"captions_on_page": [
+"Open the CURVE VIEW by clicking on the icon on the right of the CURVE topbar.",
+"Adjust the CURVE RATE.",
+"Enable BPM sync for the CURVE RATE."
+]
+},
+{
+"file": "p060-2.webp",
+"page": 60,
+"chapter": "Modulation: Curve View",
+"width": 243,
+"height": 232,
+"captions_on_page": [
+"Open the CURVE VIEW by clicking on the icon on the right of the CURVE topbar.",
+"Adjust the CURVE RATE.",
+"Enable BPM sync for the CURVE RATE."
+]
+},
+{
+"file": "p060-3.webp",
+"page": 60,
+"chapter": "Modulation: Curve View",
+"width": 1400,
+"height": 655,
+"captions_on_page": [
+"Open the CURVE VIEW by clicking on the icon on the right of the CURVE topbar.",
+"Adjust the CURVE RATE.",
+"Enable BPM sync for the CURVE RATE."
+]
+},
+{
+"file": "p061-1.webp",
+"page": 61,
+"chapter": "Modulation: Curve View",
+"width": 442,
+"height": 360,
+"captions_on_page": []
+},
+{
+"file": "p061-2.webp",
+"page": 61,
+"chapter": "Modulation: Curve View",
+"width": 389,
+"height": 193,
+"captions_on_page": []
+},
+{
+"file": "p062-1.webp",
+"page": 62,
+"chapter": "Modulation: Curve View",
+"width": 168,
+"height": 140,
+"captions_on_page": [
+"Save the current CURVE shape as a user preset.",
+"Reset the current CURVE shape.",
+"TOOLS will snap to the horizontal grid, but not the vertical grid.",
+"Undo previous changes to the editor."
+]
+},
+{
+"file": "p062-2.webp",
+"page": 62,
+"chapter": "Modulation: Curve View",
+"width": 164,
+"height": 140,
+"captions_on_page": [
+"Save the current CURVE shape as a user preset.",
+"Reset the current CURVE shape.",
+"TOOLS will snap to the horizontal grid, but not the vertical grid.",
+"Undo previous changes to the editor."
+]
+},
+{
+"file": "p062-3.webp",
+"page": 62,
+"chapter": "Modulation: Curve View",
+"width": 168,
+"height": 128,
+"captions_on_page": [
+"Save the current CURVE shape as a user preset.",
+"Reset the current CURVE shape.",
+"TOOLS will snap to the horizontal grid, but not the vertical grid.",
+"Undo previous changes to the editor."
+]
+},
+{
+"file": "p062-4.webp",
+"page": 62,
+"chapter": "Modulation: Curve View",
+"width": 1400,
+"height": 384,
+"captions_on_page": [
+"Save the current CURVE shape as a user preset.",
+"Reset the current CURVE shape.",
+"TOOLS will snap to the horizontal grid, but not the vertical grid.",
+"Undo previous changes to the editor."
+]
+},
+{
+"file": "p062-5.webp",
+"page": 62,
+"chapter": "Modulation: Curve View",
+"width": 164,
+"height": 126,
+"captions_on_page": [
+"Save the current CURVE shape as a user preset.",
+"Reset the current CURVE shape.",
+"TOOLS will snap to the horizontal grid, but not the vertical grid.",
+"Undo previous changes to the editor."
+]
+},
+{
+"file": "p062-6.webp",
+"page": 62,
+"chapter": "Modulation: Curve View",
+"width": 428,
+"height": 392,
+"captions_on_page": [
+"Save the current CURVE shape as a user preset.",
+"Reset the current CURVE shape.",
+"TOOLS will snap to the horizontal grid, but not the vertical grid.",
+"Undo previous changes to the editor."
+]
+},
+{
+"file": "p063-1.webp",
+"page": 63,
+"chapter": "Modulation: Curve View",
+"width": 172,
+"height": 124,
+"captions_on_page": [
+"OFF: Standard looping CURVE with no retriggering.",
+"BLUE: Incoming MIDI notes retrigger the looping CURVE.",
+"ORANGE: Incoming MIDI notes retrigger the CURVE as a one-shot envelope.",
+"Generate a random CURVE shape.",
+"Use the MOUSE TOOL to manipulate the CURVE in various ways.",
+"Control-shift-click (Windows) on a line and drag it."
+]
+},
+{
+"file": "p064-1.webp",
+"page": 64,
+"chapter": "Modulation: Curve View",
+"width": 1400,
+"height": 153,
+"captions_on_page": []
+},
+{
+"file": "p064-2.webp",
+"page": 64,
+"chapter": "Modulation: Curve View",
+"width": 1400,
+"height": 377,
+"captions_on_page": []
+},
+{
+"file": "p064-3.webp",
+"page": 64,
+"chapter": "Modulation: Curve View",
+"width": 293,
+"height": 127,
+"captions_on_page": []
+},
+{
+"file": "p064-4.webp",
+"page": 64,
+"chapter": "Modulation: Curve View",
+"width": 1400,
+"height": 385,
+"captions_on_page": []
+},
+{
+"file": "p065-1.webp",
+"page": 65,
+"chapter": "Routing MIDI to Rift",
+"width": 148,
+"height": 160,
+"captions_on_page": [
+"MIDI note in semitones.",
+"OFF: Standard looping LFO with no retriggering.",
+"PURPLE: Incoming MIDI notes retrigger the looping LFO.",
+"ORANGE: Incoming MIDI notes retrigger the LFO as a one-shot envelope.",
+"OFF: Standard looping CURVE with no retriggering.",
+"BLUE: Incoming MIDI notes retrigger the looping CURVE.",
+"ORANGE: Incoming MIDI notes retrigger the CURVE as a one-shot envelope."
+]
+},
+{
+"file": "p066-1.webp",
+"page": 66,
+"chapter": "Support",
+"width": 1400,
+"height": 335,
+"captions_on_page": []
+}
+]
+}

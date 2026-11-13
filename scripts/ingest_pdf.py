@@ -2,6 +2,7 @@
 """Take a book supplied as one or more PDF parts into the private library: text and pictures together.
 
     python3 scripts/ingest_pdf.py <book-id> "<Title>" part1.pdf part2.pdf ... [--skip-pages 3-22]
+        [--running "RIFT MANUAL" --headings "Welcome to Rift|Play View|Distortion|..."]
 
 Writes library/<book-id>.json            { id, title, pages: [{ page, chapter, text }] }
        library/images/<book-id>/*.webp   pictures embedded in the PDF, named p<page>-<n>.webp
@@ -10,7 +11,9 @@ Writes library/<book-id>.json            { id, title, pages: [{ page, chapter, t
 Parts are read in the order given and their pages numbered straight through, so a manual split into
 100-page files keeps its own page numbers. Text is taken in reading order (plain pdftotext, not -layout).
 The chapter of a page is read from its running header ("<Chapter title> <page number>"). Masks, tiny
-pictures and exact repeats are dropped. Needs poppler-utils (pdftotext, pdfimages, pdfinfo) and Pillow.
+pictures and exact repeats are dropped. Some manuals instead print "<RUNNING TITLE> | <page>" with the chapter
+and section as letter-spaced lines around it ("P L AY V I E W"): give --running and the real headings with
+--headings, and the chapter becomes "Play View: Distortion". Rule lines and tab runs are removed. Needs poppler-utils (pdftotext, pdfimages, pdfinfo) and Pillow.
 Same privacy rules as the rest of library/: private repository only.
 """
 import hashlib, io, json, os, re, subprocess, sys, tempfile
@@ -30,6 +33,12 @@ def main():
                 lo, _, hi = part.partition("-")
                 skip.update(range(int(lo), int(hi or lo) + 1))
             args.remove(sys.argv[i + 1])
+    running, headings = None, {}
+    for flag in ("--running", "--headings"):
+        if flag in sys.argv:
+            value = sys.argv[sys.argv.index(flag) + 1]; args.remove(value)
+            if flag == "--running": running = value
+            else: headings = {re.sub(r"\s", "", h).upper(): h for h in value.split("|")}
     if "--append" in sys.argv:
         args.remove(sys.argv[sys.argv.index("--append") + 1])
     book, title, parts = args[0], args[1], args[2:]
@@ -55,6 +64,18 @@ def main():
             head = re.match(rf"^(.*\S)\s+{page}$", lines[0].strip()) if lines else None
             if head:
                 chapter, lines = head.group(1).strip(), lines[1:]
+            if running:
+                # drop rule lines and tab runs; the first few lines hold the running title and the headings
+                lines = [re.sub(r"\s+", " ", l).strip() for l in lines if not re.match(r"^\s*_{5,}\s*$", l)]
+                lines = [l for l in lines if l]
+                found, rest = [], []
+                for k, l in enumerate(lines):
+                    name = headings.get(re.sub(r"\s", "", l).upper()) if k < 4 else None
+                    if k < 4 and l == f"{running} | {page}": continue
+                    if name and name not in found: found.append(name)
+                    else: rest.append(l)
+                if found: chapter = ": ".join(found)
+                lines = rest
             body = "\n".join(lines).strip()
             captions[page] = [l.strip() for l in lines if 12 <= len(l.strip()) <= 90 and re.match(r"^[A-Z][^.?!]*\.$", l.strip()) and "(page" not in l][:8]
             if page in skip or len(body) < 40:

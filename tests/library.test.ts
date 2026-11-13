@@ -162,6 +162,19 @@ describe("library images", () => {
     // contents pages were left out
     expect(lib.passages.some((p) => p.id === "ableton-live-11-manual#5")).toBe(false);
   });
+  const hasRift = existsSync(join(ROOT, "library", "rift-manual.json"));
+  it.skipIf(!hasRift)("the Rift manual is searchable, with chapter and section read from its letter-spaced headings", () => {
+    const lib = loadLibrary(ROOT);
+    const top = (q: string) => search(lib, q, 6).map((h) => h.passage);
+    const rift = lib.passages.filter((p) => p.id.startsWith("rift-manual#"));
+    expect(rift.length).toBe(64);
+    expect(top("Rift positive and negative distortion type wavefold").some((p) => p.source.includes("Rift") && p.section.includes("Distortion"))).toBe(true);
+    expect(top("Rift feedback frequency range comb tune").some((p) => p.section === "Advanced View: Feedback")).toBe(true);
+    expect(rift.some((p) => (p.images?.length ?? 0) > 0)).toBe(true);
+    // no letter-spaced headings, rule lines or the contents page left in the text
+    expect(rift.some((p) => /_{10,}|RIFT MANUAL \||D I S TO R T I O N/.test(p.text))).toBe(false);
+    expect(lib.passages.some((p) => p.id === "rift-manual#2")).toBe(false);
+  });
 });
 
 import { GET as getImage } from "../api/image";

@@ -315,7 +315,7 @@ Ask about these only when relevant; do not block on them.
    one. Nothing suitable is in Claude's own connector directory. Not set up; revisit when videos are wanted.
 
 **Later the same day the owner asked for three more things.**
-- Lessons on the distortion plugin **Rift (Minimal Audio)**, once they upload its manual. Not uploaded yet.
+- Lessons on the distortion plugin **Rift (Minimal Audio)**, now that its manual is in the library (`library/rift-manual.json`, 64 pages, 137 pictures; taken in 13 Nov 2026). Lessons not written yet; Rift itself cannot run in the browser, so they will be read-and-do lessons or use a built-in distortion that follows the same ideas.
 - **Six research papers** for the library: Chowning 1973 on FM synthesis (JAES); Rajala et al. 2022 on
   infrasound, loudness and annoyance (Applied Acoustics); Senn et al. on groove in drum patterns (PLOS ONE);
   Hove et al. 2014 on timing perception for low pitch (PNAS); Frühauf, Kopiez and Platz on microtiming and

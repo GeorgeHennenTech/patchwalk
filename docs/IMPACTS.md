@@ -104,6 +104,6 @@ yet**, so the sound-making parts can be built first and the explanations follow.
 
 ## Ties to other plans
 - Track Q (physical modelling) for struck objects; track R (hearing) for loudness, masking and timing.
-- The Rift lessons (Minimal Audio's distortion plugin, once its manual is supplied) sit beside T4.
+- The Rift lessons (Minimal Audio's distortion plugin, manual now in the library) sit beside T4.
 - The groove and microtiming papers feed T7.5 and the rhythm track.
 - The macro chapter: an "impact" macro and a "weight" macro are natural recipes to add.

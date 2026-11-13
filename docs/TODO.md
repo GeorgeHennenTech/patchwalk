@@ -43,6 +43,7 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 - [x] Answers link to the practice lesson that covers the topic
 - [x] Ableton Live 11 manual, pages 1 to 500: text and 428 pictures taken in
 - [x] Ableton manual, pages 501 to 867: the whole manual is now in (814 pages of text, 743 pictures)
+- [x] Rift manual (Minimal Audio): 64 pages of text and 137 pictures taken in
 - [ ] Place library pictures inside lessons where they help
 - [ ] Voice for the guide using Higgsfield (owner's choice): test quality, then generate each narration once and store it
 - [ ] Remember what the learner found hard, not only what they finished
@@ -65,7 +66,7 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 - [ ] Bioacoustics: animal signals, choruses and soundscapes
 - [ ] The ear and illusions: a listening-lab page for the hearing and illusion lessons
 - [ ] Source texts for bioacoustics and hearing (none in the library yet; the explanations wait for them)
-- [ ] Lessons on the distortion plugin Rift (Minimal Audio), once the owner uploads its manual
+- [ ] Lessons on the distortion plugin Rift (Minimal Audio); its manual is in the library
 - [ ] Take in six research papers the owner listed (FM synthesis, infrasound and loudness, groove and microtiming, bass and timing); the files have not arrived yet
 - [ ] Rhythm lessons drawing on the groove and microtiming papers
 - [ ] Master Handbook of Acoustics: waiting for a copy the owner has bought or borrowed (the uploaded copy came from a piracy site and was not taken in)
@@ -80,6 +81,7 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 ## Owner
 - [x] Upload the Ableton manual, pages 1 to 500
 - [x] Upload the rest of the Ableton manual
+- [x] Upload the Rift manual
 - [ ] Find more books for the library (EPUB or text-based PDF)
 - [ ] Review the 32 knowledge cards and 43 lesson scripts (all drafts)
 - [ ] Probe presets: start with the ten most useful (the assistant has explained what to do)

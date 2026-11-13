@@ -11,10 +11,11 @@ export interface Track {
   flags: Record<string, boolean>;
   /** Clock time (seconds) at which the currently held note began, or null when nothing is held. */
   heldSince: number | null;
+  lastNote: number | null;
 }
 
 export const newTrack = (state: SynthState): Track => ({
-  start: state, played: { mouse: 0, keys: 0, midi: 0 }, notes: [], range: {}, changes: {}, flags: {}, heldSince: null,
+  start: state, played: { mouse: 0, keys: 0, midi: 0 }, notes: [], range: {}, changes: {}, flags: {}, heldSince: null, lastNote: null,
 });
 
 export function trackState(t: Track, prev: SynthState, next: SynthState): Track {
@@ -38,6 +39,7 @@ export function trackNoteOn(t: Track, source: keyof Track["played"], note: numbe
     played: { ...t.played, [source]: t.played[source] + 1 },
     notes: t.notes.includes(note) ? t.notes : [...t.notes, note],
     heldSince: t.heldSince ?? now,
+    lastNote: note,
   };
 }
 
@@ -50,5 +52,6 @@ export function snapshot(t: Track, state: SynthState, live: { audioRunning: bool
     played: t.played, distinctNotes: t.notes.length,
     heldSeconds: t.heldSince !== null && live.held.length ? live.now - t.heldSince : 0,
     range: t.range, changes: t.changes, flags: t.flags,
+    lastNote: live.held.length ? live.held[live.held.length - 1]! : t.lastNote,
   };
 }

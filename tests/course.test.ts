@@ -6,7 +6,7 @@ import { newTrack, snapshot, trackAllReleased, trackFlag, trackNoteOn, trackStat
 
 const base = (over: Partial<Snapshot> = {}, state: Partial<SynthState> = {}, start: Partial<SynthState> = {}): Snapshot => ({
   state: { ...INITIAL, ...state }, start: { ...INITIAL, ...start }, audioRunning: true, held: [], played: { mouse: 0, keys: 0, midi: 0 },
-  distinctNotes: 0, holdOn: false, heldSeconds: 0, range: {}, changes: {}, flags: {}, ...over,
+  distinctNotes: 0, holdOn: false, heldSeconds: 0, range: {}, changes: {}, flags: {}, lastNote: null, ...over,
 });
 const step = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
 
@@ -31,7 +31,7 @@ describe("practice synth maths", () => {
     expect(dbToGain(-48)).toBe(0);
   });
   it("every lesson only reveals controls that exist, within their ranges", () => {
-    const panels = new Set(["start", "keyboard", "hold", "scope", "spectrum", "meter", "ack", ...Object.keys(PARAMS)]);
+    const panels = new Set(["start", "keyboard", "hold", "scope", "spectrum", "meter", "beat", "ack", ...Object.keys(PARAMS)]);
     for (const l of LESSONS) for (const s of l.steps) for (const p of s.show) expect(panels.has(p), `${l.id}: ${p}`).toBe(true);
   });
 });
@@ -153,8 +153,12 @@ describe("hear it first, and match by ear", () => {
     for (const l of withDemo) {
       const tones = l.demo!.tones;
       expect(tones.length, l.id).toBeGreaterThanOrEqual(2);
-      for (const t of tones) { expect(t.hz).toBeGreaterThan(40); expect(t.hz).toBeLessThan(4000); expect(t.gainDb ?? -8).toBeLessThanOrEqual(0); }
-      expect(tones.at(-1)!.at + tones.at(-1)!.seconds, l.id).toBeLessThan(6);
+      for (const t of tones) {
+        expect(!!t.patch || (!!t.shape && !!t.hz), `${l.id}: a tone needs a patch or a shape and frequency`).toBe(true);
+        if (t.hz) { expect(t.hz).toBeGreaterThan(40); expect(t.hz).toBeLessThan(4000); }
+        expect(t.gainDb ?? -8).toBeLessThanOrEqual(0);
+      }
+      expect(tones.at(-1)!.at + tones.at(-1)!.seconds, l.id).toBeLessThan(8);
       expect(tones.map((t) => t.at)).toEqual([...tones.map((t) => t.at)].sort((a, b) => a - b));
     }
     // the loudness demo really steps down by 6 dB each time
@@ -177,5 +181,99 @@ describe("hear it first, and match by ear", () => {
       expect(allMatch(compareToTarget({ ...start, ...r.target }, r.target, r.match)), `${l.id} round ${i + 1}`).toBe(true);
       for (const k of r.match) expect(k in r.target, `${l.id} round ${i + 1} target has ${k}`).toBe(true);
     }
+  });
+});
+
+import { beatHz, brightness, frameCount, harmonicsA, playedHzB, subHz, unisonOffsets, unisonPans } from "../src/synth/params";
+
+describe("extended synth maths", () => {
+  it("beat rate is the frequency difference between the two oscillators, and doubles an octave up", () => {
+    const s = { ...INITIAL, bOn: true, fine: -5, bFine: 5 };
+    const low = beatHz(s, 45), high = beatHz(s, 57);
+    expect(low).toBeCloseTo(Math.abs(playedHz(s, 45) - playedHzB(s, 45)), 9);
+    expect(high / low).toBeCloseTo(2, 6);
+    expect(beatHz({ ...s, bOn: false }, 45)).toBe(0);
+    expect(beatHz({ ...INITIAL, bOn: true }, 45)).toBe(0);
+  });
+  it("unison voices are spread evenly around the played pitch and across the stereo field", () => {
+    expect(unisonOffsets(1, 40)).toEqual([0]);
+    expect(unisonOffsets(3, 40)).toEqual([-20, 0, 20]);
+    expect(unisonOffsets(5, 40).reduce((a, b) => a + b, 0)).toBeCloseTo(0, 9);
+    expect(unisonPans(3, 100)).toEqual([-1, 0, 1]);
+    expect(unisonPans(3, 50)).toEqual([-0.5, 0, 0.5]);
+    expect(unisonPans(7, 0).every((p) => p === 0)).toBe(true);
+  });
+  it("the sub sits whole octaves below the key", () => {
+    expect(subHz({ ...INITIAL, subOctave: -1 }, 69)).toBeCloseTo(220, 6);
+    expect(subHz({ ...INITIAL, subOctave: -2 }, 69)).toBeCloseTo(110, 6);
+  });
+  it("wavetable position blends neighbouring frames, and the ends are the pure frames", () => {
+    const at = (position: number) => harmonicsA({ shape: "saw", table: "basic", position });
+    expect(frameCount("basic")).toBe(4);
+    expect(Array.from(at(0)).slice(1, 4)).toEqual([1, 0, 0]); // sine
+    expect(at(100)[2]).toBeCloseTo(0.5, 6); // saw: harmonic 2 at 1/2
+    const mid = at(50); // halfway between triangle and square
+    expect(mid[3]!).toBeCloseTo((-1 / 9 + 1 / 3) / 2, 6);
+    expect(harmonicsA({ shape: "square", table: "none", position: 80 })[2]).toBe(0);
+  });
+  it("the bright table really gets brighter along its length", () => {
+    const b = [0, 25, 50, 75, 100].map((position) => brightness(harmonicsA({ shape: "saw", table: "bright", position })));
+    expect(b).toEqual([...b].sort((x, y) => x - y));
+    expect(b[0]).toBe(0);
+    expect(b[4]!).toBeGreaterThan(b[1]!);
+  });
+});
+
+describe("chapter 1 lessons", () => {
+  const st = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
+  it("there are fourteen lessons, in chapter order, and every initial setting is a real setting", () => {
+    expect(LESSONS.map((l) => l.id)).toEqual(["C0.1", "C0.2", "C0.3", "C0.4", "C1.1", "C1.2", "C1.M", "C1.3", "C1.4", "C1.5", "C1.6", "C1.7", "C1.8", "C1.C"]);
+    for (const l of LESSONS) for (const k of Object.keys(l.initial ?? {})) expect(k in INITIAL, `${l.id}: ${k}`).toBe(true);
+  });
+  it("C1.3: sweeping means visiting both ends, and 'brightest' is judged from the harmonics", () => {
+    expect(st("C1.3", 1).check(base({ range: { position: { min: 0, max: 60 } } }, { table: "basic" }))).toBe(false);
+    expect(st("C1.3", 1).check(base({ range: { position: { min: 2, max: 100 } } }, { table: "basic" }))).toBe(true);
+    expect(st("C1.3", 4).check(base({ changes: { position: 3 } }, { table: "bright", position: 100 }))).toBe(true);
+    expect(st("C1.3", 4).check(base({ changes: { position: 3 } }, { table: "bright", position: 20 }))).toBe(false);
+    expect(st("C1.3", 2).remark!(base({}, { table: "basic", position: 50 }))).toBe("You stopped at 50%. In this table that sits between triangle and square.");
+  });
+  it("C1.4: B must match A before it is moved, and the level remark reports the gap", () => {
+    expect(st("C1.4", 1).check(base({}, { bOn: true, bShape: "square" }))).toBe(false);
+    expect(st("C1.4", 1).check(base({}, { bOn: true }))).toBe(true);
+    expect(st("C1.4", 3).check(base({}, { bOn: true, bLevelDb: -5 }))).toBe(false);
+    expect(st("C1.4", 3).remark!(base({}, { bOn: true, bLevelDb: -9 }))).toMatch(/^You put B 9 dB under A\./);
+    expect(st("C1.4", 4).check(base({}, { bOn: true, bSemitone: 7 }))).toBe(true);
+  });
+  it("C1.5: the beat-rate target depends on the key being held", () => {
+    const tuned = { bOn: true, octave: -1, bOctave: -1, fine: -14, bFine: 14 };
+    const rate = beatHz({ ...INITIAL, ...tuned }, 45);
+    expect(rate).toBeGreaterThan(0.8);
+    const s = base({ lastNote: 45 }, tuned);
+    expect(st("C1.5", 2).check(s)).toBe(rate >= 3.5 && rate <= 4.5);
+    expect(st("C1.5", 2).check(base({ lastNote: null }, tuned))).toBe(false);
+    // a 10-cent gap is right for step 2, but only with A below B as instructed
+    expect(st("C1.5", 1).check(base({}, { bOn: true, fine: -5, bFine: 5 }))).toBe(true);
+    expect(st("C1.5", 1).check(base({}, { bOn: true, fine: 5, bFine: 15 }))).toBe(false);
+    // step 4 must be done by changing key, not by changing the gap
+    const wide = { bOn: true, octave: -1, bOctave: -1, fine: -30, bFine: 30 };
+    expect(st("C1.5", 3).check(base({ lastNote: 69, played: { mouse: 1, keys: 0, midi: 0 } }, wide))).toBe(beatHz({ ...INITIAL, ...wide }, 69) >= 6.5);
+    expect(st("C1.5", 3).check(base({ lastNote: 69, played: { mouse: 1, keys: 0, midi: 0 }, changes: { fine: 1 } }, wide))).toBe(false);
+    expect(st("C1.5", 4).remark!(base({}, { bOn: true, fine: -30, bFine: 30 }))).toMatch(/past a quarter-tone/);
+  });
+  it("C1.6: 'push it too far, then back off' needs both halves", () => {
+    expect(st("C1.6", 4).check(base({ range: { detune: { min: 10, max: 80 } } }, { voices: 7, detune: 80 }))).toBe(false);
+    expect(st("C1.6", 4).check(base({ range: { detune: { min: 10, max: 80 } } }, { voices: 7, detune: 30 }))).toBe(true);
+    expect(st("C1.6", 4).check(base({ range: { detune: { min: 10, max: 40 } } }, { voices: 7, detune: 20 }))).toBe(false);
+  });
+  it("C1.7 and C1.8: sub level, noise type and phase checks", () => {
+    expect(st("C1.7", 2).check(base({ range: { subLevelDb: { min: -6, max: 0 } } }, { subOn: true, subLevelDb: -9 }))).toBe(true);
+    expect(st("C1.7", 2).check(base({ range: { subLevelDb: { min: -6, max: -4 } } }, { subOn: true, subLevelDb: -9 }))).toBe(false);
+    expect(st("C1.7", 3).check(base({}, { noiseOn: true, noiseType: "white", noiseLevelDb: -6 }))).toBe(false);
+    const sq = { shape: "square" as const, bShape: "square" as const, bOn: true };
+    expect(st("C1.8", 2).check(base({}, { ...sq, bPhase: 180 }))).toBe(true);
+    expect(st("C1.8", 2).check(base({}, { ...sq, phase: 90, bPhase: 270 }))).toBe(true);
+    expect(st("C1.8", 2).check(base({}, { ...sq, bPhase: 90 }))).toBe(false);
+    expect(st("C1.8", 2).check(base({}, { ...sq, bPhase: 180, bFine: 5 }))).toBe(false); // must be the same pitch to cancel
+    expect(st("C1.8", 2).check(base({}, { ...sq, bShape: "saw", bPhase: 180 }))).toBe(false);
   });
 });

@@ -135,21 +135,28 @@ Added after the first eight milestones (owner asked for all four in one go):
   yet see the learner's patch or remember progress. The guide's text is extracted in reading order (plain
   `pdftotext`, not `-layout`) so table cells stay together; table-of-contents pages are dropped.
 - **Practice synth and playable lessons** (first milestone of `docs/COURSE_PLAN.md`):
-  - `src/synth/` — `params.ts` (one typed state object with exact units), `engine.ts` (Web Audio: one oscillator
-    with four shapes from a shared harmonic table, pitch controls, master level, analyser, a guard compressor),
+  - `src/synth/` — `params.ts` (one typed state object with exact units, plus the maths: note-to-Hz, beat rate,
+    unison offsets, harmonic tables, generated wavetables, brightness), `engine.ts` (Web Audio: oscillator A
+    with basic shapes or a generated wavetable, unison voices with detune and stereo spread, oscillator B, a
+    sine sub, white/pink noise, start phase and random phase, master level, analyser, a guard compressor),
     `tracker.ts` (what the learner did since a step began), `useSynth.ts` (React hook, computer-keyboard notes).
+    Phase is done by rotating each harmonic of the periodic wave, so two squares half a cycle apart cancel
+    and two saws leave a saw an octave up, as on a real synth. Changing which sources exist (voices, B, sub,
+    noise) restarts the sounding notes; everything else updates in place.
   - `src/course/` — `types.ts` (a lesson is data: steps with `show`, `check(snapshot)`, optional code-written
-    `remark`), `lessons/index.ts` (six lessons: C0.1-C0.4, C1.1, C1.2, converted from `docs/lessons/`),
-    `progress.ts` (finished lessons in localStorage, next-lesson suggestion, context note for the guide).
+    `remark`), `lessons/index.ts` (C0.1-C0.4, C1.1, C1.2, C1.M) and `lessons/chapter1.ts` (C1.3-C1.8 and the
+    checkpoint C1.C), `match.ts`, `progress.ts`. **Fourteen playable lessons; chapters 0 and 1 are complete.**
   - `src/ui/PlayView.tsx` ("Lessons" tab) and `src/ui/synth/` — spotlighted controls per step, live targets,
     scope, spectrum, meter, on-screen keyboard, Hold, blind ear checks, recap, guide remarks and suggestion.
   - "Hear it first" demos (`demo` on a lesson), match-by-ear rounds (`rounds`, compared by `src/course/match.ts`:
     feedback is "matches / too low / too high / different", never the target's numbers), and a browser
     read-aloud button. Lesson C1.M is a four-round match-by-ear challenge. Seven lessons in total.
   - Verified in a headless browser with real audio: a 12 dB volume change moves the meter 12 dB; the square
-    wave shows odd harmonics on the spectrum. **How it sounds has not been judged by a person yet.**
-  - Not built yet: second oscillator, unison, sub, noise, phase, wavetables, filter, envelopes, LFOs, effects,
-    MIDI input, a shared tempo clock. Lessons C1.3-C1.8 are scripted but need those.
+    wave shows odd harmonics on the spectrum; two squares half a cycle apart drop about 15 dB; the beat-rate
+    readout doubles an octave up. Level readings need about a second to settle in automated checks.
+    **How it sounds has not been judged by a person yet.**
+  - Not built yet: filter, envelopes, LFOs, modulation, effects, MIDI input, a shared tempo clock. Chapter 2
+    (filters) is next and has no scripts yet.
   - The old ten Serum-task lessons are now the "Serum tasks" tab.
 - **Guide in context** — `src/ui/Answer.tsx` (`AskBox`): an ask box inside each practice lesson (sends lesson,
   step, current synth settings and finished lessons) and at the top of a rebuilt patch (sends only the

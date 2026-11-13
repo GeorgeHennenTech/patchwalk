@@ -1,5 +1,6 @@
 import { noteToHz } from "../../synth/params";
 import type { DemoTone, PlayableLesson, Snapshot } from "../types";
+import { CHAPTER_1 } from "./chapter1";
 
 const anyNote = (s: Snapshot) => s.played.mouse + s.played.keys + s.played.midi;
 const within = (v: number | null, lo: number, hi: number) => v !== null && v >= lo && v <= hi;
@@ -7,13 +8,13 @@ const hz = (n: number) => `${Math.round(n)} Hz`;
 
 const A3 = noteToHz(57), A4 = noteToHz(69);
 /** Tones one after another, each `len` seconds with a short gap. */
-const seq = (tones: Omit<DemoTone, "at" | "seconds">[], len = 0.8): DemoTone[] => tones.map((t, i) => ({ ...t, at: i * (len + 0.15), seconds: len }));
+export const seq = (tones: Omit<DemoTone, "at" | "seconds">[], len = 0.8): DemoTone[] => tones.map((t, i) => ({ ...t, at: i * (len + 0.15), seconds: len }));
 
 /**
  * Playable lessons, converted from the scripts in docs/lessons/. Steps the practice synth cannot yet
  * support (MIDI input, hovering harmonics) are adapted and noted in the script.
  */
-export const LESSONS: PlayableLesson[] = [
+const BASE: PlayableLesson[] = [
   {
     id: "C0.1", title: "Playing the synth", buildsOn: [], minutes: 5, cardIds: ["signal-path"],
     outcome: "Make sound on the practice synth with the mouse or your computer keyboard, and hold a note while you adjust something.",
@@ -141,5 +142,8 @@ export const LESSONS: PlayableLesson[] = [
     recap: ["Listen for one quality at a time: colour first, then register, then interval.", "Switching quickly between target and yours makes differences obvious.", "Being told “too high” or “too low” is enough; you do not need the number."],
   },
 ];
+
+/** Every playable lesson, in suggested order. */
+export const LESSONS: PlayableLesson[] = [...BASE, ...CHAPTER_1];
 
 export { anyNote };

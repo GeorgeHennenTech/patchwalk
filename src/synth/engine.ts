@@ -1,24 +1,32 @@
-// Web Audio engine for the practice synth. Deliberately small: it renders SynthState and reports what is
-// sounding. Built around a shared AudioContext clock and a per-instrument voice list so more instruments
-// and a tempo clock (for the later mini DAW) can be added without rewriting it.
-import { dbToGain, harmonic, playedHz, type Shape, type SynthState } from "./params";
+// Web Audio engine for the practice synth. It renders SynthState and reports what is sounding.
+// Built around a shared AudioContext clock and a per-instrument voice list so more instruments and a
+// tempo clock (for the later mini DAW) can be added without rewriting it.
+import { dbToGain, harmonic, harmonicsA, HARMONICS, playedHz, playedHzB, subHz, unisonOffsets, unisonPans, type Shape, type SynthState } from "./params";
 
-const HARMONICS = 64;
 const RAMP = 0.012; // seconds; short ramps avoid clicks when a value jumps
+const OSC_GAIN = 0.4;
 
 interface Voice {
   note: number;
-  osc: OscillatorNode;
+  /** Start phase of oscillator A for this note, in cycles (includes the random part). */
+  phaseA: number;
+  a: { osc: OscillatorNode; gain: GainNode; pan: StereoPannerNode }[];
+  b?: { osc: OscillatorNode; gain: GainNode };
+  sub?: { osc: OscillatorNode; gain: GainNode };
+  noise?: { src: AudioBufferSourceNode; gain: GainNode };
   amp: GainNode;
 }
+
+/** Settings whose change means rebuilding the sounding notes (the set of sound sources changes). */
+const STRUCTURAL: (keyof SynthState)[] = ["voices", "bOn", "subOn", "noiseOn", "noiseType", "randomPhase"];
 
 export class Engine {
   readonly ctx: AudioContext;
   readonly analyser: AnalyserNode;
   private readonly master: GainNode;
-  private readonly waves = new Map<Shape, PeriodicWave>();
   private voices: Voice[] = [];
   private state: SynthState;
+  private noiseBuffers: Partial<Record<"white" | "pink", AudioBuffer>> = {};
 
   constructor(state: SynthState, ctx: AudioContext = new AudioContext()) {
     this.ctx = ctx;
@@ -44,50 +52,162 @@ export class Engine {
     return this.ctx.state === "running";
   }
 
-  private wave(shape: Shape): PeriodicWave {
-    let w = this.waves.get(shape);
-    if (!w) {
-      const real = new Float32Array(HARMONICS + 1), imag = new Float32Array(HARMONICS + 1);
-      for (let n = 1; n <= HARMONICS; n++) imag[n] = harmonic(shape, n);
-      w = this.ctx.createPeriodicWave(real, imag);
-      this.waves.set(shape, w);
+  /**
+   * A periodic wave from harmonic amplitudes, started `phase` cycles into its period. Shifting a wave in
+   * time rotates harmonic n by n times the shift, which is why a half-cycle shift cancels a square against
+   * itself but turns two saws into one an octave up.
+   */
+  private wave(h: Float32Array, phase: number): PeriodicWave {
+    const real = new Float32Array(h.length), imag = new Float32Array(h.length);
+    for (let n = 1; n < h.length; n++) {
+      const angle = 2 * Math.PI * n * phase;
+      real[n] = h[n]! * Math.sin(angle);
+      imag[n] = h[n]! * Math.cos(angle);
     }
-    return w;
+    return this.ctx.createPeriodicWave(real, imag);
+  }
+  private shapeHarmonics(shape: Shape): Float32Array {
+    const h = new Float32Array(HARMONICS + 1);
+    for (let n = 1; n <= HARMONICS; n++) h[n] = harmonic(shape, n);
+    return h;
+  }
+
+  private noiseBuffer(type: "white" | "pink"): AudioBuffer {
+    let buf = this.noiseBuffers[type];
+    if (!buf) {
+      const len = this.ctx.sampleRate * 2;
+      buf = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
+      const d = buf.getChannelData(0);
+      // Pink noise: white noise through a standard set of one-pole filters (equal energy per octave).
+      let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+      for (let i = 0; i < len; i++) {
+        const w = Math.random() * 2 - 1;
+        if (type === "white") { d[i] = w * 0.5; continue; }
+        b0 = 0.99886 * b0 + w * 0.0555179; b1 = 0.99332 * b1 + w * 0.0750759; b2 = 0.969 * b2 + w * 0.153852;
+        b3 = 0.8665 * b3 + w * 0.3104856; b4 = 0.55 * b4 + w * 0.5329522; b5 = -0.7616 * b5 - w * 0.016898;
+        d[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + w * 0.5362) * 0.11;
+        b6 = w * 0.115926;
+      }
+      this.noiseBuffers[type] = buf;
+    }
+    return buf;
+  }
+
+  private build(note: number, phaseA: number): Voice {
+    const s = this.state, t = this.ctx.currentTime;
+    const amp = this.ctx.createGain();
+    amp.gain.setValueAtTime(0, t);
+    amp.gain.linearRampToValueAtTime(1, t + 0.005);
+    amp.connect(this.master);
+
+    const offsets = unisonOffsets(s.voices, s.detune), pans = unisonPans(s.voices, s.spread);
+    const base = playedHz(s, note), hA = harmonicsA(s);
+    const a = offsets.map((cents, i) => {
+      const osc = this.ctx.createOscillator();
+      // The centre voice keeps the set phase; the others start elsewhere so a stack does not begin as one spike.
+      osc.setPeriodicWave(this.wave(hA, phaseA + (s.voices > 1 ? i / s.voices : 0)));
+      osc.frequency.value = base * 2 ** (cents / 1200);
+      const gain = this.ctx.createGain();
+      gain.gain.value = OSC_GAIN / Math.sqrt(s.voices);
+      const pan = this.ctx.createStereoPanner();
+      pan.pan.value = pans[i]!;
+      osc.connect(gain).connect(pan).connect(amp);
+      osc.start(t);
+      return { osc, gain, pan };
+    });
+
+    const voice: Voice = { note, phaseA, a, amp };
+    if (s.bOn) {
+      const osc = this.ctx.createOscillator();
+      osc.setPeriodicWave(this.wave(this.shapeHarmonics(s.bShape), s.bPhase / 360));
+      osc.frequency.value = playedHzB(s, note);
+      const gain = this.ctx.createGain();
+      gain.gain.value = OSC_GAIN * dbToGain(s.bLevelDb);
+      osc.connect(gain).connect(amp);
+      osc.start(t);
+      voice.b = { osc, gain };
+    }
+    if (s.subOn) {
+      const osc = this.ctx.createOscillator();
+      osc.type = "sine";
+      osc.frequency.value = subHz(s, note);
+      const gain = this.ctx.createGain();
+      gain.gain.value = OSC_GAIN * dbToGain(s.subLevelDb);
+      osc.connect(gain).connect(amp);
+      osc.start(t);
+      voice.sub = { osc, gain };
+    }
+    if (s.noiseOn) {
+      const src = this.ctx.createBufferSource();
+      src.buffer = this.noiseBuffer(s.noiseType);
+      src.loop = true;
+      const gain = this.ctx.createGain();
+      gain.gain.value = dbToGain(s.noiseLevelDb);
+      src.connect(gain).connect(amp);
+      src.start(t, Math.random());
+      voice.noise = { src, gain };
+    }
+    return voice;
+  }
+
+  private release(v: Voice): void {
+    const t = this.ctx.currentTime;
+    v.amp.gain.cancelScheduledValues(t);
+    v.amp.gain.setTargetAtTime(0, t, 0.01);
+    const stopAt = t + 0.08;
+    for (const x of v.a) x.osc.stop(stopAt);
+    v.b?.osc.stop(stopAt);
+    v.sub?.osc.stop(stopAt);
+    v.noise?.src.stop(stopAt);
   }
 
   /** Apply new settings to everything that is sounding. */
   update(next: SynthState): void {
-    const t = this.ctx.currentTime;
-    const prev = this.state;
+    const t = this.ctx.currentTime, prev = this.state;
     this.state = next;
     if (next.volumeDb !== prev.volumeDb) this.master.gain.setTargetAtTime(dbToGain(next.volumeDb), t, RAMP);
-    for (const v of this.voices) {
-      if (next.shape !== prev.shape) v.osc.setPeriodicWave(this.wave(next.shape));
-      v.osc.frequency.setTargetAtTime(playedHz(next, v.note), t, RAMP);
+    if (STRUCTURAL.some((k) => next[k] !== prev[k])) {
+      // The set of sources changed: restart the sounding notes with the new layout.
+      const notes = this.voices.map((v) => v.note);
+      this.voices.forEach((v) => this.release(v));
+      this.voices = notes.map((n) => this.build(n, this.startPhase()));
+      return;
     }
+    const waveA = next.shape !== prev.shape || next.table !== prev.table || next.position !== prev.position || next.phase !== prev.phase;
+    const hA = waveA ? harmonicsA(next) : undefined;
+    const offsets = unisonOffsets(next.voices, next.detune), pans = unisonPans(next.voices, next.spread);
+    for (const v of this.voices) {
+      if (next.phase !== prev.phase) v.phaseA += (next.phase - prev.phase) / 360;
+      const base = playedHz(next, v.note);
+      v.a.forEach((x, i) => {
+        if (hA) x.osc.setPeriodicWave(this.wave(hA, v.phaseA + (next.voices > 1 ? i / next.voices : 0)));
+        x.osc.frequency.setTargetAtTime(base * 2 ** (offsets[i]! / 1200), t, RAMP);
+        x.pan.pan.setTargetAtTime(pans[i]!, t, RAMP);
+      });
+      if (v.b) {
+        if (next.bShape !== prev.bShape || next.bPhase !== prev.bPhase) v.b.osc.setPeriodicWave(this.wave(this.shapeHarmonics(next.bShape), next.bPhase / 360));
+        v.b.osc.frequency.setTargetAtTime(playedHzB(next, v.note), t, RAMP);
+        v.b.gain.gain.setTargetAtTime(OSC_GAIN * dbToGain(next.bLevelDb), t, RAMP);
+      }
+      if (v.sub) {
+        v.sub.osc.frequency.setTargetAtTime(subHz(next, v.note), t, RAMP);
+        v.sub.gain.gain.setTargetAtTime(OSC_GAIN * dbToGain(next.subLevelDb), t, RAMP);
+      }
+      if (v.noise) v.noise.gain.gain.setTargetAtTime(dbToGain(next.noiseLevelDb), t, RAMP);
+    }
+  }
+
+  private startPhase(): number {
+    return this.state.phase / 360 + Math.random() * (this.state.randomPhase / 100);
   }
 
   noteOn(note: number): void {
     if (this.voices.some((v) => v.note === note)) return;
-    const t = this.ctx.currentTime;
-    const osc = this.ctx.createOscillator();
-    osc.setPeriodicWave(this.wave(this.state.shape));
-    osc.frequency.value = playedHz(this.state, note);
-    const amp = this.ctx.createGain();
-    amp.gain.setValueAtTime(0, t);
-    amp.gain.linearRampToValueAtTime(0.5, t + 0.005);
-    osc.connect(amp).connect(this.master);
-    osc.start(t);
-    this.voices.push({ note, osc, amp });
+    this.voices.push(this.build(note, this.startPhase()));
   }
 
   noteOff(note: number): void {
-    const t = this.ctx.currentTime;
-    for (const v of this.voices.filter((x) => x.note === note)) {
-      v.amp.gain.cancelScheduledValues(t);
-      v.amp.gain.setTargetAtTime(0, t, 0.01);
-      v.osc.stop(t + 0.08);
-    }
+    this.voices.filter((v) => v.note === note).forEach((v) => this.release(v));
     this.voices = this.voices.filter((v) => v.note !== note);
   }
 
@@ -96,13 +216,13 @@ export class Engine {
   }
 
   /**
-   * Play a short tone that is independent of the learner's settings. Used by demos, ear checks and
-   * match-by-ear challenges. `gainDb` is relative to the master volume.
+   * Play a short sound that is independent of what the learner is holding. Used by demos, ear checks and
+   * match-by-ear. Give either a basic shape and frequency, or a whole settings object and a key.
    */
   audition(shape: Shape, hz: number, seconds = 0.9, when = 0, gainDb = -8): void {
     const t = this.ctx.currentTime + when;
     const osc = this.ctx.createOscillator();
-    osc.setPeriodicWave(this.wave(shape));
+    osc.setPeriodicWave(this.wave(this.shapeHarmonics(shape), 0));
     osc.frequency.value = hz;
     const amp = this.ctx.createGain();
     amp.gain.setValueAtTime(0, t);
@@ -111,6 +231,23 @@ export class Engine {
     osc.connect(amp).connect(this.master);
     osc.start(t);
     osc.stop(t + seconds + 0.1);
+  }
+
+  /** Play a whole patch for a moment, without disturbing held notes or the learner's settings. */
+  auditionPatch(patch: SynthState, note: number, seconds = 1.2, when = 0): void {
+    const keep = this.state;
+    this.state = patch;
+    const v = this.build(note, patch.phase / 360);
+    this.state = keep;
+    const t = this.ctx.currentTime;
+    // build() ramps in "now"; shift the whole thing if a delay was asked for
+    if (when > 0) { v.amp.gain.cancelScheduledValues(t); v.amp.gain.setValueAtTime(0, t); v.amp.gain.setValueAtTime(0, t + when); v.amp.gain.linearRampToValueAtTime(1, t + when + 0.01); }
+    v.amp.gain.setTargetAtTime(0, t + when + seconds - 0.08, 0.02);
+    const stopAt = t + when + seconds + 0.15;
+    for (const x of v.a) x.osc.stop(stopAt);
+    v.b?.osc.stop(stopAt);
+    v.sub?.osc.stop(stopAt);
+    v.noise?.src.stop(stopAt);
   }
 
   get held(): number[] {

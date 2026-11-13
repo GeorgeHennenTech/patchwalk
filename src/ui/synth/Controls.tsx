@@ -1,36 +1,51 @@
 import { useEffect, useRef } from "react";
-import { PARAMS, SHAPES, type SynthState } from "../../synth/params";
+import { PARAMS, type SynthState } from "../../synth/params";
 import { KEY_MAP, type Synth } from "../../synth/useSynth";
 
-const fmt = (id: string, v: number) => (id === "freeHz" ? `${Math.round(v)} Hz` : `${v > 0 && id !== "volumeDb" && id !== "freeHz" ? "+" : ""}${v} ${PARAMS[id]!.unit}`);
+const fmt = (id: string, v: number) => {
+  const unit = PARAMS[id]!.unit ?? "";
+  if (id === "freeHz") return `${Math.round(v)} Hz`;
+  const signed = ["octave", "semitone", "fine", "bOctave", "bSemitone", "bFine"].includes(id) && v > 0 ? "+" : "";
+  return `${signed}${v}${unit === "%" || unit === "°" ? unit : unit ? ` ${unit}` : ""}`;
+};
 
-export function Slider({ id, synth, spot }: { id: keyof SynthState; synth: Synth; spot: boolean }) {
+/** One control for any setting: a slider, a set of choices, or an on/off switch, from its spec. */
+export function Control({ id, synth, spot, only }: { id: keyof SynthState; synth: Synth; spot: boolean; only?: readonly string[] }) {
   const spec = PARAMS[id]!;
+  const cls = `ctl${spot ? " spot" : ""}`;
+  if (spec.kind === "toggle") {
+    return (
+      <label className={`${cls} toggle`}>
+        <input type="checkbox" checked={!!synth.state[id]} onChange={(e) => synth.setState({ [id]: e.target.checked } as Partial<SynthState>)} />
+        <span className="ctl-name">{spec.label}</span>
+      </label>
+    );
+  }
+  if (spec.kind === "choice") {
+    const two = id === "shape" && only?.length === 2;
+    const names: Record<string, string> = two ? { sine: "Pure tone", saw: "Bright tone" } : (spec.names ?? {});
+    return (
+      <div className={cls}>
+        <span className="ctl-name">{two ? "Tone" : spec.label}</span>
+        <div className="seg" role="radiogroup" aria-label={spec.label}>
+          {(id === "shape" && only ? only : spec.choices!).map((c) => (
+            <button key={c} role="radio" aria-checked={synth.state[id] === c} className={synth.state[id] === c ? "on" : ""} onClick={() => synth.setState({ [id]: c } as Partial<SynthState>)}>{names[c] ?? c}</button>
+          ))}
+        </div>
+      </div>
+    );
+  }
   const value = (synth.state[id] ?? spec.min!) as number;
   // Log sliders work in octaves so equal drags sound like equal steps.
-  const toPos = (v: number) => (spec.log ? Math.log2(v / spec.min!) / Math.log2(spec.max! / spec.min!) * 1000 : v);
-  const fromPos = (p: number) => (spec.log ? Math.round(spec.min! * 2 ** ((p / 1000) * Math.log2(spec.max! / spec.min!))) : p);
+  const toPos = (v: number) => (spec.log ? (Math.log2(v / spec.min!) / Math.log2(spec.max! / spec.min!)) * 1000 : v);
+  const fromPos = (pos: number) => (spec.log ? Math.round(spec.min! * 2 ** ((pos / 1000) * Math.log2(spec.max! / spec.min!))) : pos);
   return (
-    <label className={`ctl${spot ? " spot" : ""}`}>
+    <label className={cls}>
       <span className="ctl-name">{spec.label}</span>
       <input type="range" min={spec.log ? 0 : spec.min} max={spec.log ? 1000 : spec.max} step={spec.log ? 1 : spec.step} value={toPos(value)}
         onChange={(e) => synth.setState({ [id]: fromPos(Number(e.target.value)) } as Partial<SynthState>)} aria-valuetext={fmt(id, value)} />
       <output>{fmt(id, value)}</output>
     </label>
-  );
-}
-
-export function ShapePicker({ synth, spot, only }: { synth: Synth; spot: boolean; only?: readonly string[] }) {
-  const names: Record<string, string> = only?.length === 2 ? { sine: "Pure tone", saw: "Bright tone" } : { sine: "Sine", triangle: "Triangle", square: "Square", saw: "Saw" };
-  return (
-    <div className={`ctl${spot ? " spot" : ""}`}>
-      <span className="ctl-name">{only?.length === 2 ? "Tone" : "Wave shape"}</span>
-      <div className="seg" role="radiogroup" aria-label="Wave shape">
-        {(only ?? SHAPES).map((s) => (
-          <button key={s} role="radio" aria-checked={synth.state.shape === s} className={synth.state.shape === s ? "on" : ""} onClick={() => synth.setState({ shape: s as SynthState["shape"] })}>{names[s]}</button>
-        ))}
-      </div>
-    </div>
   );
 }
 

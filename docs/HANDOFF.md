@@ -5,7 +5,7 @@ has dropped this file into a new chat to save context and will often say nothing
 re-explain anything here. Read this file, do the "Start here" steps, then carry on with "What to do next".
 Write to the owner the way section 2 describes.
 
-Last updated: 13 November 2026, after commit "Fix knowledge-card text layout" on `main`.
+Last updated: 13 November 2026, after commit "Complete chapter 1 of the practice synth" on `main`.
 
 ---
 
@@ -21,7 +21,7 @@ Last updated: 13 November 2026, after commit "Fix knowledge-card text layout" on
    ```bash
    npm test
    ```
-   Expect 254 passing tests, none skipped.
+   Expect 267 passing tests, none skipped.
 3. **Run it.** `npm run dev` serves the app at http://localhost:5173 including the two server functions.
    The Claude calls report "no API key" locally unless `.env.local` has `ANTHROPIC_API_KEY`; that is expected.
 4. **Then continue with section 8** without waiting for instructions, unless the owner's message says otherwise.
@@ -62,7 +62,7 @@ synthesis course with its own practice synth and an AI guide that answers from a
 | Tab | What it does |
 |---|---|
 | **Rebuild a patch** | Reads a `.SerumPreset` in the browser (never uploaded). Shows a sound-type guess, a lesson in signal-flow order at three difficulty levels, "Explain why" (Claude writes why each step works), envelope and LFO diagrams, a signal-flow view with a modulation map, an active-modules view, "compare your attempt", a display-value table and raw data. An ask box lets the guide answer about the patch. |
-| **Lessons** | The practice synth and seven playable lessons (C0.1 to C0.4, C1.1, C1.2, C1.M). Each lesson: optional "Hear it first" demo, idea text, a knowledge card, guided steps with only the needed controls shown and live targets, guide remarks written by code, optional blind ear check, optional match-by-ear rounds, recap, suggested next lesson, read-aloud, and an ask box. Any order; progress saved in the browser. |
+| **Lessons** | The practice synth (two oscillators, unison, sub, noise, phase, generated wavetables) and fourteen playable lessons: all of chapters 0 and 1, a match-by-ear lesson (C1.M) and the chapter 1 checkpoint (C1.C). Each lesson: optional "Hear it first" demo, idea text, a knowledge card, guided steps with only the needed controls shown and live targets, guide remarks written by code, optional blind ear check, optional match-by-ear rounds, recap, suggested next lesson, read-aloud, and an ask box. Any order; progress saved in the browser. |
 | **Serum tasks** | The older ten lessons: a task done in Serum, checked by dropping the saved preset. |
 | **Ask the guide** | Answers a typed question from the library (the Serum 2 User Guide and the knowledge cards) with page citations and quoted source text. Says "not in the library" instead of guessing. |
 | **System check** | One-click end-to-end test of the explanation service. |
@@ -150,7 +150,7 @@ passed on its second attempt, meaning the validator rejected the first reply and
 the guide" (a correct, cited answer about the filter's FAT knob from pages 135, 136 and 142).
 
 **Proven by measurement only:** the practice synth makes signal; a 12 dB volume change moves the meter 12 dB;
-the square wave shows odd harmonics. All lessons were played through in a headless browser.
+the square wave shows odd harmonics; two squares half a cycle apart nearly cancel; beat rate doubles an octave up. All lessons were played through in a headless browser.
 
 **Not yet judged by a person:** how the practice synth sounds; whether the lesson format feels right; the ask
 box used with lesson or patch context; the match-by-ear difficulty.
@@ -188,13 +188,12 @@ than one instrument instead of being rewritten.
 
 Take these in order. After each, test, check in a browser, commit, push, and report briefly.
 
-1. **Extend the practice synth for lessons C1.3 to C1.8.** Add a second oscillator with its own level, fine
-   tune on both with a beat-rate readout, unison (voices, detune, stereo spread), a sub oscillator, white and
-   pink noise, phase and random phase, and a few generated morphing wavetables with a position control (maths
-   only, no Xfer tables). Convert the six scripts in `docs/lessons/` into playable lessons in
-   `src/course/lessons/`, add "Hear it first" demos, and add the chapter 1 checkpoint. Extend match-by-ear
-   rounds to use the new controls.
-2. **Filter chapter (C2).** A filter with cutoff, resonance, type, slope and drive, with the first
+1. **Done (13 Nov 2026): chapter 1.** The synth now has a second oscillator, unison, sub, noise, phase and
+   generated wavetables, and lessons C1.3 to C1.8 plus the checkpoint C1.C are playable. Two scripted lessons
+   were adapted to what the synth has: C1.6 holds one note instead of a chord (Hold latches one note), and
+   C1.7 raises and lowers the sub level instead of muting oscillator A (A has no level control yet). C1.9
+   (pulse width) is in the plan but not scripted or built.
+2. **Next: filter chapter (C2).** A filter with cutoff, resonance, type, slope and drive, with the first
    interactive diagram: a filter curve the learner can drag while a note sounds. Script and build C2 lessons.
 3. **Envelopes (C3)** with a draggable envelope drawing, then **LFOs and modulation (C4, C5)**.
 4. **Guide improvements** alongside: remember more than finished lessons (for example what the learner found
@@ -282,5 +281,5 @@ Ask about these only when relevant; do not block on them.
 5. Took in the Serum 2 User Guide: manual-based names in the app, a Serum-specifics track, and the library
    with "Ask the guide". Both Claude calls were then proven live.
 6. Built the practice synth, seven playable lessons, "Hear it first", match-by-ear, read-aloud, and the guide
-   in context.
+   in context. Later extended the synth and completed chapter 1 (fourteen lessons).
 7. Fixed knowledge-card text that rendered as one block of capitals, and wrote this handoff.

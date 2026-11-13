@@ -79,7 +79,8 @@ export function useSynth() {
       engine.current?.update(next);
       setStateRaw(next);
     }
-    track.current = newTrack(stateRef.current);
+    const last = track.current.lastNote;
+    track.current = { ...newTrack(stateRef.current), lastNote: last };
     if ((engine.current?.held.length ?? 0) > 0) track.current = { ...track.current, heldSince: now() };
     refresh();
   }, []);

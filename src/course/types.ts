@@ -21,11 +21,13 @@ export interface Snapshot {
   range: Partial<Record<keyof SynthState, { min: number; max: number }>>;
   /** How many times each setting has changed since the step began. */
   changes: Partial<Record<keyof SynthState, number>>;
+  /** The most recent note played, or null if none yet. Used for readings that depend on the key. */
+  lastNote: number | null;
   /** Things the learner clicked that are not synth settings (e.g. "acknowledged"). */
   flags: Record<string, boolean>;
 }
 
-export type Panel = "start" | "keyboard" | "hold" | "scope" | "spectrum" | "meter" | "ack" | keyof SynthState;
+export type Panel = "start" | "keyboard" | "hold" | "scope" | "spectrum" | "meter" | "beat" | "ack" | keyof SynthState;
 
 export interface LessonStep {
   do: string;
@@ -42,13 +44,17 @@ export interface LessonStep {
   remark?: (s: Snapshot) => string | undefined;
 }
 
-/** One tone in a "hear it first" demo. Times are seconds from the start of the demo. */
+/** One sound in a "hear it first" demo. Times are seconds from the start of the demo. */
 export interface DemoTone {
-  shape: SynthState["shape"];
-  hz: number;
+  /** A basic shape at a frequency... */
+  shape?: SynthState["shape"];
+  hz?: number;
+  /** ...or a whole patch (changes from the starting settings) played on a key. */
+  patch?: Partial<SynthState>;
+  note?: number;
   at: number;
   seconds: number;
-  /** Level relative to the master volume, in dB. Default -8. */
+  /** Level relative to the master volume, in dB. Default -8. Only for shape tones. */
   gainDb?: number;
 }
 
@@ -59,6 +65,8 @@ export interface MatchRound {
   match: (keyof SynthState)[];
   /** Where the learner's settings start for this round. */
   from: Partial<SynthState>;
+  /** Controls shown for the round, when more than the compared ones are needed. Defaults to `match`. */
+  controls?: (keyof SynthState)[];
 }
 
 export interface PlayableLesson {

@@ -4,20 +4,29 @@ import { allMatch, compareToTarget, type MatchVerdict } from "../course/match";
 import { guideContext, loadDone, saveDone, suggestNext } from "../course/progress";
 import type { MatchRound, Panel, PlayableLesson } from "../course/types";
 import type { Card } from "../lesson/cards";
-import { INITIAL, noteToHz, PARAMS, playedHz, SHAPES, type Shape, type SynthState } from "../synth/params";
+import { beatHz, INITIAL, noteToHz, PARAMS, SHAPES, type Group, type Shape, type SynthState } from "../synth/params";
 import { useSynth, type Synth } from "../synth/useSynth";
 import { AskBox } from "./Answer";
 import { Badge } from "./Badge";
 import { Markdown } from "./Markdown";
-import { Keyboard, ShapePicker, Slider } from "./synth/Controls";
+import { Control, Keyboard } from "./synth/Controls";
 import { Meter, Scope, Spectrum } from "./synth/Views";
 
-const SLIDERS = ["volumeDb", "freeHz", "octave", "semitone", "fine"] as const;
-const describe = (s: SynthState) =>
-  [`wave shape ${s.shape}`, `volume ${s.volumeDb} dB`, s.freeHz !== null ? `frequency fixed at ${s.freeHz} Hz` : `octave ${s.octave}, semitone ${s.semitone}, fine ${s.fine} cents`].join(", ");
+const GROUPS: Group[] = ["Master", "Oscillator A", "Unison", "Oscillator B", "Sub", "Noise"];
+const describe = (s: SynthState) => [
+  `volume ${s.volumeDb} dB`,
+  s.table === "none" ? `oscillator A wave shape ${s.shape}` : `oscillator A wavetable ${PARAMS.table!.names![s.table]} at position ${s.position}%`,
+  s.freeHz !== null ? `frequency fixed at ${s.freeHz} Hz` : `octave ${s.octave}, semitone ${s.semitone}, fine ${s.fine} cents`,
+  s.voices > 1 ? `unison ${s.voices} voices, detune ${s.detune} cents, spread ${s.spread}%` : "unison off",
+  s.bOn ? `oscillator B on (${s.bShape}, octave ${s.bOctave}, semitone ${s.bSemitone}, fine ${s.bFine} cents, level ${s.bLevelDb} dB)` : "oscillator B off",
+  s.subOn ? `sub on (${s.subOctave} octave, ${s.subLevelDb} dB)` : "sub off",
+  s.noiseOn ? `${s.noiseType} noise on (${s.noiseLevelDb} dB)` : "noise off",
+].join("; ");
 
-function SynthPanel({ synth, show, lesson, all }: { synth: Synth; show: Panel[]; lesson: PlayableLesson; all: boolean }) {
+function SynthPanel({ synth, show, lesson, all, lastNote }: { synth: Synth; show: Panel[]; lesson: PlayableLesson; all: boolean; lastNote?: number | null }) {
   const on = (p: Panel) => all || show.includes(p);
+  const ids = (Object.keys(PARAMS) as (keyof SynthState)[]).filter((id) => on(id) && (id !== "freeHz" || synth.state.freeHz !== null));
+  const beat = beatHz(synth.state, synth.held.at(-1) ?? lastNote ?? 57);
   return (
     <div className="synth">
       {!synth.running && <button className="primary big" onClick={() => void synth.start()}>Start audio</button>}
@@ -25,9 +34,22 @@ function SynthPanel({ synth, show, lesson, all }: { synth: Synth; show: Panel[];
         {on("scope") && <Scope synth={synth} />}
         {on("spectrum") && <Spectrum synth={synth} />}
       </div>
+      {GROUPS.map((g) => {
+        const mine = ids.filter((id) => PARAMS[id]!.group === g);
+        if (!mine.length) return null;
+        return (
+          <div key={g} className="synth-group">
+            {(all || ids.length > 3) && <div className="synth-group-name">{g}</div>}
+            <div className="synth-ctls">
+              {mine.map((id) => <Control key={id} id={id} synth={synth} spot={show.includes(id)} only={!all && id === "shape" ? lesson.shapes : undefined} />)}
+            </div>
+          </div>
+        );
+      })}
       <div className="synth-ctls">
-        {on("shape") && <ShapePicker synth={synth} spot={show.includes("shape")} only={all ? undefined : lesson.shapes} />}
-        {SLIDERS.filter((id) => on(id) && (id !== "freeHz" || synth.state.freeHz !== null)).map((id) => <Slider key={id} id={id} synth={synth} spot={show.includes(id)} />)}
+        {on("beat") && (
+          <div className={`ctl${show.includes("beat") ? " spot" : ""}`}><span className="ctl-name">Beat rate</span><output className="wide">{synth.state.bOn ? `${beat.toFixed(1)} per second on this key` : "Osc B is off"}</output></div>
+        )}
         {on("meter") && <Meter synth={synth} />}
         {on("hold") && (
           <label className={`ctl toggle${show.includes("hold") ? " spot" : ""}`}>
@@ -73,7 +95,7 @@ function MatchRounds({ rounds, synth, lesson, onPass }: { rounds: MatchRound[]; 
     if (!finished) { synth.setState(round.from); setVerdicts(undefined); setChecks(0); }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index]);
-  const hear = (state: SynthState) => synth.engine.current?.audition(state.shape, playedHz(state, NOTE), 1.1);
+  const hear = (state: SynthState) => synth.engine.current?.auditionPatch(state, NOTE, 1.3);
   const target = { ...INITIAL, ...round.from, ...round.target };
   const check = () => { setVerdicts(compareToTarget(synth.state, round.target, round.match)); setChecks(checks + 1); };
   const matched = !!verdicts && allMatch(verdicts);
@@ -87,7 +109,7 @@ function MatchRounds({ rounds, synth, lesson, onPass }: { rounds: MatchRound[]; 
       <h3>Match by ear <Badge kind={finished ? "ok" : "muted"}>{finished ? "all matched" : `round ${index + 1} of ${rounds.length}`}</Badge></h3>
       {!finished && (
         <>
-          <p>Listen to the target, then to yours. Change {round.match.map((k) => PARAMS[k]!.label.toLowerCase()).join(", ").replace(/, ([^,]*)$/, " and $1")} until they sound the same, then check.</p>
+          <p>Listen to the target, then to yours. Change {(round.controls ?? round.match).map((k) => PARAMS[k]!.label.toLowerCase()).join(", ").replace(/, ([^,]*)$/, " and $1")} until they sound the same, then check.</p>
           {!synth.running ? <button className="primary" onClick={() => void synth.start()}>Start audio</button> : (
             <div className="toolbar">
               <button className="primary" onClick={() => hear(target)}>Hear target</button>
@@ -96,7 +118,7 @@ function MatchRounds({ rounds, synth, lesson, onPass }: { rounds: MatchRound[]; 
               <button className="primary" onClick={check}>Check</button>
             </div>
           )}
-          <SynthPanel synth={synth} show={round.match} lesson={lesson} all={false} />
+          <SynthPanel synth={synth} show={round.controls ?? round.match} lesson={lesson} all={false} />
           {verdicts && (
             <ul className="checks" role="status">
               {round.match.map((k) => <li key={k} className={verdicts[k] === "match" ? "ok" : "no"}><span aria-hidden>{verdicts[k] === "match" ? "✓" : "✗"}</span> {PARAMS[k]!.label}: {verdicts[k] === "match" ? "matches" : verdicts[k] === "different" ? "not the same as the target" : `yours is ${verdicts[k]}`}</li>)}
@@ -201,7 +223,10 @@ export function PlayView({ cards }: { cards: Card[] }) {
   const inRounds = finishedSteps && !!lesson.rounds && !roundsPassed;
   const playDemo = async () => {
     await synth.start();
-    for (const t of lesson.demo?.tones ?? []) synth.engine.current?.audition(t.shape, t.hz, t.seconds, t.at, t.gainDb);
+    for (const t of lesson.demo?.tones ?? []) {
+      if (t.patch) synth.engine.current?.auditionPatch({ ...INITIAL, ...t.patch }, t.note ?? 57, t.seconds, t.at);
+      else if (t.shape && t.hz) synth.engine.current?.audition(t.shape, t.hz, t.seconds, t.at, t.gainDb);
+    }
   };
   useEffect(() => { if (complete && !done.includes(lesson.id)) setDone((d) => [...d, lesson.id]); }, [complete, done, lesson.id]);
 
@@ -236,7 +261,7 @@ export function PlayView({ cards }: { cards: Card[] }) {
 
         {!inRounds && (
           <div className="stage-box">
-            <SynthPanel synth={synth} show={finishedSteps || !lesson.steps.length ? [] : step.show} lesson={lesson} all={all || finishedSteps} />
+            <SynthPanel synth={synth} show={finishedSteps || !lesson.steps.length ? [] : step.show} lesson={lesson} all={all || finishedSteps} lastNote={snap.lastNote} />
             <button className="link" onClick={() => setAll(!all)}>{all ? "Show only this step’s controls" : "Show the whole synth"}</button>
           </div>
         )}

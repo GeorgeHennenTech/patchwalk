@@ -225,3 +225,9 @@ details.card summary { cursor: pointer; font-weight: 700; }
 .card p { margin: 0 0 8px; font-size: 15px; line-height: 1.6; text-transform: none; letter-spacing: 0; color: var(--text); font-weight: 400; max-width: 66ch; }
 details.card summary { font-size: 16px; padding: 2px 0; }
 details.card[open] summary { margin-bottom: 4px; border-bottom: 1px dashed var(--line); padding-bottom: 8px; }
+
+.synth-group { display: flex; flex-direction: column; gap: 6px; }
+.synth-group-name { font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+.ctl output.wide { min-width: 0; flex: 1; text-align: left; }
+
+.badge-muted { background: var(--panel); color: var(--muted); border: 1.5px dashed var(--muted); }

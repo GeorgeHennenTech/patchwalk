@@ -5,7 +5,7 @@ import type { SynthState } from "../synth/params";
 export type MatchVerdict = "match" | "too low" | "too high" | "different";
 
 /** How close a numeric setting has to be to count. Pitch in cents is the only one with slack. */
-const TOLERANCE: Partial<Record<keyof SynthState, number>> = { fine: 10, freeHz: 0, volumeDb: 2 };
+const TOLERANCE: Partial<Record<keyof SynthState, number>> = { fine: 10, bFine: 10, freeHz: 0, volumeDb: 2, detune: 12, position: 12, spread: 20, bLevelDb: 4, subLevelDb: 4, noiseLevelDb: 5 };
 
 export function compareSetting(key: keyof SynthState, mine: SynthState, target: Partial<SynthState>): MatchVerdict {
   const a = mine[key], b = target[key];

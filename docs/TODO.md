@@ -1,7 +1,7 @@
 # Patchwalk to-do
 
-The working list for the owner and the assistant. Tick a box when a thing is done. The pane beside the chat
-(the "patchwalk-todo" mod, opened with `/todo`) shows this file. `docs/HANDOFF.md` has the background.
+The working list for the owner and the assistant. Tick a box when a thing is done. The owner's live copy is the "Patchwalk To-Do" page
+(https://claude.ai/artifact/7sHF6r2vvBuxa8DSkcfcPz); keep the two in step. `docs/HANDOFF.md` has the background.
 
 ## Build next
 - [x] Envelope lessons: five lessons and a checkpoint, with an envelope drawing you can drag

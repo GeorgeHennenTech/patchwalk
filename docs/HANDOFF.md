@@ -253,10 +253,19 @@ Smaller items to pick up when convenient:
 ---
 
 ## 8b. The to-do list
-`docs/TODO.md` is the working list, with tick boxes; keep it current as things are finished or added. In a
-session where the "patchwalk-todo" mod is loaded, a pane beside the chat shows it (`/todo`), with a progress bar,
-sections in the neon colours, tickable items, and a one-line strip above the prompt when it is closed. The mod lives in
-the session's container, not the repo, and has to be rebuilt in a new one if the owner wants the pane again.
+`docs/TODO.md` is the repository's copy of the working list, with tick boxes.
+
+**What the owner actually looks at is a page:** "Patchwalk To-Do", https://claude.ai/artifact/7sHF6r2vvBuxa8DSkcfcPz
+(private to the owner; made 13 Nov 2026). Its items live in the page's own database (collection `todos`, one
+document per item: `section`, `sectionOrder`, `order`, `text`, `done`), so the owner can tick and add items
+there and the assistant can add or tick them with the `ArtifactData` tool without republishing. **When
+something is finished or added, update both the page and `docs/TODO.md`.** Read the page's items first: the
+owner may have ticked or added things. In a new conversation, pass that URL to the Artifact tool to keep the
+same page.
+
+A Claude Code mod ("patchwalk-todo", `/todo`) was tried first because the owner asked for one. In the
+owner's set-up (desktop app, cloud session) its side pane was never drawn, so the page replaced it. The mod
+only lived in that session's container.
 
 ## 9. Waiting on the owner
 

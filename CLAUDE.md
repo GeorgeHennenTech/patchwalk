@@ -152,7 +152,11 @@ Added after the first eight milestones (owner asked for all four in one go):
     trigger modes and C4.6 drawn shapes wait for those controls).
     `lessons/chapter5.ts` holds the modulation chapter (C5.1, C5.2, C5.6 and the checkpoint C5.C; C5.3 velocity
     and key position, C5.4 macros and C5.5 scaling a route wait for those controls).
-    **Thirty-six playable lessons; chapters 0 to 5 are started or built.**
+    C5.3 (velocity and key position) was added to chapter 5 once those sources existed.
+    `lessons/macros.ts` holds the macro chapter (C5M.1 to C5M.8 and the checkpoint C5M.C): most are "recipes",
+    a few lines of data each that `recipe()` turns into a full lesson. **The owner wants many macro
+    combinations: add to `RECIPES`.** Chapter order is `CHAPTER_ORDER`, not the key order of `CHAPTERS`.
+    **Forty-six playable lessons.**
   - `src/ui/PlayView.tsx` ("Lessons" tab) and `src/ui/synth/` — spotlighted controls per step, live targets,
     scope, spectrum, meter, on-screen keyboard, Hold, blind ear checks, recap, guide remarks and suggestion.
   - "Hear it first" demos (`demo` on a lesson), match-by-ear rounds (`rounds`, compared by `src/course/match.ts`:
@@ -228,8 +232,26 @@ Added after the first eight milestones (owner asked for all four in one go):
     square reached only about 86% depth, which put a one-way trill out of tune. Measured after the change:
     both ways 220/880 Hz and one way 440/880 Hz on a 440 Hz note at 100%, saw and triangle full range, and a
     4 Hz tremolo driven one octave each way by a square LFO gave about 8 then 2 swells a second.
+  - **Macros, velocity, key position, matrix view (13 Nov 2026, owner's request).**
+    `src/synth/macros.ts`: four macros, each a 0-100 knob with a name and three slots (destination + amount).
+    A destination is any continuous knob (`MACRO_DESTS`; not number boxes, not other macros). A macro is not
+    an audio signal: `applyMacros(state)` adds each slot's push (macro position x amount, as a fraction of the
+    destination knob's travel) to the settings, and **the engine plays the settings after macros** (it calls
+    `applyMacros` itself in its constructor, `update` and `auditionPatch`). Knobs keep showing where the
+    learner left them, with a dim ring for a macro's reach, a bright part for how far it is turned, and a dot
+    at the played position; `synth.effective` is the after-macros state, used by the pictures. Lesson checks
+    read `s.state` (the knobs as left) and call `applyMacros` when they need the played values.
+    Velocity (1-127; from how low a key is clicked, or the C and V keys for the letter keys) and key position
+    (-1..1 around middle C) are sources fixed for the length of a note, with one destination each like the
+    others. "Note level" is a destination for all sources (a gain after the envelope; a positive one-way
+    amount lowers the starting level so soft notes are quieter and the hardest is full level).
+    `Matrix` in `Views.tsx` (a "Matrix" toggle in the Show row) lists every route and macro slot; it is
+    read-only. **The owner wants a full editable Matrix tab later.** Measured: velocity 32/64/127 to Note
+    level at 100% gave -12/-6/0 dB; a macro slot of 20% on cutoff moved a resonant whistle 500/1000/2000 Hz
+    at 0/50/100%; key position at 40% on cutoff gave two octaves at the top key.
   - Not built yet: effects, MIDI input, a shared tempo clock, envelope curves and hold, LFO sync, trigger
-    modes and drawn shapes, velocity, macros, a mod wheel. Next in the plan is chapter 6 (reshaping the
+    modes and drawn shapes, a mod wheel, an editable matrix. **Owner's order for what comes next (13 Nov
+    2026): envelope curves and hold plus tempo-synced and drawable LFOs, then warp, sync, FM and ring mod.** Next in the plan is chapter 6 (reshaping the
     source: warp, sync, FM, ring modulation), all of which need new oscillator features first.
   - The old ten Serum-task lessons are now the "Serum tasks" tab.
 - **Pictures and lesson links in answers (13 Nov 2026, owner's rule).** When the guide cites a page that has
@@ -254,7 +276,7 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
 - **Private, single-user.** The owner has said this program is strictly for them and will never be distributed.
   Design for one user; do not add accounts, sharing or public pages. Rule 4 still applies to the name and look.
 - **Course:** `docs/CURRICULUM.md` maps 16 tracks and about 400 lessons (one line each); `docs/lessons/` holds
-  fully scripted lessons in a fixed shape (30 so far, all drafts); `docs/COURSE_PLAN.md` describes the practice
+  fully scripted lessons in a fixed shape (39 so far, all drafts); `docs/COURSE_PLAN.md` describes the practice
   synth and lesson engine. A university programme's topic list was used only as a coverage checklist.
   See also `docs/COURSE_PLAN.md`. Guided lessons on a built-in practice synth; lessons can be taken in any
   order; each lesson is its own data file so chapters are easy to add. Tracks are to grow well beyond synthesis
@@ -335,7 +357,7 @@ use explicit `.js` import suffixes so they load as plain Node ESM.
 - New knowledge cards: copy `knowledge-cards/_template.md`. Avoid numbers in cards. Only add reading links
   that have been opened and checked.
 - **Lesson labels.** Codes such as `C2.5` are for code, scripts and plans only. The learner sees lessons grouped
-  under chapter names ("Sound itself", "Oscillators", "Filters", "Envelopes", "LFOs", "Modulation"; `CHAPTERS` in `src/course/lessons/index.ts`),
+  under chapter names ("Sound itself", "Oscillators", "Filters", "Envelopes", "LFOs", "Modulation", "Macros"; `CHAPTERS` in `src/course/lessons/index.ts`),
   numbered within the chapter, with "Filters · lesson 5 of 8" above the title. A test stops lesson text from
   citing another lesson by code. Add the chapter's name to `CHAPTERS` when starting a new chapter.
 - Skin: content must stay on solid panels for legibility; fabric textures are for chrome only (header, tabs,

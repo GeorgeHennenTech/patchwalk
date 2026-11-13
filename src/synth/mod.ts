@@ -2,15 +2,23 @@
 // how far a given amount moves a destination. Pure data and maths; the engine and the knob rings share it.
 import type { Dest, SynthState } from "./params";
 
-export type ModSource = "env2" | "lfo1" | "lfo2" | "lfo3";
-export interface SourceInfo { id: ModSource; name: string; kind: "env" | "lfo"; color: string }
+export type ModSource = "env2" | "lfo1" | "lfo2" | "lfo3" | "vel" | "key";
+/** "note" sources are fixed while a note sounds: how hard it was struck, and which key it was. */
+export interface SourceInfo { id: ModSource; name: string; kind: "env" | "lfo" | "note"; color: string }
 /** Each source has its own neon colour; a knob it moves wears a ring of that colour. */
 export const SOURCES: SourceInfo[] = [
   { id: "env2", name: "Env 2", kind: "env", color: "#ffe14a" },
   { id: "lfo1", name: "LFO 1", kind: "lfo", color: "#3df5ff" },
   { id: "lfo2", name: "LFO 2", kind: "lfo", color: "#7dff5c" },
   { id: "lfo3", name: "LFO 3", kind: "lfo", color: "#ff9a3d" },
+  { id: "vel", name: "Velocity", kind: "note", color: "#ff5a5a" },
+  { id: "key", name: "Key position", kind: "note", color: "#b9a1ff" },
 ];
+
+/** Velocity runs from 1 (softest) to 127 (hardest), as on any keyboard. As a source it is 0 to 1. */
+export const velocityValue = (velocity: number) => Math.min(1, Math.max(0, velocity / 127));
+/** Key position is 0 at middle C, 1 two octaves above it and -1 two octaves below. */
+export const keyValue = (note: number) => Math.min(1, Math.max(-1, (note - 60) / 24));
 /** Envelope 1 always shapes the level of every note; it has a colour for its panel but is not routed. */
 export const ENV1_COLOR = "#ff5cb4";
 
@@ -26,7 +34,7 @@ export interface Route {
 export function routes(s: SynthState): Route[] {
   return SOURCES.flatMap((source) => {
     const dest = s[`${source.id}Dest`], amount = s[`${source.id}Amount`];
-    const oneWay = source.kind === "env" || s[`${source.id as "lfo1"}Way`] === "up";
+    const oneWay = source.kind === "env" || source.id === "vel" || (source.kind === "lfo" && s[`${source.id as "lfo1"}Way`] === "up");
     return dest === "none" ? [] : [{ source, dest, amount, oneWay }];
   });
 }
@@ -50,6 +58,15 @@ export function modDepth(dest: ModDest, amount: number): number {
   if (dest === "fine" || dest === "bFine") return a * PITCH_SEMITONES * 100;
   if (dest === "lfo1Rate") return a * RATE_OCTAVES * 1200;
   return dest === "none" ? 0 : a;
+}
+
+/**
+ * The whole note's level before its "Note level" routes are added. A one-way source with a positive amount
+ * (velocity, usually) should turn soft notes down and leave the hardest at full level, so the starting
+ * level drops by that amount and the source brings it back up.
+ */
+export function noteLevelBase(s: SynthState): number {
+  return Math.max(0, 1 - routes(s).filter((r) => r.dest === "noteLevel" && r.oneWay && r.amount > 0).reduce((sum, r) => sum + r.amount / 100, 0));
 }
 
 export interface Adsr { attack: number; decay: number; sustain: number; release: number }

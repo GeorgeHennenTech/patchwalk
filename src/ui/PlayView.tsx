@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { CHAPTERS, chapterOf, LESSONS, placeOf } from "../course/lessons";
+import { CHAPTER_ORDER, CHAPTERS, chapterOf, LESSONS, placeOf } from "../course/lessons";
 import { allMatch, compareToTarget, type MatchVerdict } from "../course/match";
 import { guideContext, loadDone, saveDone, suggestNext } from "../course/progress";
 import type { MatchRound, Panel, PlayableLesson } from "../course/types";
 import type { Card } from "../lesson/cards";
+import { macroSlots } from "../synth/macros";
 import { routes } from "../synth/mod";
 import { beatHz, DEST_NAMES, INITIAL, noteToHz, PARAMS, SHAPES, type Shape, type SynthState } from "../synth/params";
 import { useSynth, type Synth } from "../synth/useSynth";
@@ -12,7 +13,7 @@ import { Badge } from "./Badge";
 import { Markdown } from "./Markdown";
 import { Control, Keyboard } from "./synth/Controls";
 import { Rack } from "./synth/Rack";
-import { EnvCurve, FilterCurve, Meter, Scope, Spectrogram, Spectrum } from "./synth/Views";
+import { EnvCurve, FilterCurve, Matrix, Meter, Scope, Spectrogram, Spectrum } from "./synth/Views";
 
 const describe = (s: SynthState) => [
   `volume ${s.volumeDb} dB`,
@@ -25,12 +26,13 @@ const describe = (s: SynthState) => [
   s.noiseOn ? `${s.noiseType} noise on (${s.noiseLevelDb} dB)` : "noise off",
   s.filterOn ? `filter on (${PARAMS.filterType!.names![s.filterType]}, cutoff ${s.cutoff} Hz, resonance ${s.resonance}%, slope ${s.slope} dB per octave, drive ${s.drive}%, key tracking ${s.keyTrack}%)` : "filter off",
   `envelope 1 (level): attack ${s.envA} ms, decay ${s.envD} ms, sustain ${s.envS}%, release ${s.envR} ms`,
+  ...macroSlots(s).map((m) => `macro "${m.name}" (at ${m.value}%) moves ${PARAMS[m.dest]!.label.toLowerCase()} by up to ${m.amount}% of its travel`),
   ...routes(s).map((r) => `${r.source.name} sent to ${DEST_NAMES[r.dest].toLowerCase()} at ${r.amount}%${r.source.kind === "lfo" ? ` (${s[`${r.source.id as "lfo1"}Shape`]}, ${s[`${r.source.id as "lfo1"}Rate`]} Hz)` : ""}`),
 ].join("; ");
 
 /** Views of the sound the learner can switch on at any time, whatever the current step shows. */
 const VIEWS: { id: Panel; label: string }[] = [
-  { id: "scope", label: "Scope" }, { id: "spectrum", label: "Spectrum" }, { id: "spectrogram", label: "Spectrogram" }, { id: "meter", label: "Level" }, { id: "curve", label: "Filter curve" },
+  { id: "scope", label: "Scope" }, { id: "spectrum", label: "Spectrum" }, { id: "spectrogram", label: "Spectrogram" }, { id: "meter", label: "Level" }, { id: "curve", label: "Filter curve" }, { id: "matrix", label: "Matrix" },
 ];
 const VIEWS_KEY = "patchwalk.play.views";
 const SKIN_KEY = "patchwalk.play.skin";
@@ -71,6 +73,7 @@ function SynthPanel({ synth, show, lesson, all, lastNote, extra = [], onExtra, p
         {show.includes("envelope") && <EnvCurve synth={synth} which={1} spot />}
         {show.includes("envelope2") && <EnvCurve synth={synth} which={2} spot />}
         {on("spectrogram") && <Spectrogram synth={synth} />}
+        {on("matrix") && <Matrix synth={synth} />}
         {!all && !show.includes("curve") && extra.includes("curve") && <FilterCurve synth={synth} note={note} />}
       </div>
       <div className="synth-ctls">
@@ -261,7 +264,7 @@ export function PlayView({ cards, wanted }: { cards: Card[]; wanted?: { id: stri
   const playDemo = async () => {
     await synth.start();
     for (const t of lesson.demo?.tones ?? []) {
-      if (t.patch) synth.engine.current?.auditionPatch({ ...INITIAL, ...t.patch }, t.note ?? 57, t.seconds, t.at);
+      if (t.patch) synth.engine.current?.auditionPatch({ ...INITIAL, ...t.patch }, t.note ?? 57, t.seconds, t.at, t.velocity);
       else if (t.shape && t.hz) synth.engine.current?.audition(t.shape, t.hz, t.seconds, t.at, t.gainDb);
     }
   };
@@ -277,7 +280,7 @@ export function PlayView({ cards, wanted }: { cards: Card[]; wanted?: { id: stri
     <div className="learn">
       <nav className="learn-nav" aria-label="Lessons">
         <div className="learn-progress">{done.length} of {LESSONS.length} done. Take them in any order.</div>
-        {Object.keys(CHAPTERS).map((c) => (
+        {CHAPTER_ORDER.map((c) => (
           <div key={c} className="learn-chapter" role="group" aria-label={CHAPTERS[c]}>
             <div className="learn-chapter-name">{CHAPTERS[c]}</div>
             {LESSONS.filter((l) => chapterOf(l) === c).map((l, i) => (

@@ -1,7 +1,8 @@
 // Web Audio engine for the practice synth. It renders SynthState and reports what is sounding.
 // Built around a shared AudioContext clock and a per-instrument voice list so more instruments and a
 // tempo clock (for the later mini DAW) can be added without rewriting it.
-import { adsr, isLevel, modDepth, routes, type Route } from "./mod";
+import { applyMacros } from "./macros";
+import { adsr, isLevel, keyValue, modDepth, noteLevelBase, routes, velocityValue, type Route } from "./mod";
 import { DRIVE_RANGE, driveCurve, filterStages, resonanceTrim, type Stage } from "./filter";
 import { dbToGain, harmonic, harmonicsA, HARMONICS, playedHz, playedHzB, subHz, unisonOffsets, unisonPans, type Shape, type SynthState } from "./params";
 
@@ -12,6 +13,10 @@ interface Voice {
   note: number;
   /** Start phase of oscillator A for this note, in cycles (includes the random part). */
   phaseA: number;
+  /** How hard the note was struck, 1 to 127. */
+  velocity: number;
+  /** The whole note's level, after the envelope: where "Note level" routes land. */
+  out: GainNode;
   a: { osc: OscillatorNode; gain: GainNode; pan: StereoPannerNode }[];
   b?: { osc: OscillatorNode; gain: GainNode };
   sub?: { osc: OscillatorNode; gain: GainNode };
@@ -24,7 +29,7 @@ interface Voice {
 }
 
 /** Settings whose change means rebuilding the sounding notes (the set of sound sources changes). */
-const STRUCTURAL: (keyof SynthState)[] = ["voices", "bOn", "subOn", "noiseOn", "noiseType", "randomPhase", "env2Dest", "lfo1Dest", "lfo2Dest", "lfo3Dest"];
+const STRUCTURAL: (keyof SynthState)[] = ["voices", "bOn", "subOn", "noiseOn", "noiseType", "randomPhase", "env2Dest", "lfo1Dest", "lfo2Dest", "lfo3Dest", "velDest", "keyDest"];
 /** Stop changing a value from `t` on, keeping whatever it has reached (older browsers: drop what was planned). */
 const holdAt = (p: AudioParam, t: number) => (p.cancelAndHoldAtTime ? p.cancelAndHoldAtTime(t) : p.cancelScheduledValues(t));
 
@@ -40,7 +45,7 @@ export class Engine {
 
   constructor(state: SynthState, ctx: AudioContext = new AudioContext()) {
     this.ctx = ctx;
-    this.state = state;
+    this.state = applyMacros(state);
     this.master = ctx.createGain();
     this.master.gain.value = dbToGain(state.volumeDb);
     // A limiter-style compressor protects ears and speakers if several notes stack up.
@@ -174,6 +179,7 @@ export class Engine {
       case "subLevelDb": return v.sub ? [v.sub.gain.gain] : [];
       case "noiseLevelDb": return v.noise ? [v.noise.gain.gain] : [];
       // an LFO's speed, moved in octaves through its detune setting
+      case "noteLevel": return [v.out.gain];
       case "lfo1Rate": return v.mods.flatMap((m) => (m.route.source.id === "lfo1" && m.src instanceof OscillatorNode ? [m.src.detune] : []));
     }
   }
@@ -188,6 +194,10 @@ export class Engine {
         src = this.ctx.createOscillator();
         this.setLfoShape(src, s[`${id}Shape`]);
         src.frequency.value = s[`${id}Rate`];
+      } else if (route.source.kind === "note") {
+        // fixed for the whole note: how hard it was struck, or where on the keyboard it is
+        src = this.ctx.createConstantSource();
+        src.offset.value = route.source.id === "vel" ? velocityValue(v.velocity) : keyValue(v.note);
       } else {
         const e = adsr(s, 2);
         src = this.ctx.createConstantSource();
@@ -222,7 +232,7 @@ export class Engine {
     const release = adsr(s, 1).release, tc = Math.max(0.003, release / 4);
     holdAt(v.amp.gain, t);
     v.amp.gain.setTargetAtTime(0, t, tc);
-    for (const m of v.mods) if (m.src instanceof ConstantSourceNode) { holdAt(m.src.offset, t); m.src.offset.setTargetAtTime(0, t, Math.max(0.003, adsr(s, 2).release / 4)); }
+    for (const m of v.mods) if (m.route.source.kind === "env" && m.src instanceof ConstantSourceNode) { holdAt(m.src.offset, t); m.src.offset.setTargetAtTime(0, t, Math.max(0.003, adsr(s, 2).release / 4)); }
     const stopAt = t + tc * 7 + 0.03;
     for (const x of v.a) x.osc.stop(stopAt);
     v.b?.osc.stop(stopAt);
@@ -231,7 +241,7 @@ export class Engine {
     for (const m of v.mods) { m.src.stop(stopAt); m.bias.stop(stopAt); }
   }
 
-  private build(note: number, phaseA: number, t = this.ctx.currentTime): Voice {
+  private build(note: number, phaseA: number, t = this.ctx.currentTime, velocity = 100): Voice {
     const s = this.state;
     const amp = this.ctx.createGain();
     // Envelope 1: a straight rise over the attack, then easing down to the sustain level.
@@ -239,7 +249,9 @@ export class Engine {
     amp.gain.setValueAtTime(0, t);
     amp.gain.linearRampToValueAtTime(1, t + env.attack);
     if (env.sustain < 1) amp.gain.setTargetAtTime(env.sustain, t + env.attack, Math.max(0.001, env.decay / 4));
-    amp.connect(this.master);
+    const out = this.ctx.createGain();
+    out.gain.value = noteLevelBase(s);
+    amp.connect(out).connect(this.master);
     const filter = { mix: this.ctx.createGain(), shaper: this.ctx.createWaveShaper(), one: this.ctx.createBiquadFilter(), two: this.ctx.createBiquadFilter(), trim: this.ctx.createGain(), drive: -1 };
     filter.mix.gain.value = 1 / DRIVE_RANGE; // the shaper's curve covers inputs of -1..1
     filter.mix.connect(filter.shaper).connect(filter.one).connect(filter.two).connect(filter.trim).connect(amp);
@@ -261,7 +273,7 @@ export class Engine {
       return { osc, gain, pan };
     });
 
-    const voice: Voice = { note, phaseA, a, mods: [], filter, amp };
+    const voice: Voice = { note, phaseA, velocity, out, a, mods: [], filter, amp };
     this.applyFilter(voice, s, true, t);
     if (s.bOn) {
       const osc = this.ctx.createOscillator();
@@ -303,14 +315,15 @@ export class Engine {
 
   /** Apply new settings to everything that is sounding. */
   update(next: SynthState): void {
+    next = applyMacros(next);
     const t = this.ctx.currentTime, prev = this.state;
     this.state = next;
     if (next.volumeDb !== prev.volumeDb) this.master.gain.setTargetAtTime(dbToGain(next.volumeDb), t, RAMP);
     if (STRUCTURAL.some((k) => next[k] !== prev[k])) {
       // The set of sources changed: restart the sounding notes with the new layout.
-      const notes = this.voices.map((v) => v.note);
+      const notes = this.voices.map((v) => [v.note, v.velocity] as const);
       this.voices.forEach((v) => this.release(v));
-      this.voices = notes.map((n) => this.build(n, this.startPhase()));
+      this.voices = notes.map(([n, velocity]) => this.build(n, this.startPhase(), undefined, velocity));
       return;
     }
     const waveA = next.shape !== prev.shape || next.table !== prev.table || next.position !== prev.position || next.phase !== prev.phase;
@@ -318,6 +331,7 @@ export class Engine {
     const offsets = unisonOffsets(next.voices, next.detune), pans = unisonPans(next.voices, next.spread);
     for (const v of this.voices) {
       this.applyFilter(v, next, false);
+      v.out.gain.setTargetAtTime(noteLevelBase(next), t, RAMP);
       for (const m of v.mods) {
         // amounts and LFO settings follow the controls; a changed destination rebuilds the note (see STRUCTURAL)
         const route = routes(next).find((r) => r.source.id === m.route.source.id);
@@ -357,9 +371,10 @@ export class Engine {
     return this.state.phase / 360 + Math.random() * (this.state.randomPhase / 100);
   }
 
-  noteOn(note: number): void {
+  /** `velocity` is how hard the key was struck, 1 to 127. */
+  noteOn(note: number, velocity = 100): void {
     if (this.voices.some((v) => v.note === note)) return;
-    this.voices.push(this.build(note, this.startPhase()));
+    this.voices.push(this.build(note, this.startPhase(), undefined, velocity));
   }
 
   noteOff(note: number): void {
@@ -390,10 +405,11 @@ export class Engine {
   }
 
   /** Play a whole patch for a moment, without disturbing held notes or the learner's settings. */
-  auditionPatch(patch: SynthState, note: number, seconds = 1.2, when = 0): void {
+  auditionPatch(patch: SynthState, note: number, seconds = 1.2, when = 0, velocity = 100): void {
+    patch = applyMacros(patch);
     const keep = this.state, at = this.ctx.currentTime + when;
     this.state = patch;
-    const v = this.build(note, patch.phase / 360, at);
+    const v = this.build(note, patch.phase / 360, at, velocity);
     this.state = keep;
     this.releaseAt(v, patch, at + seconds - 0.08);
   }

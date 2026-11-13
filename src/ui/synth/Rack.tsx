@@ -3,8 +3,9 @@
 // has its on/off switch and name on top, a picture of what it is doing, and its controls underneath.
 import { useMemo } from "react";
 import type { Panel, PlayableLesson } from "../../course/types";
+import { MACRO_COLORS } from "../../synth/macros";
 import { adsr, ENV1_COLOR, envLevel, lfoValue, SOURCES, type Adsr, type ModSource } from "../../synth/mod";
-import { harmonic, harmonicsA, HARMONICS, PARAMS, type Group, type SynthState } from "../../synth/params";
+import { harmonic, harmonicsA, HARMONICS, MACRO_SLOTS, MACROS, PARAMS, type Group, type SynthState } from "../../synth/params";
 import type { Synth } from "../../synth/useSynth";
 import { Control, isBox } from "./Controls";
 import { FilterCurve } from "./Views";
@@ -21,8 +22,10 @@ export const MODULES: Module[] = [
 /** The row underneath, where Serum also keeps them: the envelopes and LFOs, each in its own neon colour. */
 export const MOD_MODULES: Module[] = [
   { id: "env1", name: "Env 1 · level", groups: ["Envelope 1"], color: ENV1_COLOR },
-  ...SOURCES.map((x) => ({ id: x.id, name: x.name, groups: [x.kind === "env" ? "Envelope 2" : `LFO ${x.id.slice(3)}`] as Group[], color: x.color, source: x.id })),
+  ...SOURCES.map((x) => ({ id: x.id, name: x.name, groups: [x.kind === "env" ? "Envelope 2" : x.kind === "lfo" ? `LFO ${x.id.slice(3)}` : x.name] as Group[], color: x.color, source: x.id })),
 ];
+/** Macros get their own row and their own layout (see MacroPanel). */
+export const MACRO_MODULES: Module[] = MACROS.map((n) => ({ id: `macro${n}`, name: `Macro ${n}`, groups: [`Macro ${n}`] as Group[], color: MACRO_COLORS[n - 1] }));
 
 /** An envelope drawn from its settings: a note held for a moment, then let go. */
 export function envPath(e: Adsr, w = 200, height = 64, points = 120): string {
@@ -54,17 +57,20 @@ const SINE = [0, 1];
 const NOISE_PATH = Array.from({ length: 67 }, (_, i) => `${i === 0 ? "M" : "L"}${i * 3} ${(32 + Math.sin(i * 12.9898) * Math.cos(i * 78.233) * 24).toFixed(1)}`).join(" ");
 
 function Display({ module, synth, note }: { module: Module; synth: Synth; note: number | null }) {
-  const s = synth.state;
+  // drawn from what is actually playing, so a macro's push shows in the pictures
+  const s = synth.effective;
   const d = useMemo(() => {
     if (module.id === "a") return wavePath(harmonicsA(s), s.phase / 360);
     if (module.id === "b") return wavePath(shapeHarmonics(s.bShape), s.bPhase / 360);
     if (module.id === "sub") return wavePath(SINE, 0);
     if (module.id === "env1") return envPath(adsr(s, 1));
     if (module.id === "env2") return envPath(adsr(s, 2));
+    if (module.source === "vel" || module.source === "key") return "";
     if (module.source) return lfoPath(s[`${module.source as "lfo1"}Shape`], s[`${module.source as "lfo1"}Way`] === "up");
     return NOISE_PATH;
   }, [module, s.shape, s.table, s.position, s.phase, s.bShape, s.bPhase, s.envA, s.envD, s.envS, s.envR, s.env2A, s.env2D, s.env2S, s.env2R, s.lfo1Shape, s.lfo2Shape, s.lfo3Shape, s.lfo1Way, s.lfo2Way, s.lfo3Way]); // eslint-disable-line react-hooks/exhaustive-deps
   if (module.id === "filter") return <FilterCurve synth={synth} note={note} compact />;
+  if (!d) return null;
   return <svg className="mod-wave" viewBox="0 0 200 64" preserveAspectRatio="none" role="img" aria-label={`${module.name} wave`}>{module.source?.startsWith("lfo") && <line className="mod-mid" x1="0" x2="200" y1="32" y2="32" />}<path d={d} /></svg>;
 }
 
@@ -109,5 +115,42 @@ export function Rack({ synth, show, all, lesson, note }: { synth: Synth; show: P
   };
   /** A source that is not sent anywhere yet. */
   const idle = (m: Module) => !!m.source && s[`${m.source}Dest`] === "none";
-  return <>{row(MODULES, "sources")}{row(MOD_MODULES, "mods")}</>;
+  const macros = MACRO_MODULES.filter((m, i) => all || (Object.keys(PARAMS) as Panel[]).some((id) => PARAMS[id as string]!.group === m.groups[0] && show.includes(id)) || show.includes(`macro${i + 1}Name` as Panel));
+  return (
+    <>
+      {row(MODULES, "sources")}{row(MOD_MODULES, "mods")}
+      {macros.length > 0 && <div className={`rack macros${all ? " full" : ""}`}>{macros.map((m) => <MacroPanel key={m.id} n={Number(m.id.slice(5))} color={m.color!} synth={synth} show={show} all={all} />)}</div>}
+    </>
+  );
+}
+
+/**
+ * One macro: its name, its knob, and three slots. Each slot is "send to this knob, by this much". The slots
+ * are laid out as pairs so it is plain which amount belongs to which destination.
+ */
+function MacroPanel({ n, color, synth, show, all }: { n: number; color: string; synth: Synth; show: Panel[]; all: boolean }) {
+  const on = (id: string) => all || show.includes(id as Panel);
+  const s = synth.state as unknown as Record<string, string | number>;
+  const name = s[`macro${n}Name`] as string;
+  const used = MACRO_SLOTS.some((k) => s[`macro${n}Dest${k}`] !== "none");
+  return (
+    <section className={`mod mod-macro neon${used ? "" : " idle"}`} style={{ "--glow": color } as React.CSSProperties} aria-label={`Macro ${n}`}>
+      <div className="mod-head"><span>{name || `Macro ${n}`}</span></div>
+      <div className="mod-body">
+        {on(`macro${n}Name`) && (
+          <label className={`pick menu${show.includes(`macro${n}Name` as Panel) ? " spot" : ""}`}>
+            <span className="knob-name">name</span>
+            <input className="macro-name" type="text" maxLength={18} value={name} aria-label={`Macro ${n} name`} onChange={(e) => synth.setState({ [`macro${n}Name`]: e.target.value } as Partial<SynthState>)} />
+          </label>
+        )}
+        {on(`macro${n}`) && <div className="mod-row"><Control id={`macro${n}` as keyof SynthState} synth={synth} spot={show.includes(`macro${n}` as Panel)} /></div>}
+        {MACRO_SLOTS.filter((k) => on(`macro${n}Dest${k}`) || on(`macro${n}Amt${k}`)).map((k) => (
+          <div key={k} className="macro-slot">
+            {on(`macro${n}Dest${k}`) && <Control id={`macro${n}Dest${k}` as keyof SynthState} synth={synth} spot={show.includes(`macro${n}Dest${k}` as Panel)} />}
+            {on(`macro${n}Amt${k}`) && <Control id={`macro${n}Amt${k}` as keyof SynthState} synth={synth} spot={show.includes(`macro${n}Amt${k}` as Panel)} />}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
 }

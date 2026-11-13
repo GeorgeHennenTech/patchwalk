@@ -17,6 +17,8 @@ export interface Snapshot {
   holdOn: boolean;
   /** Seconds the current note has been held without a break. */
   heldSeconds: number;
+  /** The softest and hardest notes struck since the step began (1 to 127), or null if none yet. */
+  velocity: { min: number; max: number } | null;
   /** The longest any note has been held since the step began, in seconds: still counts after it is let go. */
   longestHeld: number;
   /** Lowest and highest value each setting has taken since the step began. */
@@ -29,7 +31,8 @@ export interface Snapshot {
   flags: Record<string, boolean>;
 }
 
-export type Panel = "start" | "keyboard" | "hold" | "scope" | "spectrum" | "spectrogram" | "meter" | "beat" | "curve" | "envelope" | "envelope2" | "ack" | keyof SynthState;
+export type Panel = "start" | "keyboard" | "hold" | "scope" | "spectrum" | "spectrogram" | "meter" | "beat" | "curve" | "envelope" | "envelope2" | "matrix" | "ack" | keyof SynthState;
+// (a macro's name is a setting too, so `macro1Name` can be shown and spotlighted like any control)
 
 export interface LessonStep {
   do: string;
@@ -56,6 +59,8 @@ export interface DemoTone {
   note?: number;
   at: number;
   seconds: number;
+  /** How hard a patch tone is struck, 1 to 127. Default 100. */
+  velocity?: number;
   /** Level relative to the master volume, in dB. Default -8. Only for shape tones. */
   gainDb?: number;
 }

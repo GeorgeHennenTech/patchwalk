@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { effectiveCutoff, filterResponseDb } from "../../synth/filter";
-import { adsr, ENV1_COLOR, SOURCES } from "../../synth/mod";
+import { macroSlots, slotPush } from "../../synth/macros";
+import { adsr, ENV1_COLOR, routes, SOURCES } from "../../synth/mod";
+import { DEST_NAMES } from "../../synth/params";
 import { PARAMS, type SynthState } from "../../synth/params";
 import type { Synth } from "../../synth/useSynth";
 import { fromTravel, toTravel } from "./Controls";
@@ -111,6 +113,7 @@ export function FilterCurve({ synth, note, spot, compact }: { synth: Synth; note
   const buf = useRef(new Float32Array(2048));
   const drag = useRef<{ y: number; resonance: number } | null>(null);
   const s = synth.state;
+  const playing = synth.effective; // what is drawn: the settings after the macros
   useFrame(() => {
     const canvas = ref.current, an = synth.engine.current?.analyser;
     if (!canvas) return;
@@ -131,13 +134,13 @@ export function FilterCurve({ synth, note, spot, compact }: { synth: Synth; note
     }
     g.strokeStyle = line; g.lineWidth = 2.5; g.beginPath();
     for (let x = 0; x <= w; x++) {
-      const y = curveY(filterResponseDb(s, curveHz(x / w), note, rate)) * h;
+      const y = curveY(filterResponseDb(playing, curveHz(x / w), note, rate)) * h;
       x === 0 ? g.moveTo(x, y) : g.lineTo(x, y);
     }
     g.stroke();
     if (s.filterOn) {
-      const hz = effectiveCutoff(s, note, rate);
-      g.fillStyle = line; g.beginPath(); g.arc(curveX(hz) * w, curveY(filterResponseDb(s, hz, note, rate)) * h, 7, 0, 2 * Math.PI); g.fill();
+      const hz = effectiveCutoff(playing, note, rate);
+      g.fillStyle = line; g.beginPath(); g.arc(curveX(hz) * w, curveY(filterResponseDb(playing, hz, note, rate)) * h, 7, 0, 2 * Math.PI); g.fill();
       g.strokeStyle = "#fff"; g.lineWidth = 2; g.stroke();
     }
   }, true);
@@ -241,6 +244,30 @@ export function EnvCurve({ synth, which, spot }: { synth: Synth; which: 1 | 2; s
         {handle("a", p.a, "Attack: drag sideways")}{handle("d", p.d, "Decay and sustain: drag sideways and up or down")}{handle("r", p.r, "Release: drag sideways")}
       </svg>
       <figcaption>Envelope {which}{which === 1 ? " (loudness)" : ""}: drag the first point for attack, the second for decay and sustain, the last for release. It shows the shape, not exact seconds.</figcaption>
+    </figure>
+  );
+}
+
+/**
+ * Every connection in the patch as one list: what moves, what it moves, and by how much. The same facts the
+ * rings show, read as a table. Written by code from the settings.
+ */
+export function Matrix({ synth }: { synth: Synth }) {
+  const s = synth.state;
+  const rows = [
+    ...routes(s).map((r) => ({ key: r.source.id, color: r.source.color, source: r.source.name, dest: DEST_NAMES[r.dest], amount: r.amount, note: r.source.kind === "note" ? "fixed for each note" : r.oneWay ? "one way" : "both ways" })),
+    ...macroSlots(s).map((m) => ({ key: `m${m.macro}-${m.slot}`, color: m.color, source: m.name || `Macro ${m.macro}`, dest: PARAMS[m.dest]!.label, amount: m.amount, note: `macro at ${m.value}%: pushing ${Math.round(slotPush(m) * 100)}% of the knob's travel` })),
+  ];
+  return (
+    <figure className="view matrix">
+      <table>
+        <thead><tr><th>Source</th><th>Moves</th><th>Amount</th><th>How</th></tr></thead>
+        <tbody>
+          <tr><td><i style={{ background: ENV1_COLOR }} />Env 1</td><td>Note level</td><td>always</td><td>one way</td></tr>
+          {rows.map((r) => <tr key={r.key} className={r.amount === 0 ? "off" : ""}><td><i style={{ background: r.color }} />{r.source}</td><td>{r.dest}</td><td>{r.amount > 0 ? "+" : ""}{r.amount}%</td><td>{r.amount === 0 ? "does nothing at zero" : r.note}</td></tr>)}
+        </tbody>
+      </table>
+      <figcaption>Matrix: every connection in this sound. {rows.length === 0 ? "Nothing is connected yet except Envelope 1, which always shapes the level." : "Each row is one ring on a knob."}</figcaption>
     </figure>
   );
 }

@@ -5,14 +5,18 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 
 ## Build next
 - [x] Envelope lessons: five lessons and a checkpoint, with an envelope drawing you can drag
-- [ ] Envelope curves and hold (needs new envelope controls first)
+- [ ] Next after macros (owner's order): envelope curves and hold; tempo-synced, trigger-mode and drawable LFOs
+- [ ] Then: warp, sync, FM and ring modulation (chapter 6, "reshaping the source")
 - [x] LFO lessons: three lessons and a checkpoint
 - [ ] LFO lessons that need new controls: tempo sync, trigger modes with rise and delay, drawing a shape
 - [x] Modulation lessons: routes and amounts, one way or both ways, modulating a modulator, and a checkpoint
-- [ ] Modulation lessons that need new controls: velocity and key position as sources, macros, scaling a route (mod wheel)
+- [x] Velocity and key position: as sources on the synth, and a lesson
+- [x] Macro chapter: seven macro recipes, two macros on one sound, and a by-ear checkpoint
+- [ ] More macro recipes (the owner wants many; each is a few lines of data in the macro lesson file)
+- [ ] Scaling a route with a second source (mod wheel) and its lesson
 - [ ] Blind ear checks for the filter, envelope, LFO and modulation lessons
 - [ ] Pulse-width lesson in the oscillator chapter
-- [ ] Remaining synthesis chapters from the course plan (36 of about 77 lessons built)
+- [ ] Remaining synthesis chapters from the course plan (46 lessons built)
 
 ## Synth
 - [x] Filter with a draggable curve
@@ -22,6 +26,9 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 - [x] Z and X keys move the computer keyboard down and up an octave
 - [x] Sound views (scope, spectrum, spectrogram, level, filter curve) switchable at any step
 - [ ] Envelopes and LFOs can move wavetable position and resonance
+- [x] Four macros with three slots each; any continuous knob can be a destination
+- [x] Matrix view: every connection listed (read-only)
+- [ ] A full Matrix tab you can edit, as in Serum (owner asked; also lifts the one-destination-per-source limit)
 - [ ] More than one destination per envelope or LFO
 - [ ] Drag a source onto a knob to connect it
 - [ ] Tempo clock, so LFOs can sync to a beat
@@ -59,6 +66,6 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 - [x] Upload the Ableton manual, pages 1 to 500
 - [x] Upload the rest of the Ableton manual
 - [ ] Find more books for the library (EPUB or text-based PDF)
-- [ ] Review the 32 knowledge cards and 30 lesson scripts (all drafts)
+- [ ] Review the 32 knowledge cards and 39 lesson scripts (all drafts)
 - [ ] Probe presets: start with the ten most useful (the assistant has explained what to do)
 - [ ] Keep reporting how things sound and feel

@@ -11,10 +11,10 @@ export const NOISES = ["white", "pink"] as const;
 const FILTER_TYPES = ["low", "high", "band", "notch"] as const;
 const SLOPES = ["12", "24"] as const;
 /** Settings an envelope or LFO can move. "none" means it is not connected. */
-export const MOD_DESTS = ["none", "cutoff", "fine", "bFine", "aLevelDb", "bLevelDb", "subLevelDb", "noiseLevelDb", "lfo1Rate"] as const;
+export const MOD_DESTS = ["none", "cutoff", "fine", "bFine", "aLevelDb", "bLevelDb", "subLevelDb", "noiseLevelDb", "lfo1Rate", "noteLevel"] as const;
 const WAYS = ["both", "up"] as const;
 export type Dest = (typeof MOD_DESTS)[number];
-export const DEST_NAMES: Record<Dest, string> = { none: "Nothing", cutoff: "Filter cutoff", fine: "Osc A pitch", bFine: "Osc B pitch", aLevelDb: "Osc A level", bLevelDb: "Osc B level", subLevelDb: "Sub level", noiseLevelDb: "Noise level", lfo1Rate: "LFO 1 rate" };
+export const DEST_NAMES: Record<Dest, string> = { none: "Nothing", cutoff: "Filter cutoff", fine: "Osc A pitch", bFine: "Osc B pitch", aLevelDb: "Osc A level", bLevelDb: "Osc B level", subLevelDb: "Sub level", noiseLevelDb: "Noise level", lfo1Rate: "LFO 1 rate", noteLevel: "Note level" };
 
 export interface SynthState {
   /** Master level in dB. 0 is the loudest the lesson synth goes. */
@@ -89,6 +89,16 @@ export interface SynthState {
   lfo3Rate: number; lfo3Shape: Shape; lfo3Dest: Dest; lfo3Amount: number;
   /** Whether each LFO pushes its destination both ways from the knob ("both") or one way only ("up"). */
   lfo1Way: (typeof WAYS)[number]; lfo2Way: (typeof WAYS)[number]; lfo3Way: (typeof WAYS)[number];
+  // ---- two sources that are fixed for the length of a note: how hard it was struck, and which key it was
+  velDest: Dest; velAmount: number;
+  keyDest: Dest; keyAmount: number;
+  // ---- four macros: one knob each (0..100), a name, and three slots that each move another control.
+  // A slot's destination is the id of any knob, or "none"; its amount is how much of that knob's travel
+  // the macro covers when turned right up (-100..100). See macros.ts.
+  macro1: number; macro1Name: string; macro1Dest1: string; macro1Amt1: number; macro1Dest2: string; macro1Amt2: number; macro1Dest3: string; macro1Amt3: number;
+  macro2: number; macro2Name: string; macro2Dest1: string; macro2Amt1: number; macro2Dest2: string; macro2Amt2: number; macro2Dest3: string; macro2Amt3: number;
+  macro3: number; macro3Name: string; macro3Dest1: string; macro3Amt1: number; macro3Dest2: string; macro3Amt2: number; macro3Dest3: string; macro3Amt3: number;
+  macro4: number; macro4Name: string; macro4Dest1: string; macro4Amt1: number; macro4Dest2: string; macro4Amt2: number; macro4Dest3: string; macro4Amt3: number;
 }
 
 export const INITIAL: SynthState = {
@@ -103,9 +113,14 @@ export const INITIAL: SynthState = {
   lfo2Rate: 5, lfo2Shape: "triangle", lfo2Dest: "none", lfo2Amount: 30,
   lfo3Rate: 0.5, lfo3Shape: "saw", lfo3Dest: "none", lfo3Amount: 30,
   lfo1Way: "both", lfo2Way: "both", lfo3Way: "both",
+  velDest: "none", velAmount: 60, keyDest: "none", keyAmount: 50,
+  macro1: 0, macro1Name: "Macro 1", macro1Dest1: "none", macro1Amt1: 50, macro1Dest2: "none", macro1Amt2: 50, macro1Dest3: "none", macro1Amt3: 50,
+  macro2: 0, macro2Name: "Macro 2", macro2Dest1: "none", macro2Amt1: 50, macro2Dest2: "none", macro2Amt2: 50, macro2Dest3: "none", macro2Amt3: 50,
+  macro3: 0, macro3Name: "Macro 3", macro3Dest1: "none", macro3Amt1: 50, macro3Dest2: "none", macro3Amt2: 50, macro3Dest3: "none", macro3Amt3: 50,
+  macro4: 0, macro4Name: "Macro 4", macro4Dest1: "none", macro4Amt1: 50, macro4Dest2: "none", macro4Amt2: 50, macro4Dest3: "none", macro4Amt3: 50,
 };
 
-export type Group = "Master" | "Oscillator A" | "Unison" | "Oscillator B" | "Sub" | "Noise" | "Filter" | "Envelope 1" | "Envelope 2" | "LFO 1" | "LFO 2" | "LFO 3";
+export type Group = "Master" | "Oscillator A" | "Unison" | "Oscillator B" | "Sub" | "Noise" | "Filter" | "Envelope 1" | "Envelope 2" | "LFO 1" | "LFO 2" | "LFO 3" | "Velocity" | "Key position" | "Macro 1" | "Macro 2" | "Macro 3" | "Macro 4";
 
 export interface ParamSpec {
   id: keyof SynthState;
@@ -125,7 +140,7 @@ export interface ParamSpec {
 
 const SHAPE_NAMES = { sine: "Sine", triangle: "Triangle", square: "Square", saw: "Saw" };
 
-export const PARAMS: Record<string, ParamSpec> = {
+const BASE_PARAMS: Record<string, ParamSpec> = {
   volumeDb: { id: "volumeDb", label: "Volume", group: "Master", kind: "range", min: -48, max: 0, step: 1, unit: "dB" },
   shape: { id: "shape", label: "Wave shape", group: "Oscillator A", kind: "choice", choices: SHAPES, names: SHAPE_NAMES },
   table: { id: "table", label: "Wavetable", group: "Oscillator A", kind: "choice", choices: TABLES, names: { none: "Off", basic: "Basic morph", bright: "Bright sweep", vowel: "Vowel" } },
@@ -164,7 +179,39 @@ export const PARAMS: Record<string, ParamSpec> = {
   ...envelope("env2", "Envelope 2", "Env 2"),
   ...source("env2", "Envelope 2", "Env 2"),
   ...lfo(1), ...lfo(2), ...lfo(3),
+  ...source("vel", "Velocity", "Velocity"),
+  ...source("key", "Key position", "Key position"),
 };
+
+/** Whole-step settings shown as number boxes. A macro cannot move these. */
+export const BOX_IDS = ["octave", "semitone", "bOctave", "bSemitone", "voices", "subOctave"] as const;
+/** Every knob a macro can be sent to: all the continuous settings. "none" means the slot is empty. */
+export const MACRO_DESTS: string[] = ["none", ...Object.values(BASE_PARAMS).filter((p) => p.kind === "range" && !(BOX_IDS as readonly string[]).includes(p.id) && p.id !== "freeHz").map((p) => p.id as string)];
+export const MACROS = [1, 2, 3, 4] as const;
+export const MACRO_SLOTS = [1, 2, 3] as const;
+function macro(n: number): Record<string, ParamSpec> {
+  const group = `Macro ${n}` as Group, out: Record<string, ParamSpec> = {};
+  out[`macro${n}`] = { id: `macro${n}` as keyof SynthState, label: `Macro ${n}`, group, kind: "range", min: 0, max: 100, step: 1, unit: "%" };
+  for (const k of MACRO_SLOTS) {
+    out[`macro${n}Dest${k}`] = { id: `macro${n}Dest${k}` as keyof SynthState, label: `Macro ${n} slot ${k} sends to`, group, kind: "menu", choices: MACRO_DESTS, names: Object.fromEntries(MACRO_DESTS.map((d) => [d, d === "none" ? "Nothing" : BASE_PARAMS[d]!.label])) };
+    out[`macro${n}Amt${k}`] = { id: `macro${n}Amt${k}` as keyof SynthState, label: `Macro ${n} slot ${k} amount`, group, kind: "range", min: -100, max: 100, step: 1, unit: "%" };
+  }
+  return out;
+}
+export const PARAMS: Record<string, ParamSpec> = { ...BASE_PARAMS, ...macro(1), ...macro(2), ...macro(3), ...macro(4) };
+
+const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
+/** Steps smaller than one (an LFO's rate) must not pick up stray digits from floating-point sums. */
+const tidy = (v: number) => Number(v.toFixed(4));
+/** A setting's value as a position from 0 to 1 along its knob's travel, and back. Wide-ranging ones travel in octaves. */
+export function toTravel(spec: ParamSpec, v: number): number {
+  return clamp01(spec.log ? Math.log(v / spec.min!) / Math.log(spec.max! / spec.min!) : (v - spec.min!) / (spec.max! - spec.min!));
+}
+export function fromTravel(spec: ParamSpec, t: number): number {
+  const raw = spec.log ? spec.min! * (spec.max! / spec.min!) ** clamp01(t) : spec.min! + clamp01(t) * (spec.max! - spec.min!);
+  const step = spec.step ?? 1;
+  return tidy(Math.min(spec.max!, Math.max(spec.min!, Math.round(raw / step) * step)));
+}
 
 function envelope(prefix: "env" | "env2", group: Group, name: string): Record<string, ParamSpec> {
   const time = (key: string, label: string): ParamSpec => ({ id: `${prefix}${key}` as keyof SynthState, label: `${name} ${label}`, group, kind: "range", min: 1, max: 5000, step: 1, log: true, unit: "ms" });
@@ -174,7 +221,7 @@ function envelope(prefix: "env" | "env2", group: Group, name: string): Record<st
     [`${prefix}R`]: time("R", "release"),
   };
 }
-function source(prefix: "env2" | "lfo1" | "lfo2" | "lfo3", group: Group, name: string): Record<string, ParamSpec> {
+function source(prefix: "env2" | "lfo1" | "lfo2" | "lfo3" | "vel" | "key", group: Group, name: string): Record<string, ParamSpec> {
   return {
     [`${prefix}Dest`]: { id: `${prefix}Dest`, label: `${name} sends to`, group, kind: "menu", choices: MOD_DESTS, names: DEST_NAMES },
     [`${prefix}Amount`]: { id: `${prefix}Amount`, label: `${name} amount`, group, kind: "range", min: -100, max: 100, step: 1, unit: "%" },

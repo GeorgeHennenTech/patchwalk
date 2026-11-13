@@ -13,11 +13,12 @@ export interface Track {
   heldSince: number | null;
   /** Longest finished hold since the step began, in seconds. */
   longest: number;
+  velocity: Snapshot["velocity"];
   lastNote: number | null;
 }
 
 export const newTrack = (state: SynthState): Track => ({
-  start: state, played: { mouse: 0, keys: 0, midi: 0 }, notes: [], range: {}, changes: {}, flags: {}, heldSince: null, longest: 0, lastNote: null,
+  start: state, played: { mouse: 0, keys: 0, midi: 0 }, notes: [], range: {}, changes: {}, flags: {}, heldSince: null, longest: 0, velocity: null, lastNote: null,
 });
 
 export function trackState(t: Track, prev: SynthState, next: SynthState): Track {
@@ -35,9 +36,10 @@ export function trackState(t: Track, prev: SynthState, next: SynthState): Track 
   return { ...t, range, changes };
 }
 
-export function trackNoteOn(t: Track, source: keyof Track["played"], note: number, now: number): Track {
+export function trackNoteOn(t: Track, source: keyof Track["played"], note: number, now: number, velocity = 100): Track {
   return {
     ...t,
+    velocity: { min: Math.min(t.velocity?.min ?? velocity, velocity), max: Math.max(t.velocity?.max ?? velocity, velocity) },
     played: { ...t.played, [source]: t.played[source] + 1 },
     notes: t.notes.includes(note) ? t.notes : [...t.notes, note],
     heldSince: t.heldSince ?? now,
@@ -51,7 +53,7 @@ export const trackFlag = (t: Track, flag: string): Track => ({ ...t, flags: { ..
 export function snapshot(t: Track, state: SynthState, live: { audioRunning: boolean; held: number[]; holdOn: boolean; now: number }): Snapshot {
   return {
     state, start: t.start, audioRunning: live.audioRunning, held: live.held, holdOn: live.holdOn,
-    played: t.played, distinctNotes: t.notes.length,
+    played: t.played, distinctNotes: t.notes.length, velocity: t.velocity,
     heldSeconds: t.heldSince !== null && live.held.length ? live.now - t.heldSince : 0,
     longestHeld: Math.max(t.longest, t.heldSince !== null && live.held.length ? live.now - t.heldSince : 0),
     range: t.range, changes: t.changes, flags: t.flags,

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Snapshot } from "../course/types";
 import { Engine } from "./engine";
+import { applyMacros } from "./macros";
 import { INITIAL, type SynthState } from "./params";
 import { newTrack, snapshot, trackAllReleased, trackFlag, trackNoteOn, trackState, type Track } from "./tracker";
 
@@ -11,6 +12,11 @@ export const KEY_MAP: Record<string, number> = { a: 60, w: 61, s: 62, e: 63, d: 
 
 /** How far Z and X can move the computer keyboard, in octaves either way. */
 export const KEY_OCTAVES = 3;
+/** C and V step the computer keyboard's velocity by this much, between 20 and 127. */
+export const VELOCITY_STEP = 20;
+export const shiftVelocity = (now: number, by: 1 | -1) => Math.min(127, Math.max(20, now === 127 && by === -1 ? 120 : now + by * VELOCITY_STEP));
+/** Where on a key it was clicked, from its top (0) to its bottom (1), as a velocity: lower down is harder. */
+export const clickVelocity = (y: number) => Math.round(Math.min(127, Math.max(20, 20 + Math.min(1, Math.max(0, y)) * 107)));
 export const shiftOctave = (now: number, by: 1 | -1) => Math.min(KEY_OCTAVES, Math.max(-KEY_OCTAVES, now + by));
 
 export function useSynth() {
@@ -26,6 +32,9 @@ export function useSynth() {
   const [keyOctave, setKeyOctave] = useState(0);
   const keyOctaveRef = useRef(0);
   const letters = useRef(new Map<string, number>());
+  // C and V make the computer keyboard strike softer and harder; the on-screen keys go by where you click.
+  const [keyVelocity, setKeyVelocity] = useState(100);
+  const keyVelocityRef = useRef(100);
   const track = useRef<Track>(newTrack(INITIAL));
   const [, bump] = useState(0);
   const refresh = () => bump((n) => n + 1);
@@ -51,13 +60,13 @@ export function useSynth() {
     if (h.length === 0) track.current = trackAllReleased(track.current, now());
   };
 
-  const noteOn = useCallback((note: number, source: "mouse" | "keys" | "midi") => {
+  const noteOn = useCallback((note: number, source: "mouse" | "keys" | "midi", velocity = 100) => {
     if (!engine.current?.running) return;
     down.current.add(note);
     // With Hold on, a new note replaces whatever was latched.
     if (holdRef.current) for (const n of engine.current.held) if (n !== note) engine.current.noteOff(n);
-    engine.current.noteOn(note);
-    track.current = trackNoteOn(track.current, source, note, now());
+    engine.current.noteOn(note, velocity);
+    track.current = trackNoteOn(track.current, source, note, now(), velocity);
     sync();
   }, []);
 
@@ -120,11 +129,16 @@ export function useSynth() {
         setKeyOctave(keyOctaveRef.current);
         return;
       }
+      if (key === "c" || key === "v") {
+        keyVelocityRef.current = shiftVelocity(keyVelocityRef.current, key === "v" ? 1 : -1);
+        setKeyVelocity(keyVelocityRef.current);
+        return;
+      }
       const base = KEY_MAP[key];
       if (base === undefined) return;
       const note = base + 12 * keyOctaveRef.current;
       letters.current.set(key, note);
-      noteOn(note, "keys");
+      noteOn(note, "keys", keyVelocityRef.current);
     };
     const onUp = (e: KeyboardEvent) => {
       const key = e.key.toLowerCase(), note = letters.current.get(key);
@@ -142,6 +156,6 @@ export function useSynth() {
 
   const snap = (): Snapshot => snapshot(track.current, stateRef.current, { audioRunning: running, held, holdOn, now: now() });
 
-  return { keyOctave, state, setState, running, start, held, holdOn, setHold, noteOn, noteOff, flag, beginStep, reset, snap, engine };
+  return { keyOctave, keyVelocity, effective: applyMacros(state), state, setState, running, start, held, holdOn, setHold, noteOn, noteOff, flag, beginStep, reset, snap, engine };
 }
 export type Synth = ReturnType<typeof useSynth>;

@@ -54,6 +54,33 @@ export const CHAPTER_5: PlayableLesson[] = [
     inSerum: "On Serum’s MATRIX tab each route has a direction switch that chooses between one way and both ways. Its exact labels are not confirmed here, so nothing is checked.",
   },
   {
+    id: "C5.3", title: "Playing harder, playing higher", buildsOn: ["C5.1", "C2.6"], minutes: 8, cardIds: ["mod-routing"], initial: { filterOn: true, cutoff: 400, resonance: 20 },
+    outcome: "Use how hard a key is struck, and which key it is, as sources.",
+    demo: { caption: "A soft note and a hard note that sound the same, then the same two with velocity sent to the filter.", tones: [
+      { patch: { filterOn: true, cutoff: 400, resonance: 20 }, note: 57, at: 0, seconds: 0.8, velocity: 30 }, { patch: { filterOn: true, cutoff: 400, resonance: 20 }, note: 57, at: 0.95, seconds: 0.8, velocity: 127 },
+      { patch: { filterOn: true, cutoff: 400, resonance: 20, velDest: "cutoff", velAmount: 70 }, note: 57, at: 2.2, seconds: 0.8, velocity: 30 }, { patch: { filterOn: true, cutoff: 400, resonance: 20, velDest: "cutoff", velAmount: 70 }, note: 57, at: 3.15, seconds: 0.8, velocity: 127 },
+    ] },
+    idea: [
+      "Envelopes and LFOs move by themselves. Two other sources come from your hands. Velocity is how hard a key is struck, and Key position is how high or low the key is. Each is fixed for the length of a note: one number, decided the moment the note starts.",
+      "On a real instrument, playing harder is louder and also brighter, and high notes behave differently from low ones. Sending these two sources to the right knobs is what makes a synth respond to playing. Here, click lower on a key to strike harder, or use C and V to set how hard the letter keys strike.",
+    ],
+    steps: [
+      { do: "Strike a key softly and then hard: click near the top of a key, then near its bottom.", show: ["keyboard", "velDest"], hear: "No difference at all. Nothing is listening to how hard you play.", target: "Velocity sent to nothing; one note at 60 or softer and one at 100 or harder",
+        check: (s) => s.state.velDest === "none" && !!s.velocity && s.velocity.min <= 60 && s.velocity.max >= 100 },
+      { do: "Send Velocity to Note level, then strike soft and hard again.", show: ["keyboard", "velDest", "velAmount"], hear: "Soft notes quiet, hard notes loud.", target: "Velocity sent to Note level; a soft note and a hard note played",
+        check: (s) => s.state.velDest === "noteLevel" && !!s.velocity && s.velocity.min <= 60 && s.velocity.max >= 100 },
+      { do: "Now send Velocity to Filter cutoff instead, and strike soft and hard.", show: ["keyboard", "velDest", "velAmount", "cutoff", "curve"], hear: "Soft notes dull, hard notes bright, at the same loudness. Cutoff wears a red ring.", target: "Velocity sent to Filter cutoff; a soft note and a hard note played",
+        check: (s) => s.state.velDest === "cutoff" && !!s.velocity && s.velocity.min <= 60 && s.velocity.max >= 100,
+        remark: (s) => `Your softest note was ${s.velocity?.min} and your hardest ${s.velocity?.max}, out of 127. Real instruments do both things at once: louder and brighter. A synth needs two routes for that, and has only one velocity source here, which is a good reason to want a matrix.` },
+      { do: "Send Key position to Filter cutoff as well, and play low and high keys. Z and X move the letter keys by octaves.", show: ["keyboard", "keyDest", "keyAmount", "cutoff", "curve"], hear: "High notes brighter than low ones. This is key tracking, built from a route.", target: "Key position sent to Filter cutoff; three different keys played",
+        check: (s) => s.state.keyDest === "cutoff" && s.distinctNotes >= 3 },
+      { do: "Send Key position to Note level instead and turn its Amount below zero. Play low and high keys.", show: ["keyboard", "keyDest", "keyAmount"], hear: "High notes quieter than low ones: a way to stop a bright sound getting piercing at the top.", target: "Key position sent to Note level, amount below zero; two different keys played",
+        check: (s) => s.state.keyDest === "noteLevel" && s.state.keyAmount < 0 && s.distinctNotes >= 2 },
+    ],
+    recap: ["Velocity is how hard a note is struck; key position is which key it is.", "Both are fixed for the length of a note.", "Sent to level and brightness, they make a synth respond to playing."],
+    inSerum: "Serum has VELO and NOTE sources beside the LFOs; drag either onto a knob. A new preset already sends velocity to level.",
+  },
+  {
     id: "C5.6", title: "Modulating a modulator", buildsOn: ["C5.1"], minutes: 7, cardIds: ["mod-of-mod"], initial: { ...WOBBLE },
     outcome: "Send one source to another source’s settings, so the movement itself changes over time.",
     demo: { caption: "A steady wobble, then a wobble whose speed is itself being moved.", tones: patches([{ ...WOBBLE }, { ...WOBBLE, lfo2Dest: "lfo1Rate", lfo2Amount: 80, lfo2Rate: 0.4, lfo2Shape: "sine" }], 3.0) },

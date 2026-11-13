@@ -1,7 +1,8 @@
 import { useEffect, useRef } from "react";
-import { INITIAL, PARAMS, type ParamSpec, type SynthState } from "../../synth/params";
+import { BOX_IDS, fromTravel, INITIAL, PARAMS, toTravel, type ParamSpec, type SynthState } from "../../synth/params";
+import { slotPush, slotsTo } from "../../synth/macros";
 import { routesTo } from "../../synth/mod";
-import { KEY_MAP, type Synth } from "../../synth/useSynth";
+import { clickVelocity, KEY_MAP, type Synth } from "../../synth/useSynth";
 
 const fmt = (id: string, v: number) => {
   const unit = PARAMS[id]!.unit ?? "";
@@ -15,22 +16,14 @@ const fmt = (id: string, v: number) => {
 };
 
 /** The name printed under a control. Its module panel already says which oscillator or section it belongs to. */
-export const shortLabel = (label: string) => label.replace(/^(A|B|Sub|Noise|Filter|Wave|Env \d|LFO \d) /, "");
+export const shortLabel = (label: string) => label.replace(/^(A|B|Sub|Noise|Filter|Wave|Env \d|LFO \d|Velocity|Key position|Macro \d slot \d) /, "");
 
 /** Settings shown as a small number box (a few whole steps) and not as a knob. */
-const BOXES = new Set<keyof SynthState>(["octave", "semitone", "bOctave", "bSemitone", "voices", "subOctave"]);
+const BOXES = new Set<string>(BOX_IDS);
 export const isBox = (id: keyof SynthState) => BOXES.has(id);
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
-/** A setting's value as a position from 0 to 1 along its travel, and back. Wide-ranging ones travel in octaves. */
-export function toTravel(spec: ParamSpec, v: number): number {
-  return clamp01(spec.log ? Math.log(v / spec.min!) / Math.log(spec.max! / spec.min!) : (v - spec.min!) / (spec.max! - spec.min!));
-}
-export function fromTravel(spec: ParamSpec, t: number): number {
-  const raw = spec.log ? spec.min! * (spec.max! / spec.min!) ** clamp01(t) : spec.min! + clamp01(t) * (spec.max! - spec.min!);
-  const step = spec.step ?? 1;
-  return tidy(Math.min(spec.max!, Math.max(spec.min!, Math.round(raw / step) * step)));
-}
+export { fromTravel, toTravel };
 /** One press of an arrow key: the smallest step, or about 1% for wide-ranging settings. `big` is ten times that. */
 export function nudge(spec: ParamSpec, v: number, dir: 1 | -1, big: boolean): number {
   const step = spec.step ?? 1;
@@ -80,11 +73,15 @@ function Knob({ id, synth, spot }: { id: keyof SynthState; synth: Synth; spot: b
   const t = toTravel(spec, value);
   const angle = -SWEEP / 2 + t * SWEEP;
   const mods = routesTo(synth.state, id);
+  const slots = slotsTo(synth.state, id);
+  const lit = mods.length + slots.length > 0;
+  // where the macros have actually put this knob, when that differs from where it was left
+  const played = slots.length ? toTravel(spec, synth.effective[id] as number) : t;
   const zero = spec.min! < 0 && spec.max! > 0 ? -SWEEP / 2 + toTravel(spec, 0) * SWEEP : -SWEEP / 2;
   return (
-    <div className={`${box ? "nbox" : "knob"}${spot ? " spot" : ""}${mods.length ? " moved" : ""}`} style={mods.length ? ({ "--glow": mods[0]!.source.color } as React.CSSProperties) : undefined} role="slider" tabIndex={0} aria-label={spec.label} aria-orientation="vertical"
+    <div className={`${box ? "nbox" : "knob"}${spot ? " spot" : ""}${lit ? " moved" : ""}`} style={lit ? ({ "--glow": mods[0]?.source.color ?? slots[0]!.color } as React.CSSProperties) : undefined} role="slider" tabIndex={0} aria-label={spec.label} aria-orientation="vertical"
       aria-valuemin={spec.min} aria-valuemax={spec.max} aria-valuenow={value} aria-valuetext={fmt(id, value)}
-      title={`${spec.label}: drag up or down, or click and use the arrow keys. Double-click to reset.${mods.length ? ` Moved by ${mods.map((m) => m.source.name).join(" and ")}.` : ""}`}
+      title={`${spec.label}: drag up or down, or click and use the arrow keys. Double-click to reset.${lit ? ` Moved by ${[...mods.map((m) => m.source.name), ...slots.map((m) => m.name)].join(" and ")}.` : ""}`}
       onKeyDown={onKey} onDoubleClick={reset}
       onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); e.currentTarget.focus(); drag.current = { y: e.clientY, travel: t }; }}
       onPointerMove={(e) => {
@@ -99,10 +96,21 @@ function Knob({ id, synth, spot }: { id: keyof SynthState; synth: Synth; spot: b
             const [from, to] = ringSpan(t, m.amount, m.oneWay ? "env" : "lfo");
             return <path key={m.source.id} className="knob-ring" style={{ stroke: m.source.color, filter: `drop-shadow(0 0 2.5px ${m.source.color})` }} d={arc(degrees(from), Math.max(degrees(to), degrees(from) + 1), 24.5 + i * 3.4)}><title>{`${m.source.name} moves this`}</title></path>;
           })}
+          {slots.map((m, i) => {
+            // a macro's ring: dim across everything it could reach, bright as far as it is turned up now
+            const r = 24.5 + (mods.length + i) * 3.4, reach = t + m.amount / 100, now = t + slotPush(m);
+            return (
+              <g key={`${m.macro}-${m.slot}`} style={{ stroke: m.color }}>
+                <path className="knob-ring reach" d={arc(degrees(Math.min(t, reach)), Math.max(degrees(Math.max(t, reach)), degrees(Math.min(t, reach)) + 1), r)}><title>{`${m.name} can move this`}</title></path>
+                {m.value > 0 && <path className="knob-ring" style={{ filter: `drop-shadow(0 0 2.5px ${m.color})` }} d={arc(degrees(Math.min(t, now)), Math.max(degrees(Math.max(t, now)), degrees(Math.min(t, now)) + 1), r)} />}
+              </g>
+            );
+          })}
           <path className="knob-track" d={arc(-SWEEP / 2, SWEEP / 2, 20)} />
           {angle !== zero && <path className="knob-value" d={arc(zero, angle, 20)} />}
           <circle className="knob-cap" cx="24" cy="24" r="14" />
           <path className="knob-mark" d={`M ${point(angle, 5)} L ${point(angle, 13)}`} />
+          {played !== t && <circle className="knob-played" cx={point(degrees(played), 20).split(" ")[0]} cy={point(degrees(played), 20).split(" ")[1]} r="2.6"><title>Where the macros have put it</title></circle>}
         </svg>
       )}
       <span className="knob-name">{shortLabel(spec.label)}</span>
@@ -161,7 +169,11 @@ export function Keyboard({ synth, from = 48, octaves = 3 }: { synth: Synth; from
   const whites = notes.filter((n) => WHITE.includes(n % 12));
   const release = () => { if (pressed.current !== null) { synth.noteOff(pressed.current); pressed.current = null; } };
   useEffect(() => { window.addEventListener("pointerup", release); return () => window.removeEventListener("pointerup", release); });
-  const press = (n: number) => { release(); pressed.current = n; synth.noteOn(n, "mouse"); };
+  // Lower on the key strikes harder, as on many on-screen keyboards.
+  const press = (n: number, e: React.PointerEvent<HTMLButtonElement>) => {
+    const box = e.currentTarget.getBoundingClientRect();
+    release(); pressed.current = n; synth.noteOn(n, "mouse", clickVelocity((e.clientY - box.top) / box.height));
+  };
   return (
     <div className="keys-wrap">
     <div className={`keys${synth.running ? "" : " off"}`} role="group" aria-label="Keyboard">
@@ -169,15 +181,15 @@ export function Keyboard({ synth, from = 48, octaves = 3 }: { synth: Synth; from
         const black = notes.includes(n + 1) && !WHITE.includes((n + 1) % 12) ? n + 1 : null;
         return (
           <div key={n} className="key-slot" style={{ width: `${100 / whites.length}%` }}>
-            <button className={`key white${synth.held.includes(n) ? " down" : ""}`} onPointerDown={() => press(n)} aria-label={`Note ${n}`}>{LABEL[n] && <span>{LABEL[n]}</span>}{n % 12 === 0 && <em>C{n / 12 - 1}</em>}</button>
+            <button className={`key white${synth.held.includes(n) ? " down" : ""}`} onPointerDown={(e) => press(n, e)} aria-label={`Note ${n}`}>{LABEL[n] && <span>{LABEL[n]}</span>}{n % 12 === 0 && <em>C{n / 12 - 1}</em>}</button>
             {black !== null && i < whites.length - 1 && (
-              <button className={`key black${synth.held.includes(black) ? " down" : ""}`} onPointerDown={() => press(black)} aria-label={`Note ${black}`}>{LABEL[black] && <span>{LABEL[black]}</span>}</button>
+              <button className={`key black${synth.held.includes(black) ? " down" : ""}`} onPointerDown={(e) => press(black, e)} aria-label={`Note ${black}`}>{LABEL[black] && <span>{LABEL[black]}</span>}</button>
             )}
           </div>
         );
       })}
     </div>
-    <p className="keys-hint" role="status">Computer keys: <kbd>Z</kbd> octave down, <kbd>X</kbd> octave up.{synth.keyOctave !== 0 && ` Now ${synth.keyOctave > 0 ? "+" : ""}${synth.keyOctave} octave${Math.abs(synth.keyOctave) === 1 ? "" : "s"}${shown ? "" : " (beyond the keys drawn here)"}.`}</p>
+    <p className="keys-hint" role="status">Computer keys: <kbd>Z</kbd> octave down, <kbd>X</kbd> octave up, <kbd>C</kbd> softer, <kbd>V</kbd> harder (now {synth.keyVelocity} of 127). With the mouse, click lower on a key to strike harder.{synth.keyOctave !== 0 && ` Now ${synth.keyOctave > 0 ? "+" : ""}${synth.keyOctave} octave${Math.abs(synth.keyOctave) === 1 ? "" : "s"}${shown ? "" : " (beyond the keys drawn here)"}.`}</p>
     </div>
   );
 }

@@ -6,7 +6,7 @@ import { newTrack, snapshot, trackAllReleased, trackFlag, trackNoteOn, trackStat
 
 const base = (over: Partial<Snapshot> = {}, state: Partial<SynthState> = {}, start: Partial<SynthState> = {}): Snapshot => ({
   state: { ...INITIAL, ...state }, start: { ...INITIAL, ...start }, audioRunning: true, held: [], played: { mouse: 0, keys: 0, midi: 0 },
-  distinctNotes: 0, holdOn: false, heldSeconds: 0, longestHeld: 0, range: {}, changes: {}, flags: {}, lastNote: null, ...over,
+  distinctNotes: 0, holdOn: false, heldSeconds: 0, longestHeld: 0, velocity: null, range: {}, changes: {}, flags: {}, lastNote: null, ...over,
 });
 const step = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
 
@@ -31,7 +31,7 @@ describe("practice synth maths", () => {
     expect(dbToGain(-48)).toBe(0);
   });
   it("every lesson only reveals controls that exist, within their ranges", () => {
-    const panels = new Set(["start", "keyboard", "hold", "scope", "spectrum", "spectrogram", "meter", "beat", "curve", "envelope", "envelope2", "ack", ...Object.keys(PARAMS)]);
+    const panels = new Set(["start", "keyboard", "hold", "scope", "spectrum", "spectrogram", "meter", "beat", "curve", "envelope", "envelope2", "matrix", "ack", "macro1Name", "macro2Name", "macro3Name", "macro4Name", ...Object.keys(PARAMS)]);
     for (const l of LESSONS) for (const s of l.steps) for (const p of s.show) expect(panels.has(p), `${l.id}: ${p}`).toBe(true);
   });
 });
@@ -424,7 +424,7 @@ describe("how lessons are labelled for the learner", () => {
 });
 
 import { fromTravel, isBox, nudge, shortLabel, toTravel } from "../src/ui/synth/Controls";
-import { MOD_MODULES, MODULES, wavePath } from "../src/ui/synth/Rack";
+import { MACRO_MODULES, MOD_MODULES, MODULES, wavePath } from "../src/ui/synth/Rack";
 
 describe("knobs and the module rack", () => {
   it("a knob's travel covers its whole range, in octaves for wide-ranging settings, and snaps to steps", () => {
@@ -449,7 +449,7 @@ describe("knobs and the module rack", () => {
     expect(nudge(cutoff, 5000, -1, true)).toBe(4500);
   });
   it("every setting has a home: one module panel, or the main volume", () => {
-    const groups = [...MODULES, ...MOD_MODULES].flatMap((m) => m.groups);
+    const groups = [...MODULES, ...MOD_MODULES, ...MACRO_MODULES].flatMap((m) => m.groups);
     expect(new Set(groups).size).toBe(groups.length);
     for (const spec of Object.values(PARAMS)) expect(spec.group === "Master" || groups.includes(spec.group), spec.label).toBe(true);
     for (const m of MODULES) if (m.toggle) expect(PARAMS[m.toggle]!.kind).toBe("toggle");
@@ -626,7 +626,7 @@ import { CHAPTER_5 } from "../src/course/lessons/chapter5";
 describe("chapter 5: routes, direction, and modulating a modulator", () => {
   const st = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
   it("the modulation chapter follows the LFOs and starts from real settings", () => {
-    expect(LESSONS.map((l) => l.id).slice(32)).toEqual(["C5.1", "C5.2", "C5.6", "C5.C"]);
+    expect(LESSONS.map((l) => l.id).slice(32, 37)).toEqual(["C5.1", "C5.2", "C5.3", "C5.6", "C5.C"]);
     for (const l of CHAPTER_5) for (const k of Object.keys(l.initial ?? {})) expect(k in INITIAL, `${l.id}: ${k}`).toBe(true);
   });
   it("an LFO set to one way pushes one side only, like an envelope; both ways is the default", () => {
@@ -645,5 +645,98 @@ describe("chapter 5: routes, direction, and modulating a modulator", () => {
     const modmod = base({}, { lfo1Rate: 3, lfo2Dest: "lfo1Rate", lfo2Rate: 0.3, lfo2Amount: 50 });
     expect(st("C5.6", 1).check(base({}, { lfo2Dest: "lfo1Rate", lfo2Rate: 0.3, lfo2Amount: 60 }))).toBe(true);
     expect(st("C5.6", 1).remark!(modmod)).toContain("about 1.0 octaves either side of its setting: from roughly 1.5 to 6 wobbles a second");
+  });
+});
+
+import { MACRO_CHAPTER } from "../src/course/lessons/macros";
+import { applyMacros, macroSlots, slotsTo } from "../src/synth/macros";
+import { keyValue, noteLevelBase, velocityValue } from "../src/synth/mod";
+import { MACRO_DESTS } from "../src/synth/params";
+import { clickVelocity, shiftVelocity } from "../src/synth/useSynth";
+import { CHAPTER_ORDER } from "../src/course/lessons";
+
+describe("macros", () => {
+  const bite: SynthState = { ...INITIAL, filterOn: true, cutoff: 400, resonance: 10, macro1Dest1: "cutoff", macro1Amt1: 20, macro1Dest2: "resonance", macro1Amt2: 50 };
+  it("a macro at zero changes nothing; turned up, it pushes each knob along its travel by its slot's amount", () => {
+    expect(applyMacros(bite)).toBe(bite);
+    const full = applyMacros({ ...bite, macro1: 100 });
+    expect(full.cutoff / 400).toBeCloseTo(4, 1); // 20% of a ten-octave knob is two octaves
+    expect(full.resonance).toBe(60);
+    const half = applyMacros({ ...bite, macro1: 50 });
+    expect(half.cutoff / 400).toBeCloseTo(2, 1);
+    expect(half.resonance).toBe(35);
+    expect(applyMacros({ ...bite, macro1: 100, macro1Amt1: -100 }).cutoff).toBe(20); // never past the end of the knob
+    expect(half.macro1).toBe(50); // the macro itself and everything else are untouched
+    expect(half.volumeDb).toBe(INITIAL.volumeDb);
+  });
+  it("two macros on one knob add, and a slot with no destination or no amount is ignored", () => {
+    const two = applyMacros({ ...bite, macro1: 100, macro2: 100, macro2Dest1: "resonance", macro2Amt1: 20, macro3Dest1: "nonsense", macro3: 100 });
+    expect(two.resonance).toBe(80);
+    expect(macroSlots({ ...bite, macro3Dest1: "nonsense" }).map((m) => m.dest)).toEqual(["cutoff", "resonance"]);
+    expect(slotsTo({ ...bite, macro1Amt1: 0 }, "cutoff")).toEqual([]);
+    expect(slotsTo(bite, "cutoff")[0]!.name).toBe("Macro 1");
+  });
+  it("a macro can reach any continuous knob, but not whole-step boxes or other macros", () => {
+    for (const id of ["cutoff", "position", "lfo1Rate", "lfo1Amount", "envA", "noiseLevelDb", "velAmount"]) expect(MACRO_DESTS, id).toContain(id);
+    for (const id of ["octave", "voices", "macro1", "macro2Amt1", "shape", "filterOn", "freeHz"]) expect(MACRO_DESTS, id).not.toContain(id);
+    expect(MACRO_DESTS[0]).toBe("none");
+  });
+  it("the macro chapter is listed after Modulation, and every recipe wires what it teaches", () => {
+    expect(CHAPTER_ORDER.map((c) => CHAPTERS[c])).toEqual(["Sound itself", "Oscillators", "Filters", "Envelopes", "LFOs", "Modulation", "Macros"]);
+    expect(new Set(LESSONS.map((l) => chapterOf(l))).size).toBe(CHAPTER_ORDER.length);
+    expect(MACRO_CHAPTER.map((l) => l.id)).toEqual(["C5M.1", "C5M.2", "C5M.3", "C5M.4", "C5M.5", "C5M.6", "C5M.7", "C5M.8", "C5M.C"]);
+    for (const l of MACRO_CHAPTER.slice(0, 7)) {
+      // the finished macro, as the demo plays it, really changes the sound between zero and full
+      const [zero, , top] = l.demo!.tones.map((t) => applyMacros({ ...INITIAL, ...t.patch }));
+      expect(JSON.stringify(zero) === JSON.stringify({ ...top, macro1: 0 }), l.id).toBe(false);
+      expect(l.steps.at(-3)!.do, l.id).toMatch(/^Give the macro a name/);
+    }
+  });
+  it("a recipe's steps check the slot, the name, the sweep and the parked position, and the remark lists what moved", () => {
+    const l = MACRO_CHAPTER[0]!, wired = { filterOn: true, cutoff: 400, resonance: 10, macro1Dest1: "cutoff", macro1Amt1: 35, macro1Dest2: "resonance", macro1Amt2: 45, macro1Name: "Bite" } as Partial<SynthState>;
+    expect(l.steps[1]!.check(base({}, { macro1Dest1: "cutoff", macro1Amt1: 40 }))).toBe(true);
+    expect(l.steps[1]!.check(base({}, { macro1Dest1: "resonance", macro1Amt1: 40 }))).toBe(false);
+    expect(l.steps[3]!.check(base({}, { macro1Name: "Bite" }))).toBe(true);
+    expect(l.steps[3]!.check(base({}, { macro1Name: "  " }))).toBe(false);
+    expect(l.steps[4]!.check(base({ range: { macro1: { min: 0, max: 100 } } }, wired))).toBe(true);
+    expect(l.steps[4]!.check(base({ range: { macro1: { min: 0, max: 60 } } }, wired))).toBe(false);
+    const parked = base({ changes: { macro1: 4 } }, { ...wired, macro1: 50 });
+    expect(l.steps[5]!.check(parked)).toBe(true);
+    expect(l.steps[5]!.remark!(parked)).toMatch(/^“Bite” at 50% has moved Cutoff from 400 Hz to 1\.3\d kHz, Resonance from 10% to 33%\. One knob, 2 changes\.$/);
+  });
+});
+
+describe("velocity and key position", () => {
+  it("velocity runs 0 to 1, key position -1 to 1 around middle C", () => {
+    expect(velocityValue(127)).toBe(1);
+    expect(velocityValue(64)).toBeCloseTo(0.5, 2);
+    expect(keyValue(60)).toBe(0);
+    expect(keyValue(84)).toBe(1);
+    expect(keyValue(36)).toBe(-1);
+    expect(keyValue(120)).toBe(1);
+  });
+  it("velocity is a one-way source, and sent to Note level it turns soft notes down, not hard notes up", () => {
+    const s: SynthState = { ...INITIAL, velDest: "noteLevel", velAmount: 60, keyDest: "cutoff" };
+    expect(routes(s).map((r) => [r.source.id, r.oneWay])).toEqual([["vel", true], ["key", false]]);
+    expect(noteLevelBase(s)).toBeCloseTo(0.4, 9); // softest possible note; a full-velocity note adds the 0.6 back
+    expect(noteLevelBase(INITIAL)).toBe(1);
+    expect(noteLevelBase({ ...s, velAmount: -60 })).toBe(1);
+  });
+  it("clicking lower on a key strikes harder, and C and V step the letter keys' velocity within limits", () => {
+    expect(clickVelocity(0)).toBe(20);
+    expect(clickVelocity(1)).toBe(127);
+    expect(clickVelocity(0.5)).toBeGreaterThan(60);
+    expect(shiftVelocity(100, 1)).toBe(120);
+    expect(shiftVelocity(120, 1)).toBe(127);
+    expect(shiftVelocity(127, -1)).toBe(120);
+    expect(shiftVelocity(20, -1)).toBe(20);
+  });
+  it("C5.3 needs a soft and a hard note, with velocity sent where the step says", () => {
+    const st = (n: number) => LESSONS.find((l) => l.id === "C5.3")!.steps[n]!;
+    expect(st(0).check(base({ velocity: { min: 30, max: 120 } }))).toBe(true);
+    expect(st(0).check(base({ velocity: { min: 90, max: 120 } }))).toBe(false);
+    expect(st(1).check(base({ velocity: { min: 30, max: 120 } }, { velDest: "noteLevel" }))).toBe(true);
+    expect(st(2).check(base({ velocity: { min: 30, max: 120 } }, { velDest: "noteLevel" }))).toBe(false);
+    expect(st(4).check(base({ distinctNotes: 2 }, { keyDest: "noteLevel", keyAmount: -40 }))).toBe(true);
   });
 });

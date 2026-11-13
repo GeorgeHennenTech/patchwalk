@@ -407,3 +407,24 @@ label.mod-head { cursor: pointer; }
 .synth:not(.plain) .env-handle { fill: var(--glow); stroke: #0c0510; }
 
 .mod-mid { stroke: var(--line); stroke-width: 1; stroke-dasharray: 3 3; vector-effect: non-scaling-stroke; }
+
+/* Macros, velocity and the matrix */
+.rack.macros .mod { flex: 1 1 220px; }
+.macro-slot { display: flex; align-items: center; gap: 4px; padding-top: 6px; border-top: 1px dashed var(--line); }
+.macro-slot .pick { flex: 1; min-width: 0; }
+.macro-slot .knob { min-width: 58px; }
+.macro-slot .knob svg { width: 38px; height: 38px; }
+.rack:not(.full) .macro-slot .knob svg { width: 50px; height: 50px; }
+.macro-name { flex: 1; min-width: 0; padding: 4px 6px; border-radius: 8px; border: 2px solid var(--line); background: var(--panel); color: var(--text); font: inherit; font-size: 13px; font-weight: 700; }
+.mod-macro .mod-row .knob svg { width: 60px; height: 60px; }
+.knob-ring.reach { opacity: 0.35; }
+.knob-played { fill: var(--glow, var(--accent)); stroke: var(--panel); stroke-width: 1; }
+.view.matrix { grid-column: 1 / -1; }
+.view.matrix table { width: 100%; border-collapse: collapse; font-size: 13px; background: var(--panel); border: 2px solid var(--line); border-radius: 10px; overflow: hidden; }
+.view.matrix th, .view.matrix td { text-align: left; padding: 5px 10px; border-bottom: 1px solid var(--line); }
+.view.matrix th { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.view.matrix td i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 7px; }
+.view.matrix tr.off td { color: var(--muted); }
+.synth:not(.plain) .view.matrix table { background: #0c0510; }
+.synth:not(.plain) .view.matrix td i { box-shadow: 0 0 6px currentColor; }
+.synth:not(.plain) .macro-name { background: #0c0510; border-color: var(--glow); color: var(--glow); }

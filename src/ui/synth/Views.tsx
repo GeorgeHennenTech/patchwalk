@@ -103,7 +103,7 @@ const curveY = (db: number) => 1 - (Math.min(CURVE.top, Math.max(CURVE.bottom, d
  * sound), with the live spectrum faintly behind it. The dot can be dragged: sideways for cutoff, up and down
  * for resonance.
  */
-export function FilterCurve({ synth, note, spot }: { synth: Synth; note: number | null; spot?: boolean }) {
+export function FilterCurve({ synth, note, spot, compact }: { synth: Synth; note: number | null; spot?: boolean; compact?: boolean }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const buf = useRef(new Float32Array(2048));
   const drag = useRef<{ y: number; resonance: number } | null>(null);
@@ -148,11 +148,11 @@ export function FilterCurve({ synth, note, spot }: { synth: Synth; note: number 
     synth.setState({ cutoff, resonance });
   };
   return (
-    <figure className={`view curve${spot ? " spot" : ""}`}>
+    <figure className={`view curve${spot ? " spot" : ""}${compact ? " compact" : ""}`}>
       <canvas ref={ref} role="img" aria-label="Filter curve. Drag the dot sideways to move the cutoff and up or down to change the resonance."
         onPointerDown={(e) => { if (!s.filterOn) return; e.currentTarget.setPointerCapture(e.pointerId); drag.current = { y: e.clientY, resonance: s.resonance }; synth.flag("curve"); move(e); }}
         onPointerMove={move} onPointerUp={() => { drag.current = null; }} onPointerCancel={() => { drag.current = null; }} />
-      <figcaption>{s.filterOn ? "Filter curve: how much gets through at each frequency. Drag the dot: sideways moves the cutoff, up and down sets the resonance. The faint shape is the live sound." : "Filter curve: flat, because the filter is off and everything gets through."}</figcaption>
+      {!compact && <figcaption>{s.filterOn ? "Filter curve: how much gets through at each frequency. Drag the dot: sideways moves the cutoff, up and down sets the resonance. The faint shape is the live sound." : "Filter curve: flat, because the filter is off and everything gets through."}</figcaption>}
     </figure>
   );
 }

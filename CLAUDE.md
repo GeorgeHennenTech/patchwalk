@@ -174,6 +174,19 @@ Added after the first eight milestones (owner asked for all four in one go):
     spectrum, spectrogram (new: the spectrum scrolling over time), level meter and filter curve on at any
     step; the choice is remembered in the browser. Hidden during match-by-ear, where seeing the target would
     defeat the exercise. The views only need the engine's analyser, so the later mini DAW can reuse them.
+  - **Rack layout and knobs (13 Nov 2026, owner's request).** The owner asked for the synth to be laid out as
+    much like Serum as possible, with knobs. `src/ui/synth/Rack.tsx` draws module panels in Serum's left-to-right
+    order (Sub, Osc A, Osc B, Noise, Filter), each with its on/off switch and name on top, a picture (the wave
+    computed from its harmonics, or the filter curve), then choices, number boxes and knobs; main volume and the
+    level meter sit top right; views and the keyboard are below. **Only the arrangement follows Serum. The look
+    stays our own patchwork skin**: no Serum colours, artwork, fonts or name (rule 4 and the "never imitate
+    Serum's interface" decision are read as covering appearance; the owner has now explicitly asked for the
+    arrangement). In a lesson step only the panels and controls that step needs appear, larger; "Show the whole
+    synth" gives the full rack. `Control` in `Controls.tsx` renders every numeric setting as a knob (or a number
+    box for octave, semitone, voices): drag up/down to turn (Shift = fine), click then arrow keys for exact
+    steps (Shift or Page Up/Down = ten steps; cutoff moves about 1% per press), Home/End, double-click to reset.
+    Knobs are `role="slider"` elements, not inputs, so computer-keyboard notes still play while one has focus.
+    Labels drop the module prefix ("B level" shows as LEVEL inside the Osc B panel).
   - Not built yet: envelopes, LFOs, modulation, effects, MIDI input, a shared tempo clock. Chapter 3
     (envelopes) is next and has no scripts yet.
   - The old ten Serum-task lessons are now the "Serum tasks" tab.

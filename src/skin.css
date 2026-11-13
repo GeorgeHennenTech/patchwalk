@@ -250,3 +250,52 @@ details.card[open] summary { margin-bottom: 4px; border-bottom: 1px dashed var(-
 .learn-chapter-name { margin: 14px 0 4px; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
 .learn-place { margin: 0 0 2px; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
 .learn-place + h2 { margin-top: 0; }
+
+/* ---- The synth as a rack of module panels with knobs ---- */
+main:has(.learn .synth) { max-width: 1500px; }
+.synth-top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+.synth-main { display: flex; align-items: center; gap: 10px; margin-left: auto; padding: 4px 10px; background: var(--panel); border: 2px solid var(--thread); border-radius: 12px; }
+.synth-main .ctl.meter { border: 0; padding: 0; flex: 0 1 230px; min-width: 170px; background: none; }
+.rack { display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; }
+.mod { display: flex; flex-direction: column; flex: 1 1 150px; min-width: 0; background: var(--panel); border: 2px solid var(--thread); border-radius: 12px; overflow: hidden; }
+.rack.full .mod-sub, .rack.full .mod-noise { flex: 1 1 100px; }
+.rack.full .mod-a { flex: 3.2 1 290px; }
+.rack.full .mod-b { flex: 2.2 1 200px; }
+.rack.full .mod-filter { flex: 2.6 1 230px; }
+.mod-head { display: flex; align-items: center; gap: 7px; padding: 5px 10px; background: var(--thread); color: var(--panel); font-weight: 800; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; }
+label.mod-head { cursor: pointer; }
+.mod-head input { accent-color: var(--accent); width: 15px; height: 15px; margin: 0; }
+.mod-head em { margin-left: auto; font-style: normal; font-weight: 600; font-size: 11px; opacity: 0.8; }
+.mod-head.spot { box-shadow: inset 0 -4px 0 var(--accent); }
+.mod-body { display: flex; flex-direction: column; gap: 8px; padding: 8px; flex: 1; }
+.mod.off .mod-body { opacity: 0.5; }
+.mod-wave { display: block; width: 100%; height: 64px; background: var(--thread); border-radius: 8px; }
+.mod-wave path { fill: none; stroke: var(--accent-soft); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.mod-row { display: flex; flex-wrap: wrap; gap: 6px 4px; justify-content: space-around; align-items: flex-start; }
+.view.curve.compact canvas { height: 64px; border-width: 0; border-radius: 8px; box-shadow: inset 0 0 0 1px var(--line); }
+.mod .view.curve { grid-column: auto; }
+
+.knob, .nbox { display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 4px 3px 3px; min-width: 62px; border-radius: 10px; border: 2px solid transparent; cursor: ns-resize; touch-action: none; user-select: none; -webkit-user-select: none; }
+.knob svg { width: 46px; height: 46px; display: block; }
+.knob-track { fill: none; stroke: var(--line); stroke-width: 4; stroke-linecap: round; }
+.knob-value { fill: none; stroke: var(--accent); stroke-width: 4; stroke-linecap: round; }
+.knob-cap { fill: var(--thread); }
+.knob-mark { stroke: var(--panel); stroke-width: 3; stroke-linecap: round; }
+.knob-name { font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.knob output, .nbox output { font-family: ui-monospace, Menlo, monospace; font-size: 12px; white-space: nowrap; }
+.nbox { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 0 8px; padding: 4px 7px; border: 2px solid var(--line); background: var(--bg-soft, transparent); min-width: 0; }
+.nbox output { min-width: 34px; text-align: right; font-weight: 700; }
+.knob:hover .knob-cap, .knob:focus-visible .knob-cap { fill: var(--accent); }
+.knob:focus-visible, .nbox:focus-visible { outline: none; border-color: var(--accent); background: var(--accent-soft); }
+.knob.spot, .nbox.spot, .pick.spot { border-color: var(--thread); box-shadow: 3px 3px 0 var(--accent); background: var(--panel); }
+.pick { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; padding: 3px; border: 2px solid transparent; border-radius: 10px; }
+.pick .seg { flex-wrap: wrap; max-width: 100%; }
+.pick .seg button { padding: 3px 9px; font-size: 13px; }
+/* In a lesson step only a few controls are on screen, so they can be bigger */
+.rack:not(.full) .mod { flex: 0 1 auto; min-width: 150px; }
+.rack:not(.full) .knob svg { width: 62px; height: 62px; }
+.rack:not(.full) .knob { min-width: 86px; }
+.rack:not(.full) .knob-name { font-size: 12px; }
+.rack:not(.full) .knob output, .rack:not(.full) .nbox output { font-size: 13px; }
+.rack:not(.full) .pick .seg button { padding: 6px 13px; font-size: 14px; }
+.rack:not(.full) .mod:has(.view.curve) { flex: 1 1 100%; }

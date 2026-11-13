@@ -420,3 +420,48 @@ describe("how lessons are labelled for the learner", () => {
     }
   });
 });
+
+import { fromTravel, isBox, nudge, shortLabel, toTravel } from "../src/ui/synth/Controls";
+import { MODULES, wavePath } from "../src/ui/synth/Rack";
+
+describe("knobs and the module rack", () => {
+  it("a knob's travel covers its whole range, in octaves for wide-ranging settings, and snaps to steps", () => {
+    const cutoff = PARAMS.cutoff!, res = PARAMS.resonance!, track = PARAMS.keyTrack!;
+    expect(toTravel(cutoff, 20)).toBe(0);
+    expect(toTravel(cutoff, 20000)).toBeCloseTo(1, 9);
+    expect(toTravel(cutoff, 2000) - toTravel(cutoff, 1000)).toBeCloseTo(toTravel(cutoff, 400) - toTravel(cutoff, 200), 9);
+    expect(fromTravel(res, 0.5)).toBe(50);
+    expect(fromTravel(track, 0.52)).toBe(50); // steps of 5
+    expect(fromTravel(res, 2)).toBe(100);
+    expect(fromTravel(res, -1)).toBe(0);
+    for (const v of [20, 262, 1000, 20000]) expect(fromTravel(cutoff, toTravel(cutoff, v))).toBe(v);
+  });
+  it("arrow keys move one exact step, ten with Shift, and never leave the range", () => {
+    const res = PARAMS.resonance!, cutoff = PARAMS.cutoff!, oct = PARAMS.octave!;
+    expect(nudge(res, 40, 1, false)).toBe(41);
+    expect(nudge(res, 40, -1, true)).toBe(30);
+    expect(nudge(res, 99, 1, true)).toBe(100);
+    expect(nudge(oct, 3, 1, false)).toBe(3);
+    expect(nudge(cutoff, 50, 1, false)).toBe(51); // never less than 1 Hz
+    expect(nudge(cutoff, 5000, 1, false)).toBe(5050); // about 1% higher up
+    expect(nudge(cutoff, 5000, -1, true)).toBe(4500);
+  });
+  it("every setting has a home: one module panel, or the main volume", () => {
+    const groups = MODULES.flatMap((m) => m.groups);
+    expect(new Set(groups).size).toBe(groups.length);
+    for (const spec of Object.values(PARAMS)) expect(spec.group === "Master" || groups.includes(spec.group), spec.label).toBe(true);
+    for (const m of MODULES) if (m.toggle) expect(PARAMS[m.toggle]!.kind).toBe("toggle");
+    expect(isBox("octave")).toBe(true);
+    expect(isBox("cutoff")).toBe(false);
+    expect(shortLabel("B level")).toBe("level");
+    expect(shortLabel("Bright")).toBe("Bright");
+  });
+  it("the wave drawn on an oscillator panel comes from its harmonics and start phase", () => {
+    const y = (path: string, i: number) => Number(path.split(" L")[i]!.split(" ")[1]);
+    const sine = wavePath([0, 1], 0, 200, 64, 8);
+    expect(y(sine, 2)).toBeLessThan(10); // a quarter of the way through, a sine is at its top (small y)
+    expect(y(sine, 6)).toBeGreaterThan(54);
+    const shifted = wavePath([0, 1], 0.5, 200, 64, 8);
+    expect(y(shifted, 2)).toBeGreaterThan(54); // half a cycle later it is upside down
+  });
+});

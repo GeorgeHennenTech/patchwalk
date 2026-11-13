@@ -52,7 +52,8 @@ Last updated: 13 November 2026, after commit "Add the filter chapter to the prac
 ## 3. What the product is
 
 A private website, working name **Patchwalk**, live at **https://patchwalk.vercel.app** behind a password.
-The name and look must never use "Serum" or "Xfer" or imitate Serum's interface.
+The name and look must never use "Serum" or "Xfer" or copy Serum's appearance (colours, artwork, fonts). On
+13 Nov 2026 the owner asked for the practice synth's *arrangement* to follow Serum's so skills transfer; that is done.
 
 It began as: drop in a Serum 2 preset, get a step-by-step lesson for rebuilding it. It has grown into a
 synthesis course with its own practice synth and an AI guide that answers from a private library.
@@ -122,7 +123,7 @@ Stack: Vite, React, TypeScript, Zod, Vitest, deployed on Vercel. Claude is calle
 | Practice synth | `src/synth/` | `params.ts` (one typed state, exact units), `filter.ts` (filter maths, shared by sound and drawing), `engine.ts` (Web Audio), `tracker.ts`, `useSynth.ts`. |
 | Playable lessons | `src/course/` | `types.ts`, `lessons/index.ts`, `match.ts`, `progress.ts`. A lesson is data. |
 | Older Serum tasks | `src/learn/course.ts` | Ten lessons with preset-drop checks. |
-| Interface | `src/ui/`, `src/skin.css`, `src/styles.css` | `PlayView.tsx` is the lesson player. |
+| Interface | `src/ui/`, `src/skin.css`, `src/styles.css` | `PlayView.tsx` is the lesson player; `synth/Rack.tsx` the module panels; `synth/Controls.tsx` the knobs. |
 | Knowledge cards | `knowledge-cards/*.md` | 32 cards with a template. Four fixed sections each. |
 | Plans and scripts | `docs/` | See section 7. |
 
@@ -203,6 +204,10 @@ Take these in order. After each, test, check in a browser, commit, push, and rep
    Chapter 2 has no blind ear checks yet (each script names the one planned).
    Also added at the owner's suggestion: a "Show:" row to switch the scope, spectrum, a new scrolling
    spectrogram, the level meter and the filter curve on at any step (remembered; hidden in match-by-ear). The
+   Also at the owner's request: lesson codes are hidden (chapters are named), and the synth is now a rack of
+   module panels with knobs in Serum's arrangement (Sub, Osc A, Osc B, Noise, Filter; main volume top right).
+   Only the arrangement follows Serum; the look stays our own skin. Details in `CLAUDE.md`. New modules
+   (envelopes, LFOs) should go below the rack, where Serum puts them, as panels with knobs. The
    owner wants the same toggles in the piano roll when the mini DAW exists; ideas not built yet are a stereo
    (left/right) view, a tuner/pitch readout and a loudness meter.
 3. **Next: envelopes (C3)** with a draggable envelope drawing, then **LFOs and modulation (C4, C5)**.

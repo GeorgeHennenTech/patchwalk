@@ -4,15 +4,15 @@ import { allMatch, compareToTarget, type MatchVerdict } from "../course/match";
 import { guideContext, loadDone, saveDone, suggestNext } from "../course/progress";
 import type { MatchRound, Panel, PlayableLesson } from "../course/types";
 import type { Card } from "../lesson/cards";
-import { beatHz, INITIAL, noteToHz, PARAMS, SHAPES, type Group, type Shape, type SynthState } from "../synth/params";
+import { beatHz, INITIAL, noteToHz, PARAMS, SHAPES, type Shape, type SynthState } from "../synth/params";
 import { useSynth, type Synth } from "../synth/useSynth";
 import { AskBox } from "./Answer";
 import { Badge } from "./Badge";
 import { Markdown } from "./Markdown";
 import { Control, Keyboard } from "./synth/Controls";
+import { Rack } from "./synth/Rack";
 import { FilterCurve, Meter, Scope, Spectrogram, Spectrum } from "./synth/Views";
 
-const GROUPS: Group[] = ["Master", "Oscillator A", "Unison", "Oscillator B", "Sub", "Noise", "Filter"];
 const describe = (s: SynthState) => [
   `volume ${s.volumeDb} dB`,
   s.table === "none" ? `oscillator A wave shape ${s.shape}` : `oscillator A wavetable ${PARAMS.table!.names![s.table]} at position ${s.position}%`,
@@ -36,43 +36,40 @@ function loadViews(): Panel[] {
 
 function SynthPanel({ synth, show, lesson, all, lastNote, extra = [], onExtra }: { synth: Synth; show: Panel[]; lesson: PlayableLesson; all: boolean; lastNote?: number | null; extra?: Panel[]; onExtra?: (p: Panel) => void }) {
   const on = (p: Panel) => all || show.includes(p) || extra.includes(p);
-  const ids = (Object.keys(PARAMS) as (keyof SynthState)[]).filter((id) => on(id) && (id !== "freeHz" || synth.state.freeHz !== null));
-  const beat = beatHz(synth.state, synth.held.at(-1) ?? lastNote ?? 57);
+  const note = synth.held.at(-1) ?? lastNote ?? null;
+  const beat = beatHz(synth.state, note ?? 57);
   return (
     <div className="synth">
-      {!synth.running && onExtra && <button className="primary big" onClick={() => void synth.start()}>Start audio</button>}
-      {onExtra && (
-        <div className="view-toggles" role="group" aria-label="Views of the sound">
-          <span>Show:</span>
-          {VIEWS.map((v) => {
-            const fixed = all || show.includes(v.id);
-            return <button key={v.id} aria-pressed={on(v.id)} disabled={fixed} title={fixed ? "This step is using it" : undefined} onClick={() => onExtra(v.id)}>{v.label}</button>;
-          })}
-        </div>
-      )}
+      <div className="synth-top">
+        {!synth.running && onExtra && <button className="primary big" onClick={() => void synth.start()}>Start audio</button>}
+        {onExtra && (
+          <div className="view-toggles" role="group" aria-label="Views of the sound">
+            <span>Show:</span>
+            {VIEWS.map((v) => {
+              const fixed = all || show.includes(v.id);
+              return <button key={v.id} aria-pressed={on(v.id)} disabled={fixed} title={fixed ? "This step is using it" : undefined} onClick={() => onExtra(v.id)}>{v.label}</button>;
+            })}
+          </div>
+        )}
+        {(on("volumeDb") || on("meter")) && (
+          <div className="synth-main">
+            {on("meter") && <Meter synth={synth} />}
+            {on("volumeDb") && <Control id="volumeDb" synth={synth} spot={show.includes("volumeDb")} />}
+          </div>
+        )}
+      </div>
+      <Rack synth={synth} show={show} all={all} lesson={lesson} note={note} />
+      {/* In the whole synth the filter's curve lives in the filter panel; as an extra view it goes with the others. */}
       <div className="synth-views">
         {on("scope") && <Scope synth={synth} />}
         {on("spectrum") && <Spectrum synth={synth} />}
         {on("spectrogram") && <Spectrogram synth={synth} />}
-        {on("curve") && <FilterCurve synth={synth} note={synth.held.at(-1) ?? lastNote ?? null} spot={show.includes("curve")} />}
+        {!all && !show.includes("curve") && extra.includes("curve") && <FilterCurve synth={synth} note={note} />}
       </div>
-      {GROUPS.map((g) => {
-        const mine = ids.filter((id) => PARAMS[id]!.group === g);
-        if (!mine.length) return null;
-        return (
-          <div key={g} className="synth-group">
-            {(all || ids.length > 3) && <div className="synth-group-name">{g}</div>}
-            <div className="synth-ctls">
-              {mine.map((id) => <Control key={id} id={id} synth={synth} spot={show.includes(id)} only={!all && id === "shape" ? lesson.shapes : undefined} />)}
-            </div>
-          </div>
-        );
-      })}
       <div className="synth-ctls">
         {on("beat") && (
           <div className={`ctl${show.includes("beat") ? " spot" : ""}`}><span className="ctl-name">Beat rate</span><output className="wide">{synth.state.bOn ? `${beat.toFixed(1)} per second on this key` : "Osc B is off"}</output></div>
         )}
-        {on("meter") && <Meter synth={synth} />}
         {on("hold") && (
           <label className={`ctl toggle${show.includes("hold") ? " spot" : ""}`}>
             <input type="checkbox" checked={synth.holdOn} onChange={(e) => synth.setHold(e.target.checked)} /> <span className="ctl-name">Hold</span>

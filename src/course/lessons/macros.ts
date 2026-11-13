@@ -14,6 +14,7 @@ function shown(id: string, v: number): string {
   if (id === "cutoff") return v >= 1000 ? `${(v / 1000).toFixed(2)} kHz` : `${Math.round(v)} Hz`;
   if (unit === "ms") return v >= 1000 ? `${(v / 1000).toFixed(2)} s` : `${Math.round(v)} ms`;
   if (id.endsWith("Rate")) return `${v.toFixed(1)} Hz`;
+  if (unit === ":1") return `${v} to 1`;
   return `${v}${unit === "%" ? "%" : unit ? ` ${unit}` : ""}`;
 }
 const dest = (s: Snapshot, k: number) => (s.state as unknown as Record<string, string>)[`macro1Dest${k}`];
@@ -161,6 +162,107 @@ const RECIPES: Recipe[] = [
   },
 ];
 
+/** More recipes, added once the synth had effects, warp, FM and the wide pitch destination. Listed after "Two macros on one sound". */
+const PLUCK = { shape: "saw", filterOn: true, cutoff: 1800, envA: 2, envD: 220, envS: 0, envR: 120 } as const;
+const MORE_RECIPES: Recipe[] = [
+  {
+    id: "C5M.9", title: "Near to far", minutes: 7, name: "Space", buildsOn: ["C5M.1", "C7.6"], cardIds: ["macro-fx", "fx-reverb"], strike: true,
+    initial: { ...PLUCK, reverbOn: true, reverbMix: 0, reverbSize: 0.6 },
+    outcome: "Put distance on one knob: a macro that makes the room bigger as it makes it louder.",
+    idea: [
+      "A reverb has a size and a level, and they usually want to move together. A little of a small room reads as close; a lot of a big room reads as far away. Turning only one of them gives odd results: a huge hall you can barely hear, or a tiny room that swamps the sound.",
+      "So the macro raises both. At zero the sound is dry and in front of you. Turned up, it walks to the back of a hall.",
+    ],
+    slots: [{ to: "reverbMix", amount: 60, hear: "" }, { to: "reverbSize", amount: 50, hear: "" }],
+    sweep: "A dry pluck gaining a short bloom, then a long tail, as if it were moving away from you.",
+    recap: ["Reverb size and level usually belong on one control.", "Small and quiet is close; large and loud is far.", "An effect that starts at zero mix can be brought in by a macro."],
+  },
+  {
+    id: "C5M.10", title: "The echo throw", minutes: 7, name: "Throw", buildsOn: ["C5M.1", "C7.5"], cardIds: ["macro-fx", "fx-delay"], strike: true,
+    initial: { ...PLUCK, delayOn: true, delayMix: 0, delayFeedback: 20, delayTime: 280 },
+    outcome: "Build a macro that throws a note into a long train of echoes, and takes them away again.",
+    idea: [
+      "A delay left on all the time clutters a busy part. A common trick is to keep it silent and open it for a single note or the end of a phrase, so just that moment echoes away. That needs two things at once: the echoes turned up, and enough feedback for them to carry on.",
+      "One macro does both. Flick it up on the note you want to throw, then bring it back down.",
+    ],
+    slots: [{ to: "delayMix", amount: 70, hear: "" }, { to: "delayFeedback", amount: 50, hear: "" }],
+    sweep: "No echo at all at zero. Turned up, each note is followed by a long, fading train of repeats.",
+    recap: ["A delay can sit silent until a macro opens it.", "Echo level and feedback rise together for a throw.", "Bring the macro back down and the tail dies away naturally."],
+  },
+  {
+    id: "C5M.11", title: "Heat without the fizz", minutes: 7, name: "Heat", buildsOn: ["C5M.4", "C7.1", "C7.2"], cardIds: ["macro-fx", "fx-distortion"],
+    initial: { shape: "saw", octave: -1, distOn: true, distType: "soft", distDrive: 0, eqOn: true },
+    outcome: "Build a distortion macro that tames its own harshness as it goes.",
+    idea: [
+      "Distortion adds harmonics all the way up, and past a certain point the top end turns to fizz. The usual cure is to turn the highs down after the distortion. The EQ comes after the distortion in the rack, so it can do exactly that.",
+      "The macro pushes the drive up and pulls the high band down in the same move. The more heat, the more the top is rounded off. This is compensation again, as with the width macro, now for tone.",
+    ],
+    slots: [{ to: "distDrive", amount: 70, hear: "" }, { to: "eqHigh", amount: -30, hear: "" }],
+    sweep: "A clean bass thickening into a warm, heavy growl, without the top turning harsh.",
+    recap: ["Distortion adds highs; an EQ after it can take some back.", "A macro can apply the cure in step with the cause.", "Order matters: the EQ only tames the fizz because it comes after."],
+  },
+  {
+    id: "C5M.12", title: "The sync tear", minutes: 7, name: "Tear", buildsOn: ["C5M.1", "C6.2"], cardIds: ["macro-multi", "warp"], views: ["scope", "spectrum"],
+    initial: { shape: "saw", octave: -1, warp: "sync", warpAmount: 0, filterOn: true, cutoff: 900, resonance: 10 },
+    outcome: "Put a sync sweep and the filter on one knob, so the tear opens up as it rises.",
+    idea: [
+      "The sync sweep is a sound you play, not a setting you leave. Warp amount cannot be moved by an LFO or envelope on this synth, but it can be moved by a macro, which is the natural home for it anyway.",
+      "On its own the sweep can be thin at the bottom and piercing at the top. Opening the filter along with it keeps the low end of the sweep dark and lets the top through only when the sweep gets there.",
+    ],
+    slots: [{ to: "warpAmount", amount: 100, hear: "" }, { to: "cutoff", amount: 25, hear: "" }],
+    sweep: "A dark saw tearing open into a bright, vowel-like scream and closing again.",
+    recap: ["Warp amount belongs on a macro.", "A second slot on the filter shapes how the sweep opens.", "A macro is the way to move a control that sources cannot reach."],
+  },
+  {
+    id: "C5M.13", title: "A growl you can ride", minutes: 8, name: "Growl", buildsOn: ["C5M.5", "C6.4"], cardIds: ["macro-multi"], views: ["spectrum"],
+    initial: { shape: "sine", bShape: "sine", octave: -1, bOctave: -1, lfo1Dest: "fmAmount", lfo1Amount: 0, lfo1Rate: 2, lfo1Shape: "triangle" },
+    outcome: "Combine FM and an LFO under one macro: more FM, moving more, moving faster.",
+    idea: [
+      "A growling bass is often FM whose amount keeps changing, so the tone snarls and relaxes. Three settings make it: how much FM there is, how far an LFO swings that amount, and how fast.",
+      "LFO 1 is already sent to FM from B with an amount of zero. The macro raises the FM itself, the LFO’s amount and the LFO’s rate together, so one knob goes from a plain sine to a fast, snarling growl.",
+    ],
+    slots: [{ to: "fmAmount", amount: 30, hear: "" }, { to: "lfo1Amount", amount: 40, hear: "" }, { to: "lfo1Rate", amount: 35, hear: "" }],
+    sweep: "A pure low sine growing an edge, then starting to snarl, faster and deeper as the macro rises.",
+    recap: ["FM whose amount moves is a growl.", "One macro can raise an effect, its movement and the speed of that movement.", "Starting the LFO’s amount at zero lets the macro bring the motion in."],
+  },
+  {
+    id: "C5M.14", title: "Squash", minutes: 8, name: "Squash", buildsOn: ["C5M.4", "C7.3"], cardIds: ["macro-fx", "fx-compressor"], strike: true, views: ["meter"],
+    initial: { shape: "saw", octave: -1, filterOn: true, cutoff: 1200, envA: 2, envD: 500, envS: 45, envR: 80, velDest: "noteLevel", velAmount: 100, compOn: true, compThreshold: 0, compRatio: 4, compMakeup: 0 },
+    outcome: "Put a compressor on one knob: threshold down, ratio up, and make-up gain to keep the level.",
+    idea: [
+      "Compressing harder means three moves: lower the threshold so more of the signal is caught, raise the ratio so it is held more firmly, and add make-up gain because the result is quieter. Do only the first two and the sound just shrinks.",
+      "The macro makes all three. At zero the compressor does nothing. Turned up, soft and hard notes come closer and closer together while the overall level stays roughly put. Click lower on a key to strike it harder.",
+    ],
+    slots: [{ to: "compThreshold", amount: -60, hear: "" }, { to: "compRatio", amount: 40, hear: "" }, { to: "compMakeup", amount: 40, hear: "" }],
+    sweep: "Soft and hard notes far apart at zero, and nearly the same level with the macro right up. Watch “Turning down by” grow.",
+    recap: ["More compression is threshold down, ratio up, make-up up.", "The make-up slot is the compensation that keeps the macro playable.", "At zero the compressor is in the path but doing nothing."],
+  },
+  {
+    id: "C5M.15", title: "Shimmer", minutes: 7, name: "Shimmer", buildsOn: ["C5M.3", "C7.4"], cardIds: ["macro-fx", "fx-chorus"],
+    initial: { shape: "saw", chorusOn: true, chorusMix: 0, chorusDepth: 20, eqOn: true },
+    outcome: "Build a macro that makes a plain sound wide, moving and airy in one gesture.",
+    idea: [
+      "Three small changes add up to a sound seeming to open out: chorus copies fading in, those copies drifting further, and a little more top end. None of them is dramatic alone.",
+      "As with the brightness macro, the aim is for the three to be heard as one change. Keep the amounts moderate: a macro that goes too far at the top is one you never turn all the way up.",
+    ],
+    slots: [{ to: "chorusMix", amount: 50, hear: "" }, { to: "chorusDepth", amount: 50, hear: "" }, { to: "eqHigh", amount: 25, hear: "" }],
+    sweep: "One thin saw spreading into a wide, glistening pad-like tone.",
+    recap: ["Several gentle effect moves read as one change.", "Moderate amounts keep the whole of the macro’s travel usable.", "Width, movement and brightness reinforce each other."],
+  },
+  {
+    id: "C5M.16", title: "Knock", minutes: 7, name: "Knock", buildsOn: ["C5M.1", "CT.3", "C7.1"], cardIds: ["macro-fx"], strike: true, views: ["scope"],
+    initial: { shape: "sine", octave: -2, envA: 1, envD: 350, envS: 0, envR: 150, env2Dest: "aPitchWide", env2Amount: 10, env2A: 1, env2D: 60, env2S: 0, env2Bend: "sharp", distOn: true, distType: "soft", distDrive: 0 },
+    outcome: "Make a kick drum harder with one knob: a bigger pitch fall and some distortion together.",
+    idea: [
+      "Two things make a kick drum hit harder at the front. A larger fall in pitch gives a sharper knock. Distortion adds harmonics, so the drum is heard on speakers that cannot reproduce its lowest note.",
+      "The macro raises both. At zero it is a soft, round thud; turned up, a hard, bright kick. The same drum, from gentle to aggressive.",
+    ],
+    slots: [{ to: "env2Amount", amount: 25, hear: "" }, { to: "distDrive", amount: 50, hear: "" }],
+    sweep: "A soft thud growing a sharper knock and a rougher, louder-seeming body.",
+    recap: ["A kick’s hardness is partly the size of its pitch fall.", "Distortion adds harmonics that carry on small speakers.", "A macro can move an envelope’s amount as well as a knob."],
+  },
+];
+
 const BITE = wired(RECIPES[0]!, 0), MORPH = wired(RECIPES[1]!, 0), WOBBLE = wired(RECIPES[4]!, 0), DIRT = wired(RECIPES[6]!, 0);
 const round = (from: Partial<SynthState>, value: number): MatchRound => ({ target: { macro1: value }, match: ["macro1"], from });
 
@@ -190,6 +292,7 @@ export const MACRO_CHAPTER: PlayableLesson[] = [
     recap: ["Each macro should stand for one musical idea.", "Independent macros multiply: every combination is a sound.", "Two macros on one knob add together."],
     inSerum: "Serum shows a small number on each macro for how many places it is sent, and lists them all on the MATRIX tab.",
   },
+  ...MORE_RECIPES.map(recipe),
   {
     id: "C5M.C", title: "Checkpoint: macros by ear", buildsOn: ["C5M.1", "C5M.2", "C5M.5", "C5M.7"], minutes: 8, cardIds: [],
     outcome: "Hear how far a macro has been turned, and match it.",

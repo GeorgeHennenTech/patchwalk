@@ -165,7 +165,9 @@ Added after the first eight milestones (owner asked for all four in one go):
     `lessons/chapter7.ts` holds "Effects" (C7.1 distortion, C7.2 EQ, C7.3 compression, C7.4 chorus, C7.5
     delay, C7.6 reverb, and the checkpoint C7.C), listed between "Reshaping the wave" and "Impacts".
     C5.4, "The matrix: one source, several places", was added to chapter 5 once the matrix could be edited.
-    **Seventy-one playable lessons.**
+    Eight more macro recipes (C5M.9 to C5M.16, `MORE_RECIPES`, listed after "Two macros on one sound") use the
+    effects, warp, FM and the wide pitch destination: Space, Throw, Heat, Tear, Growl, Squash, Shimmer, Knock.
+    **Seventy-nine playable lessons.**
   - `src/ui/PlayView.tsx` ("Lessons" tab) and `src/ui/synth/` — spotlighted controls per step, live targets,
     scope, spectrum, meter, on-screen keyboard, Hold, blind ear checks, recap, guide remarks and suggestion.
   - "Hear it first" demos (`demo` on a lesson), match-by-ear rounds (`rounds`, compared by `src/course/match.ts`:

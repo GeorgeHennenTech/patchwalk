@@ -10,17 +10,19 @@ import { AskBox } from "./Answer";
 import { Badge } from "./Badge";
 import { Markdown } from "./Markdown";
 import { Control, Keyboard } from "./synth/Controls";
-import { Meter, Scope, Spectrum } from "./synth/Views";
+import { FilterCurve, Meter, Scope, Spectrum } from "./synth/Views";
 
-const GROUPS: Group[] = ["Master", "Oscillator A", "Unison", "Oscillator B", "Sub", "Noise"];
+const GROUPS: Group[] = ["Master", "Oscillator A", "Unison", "Oscillator B", "Sub", "Noise", "Filter"];
 const describe = (s: SynthState) => [
   `volume ${s.volumeDb} dB`,
   s.table === "none" ? `oscillator A wave shape ${s.shape}` : `oscillator A wavetable ${PARAMS.table!.names![s.table]} at position ${s.position}%`,
+  ...(s.aLevelDb < 0 ? [s.aLevelDb <= -48 ? "oscillator A silent" : `oscillator A level ${s.aLevelDb} dB`] : []),
   s.freeHz !== null ? `frequency fixed at ${s.freeHz} Hz` : `octave ${s.octave}, semitone ${s.semitone}, fine ${s.fine} cents`,
   s.voices > 1 ? `unison ${s.voices} voices, detune ${s.detune} cents, spread ${s.spread}%` : "unison off",
   s.bOn ? `oscillator B on (${s.bShape}, octave ${s.bOctave}, semitone ${s.bSemitone}, fine ${s.bFine} cents, level ${s.bLevelDb} dB)` : "oscillator B off",
   s.subOn ? `sub on (${s.subOctave} octave, ${s.subLevelDb} dB)` : "sub off",
   s.noiseOn ? `${s.noiseType} noise on (${s.noiseLevelDb} dB)` : "noise off",
+  s.filterOn ? `filter on (${PARAMS.filterType!.names![s.filterType]}, cutoff ${s.cutoff} Hz, resonance ${s.resonance}%, slope ${s.slope} dB per octave, drive ${s.drive}%, key tracking ${s.keyTrack}%)` : "filter off",
 ].join("; ");
 
 function SynthPanel({ synth, show, lesson, all, lastNote }: { synth: Synth; show: Panel[]; lesson: PlayableLesson; all: boolean; lastNote?: number | null }) {
@@ -33,6 +35,7 @@ function SynthPanel({ synth, show, lesson, all, lastNote }: { synth: Synth; show
       <div className="synth-views">
         {on("scope") && <Scope synth={synth} />}
         {on("spectrum") && <Spectrum synth={synth} />}
+        {on("curve") && <FilterCurve synth={synth} note={synth.held.at(-1) ?? lastNote ?? null} spot={show.includes("curve")} />}
       </div>
       {GROUPS.map((g) => {
         const mine = ids.filter((id) => PARAMS[id]!.group === g);

@@ -5,6 +5,7 @@ import { KEY_MAP, type Synth } from "../../synth/useSynth";
 const fmt = (id: string, v: number) => {
   const unit = PARAMS[id]!.unit ?? "";
   if (id === "freeHz") return `${Math.round(v)} Hz`;
+  if (id === "cutoff") return v >= 1000 ? `${(v / 1000).toFixed(v >= 10000 ? 1 : 2)} kHz` : `${Math.round(v)} Hz`;
   const signed = ["octave", "semitone", "fine", "bOctave", "bSemitone", "bFine"].includes(id) && v > 0 ? "+" : "";
   return `${signed}${v}${unit === "%" || unit === "°" ? unit : unit ? ` ${unit}` : ""}`;
 };

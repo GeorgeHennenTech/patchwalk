@@ -27,7 +27,7 @@ export interface Snapshot {
   flags: Record<string, boolean>;
 }
 
-export type Panel = "start" | "keyboard" | "hold" | "scope" | "spectrum" | "meter" | "beat" | "ack" | keyof SynthState;
+export type Panel = "start" | "keyboard" | "hold" | "scope" | "spectrum" | "meter" | "beat" | "curve" | "ack" | keyof SynthState;
 
 export interface LessonStep {
   do: string;

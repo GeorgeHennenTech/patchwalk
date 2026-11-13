@@ -7,6 +7,9 @@ export type Shape = (typeof SHAPES)[number];
 export const TABLES = ["none", "basic", "bright", "vowel"] as const;
 export type Table = (typeof TABLES)[number];
 export const NOISES = ["white", "pink"] as const;
+// Kept here (not in filter.ts) so this file stays free of imports from the modules that depend on it.
+const FILTER_TYPES = ["low", "high", "band", "notch"] as const;
+const SLOPES = ["12", "24"] as const;
 
 export interface SynthState {
   /** Master level in dB. 0 is the loudest the lesson synth goes. */
@@ -30,6 +33,8 @@ export interface SynthState {
    * frequency itself. `null` means "follow the keys".
    */
   freeHz: number | null;
+  /** Level of oscillator A in dB. The bottom of the range is silence. */
+  aLevelDb: number;
   // ---- unison on oscillator A
   voices: number;
   /** Total spread of the unison voices in cents (outermost voices are +/- half of this). */
@@ -53,16 +58,30 @@ export interface SynthState {
   noiseOn: boolean;
   noiseType: (typeof NOISES)[number];
   noiseLevelDb: number;
+  // ---- filter (see filter.ts for the maths)
+  filterOn: boolean;
+  filterType: (typeof FILTER_TYPES)[number];
+  /** Cutoff frequency in Hz, for middle C when key tracking is in use. */
+  cutoff: number;
+  /** Resonance, 0..100 (% of the way from flat to the tallest peak). */
+  resonance: number;
+  /** Steepness in dB per octave. */
+  slope: (typeof SLOPES)[number];
+  /** Drive into the filter, 0..100. 0 is clean. */
+  drive: number;
+  /** How far the cutoff follows the key played, 0..100. At 100 it moves an octave per octave. */
+  keyTrack: number;
 }
 
 export const INITIAL: SynthState = {
-  volumeDb: -12, shape: "saw", table: "none", position: 0, octave: 0, semitone: 0, fine: 0, phase: 0, randomPhase: 0, freeHz: null,
+  volumeDb: -12, shape: "saw", table: "none", position: 0, octave: 0, semitone: 0, fine: 0, phase: 0, randomPhase: 0, freeHz: null, aLevelDb: 0,
   voices: 1, detune: 0, spread: 0,
   bOn: false, bShape: "saw", bOctave: 0, bSemitone: 0, bFine: 0, bPhase: 0, bLevelDb: 0,
   subOn: false, subOctave: -1, subLevelDb: -6, noiseOn: false, noiseType: "white", noiseLevelDb: -18,
+  filterOn: false, filterType: "low", cutoff: 20000, resonance: 0, slope: "12", drive: 0, keyTrack: 0,
 };
 
-export type Group = "Master" | "Oscillator A" | "Unison" | "Oscillator B" | "Sub" | "Noise";
+export type Group = "Master" | "Oscillator A" | "Unison" | "Oscillator B" | "Sub" | "Noise" | "Filter";
 
 export interface ParamSpec {
   id: keyof SynthState;
@@ -93,6 +112,7 @@ export const PARAMS: Record<string, ParamSpec> = {
   phase: { id: "phase", label: "Phase", group: "Oscillator A", kind: "range", min: 0, max: 360, step: 5, unit: "°" },
   randomPhase: { id: "randomPhase", label: "Random phase", group: "Oscillator A", kind: "range", min: 0, max: 100, step: 5, unit: "%" },
   freeHz: { id: "freeHz", label: "Frequency", group: "Oscillator A", kind: "range", min: 55, max: 1760, step: 1, log: true, unit: "Hz" },
+  aLevelDb: { id: "aLevelDb", label: "A level", group: "Oscillator A", kind: "range", min: -48, max: 0, step: 1, unit: "dB" },
   voices: { id: "voices", label: "Voices", group: "Unison", kind: "range", min: 1, max: 7, step: 1, unit: "" },
   detune: { id: "detune", label: "Detune", group: "Unison", kind: "range", min: 0, max: 100, step: 1, unit: "cents" },
   spread: { id: "spread", label: "Spread", group: "Unison", kind: "range", min: 0, max: 100, step: 5, unit: "%" },
@@ -109,6 +129,13 @@ export const PARAMS: Record<string, ParamSpec> = {
   noiseOn: { id: "noiseOn", label: "Noise", group: "Noise", kind: "toggle" },
   noiseType: { id: "noiseType", label: "Noise type", group: "Noise", kind: "choice", choices: NOISES, names: { white: "White", pink: "Pink" } },
   noiseLevelDb: { id: "noiseLevelDb", label: "Noise level", group: "Noise", kind: "range", min: -48, max: 0, step: 1, unit: "dB" },
+  filterOn: { id: "filterOn", label: "Filter", group: "Filter", kind: "toggle" },
+  filterType: { id: "filterType", label: "Filter type", group: "Filter", kind: "choice", choices: FILTER_TYPES, names: { low: "Low-pass", high: "High-pass", band: "Band-pass", notch: "Notch" } },
+  cutoff: { id: "cutoff", label: "Cutoff", group: "Filter", kind: "range", min: 20, max: 20000, step: 1, log: true, unit: "Hz" },
+  resonance: { id: "resonance", label: "Resonance", group: "Filter", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
+  slope: { id: "slope", label: "Slope", group: "Filter", kind: "choice", choices: SLOPES, names: { "12": "Gentle (12)", "24": "Steep (24)" } },
+  drive: { id: "drive", label: "Drive", group: "Filter", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
+  keyTrack: { id: "keyTrack", label: "Key track", group: "Filter", kind: "range", min: 0, max: 100, step: 5, unit: "%" },
 };
 
 export const A4 = 440;

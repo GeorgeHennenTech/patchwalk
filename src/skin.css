@@ -231,3 +231,9 @@ details.card[open] summary { margin-bottom: 4px; border-bottom: 1px dashed var(-
 .ctl output.wide { min-width: 0; flex: 1; text-align: left; }
 
 .badge-muted { background: var(--panel); color: var(--muted); border: 1.5px dashed var(--muted); }
+
+/* Filter curve: taller than the scope, and draggable */
+.view.curve { grid-column: 1 / -1; }
+.view.curve canvas { height: 170px; touch-action: none; cursor: grab; }
+.view.curve canvas:active { cursor: grabbing; }
+.view.curve.spot canvas { box-shadow: 3px 3px 0 var(--accent); }

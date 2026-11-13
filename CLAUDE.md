@@ -117,7 +117,7 @@ Added after the first eight milestones (owner asked for all four in one go):
   computed from stored values. Diagrams are always drawn by code, never by the narrator.
 - `src/learn/course.ts` + `src/ui/LearnView.tsx` — ten-lesson beginner course. Each exercise is checked from the
   saved preset using stored values only. Progress lives in localStorage.
-- `knowledge-cards/` — 30 cards, all `status: draft` (written by Claude, not yet reviewed by the owner). Change
+- `knowledge-cards/` — 32 cards (two, on filter shapes/slope and drive/key tracking, are used only by the practice lessons: empty `stages` and `applies_to` keep them out of rebuilt-patch steps), all `status: draft` (written by Claude, not yet reviewed by the owner). Change
   to `reviewed` after the owner has read one. Reading links were each loaded and title-checked in Nov 2026.
 - `src/lesson/selftest.ts` + "System check" tab — one-click end-to-end test of the explanation service with a
   built-in step; reports in plain words where a failure is (network, password, API key, validator).
@@ -145,7 +145,8 @@ Added after the first eight milestones (owner asked for all four in one go):
     noise) restarts the sounding notes; everything else updates in place.
   - `src/course/` — `types.ts` (a lesson is data: steps with `show`, `check(snapshot)`, optional code-written
     `remark`), `lessons/index.ts` (C0.1-C0.4, C1.1, C1.2, C1.M) and `lessons/chapter1.ts` (C1.3-C1.8 and the
-    checkpoint C1.C), `match.ts`, `progress.ts`. **Fourteen playable lessons; chapters 0 and 1 are complete.**
+    checkpoint C1.C), `match.ts`, `progress.ts`. `lessons/chapter2.ts` holds the filter chapter (C2.1-C2.7 and the checkpoint C2.C).
+    **Twenty-two playable lessons; chapters 0, 1 and 2 are complete.**
   - `src/ui/PlayView.tsx` ("Lessons" tab) and `src/ui/synth/` — spotlighted controls per step, live targets,
     scope, spectrum, meter, on-screen keyboard, Hold, blind ear checks, recap, guide remarks and suggestion.
   - "Hear it first" demos (`demo` on a lesson), match-by-ear rounds (`rounds`, compared by `src/course/match.ts`:
@@ -155,8 +156,22 @@ Added after the first eight milestones (owner asked for all four in one go):
     wave shows odd harmonics on the spectrum; two squares half a cycle apart drop about 15 dB; the beat-rate
     readout doubles an octave up. Level readings need about a second to settle in automated checks.
     **How it sounds has not been judged by a person yet.**
-  - Not built yet: filter, envelopes, LFOs, modulation, effects, MIDI input, a shared tempo clock. Chapter 2
-    (filters) is next and has no scripts yet.
+  - **Filter (chapter 2, added 13 Nov 2026).** `src/synth/filter.ts` is the filter as pure maths: low-pass,
+    high-pass, band-pass and notch; cutoff; resonance (0-100% maps to Q 0.707-40, with a level trim on
+    low/high-pass so the body drops as the peak grows); gentle (12) or steep (24 dB/oct) slope as one or two
+    two-pole stages; drive (a soft clip before the filter, straight line at 0); key tracking pivoting on
+    middle C. The engine builds every note's filter from `filterStages`, and `FilterCurve` in
+    `src/ui/synth/Views.tsx` draws from the same functions, with the live spectrum faint behind it and a dot
+    that drags (sideways cutoff, up/down resonance; sets the `curve` flag lessons can check). The chain is
+    always in the signal path; "off" is two pass-everything stages and a straight drive curve, so switching it
+    does not restart notes. Browsers read Q in dB for low/high-pass and as a plain number for band/notch.
+    Oscillator A gained a level control (`aLevelDb`). Match-by-ear judges cutoff in octaves (0.4 either way).
+    Measured in a headless browser: at eleven harmonics the output matched the drawn curve within 0.1 dB for
+    every type, both slopes, resonance and key tracking, and filter-off was unchanged from before. To measure
+    the analyser, set its smoothing to 0 and average several reads: smoothing is applied per read, not per second.
+    The filter does not truly self-oscillate: C2.7 feeds it noise and says so. No ear checks for chapter 2 yet.
+  - Not built yet: envelopes, LFOs, modulation, effects, MIDI input, a shared tempo clock. Chapter 3
+    (envelopes) is next and has no scripts yet.
   - The old ten Serum-task lessons are now the "Serum tasks" tab.
 - **Guide in context** — `src/ui/Answer.tsx` (`AskBox`): an ask box inside each practice lesson (sends lesson,
   step, current synth settings and finished lessons) and at the top of a rebuilt patch (sends only the
@@ -172,7 +187,7 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
 - **Private, single-user.** The owner has said this program is strictly for them and will never be distributed.
   Design for one user; do not add accounts, sharing or public pages. Rule 4 still applies to the name and look.
 - **Course:** `docs/CURRICULUM.md` maps 16 tracks and about 400 lessons (one line each); `docs/lessons/` holds
-  fully scripted lessons in a fixed shape (12 so far, all drafts); `docs/COURSE_PLAN.md` describes the practice
+  fully scripted lessons in a fixed shape (19 so far, all drafts); `docs/COURSE_PLAN.md` describes the practice
   synth and lesson engine. A university programme's topic list was used only as a coverage checklist.
   See also `docs/COURSE_PLAN.md`. Guided lessons on a built-in practice synth; lessons can be taken in any
   order; each lesson is its own data file so chapters are easy to add. Tracks are to grow well beyond synthesis

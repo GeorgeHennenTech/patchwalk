@@ -1,6 +1,7 @@
 // Web Audio engine for the practice synth. It renders SynthState and reports what is sounding.
 // Built around a shared AudioContext clock and a per-instrument voice list so more instruments and a
 // tempo clock (for the later mini DAW) can be added without rewriting it.
+import { DRIVE_RANGE, driveCurve, filterStages, resonanceTrim, type Stage } from "./filter";
 import { dbToGain, harmonic, harmonicsA, HARMONICS, playedHz, playedHzB, subHz, unisonOffsets, unisonPans, type Shape, type SynthState } from "./params";
 
 const RAMP = 0.012; // seconds; short ramps avoid clicks when a value jumps
@@ -14,6 +15,8 @@ interface Voice {
   b?: { osc: OscillatorNode; gain: GainNode };
   sub?: { osc: OscillatorNode; gain: GainNode };
   noise?: { src: AudioBufferSourceNode; gain: GainNode };
+  /** Every source feeds `mix`, then drive, then the two filter stages, then the resonance level trim. */
+  filter: { mix: GainNode; shaper: WaveShaperNode; one: BiquadFilterNode; two: BiquadFilterNode; trim: GainNode; drive: number };
   amp: GainNode;
 }
 
@@ -27,6 +30,7 @@ export class Engine {
   private voices: Voice[] = [];
   private state: SynthState;
   private noiseBuffers: Partial<Record<"white" | "pink", AudioBuffer>> = {};
+  private curve: { drive: number; data: Float32Array<ArrayBuffer> } | undefined;
 
   constructor(state: SynthState, ctx: AudioContext = new AudioContext()) {
     this.ctx = ctx;
@@ -93,12 +97,48 @@ export class Engine {
     return buf;
   }
 
+  /** The drive curve for these settings. Drive belongs to the filter: with the filter off it does nothing. */
+  private driveFor(s: SynthState): { drive: number; data: Float32Array<ArrayBuffer> } {
+    const drive = s.filterOn ? s.drive : 0;
+    if (this.curve?.drive !== drive) this.curve = { drive, data: driveCurve(drive) };
+    return this.curve;
+  }
+
+  private setStage(node: BiquadFilterNode, stage: Stage, t: number, jump: boolean): void {
+    if (node.type !== stage.type) node.type = stage.type;
+    // The browser reads Q in decibels for low-pass and high-pass, and as a plain number for the others.
+    const q = stage.type === "lowpass" || stage.type === "highpass" ? 20 * Math.log10(stage.q) : stage.q;
+    if (jump) { node.frequency.setValueAtTime(stage.hz, t); node.Q.setValueAtTime(q, t); }
+    else { node.frequency.setTargetAtTime(stage.hz, t, RAMP); node.Q.setTargetAtTime(q, t, RAMP); }
+  }
+
+  /** Make one note's drive and filter match the settings. `jump` sets values at once (for a new note). */
+  private applyFilter(v: Voice, s: SynthState, jump: boolean): void {
+    const t = this.ctx.currentTime, f = v.filter;
+    const curve = this.driveFor(s);
+    if (f.drive !== curve.drive) {
+      f.drive = curve.drive;
+      f.shaper.curve = null;
+      f.shaper.curve = curve.data;
+      f.shaper.oversample = curve.drive > 0 ? "4x" : "none";
+    }
+    const [one, two] = filterStages(s, v.note, this.ctx.sampleRate);
+    this.setStage(f.one, one, t, jump);
+    this.setStage(f.two, two, t, jump);
+    if (jump) f.trim.gain.setValueAtTime(resonanceTrim(s), t);
+    else f.trim.gain.setTargetAtTime(resonanceTrim(s), t, RAMP);
+  }
+
   private build(note: number, phaseA: number): Voice {
     const s = this.state, t = this.ctx.currentTime;
     const amp = this.ctx.createGain();
     amp.gain.setValueAtTime(0, t);
     amp.gain.linearRampToValueAtTime(1, t + 0.005);
     amp.connect(this.master);
+    const filter = { mix: this.ctx.createGain(), shaper: this.ctx.createWaveShaper(), one: this.ctx.createBiquadFilter(), two: this.ctx.createBiquadFilter(), trim: this.ctx.createGain(), drive: -1 };
+    filter.mix.gain.value = 1 / DRIVE_RANGE; // the shaper's curve covers inputs of -1..1
+    filter.mix.connect(filter.shaper).connect(filter.one).connect(filter.two).connect(filter.trim).connect(amp);
+    const into = filter.mix;
 
     const offsets = unisonOffsets(s.voices, s.detune), pans = unisonPans(s.voices, s.spread);
     const base = playedHz(s, note), hA = harmonicsA(s);
@@ -108,22 +148,23 @@ export class Engine {
       osc.setPeriodicWave(this.wave(hA, phaseA + (s.voices > 1 ? i / s.voices : 0)));
       osc.frequency.value = base * 2 ** (cents / 1200);
       const gain = this.ctx.createGain();
-      gain.gain.value = OSC_GAIN / Math.sqrt(s.voices);
+      gain.gain.value = (OSC_GAIN / Math.sqrt(s.voices)) * dbToGain(s.aLevelDb);
       const pan = this.ctx.createStereoPanner();
       pan.pan.value = pans[i]!;
-      osc.connect(gain).connect(pan).connect(amp);
+      osc.connect(gain).connect(pan).connect(into);
       osc.start(t);
       return { osc, gain, pan };
     });
 
-    const voice: Voice = { note, phaseA, a, amp };
+    const voice: Voice = { note, phaseA, a, filter, amp };
+    this.applyFilter(voice, s, true);
     if (s.bOn) {
       const osc = this.ctx.createOscillator();
       osc.setPeriodicWave(this.wave(this.shapeHarmonics(s.bShape), s.bPhase / 360));
       osc.frequency.value = playedHzB(s, note);
       const gain = this.ctx.createGain();
       gain.gain.value = OSC_GAIN * dbToGain(s.bLevelDb);
-      osc.connect(gain).connect(amp);
+      osc.connect(gain).connect(into);
       osc.start(t);
       voice.b = { osc, gain };
     }
@@ -133,7 +174,7 @@ export class Engine {
       osc.frequency.value = subHz(s, note);
       const gain = this.ctx.createGain();
       gain.gain.value = OSC_GAIN * dbToGain(s.subLevelDb);
-      osc.connect(gain).connect(amp);
+      osc.connect(gain).connect(into);
       osc.start(t);
       voice.sub = { osc, gain };
     }
@@ -143,7 +184,7 @@ export class Engine {
       src.loop = true;
       const gain = this.ctx.createGain();
       gain.gain.value = dbToGain(s.noiseLevelDb);
-      src.connect(gain).connect(amp);
+      src.connect(gain).connect(into);
       src.start(t, Math.random());
       voice.noise = { src, gain };
     }
@@ -177,12 +218,14 @@ export class Engine {
     const hA = waveA ? harmonicsA(next) : undefined;
     const offsets = unisonOffsets(next.voices, next.detune), pans = unisonPans(next.voices, next.spread);
     for (const v of this.voices) {
+      this.applyFilter(v, next, false);
       if (next.phase !== prev.phase) v.phaseA += (next.phase - prev.phase) / 360;
       const base = playedHz(next, v.note);
       v.a.forEach((x, i) => {
         if (hA) x.osc.setPeriodicWave(this.wave(hA, v.phaseA + (next.voices > 1 ? i / next.voices : 0)));
         x.osc.frequency.setTargetAtTime(base * 2 ** (offsets[i]! / 1200), t, RAMP);
         x.pan.pan.setTargetAtTime(pans[i]!, t, RAMP);
+        if (next.aLevelDb !== prev.aLevelDb) x.gain.gain.setTargetAtTime((OSC_GAIN / Math.sqrt(next.voices)) * dbToGain(next.aLevelDb), t, RAMP);
       });
       if (v.b) {
         if (next.bShape !== prev.bShape || next.bPhase !== prev.bPhase) v.b.osc.setPeriodicWave(this.wave(this.shapeHarmonics(next.bShape), next.bPhase / 360));

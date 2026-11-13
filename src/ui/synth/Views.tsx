@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { effectiveCutoff, filterResponseDb } from "../../synth/filter";
 import type { Synth } from "../../synth/useSynth";
 
 function useFrame(draw: () => void, active: boolean) {
@@ -88,5 +89,70 @@ export function Meter({ synth }: { synth: Synth }) {
       <div className="meter-bar" role="meter" aria-valuemin={-60} aria-valuemax={0} aria-valuenow={Number.isFinite(db) ? Math.round(db) : -60}><div style={{ width: `${pct}%` }} /></div>
       <output>{Number.isFinite(db) ? `${db.toFixed(1)} dB` : "silent"}</output>
     </div>
+  );
+}
+
+const CURVE = { lo: 20, hi: 20000, top: 24, bottom: -48 };
+/** Where a frequency sits across the filter drawing (0..1), and back. Octaves are evenly spaced. */
+export const curveX = (hz: number) => Math.log(hz / CURVE.lo) / Math.log(CURVE.hi / CURVE.lo);
+export const curveHz = (x: number) => CURVE.lo * (CURVE.hi / CURVE.lo) ** Math.min(1, Math.max(0, x));
+const curveY = (db: number) => 1 - (Math.min(CURVE.top, Math.max(CURVE.bottom, db)) - CURVE.bottom) / (CURVE.top - CURVE.bottom);
+
+/**
+ * The filter's curve: how much it lets through at each frequency, computed from the settings (never from the
+ * sound), with the live spectrum faintly behind it. The dot can be dragged: sideways for cutoff, up and down
+ * for resonance.
+ */
+export function FilterCurve({ synth, note, spot }: { synth: Synth; note: number | null; spot?: boolean }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  const buf = useRef(new Float32Array(2048));
+  const drag = useRef<{ y: number; resonance: number } | null>(null);
+  const s = synth.state;
+  useFrame(() => {
+    const canvas = ref.current, an = synth.engine.current?.analyser;
+    if (!canvas) return;
+    const { g, w, h, line, grid } = setup(canvas);
+    const rate = an?.context.sampleRate ?? 48000;
+    g.fillStyle = grid; g.font = "10px system-ui";
+    for (const f of [100, 1000, 10000]) { const x = curveX(f) * w; g.fillRect(x, 0, 1, h); g.fillText(f >= 1000 ? `${f / 1000} kHz` : `${f} Hz`, x + 3, 10); }
+    g.fillRect(0, curveY(0) * h, w, 1);
+    if (an) {
+      // the sound itself, faint, so the curve can be seen carving it
+      an.getFloatFrequencyData(buf.current);
+      g.globalAlpha = 0.22; g.fillStyle = line; g.beginPath(); g.moveTo(0, h);
+      for (let x = 0; x < w; x++) {
+        const db = buf.current[Math.min(buf.current.length - 1, Math.round((curveHz(x / w) / (rate / 2)) * buf.current.length))] ?? -120;
+        g.lineTo(x, h - Math.max(0, Math.min(1, (db + 100) / 80)) * h);
+      }
+      g.lineTo(w, h); g.fill(); g.globalAlpha = 1;
+    }
+    g.strokeStyle = line; g.lineWidth = 2.5; g.beginPath();
+    for (let x = 0; x <= w; x++) {
+      const y = curveY(filterResponseDb(s, curveHz(x / w), note, rate)) * h;
+      x === 0 ? g.moveTo(x, y) : g.lineTo(x, y);
+    }
+    g.stroke();
+    if (s.filterOn) {
+      const hz = effectiveCutoff(s, note, rate);
+      g.fillStyle = line; g.beginPath(); g.arc(curveX(hz) * w, curveY(filterResponseDb(s, hz, note, rate)) * h, 7, 0, 2 * Math.PI); g.fill();
+      g.strokeStyle = "#fff"; g.lineWidth = 2; g.stroke();
+    }
+  }, true);
+  const move = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (!drag.current || !s.filterOn) return;
+    const box = e.currentTarget.getBoundingClientRect();
+    // Undo key tracking so the dot, which is drawn at the tracked cutoff, stays under the pointer.
+    const follow = effectiveCutoff({ cutoff: 1000, keyTrack: s.keyTrack }, note) / 1000;
+    const cutoff = Math.round(Math.min(20000, Math.max(20, curveHz((e.clientX - box.left) / box.width) / follow)));
+    const resonance = Math.round(Math.min(100, Math.max(0, drag.current.resonance + ((drag.current.y - e.clientY) / box.height) * 150)));
+    synth.setState({ cutoff, resonance });
+  };
+  return (
+    <figure className={`view curve${spot ? " spot" : ""}`}>
+      <canvas ref={ref} role="img" aria-label="Filter curve. Drag the dot sideways to move the cutoff and up or down to change the resonance."
+        onPointerDown={(e) => { if (!s.filterOn) return; e.currentTarget.setPointerCapture(e.pointerId); drag.current = { y: e.clientY, resonance: s.resonance }; synth.flag("curve"); move(e); }}
+        onPointerMove={move} onPointerUp={() => { drag.current = null; }} onPointerCancel={() => { drag.current = null; }} />
+      <figcaption>{s.filterOn ? "Filter curve: how much gets through at each frequency. Drag the dot: sideways moves the cutoff, up and down sets the resonance. The faint shape is the live sound." : "Filter curve: flat, because the filter is off and everything gets through."}</figcaption>
+    </figure>
   );
 }

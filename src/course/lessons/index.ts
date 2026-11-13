@@ -1,6 +1,7 @@
 import { noteToHz } from "../../synth/params";
 import type { DemoTone, PlayableLesson, Snapshot } from "../types";
 import { CHAPTER_1 } from "./chapter1";
+import { CHAPTER_2 } from "./chapter2";
 
 const anyNote = (s: Snapshot) => s.played.mouse + s.played.keys + s.played.midi;
 const within = (v: number | null, lo: number, hi: number) => v !== null && v >= lo && v <= hi;
@@ -144,6 +145,6 @@ const BASE: PlayableLesson[] = [
 ];
 
 /** Every playable lesson, in suggested order. */
-export const LESSONS: PlayableLesson[] = [...BASE, ...CHAPTER_1];
+export const LESSONS: PlayableLesson[] = [...BASE, ...CHAPTER_1, ...CHAPTER_2];
 
 export { anyNote };

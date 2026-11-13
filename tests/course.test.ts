@@ -31,7 +31,7 @@ describe("practice synth maths", () => {
     expect(dbToGain(-48)).toBe(0);
   });
   it("every lesson only reveals controls that exist, within their ranges", () => {
-    const panels = new Set(["start", "keyboard", "hold", "scope", "spectrum", "meter", "beat", "ack", ...Object.keys(PARAMS)]);
+    const panels = new Set(["start", "keyboard", "hold", "scope", "spectrum", "meter", "beat", "curve", "ack", ...Object.keys(PARAMS)]);
     for (const l of LESSONS) for (const s of l.steps) for (const p of s.show) expect(panels.has(p), `${l.id}: ${p}`).toBe(true);
   });
 });
@@ -226,8 +226,8 @@ describe("extended synth maths", () => {
 
 describe("chapter 1 lessons", () => {
   const st = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
-  it("there are fourteen lessons, in chapter order, and every initial setting is a real setting", () => {
-    expect(LESSONS.map((l) => l.id)).toEqual(["C0.1", "C0.2", "C0.3", "C0.4", "C1.1", "C1.2", "C1.M", "C1.3", "C1.4", "C1.5", "C1.6", "C1.7", "C1.8", "C1.C"]);
+  it("chapters 0 and 1 come first, in chapter order, and every initial setting is a real setting", () => {
+    expect(LESSONS.map((l) => l.id).slice(0, 14)).toEqual(["C0.1", "C0.2", "C0.3", "C0.4", "C1.1", "C1.2", "C1.M", "C1.3", "C1.4", "C1.5", "C1.6", "C1.7", "C1.8", "C1.C"]);
     for (const l of LESSONS) for (const k of Object.keys(l.initial ?? {})) expect(k in INITIAL, `${l.id}: ${k}`).toBe(true);
   });
   it("C1.3: sweeping means visiting both ends, and 'brightest' is judged from the harmonics", () => {
@@ -275,5 +275,131 @@ describe("chapter 1 lessons", () => {
     expect(st("C1.8", 2).check(base({}, { ...sq, bPhase: 90 }))).toBe(false);
     expect(st("C1.8", 2).check(base({}, { ...sq, bPhase: 180, bFine: 5 }))).toBe(false); // must be the same pitch to cancel
     expect(st("C1.8", 2).check(base({}, { ...sq, bShape: "saw", bPhase: 180 }))).toBe(false);
+  });
+});
+
+import { CHAPTER_2 } from "../src/course/lessons/chapter2";
+import { driveCurve, effectiveCutoff, filterResponseDb, filterStages, peakAboveBodyDb, resonanceQ, resonanceTrim } from "../src/synth/filter";
+
+describe("filter maths", () => {
+  const on = (over: Partial<SynthState> = {}): SynthState => ({ ...INITIAL, filterOn: true, cutoff: 1000, ...over });
+  const at = (s: SynthState, f: number, note: number | null = null) => filterResponseDb(s, f, note);
+  it("a switched-off filter lets everything through unchanged", () => {
+    for (const f of [50, 1000, 15000]) expect(at({ ...INITIAL, cutoff: 300, resonance: 80 }, f)).toBeCloseTo(0, 9);
+    expect(filterStages(INITIAL, 60).map((x) => x.type)).toEqual(["allpass", "allpass"]);
+    expect(resonanceTrim({ ...INITIAL, resonance: 100 })).toBe(1);
+  });
+  it("low-pass: flat below, 3 dB down at the cutoff, then 12 or 24 dB per octave", () => {
+    expect(at(on(), 60)).toBeCloseTo(0, 1);
+    expect(at(on(), 1000)).toBeCloseTo(-3, 1);
+    expect(at(on(), 2000) - at(on(), 4000)).toBeGreaterThan(11.5);
+    expect(at(on(), 2000) - at(on(), 4000)).toBeLessThan(13.5);
+    const steep = on({ slope: "24" });
+    expect(at(steep, 2000) - at(steep, 4000)).toBeGreaterThan(23);
+    expect(at(steep, 2000) - at(steep, 4000)).toBeLessThan(27);
+    expect(at(steep, 60)).toBeCloseTo(0, 1);
+  });
+  it("high-pass mirrors it, band-pass keeps a slice, notch removes one", () => {
+    const high = on({ filterType: "high" });
+    expect(at(high, 12000)).toBeCloseTo(0, 0);
+    expect(at(high, 250) - at(high, 125)).toBeGreaterThan(11.5);
+    const band = on({ filterType: "band" });
+    expect(at(band, 1000)).toBeCloseTo(0, 6);
+    expect(at(band, 100)).toBeLessThan(-12);
+    expect(at(band, 10000)).toBeLessThan(-12);
+    // more resonance, narrower slice
+    expect(at(on({ filterType: "band", resonance: 70 }), 500)).toBeLessThan(at(band, 500) - 12);
+    const notch = on({ filterType: "notch" });
+    expect(at(notch, 1000)).toBeLessThan(-60);
+    expect(at(notch, 100)).toBeGreaterThan(-1);
+    expect(at(notch, 10000)).toBeGreaterThan(-1);
+  });
+  it("resonance raises a peak at the cutoff and turns the body down", () => {
+    expect(resonanceQ(0)).toBeCloseTo(Math.SQRT1_2, 9);
+    expect(resonanceQ(100)).toBeCloseTo(40, 9);
+    const peaks = [0, 25, 50, 75, 100].map((resonance) => peakAboveBodyDb(on({ resonance })));
+    expect(peaks).toEqual([...peaks].sort((a, b) => a - b));
+    expect(peaks[0]!).toBeLessThan(0.5);
+    expect(peaks[4]!).toBeGreaterThan(28);
+    expect(at(on({ resonance: 100 }), 60)).toBeLessThan(at(on(), 60) - 12);
+    expect(at(on({ resonance: 100 }), 1000)).toBeGreaterThan(10);
+  });
+  it("key tracking pivots on middle C and at 100% moves an octave per octave", () => {
+    const s = on({ cutoff: 500, keyTrack: 100 });
+    expect(effectiveCutoff(s, 60)).toBeCloseTo(500, 6);
+    expect(effectiveCutoff(s, 72)).toBeCloseTo(1000, 6);
+    expect(effectiveCutoff(s, 48)).toBeCloseTo(250, 6);
+    expect(effectiveCutoff({ ...s, keyTrack: 50 }, 84)).toBeCloseTo(1000, 6);
+    expect(effectiveCutoff({ ...s, keyTrack: 0 }, 84)).toBe(500);
+    expect(effectiveCutoff(s, null)).toBe(500);
+    expect(effectiveCutoff({ cutoff: 20000, keyTrack: 100 }, 96)).toBe(20000);
+    // the curve moves with the key: the 3 dB point follows
+    expect(filterResponseDb(s, 1000, 72)).toBeCloseTo(-3, 1);
+  });
+  it("drive at zero is a straight line; above zero it flattens peaks, symmetrically and within bounds", () => {
+    const clean = driveCurve(0, 9);
+    expect(Array.from(clean)).toEqual([-4, -3, -2, -1, 0, 1, 2, 3, 4]);
+    const hot = driveCurve(80, 2049);
+    expect(hot[1024]).toBe(0);
+    for (let i = 0; i < 1024; i++) { expect(hot[i]!).toBeCloseTo(-hot[2048 - i]!, 6); expect(hot[i + 1]!).toBeGreaterThanOrEqual(hot[i]!); }
+    // flattened: the top of the curve barely rises while the middle is steep
+    expect(hot[2048]! - hot[1536]!).toBeLessThan(0.01);
+    expect(hot[1040]! - hot[1024]!).toBeGreaterThan(0.1);
+    expect(Math.max(...hot)).toBeLessThan(1);
+  });
+});
+
+describe("chapter 2 lessons", () => {
+  const st = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
+  it("the filter chapter follows chapter 1 and uses only real settings and cards that exist", async () => {
+    expect(LESSONS.map((l) => l.id).slice(14)).toEqual(["C2.1", "C2.2", "C2.3", "C2.4", "C2.5", "C2.6", "C2.7", "C2.C"]);
+    const { readdirSync } = await import("node:fs");
+    const cards = readdirSync("knowledge-cards").map((f) => f.replace(".md", ""));
+    for (const l of CHAPTER_2) {
+      for (const k of Object.keys(l.initial ?? {})) expect(k in INITIAL, `${l.id}: ${k}`).toBe(true);
+      for (const c of l.cardIds) expect(cards, `${l.id}: card ${c}`).toContain(c);
+    }
+  });
+  it("C2.1: the cutoff has to come down, the curve has to be dragged, and the remark counts harmonics", () => {
+    expect(st("C2.1", 2).check(base({}, { filterOn: true, cutoff: 1000 }))).toBe(true);
+    expect(st("C2.1", 2).check(base({}, { filterOn: false, cutoff: 1000 }))).toBe(false);
+    expect(st("C2.1", 3).remark!(base({ lastNote: 57 }, { filterOn: true, cutoff: 230 }))).toMatch(/^At 230 Hz only the lowest harmonic of your note/);
+    expect(st("C2.1", 3).remark!(base({ lastNote: 45 }, { filterOn: true, cutoff: 240 }))).toMatch(/only the lowest 2 harmonics/);
+    const swept = { range: { cutoff: { min: 300, max: 1300 } } };
+    expect(st("C2.1", 4).check(base(swept, { filterOn: true }))).toBe(false); // sliders alone do not count
+    expect(st("C2.1", 4).check(base({ ...swept, flags: { curve: true } }, { filterOn: true }))).toBe(true);
+    expect(st("C2.1", 4).check(base({ range: { cutoff: { min: 300, max: 1100 } }, flags: { curve: true } }, { filterOn: true }))).toBe(false);
+  });
+  it("C2.2: the remark reports the real height of the peak", () => {
+    const s = base({}, { filterOn: true, cutoff: 1200, resonance: 90 });
+    expect(st("C2.2", 3).check(s)).toBe(true);
+    expect(st("C2.2", 3).remark!(s)).toContain(`about ${Math.round(peakAboveBodyDb(s.state))} dB above`);
+    expect(st("C2.2", 4).check(base({ changes: { resonance: 5 } }, { filterOn: true, resonance: 30 }))).toBe(true);
+    expect(st("C2.2", 4).check(base({ changes: { resonance: 5 } }, { filterOn: true, resonance: 70 }))).toBe(false);
+  });
+  it("C2.3 to C2.6: type, slope, drive and key-track steps check the setting they teach", () => {
+    expect(st("C2.3", 2).check(base({}, { filterOn: true, filterType: "high", cutoff: 3500 }))).toBe(true);
+    expect(st("C2.3", 2).check(base({}, { filterOn: true, filterType: "low", cutoff: 3500 }))).toBe(false);
+    expect(st("C2.3", 5).check(base({ range: { cutoff: { min: 400, max: 1700 } } }, { filterOn: true, filterType: "notch" }))).toBe(true);
+    expect(st("C2.4", 2).check(base({ changes: { slope: 4 } }))).toBe(true);
+    expect(st("C2.4", 3).remark!(base({}, { slope: "24", cutoff: 1100 }, { cutoff: 600 }))).toMatch(/^You went from 600 Hz to 1\.10 kHz\./);
+    expect(st("C2.5", 4).check(base({}, { bOn: true, bSemitone: 7, drive: 60 }))).toBe(true);
+    expect(st("C2.5", 4).check(base({}, { bOn: true, bSemitone: 7, drive: 20 }))).toBe(false);
+    const tracked = base({ distinctNotes: 2, lastNote: 72 }, { filterOn: true, cutoff: 700, keyTrack: 100 });
+    expect(st("C2.6", 2).check(tracked)).toBe(true);
+    expect(st("C2.6", 2).remark!(tracked)).toBe("On the last key you played the cutoff sat at 1.40 kHz, though the control still says 700 Hz.");
+  });
+  it("C2.7 starts as noise alone through the filter, and ends with the oscillator back", () => {
+    const l = LESSONS.find((x) => x.id === "C2.7")!;
+    expect(dbToGain(l.initial!.aLevelDb!)).toBe(0);
+    expect(l.initial!.noiseOn).toBe(true);
+    expect(st("C2.7", 4).check(base({}, { keyTrack: 100, cutoff: 262 }))).toBe(true);
+    expect(st("C2.7", 5).check(base({ played: { mouse: 1, keys: 0, midi: 0 } }, { aLevelDb: -12 }))).toBe(true);
+  });
+  it("cutoff is matched by ear in octaves, not hertz", () => {
+    expect(compareSetting("cutoff", { ...INITIAL, cutoff: 850 }, { cutoff: 700 })).toBe("match");
+    expect(compareSetting("cutoff", { ...INITIAL, cutoff: 1000 }, { cutoff: 700 })).toBe("too high");
+    expect(compareSetting("cutoff", { ...INITIAL, cutoff: 500 }, { cutoff: 700 })).toBe("too low");
+    expect(compareSetting("slope", { ...INITIAL, slope: "12" }, { slope: "24" })).toBe("different");
   });
 });

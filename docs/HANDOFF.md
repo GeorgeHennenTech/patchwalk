@@ -21,7 +21,7 @@ Last updated: 13 November 2026, after commit "Add the filter chapter to the prac
    ```bash
    npm test
    ```
-   Expect 298 passing tests, none skipped.
+   Expect 301 passing tests, none skipped.
 3. **Run it.** `npm run dev` serves the app at http://localhost:5173 including the two server functions.
    The Claude calls report "no API key" locally unless `.env.local` has `ANTHROPIC_API_KEY`; that is expected.
 4. **Then continue with section 8** without waiting for instructions, unless the owner's message says otherwise.
@@ -65,7 +65,7 @@ synthesis course with its own practice synth and an AI guide that answers from a
 | **Rebuild a patch** | Reads a `.SerumPreset` in the browser (never uploaded). Shows a sound-type guess, a lesson in signal-flow order at three difficulty levels, "Explain why" (Claude writes why each step works), envelope and LFO diagrams, a signal-flow view with a modulation map, an active-modules view, "compare your attempt", a display-value table and raw data. An ask box lets the guide answer about the patch. |
 | **Lessons** | The practice synth (two oscillators, unison, sub, noise, phase, generated wavetables, a filter with a draggable curve, two envelopes and three LFOs; shown as a rack of panels with knobs) and twenty-eight playable lessons: chapters 0 to 3 (oscillators, filters, envelopes), a match-by-ear lesson (C1.M) and the chapter checkpoints (C1.C, C2.C, C3.C). Each lesson: optional "Hear it first" demo, idea text, a knowledge card, guided steps with only the needed controls shown and live targets, guide remarks written by code, optional blind ear check, optional match-by-ear rounds, recap, suggested next lesson, read-aloud, and an ask box. Any order; progress saved in the browser. |
 | **Serum tasks** | The older ten lessons: a task done in Serum, checked by dropping the saved preset. |
-| **Ask the guide** | Answers a typed question from the library (the Serum 2 User Guide and the knowledge cards) with page citations and quoted source text. Says "not in the library" instead of guessing. |
+| **Ask the guide** | Answers a typed question from the library (the Serum 2 User Guide, the first 500 pages of the Ableton Live 11 manual, and the knowledge cards) with page citations, quoted source text, the cited page's pictures, and links to matching lessons. Says "not in the library" instead of guessing. |
 | **System check** | One-click end-to-end test of the explanation service. |
 
 The look is a "thrifted patchwork" skin the owner asked for: quilt backdrop, tiger-stripe name patch, leopard,
@@ -256,8 +256,9 @@ Ask about these only when relevant; do not block on them.
 1. **Listening feedback** on the Lessons tab: are tones clean and at a sensible volume, does the step format
    feel right, are the match-by-ear rounds too easy or too hard?
 2. **Voice for the guide: answered, Higgsfield.** Not built yet. Test quality on one lesson before generating many.
-3. **More books for the library.** The owner is gathering them and is starting with the Ableton Live manual,
-   uploaded in 100-page sections. Extract text and pictures together (procedure in `CLAUDE.md`, "Library
+3. **More books for the library.** The Ableton Live 11 manual, pages 1 to 500, is in (13 Nov 2026); **pages 501
+   to the end are still to come from the owner** (add them with `scripts/ingest_pdf.py ... --append 500`).
+   Uploaded PDFs live outside the repo and are gone in a new session; only the extracted text and pictures stay. Extract text and pictures together (procedure in `CLAUDE.md`, "Library
    images"), and merge the sections into one book with the manual's own page numbers. Suggestions given to the
    owner are listed at the end of this section.
 4. **Genres: answered.** The heady psychedelic genres stay; see `docs/GENRES.md`. The owner's reason for the

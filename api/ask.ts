@@ -1,4 +1,4 @@
-// "Ask the guide": answers a question from the private library (the Serum 2 User Guide and the knowledge
+// "Ask the guide": answers a question from the private library (every book under library/ and the knowledge
 // cards) with citations. The library is read from disk on the server and is never sent to the browser in
 // bulk; only the few passages relevant to a question go to the Claude API.
 import { existsSync, readdirSync, readFileSync } from "node:fs";

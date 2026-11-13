@@ -268,6 +268,16 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   it. Library text must never be imported by anything under `src/` (a test enforces this), bundled into the
   browser build, or shown in full in the UI; only the few passages retrieved for a question go to the model.
   To add a text: one JSON file in `library/` shaped `{ id, title, pages: [{ page, chapter, text }] }`.
+- **Ableton Live 11 Reference Manual (owner supplied pages 1-500 of it on 13 Nov 2026, in five 100-page PDFs).**
+  `library/ableton-live-11-manual.json` (466 pages of text; contents pages 1-22 and blank separator pages left
+  out; chapters read from each page's running header, 24 chapters so far, ending partway through "Live Audio
+  Effect Reference") and `library/images/ableton-live-11-manual/` (428 pictures on 317 pages, 6.9 MB). The
+  guide searches it alongside the Serum guide and is told not to carry one product's facts over to another.
+  **The rest of the manual (page 501 on) has not been supplied.** To add it:
+  `python3 scripts/ingest_pdf.py ableton-live-11-manual "Ableton Live 11 Reference Manual" <parts...> --append 500`.
+- **`scripts/ingest_pdf.py`** is the standard way to take in any PDF book, text and pictures together, from one
+  or more parts numbered straight through (`--skip-pages` for contents pages, `--append <last page>` to add
+  later parts). A test checks every book's text and picture index agree.
 - **Library images.** `library/images/<book-id>/` holds the pictures embedded in a book's PDF plus an
   `index.json` (file, page, chapter, size, and caption candidates found on the same page). For the Serum 2 User
   Guide: 413 images from 247 pages, about 6 MB. The owner wants these in the repo only, for the assistant and

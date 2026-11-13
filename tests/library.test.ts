@@ -127,10 +127,36 @@ describe("library images", () => {
       expect(i.width).toBeGreaterThanOrEqual(90);
     }
   });
-  it("images are not shipped with the server functions or the browser build", () => {
-    const vercel = readFileSync(join(ROOT, "vercel.json"), "utf8");
-    expect(vercel).toContain("library/*.json");
-    expect(vercel).not.toMatch(/library\/\*\*|\{library,/);
+  it("pictures travel only with the password-checked picture route, never with the browser build", () => {
+    const vercel = JSON.parse(readFileSync(join(ROOT, "vercel.json"), "utf8")) as { functions: Record<string, { includeFiles?: string }> };
+    expect(vercel.functions["api/image.ts"]!.includeFiles).toBe("library/images/**");
+    expect(vercel.functions["api/ask.ts"]!.includeFiles).not.toMatch(/webp|images\/\*\*/);
+    expect(vercel.functions["api/lesson.ts"]!.includeFiles).toBeUndefined();
+  });
+  const books = existsSync(join(ROOT, "library")) ? readdirSync(join(ROOT, "library")).filter((f) => f.endsWith(".json")).map((f) => f.replace(".json", "")) : [];
+  it.each(books)("%s: text and pictures agree with each other", (book) => {
+    const doc = JSON.parse(readFileSync(join(ROOT, "library", `${book}.json`), "utf8")) as { id: string; title: string; pages: { page: number; chapter: string; text: string }[] };
+    expect(doc.id).toBe(book);
+    expect(doc.pages.map((p) => p.page)).toEqual([...doc.pages.map((p) => p.page)].sort((a, b) => a - b));
+    expect(new Set(doc.pages.map((p) => p.page)).size).toBe(doc.pages.length);
+    const last = doc.pages.at(-1)!.page;
+    const imgDir = join(ROOT, "library", "images", book);
+    expect(existsSync(imgDir), "every book is taken in with its pictures").toBe(true);
+    const index = JSON.parse(readFileSync(join(imgDir, "index.json"), "utf8")) as { images: { file: string; page: number }[] };
+    expect(index.images.map((i) => i.file).sort()).toEqual(readdirSync(imgDir).filter((f) => f.endsWith(".webp")).sort());
+    for (const i of index.images) { expect(i.file).toMatch(/^p\d{3,4}-\d+\.webp$/); expect(Number(i.file.slice(1, i.file.indexOf("-")))).toBe(i.page); expect(i.page).toBeLessThanOrEqual(last + 5); }
+  });
+  const hasAbleton = existsSync(join(ROOT, "library", "ableton-live-11-manual.json"));
+  it.skipIf(!hasAbleton)("the Ableton manual is searchable by chapter topic, and its pictures come with its pages", () => {
+    const lib = loadLibrary(ROOT);
+    const top = (q: string) => search(lib, q, 6).map((h) => h.passage);
+    expect(top("how do I warp an audio clip to the tempo").some((p) => p.source.includes("Ableton") && p.section.includes("Warping"))).toBe(true);
+    expect(top("draw automation envelope in arrangement view").some((p) => p.section.includes("Automation"))).toBe(true);
+    expect(top("session view launch clips scene").some((p) => p.source.includes("Ableton"))).toBe(true);
+    expect(lib.passages.filter((p) => p.id.startsWith("ableton-live-11-manual#")).length).toBeGreaterThan(450);
+    expect(lib.passages.some((p) => p.id.startsWith("ableton-live-11-manual#") && (p.images?.length ?? 0) > 0)).toBe(true);
+    // contents pages were left out
+    expect(lib.passages.some((p) => p.id === "ableton-live-11-manual#5")).toBe(false);
   });
 });
 
@@ -163,7 +189,7 @@ describe("pictures in the guide's answers", () => {
     const lib = loadLibrary(ROOT);
     const page = lib.passages.find((p) => p.id === "serum-2-user-guide#13")!;
     expect(page.images!.some((i) => i.file === "p013-1.webp")).toBe(true);
-    for (const p of lib.passages) for (const im of p.images ?? []) { expect(im.book).toBe("serum-2-user-guide"); expect(im.width).toBeGreaterThanOrEqual(300); }
+    for (const p of lib.passages) for (const im of p.images ?? []) { expect(p.id.startsWith(`${im.book}#`)).toBe(true); expect(im.width).toBeGreaterThanOrEqual(300); }
   });
   it("pictures are served only with the password, only by exact name, and never from outside the library", async () => {
     process.env.VERCEL = "1"; process.env.APP_PASSWORD = "pw";

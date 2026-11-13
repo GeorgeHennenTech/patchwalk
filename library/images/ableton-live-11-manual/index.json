@@ -1,0 +1,4640 @@
+{
+"source": "Ableton Live 11 Reference Manual",
+"note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text.",
+"images": [
+{
+"file": "p040-1.webp",
+"page": 40,
+"chapter": "First Steps",
+"width": 847,
+"height": 522,
+"captions_on_page": [
+"The Info View and its Show/Hide Button."
+]
+},
+{
+"file": "p041-1.webp",
+"page": 41,
+"chapter": "First Steps",
+"width": 990,
+"height": 439,
+"captions_on_page": [
+"The Use System Device Option on macOS.",
+"To access the lesson, use the Help View command from the Help menu."
+]
+},
+{
+"file": "p043-1.webp",
+"page": 43,
+"chapter": "First Steps",
+"width": 506,
+"height": 192,
+"captions_on_page": [
+"The Browser Selector."
+]
+},
+{
+"file": "p043-2.webp",
+"page": 43,
+"chapter": "First Steps",
+"width": 226,
+"height": 115,
+"captions_on_page": [
+"The Browser Selector."
+]
+},
+{
+"file": "p044-1.webp",
+"page": 44,
+"chapter": "First Steps",
+"width": 468,
+"height": 110,
+"captions_on_page": [
+"If Live’s browser is open, you can adjust the main window’s horizontal split by dragging.",
+"Adjusting the Main Window Split."
+]
+},
+{
+"file": "p044-2.webp",
+"page": 44,
+"chapter": "First Steps",
+"width": 710,
+"height": 228,
+"captions_on_page": [
+"If Live’s browser is open, you can adjust the main window’s horizontal split by dragging.",
+"Adjusting the Main Window Split."
+]
+},
+{
+"file": "p049-1.webp",
+"page": 49,
+"chapter": "Live Concepts",
+"width": 509,
+"height": 454,
+"captions_on_page": [
+"Live’s Browser."
+]
+},
+{
+"file": "p050-1.webp",
+"page": 50,
+"chapter": "Live Concepts",
+"width": 703,
+"height": 265,
+"captions_on_page": [
+"A Live Set in the Browser.",
+"Clips in the Session View (Left) and in the Arrangement View (Right)."
+]
+},
+{
+"file": "p050-2.webp",
+"page": 50,
+"chapter": "Live Concepts",
+"width": 1348,
+"height": 144,
+"captions_on_page": [
+"A Live Set in the Browser.",
+"Clips in the Session View (Left) and in the Arrangement View (Right)."
+]
+},
+{
+"file": "p051-1.webp",
+"page": 51,
+"chapter": "Live Concepts",
+"width": 441,
+"height": 217,
+"captions_on_page": [
+"The Arrangement and Session View Selectors.",
+"A Track in the Arrangement View.",
+"A track can only play one clip at a time."
+]
+},
+{
+"file": "p051-2.webp",
+"page": 51,
+"chapter": "Live Concepts",
+"width": 1390,
+"height": 240,
+"captions_on_page": [
+"The Arrangement and Session View Selectors.",
+"A Track in the Arrangement View.",
+"A track can only play one clip at a time."
+]
+},
+{
+"file": "p052-1.webp",
+"page": 52,
+"chapter": "Live Concepts",
+"width": 1400,
+"height": 213,
+"captions_on_page": [
+"A Scene in the Session View.",
+"The track will not resume Arrangement playback until explicitly told to do so."
+]
+},
+{
+"file": "p053-1.webp",
+"page": 53,
+"chapter": "Live Concepts",
+"width": 384,
+"height": 189,
+"captions_on_page": [
+"The Back to Arrangement Button in the Session View.",
+"The Back to Arrangement Button in the Arrangement View.",
+"A Single Track’s Back to Arrangement Button."
+]
+},
+{
+"file": "p053-2.webp",
+"page": 53,
+"chapter": "Live Concepts",
+"width": 993,
+"height": 319,
+"captions_on_page": [
+"The Back to Arrangement Button in the Session View.",
+"The Back to Arrangement Button in the Arrangement View.",
+"A Single Track’s Back to Arrangement Button."
+]
+},
+{
+"file": "p053-3.webp",
+"page": 53,
+"chapter": "Live Concepts",
+"width": 561,
+"height": 389,
+"captions_on_page": [
+"The Back to Arrangement Button in the Session View.",
+"The Back to Arrangement Button in the Arrangement View.",
+"A Single Track’s Back to Arrangement Button."
+]
+},
+{
+"file": "p055-1.webp",
+"page": 55,
+"chapter": "Live Concepts",
+"width": 707,
+"height": 455,
+"captions_on_page": [
+"Samples Are Dragged in from Live’s Browser.",
+"An Audio Clip’s Properties as Displayed in the Clip View.",
+"The Control Bar’s Tempo Field."
+]
+},
+{
+"file": "p055-2.webp",
+"page": 55,
+"chapter": "Live Concepts",
+"width": 1288,
+"height": 325,
+"captions_on_page": [
+"Samples Are Dragged in from Live’s Browser.",
+"An Audio Clip’s Properties as Displayed in the Clip View.",
+"The Control Bar’s Tempo Field."
+]
+},
+{
+"file": "p055-3.webp",
+"page": 55,
+"chapter": "Live Concepts",
+"width": 618,
+"height": 62,
+"captions_on_page": [
+"Samples Are Dragged in from Live’s Browser.",
+"An Audio Clip’s Properties as Displayed in the Clip View.",
+"The Control Bar’s Tempo Field."
+]
+},
+{
+"file": "p056-1.webp",
+"page": 56,
+"chapter": "Live Concepts",
+"width": 680,
+"height": 324,
+"captions_on_page": [
+"MIDI Files Are Dragged in from Live’s Browsers.",
+"View, for instance to change a melody or “paint“ a drum pattern.",
+"A MIDI Clip’s Properties as Displayed in the Clip View."
+]
+},
+{
+"file": "p056-2.webp",
+"page": 56,
+"chapter": "Live Concepts",
+"width": 1400,
+"height": 227,
+"captions_on_page": [
+"MIDI Files Are Dragged in from Live’s Browsers.",
+"View, for instance to change a melody or “paint“ a drum pattern.",
+"A MIDI Clip’s Properties as Displayed in the Clip View."
+]
+},
+{
+"file": "p057-1.webp",
+"page": 57,
+"chapter": "Live Concepts",
+"width": 1400,
+"height": 510,
+"captions_on_page": [
+"The Device View Displaying a MIDI Track’s Device Chain.",
+"Live’s Built-in Devices Are Available from the Browser."
+]
+},
+{
+"file": "p057-2.webp",
+"page": 57,
+"chapter": "Live Concepts",
+"width": 605,
+"height": 419,
+"captions_on_page": [
+"The Device View Displaying a MIDI Track’s Device Chain.",
+"Live’s Built-in Devices Are Available from the Browser."
+]
+},
+{
+"file": "p058-1.webp",
+"page": 58,
+"chapter": "Live Concepts",
+"width": 728,
+"height": 443,
+"captions_on_page": [
+"Plug-In Devices Are Available from the Browser’s Plug-Ins Label.",
+"The Live Mixer in the Arrangement View (Left) and Session View (Right)."
+]
+},
+{
+"file": "p058-2.webp",
+"page": 58,
+"chapter": "Live Concepts",
+"width": 886,
+"height": 378,
+"captions_on_page": [
+"Plug-In Devices Are Available from the Browser’s Plug-Ins Label.",
+"The Live Mixer in the Arrangement View (Left) and Session View (Right)."
+]
+},
+{
+"file": "p059-1.webp",
+"page": 59,
+"chapter": "Live Concepts",
+"width": 1058,
+"height": 329,
+"captions_on_page": [
+"Live’s Crossfader.",
+"A MIDI Effect, an Instrument and an Audio Effect in a MIDI Track."
+]
+},
+{
+"file": "p059-2.webp",
+"page": 59,
+"chapter": "Live Concepts",
+"width": 1398,
+"height": 237,
+"captions_on_page": [
+"Live’s Crossfader.",
+"A MIDI Effect, an Instrument and an Audio Effect in a MIDI Track."
+]
+},
+{
+"file": "p060-1.webp",
+"page": 60,
+"chapter": "Live Concepts",
+"width": 760,
+"height": 624,
+"captions_on_page": [
+"The Mixer for a MIDI Track without an Instrument."
+]
+},
+{
+"file": "p061-1.webp",
+"page": 61,
+"chapter": "Live Concepts",
+"width": 737,
+"height": 356,
+"captions_on_page": []
+},
+{
+"file": "p062-1.webp",
+"page": 62,
+"chapter": "Live Concepts",
+"width": 765,
+"height": 228,
+"captions_on_page": [
+"Track Arm Buttons, as They Appear in the Session View.",
+"The Control Bar’s Session Record Button.",
+"The Control Bar’s Quantization Chooser."
+]
+},
+{
+"file": "p063-1.webp",
+"page": 63,
+"chapter": "Live Concepts",
+"width": 1400,
+"height": 276,
+"captions_on_page": [
+"The Automated Pan Control and its Envelope."
+]
+},
+{
+"file": "p064-1.webp",
+"page": 64,
+"chapter": "Live Concepts",
+"width": 1186,
+"height": 375,
+"captions_on_page": [
+"An Envelope for Clip Transposition.",
+"The Key/MIDI Map Controls."
+]
+},
+{
+"file": "p065-1.webp",
+"page": 65,
+"chapter": "Live Concepts",
+"width": 706,
+"height": 360,
+"captions_on_page": [
+"A Live Clip in the Browser."
+]
+},
+{
+"file": "p068-1.webp",
+"page": 68,
+"chapter": "Managing Files and Sets",
+"width": 735,
+"height": 750,
+"captions_on_page": [
+"The Browser."
+]
+},
+{
+"file": "p069-1.webp",
+"page": 69,
+"chapter": "Managing Files and Sets",
+"width": 367,
+"height": 374,
+"captions_on_page": [
+"The Edit Button in the Browser.",
+"Label option next to each label.",
+"Editing Shown and Hidden Collections in the Browser."
+]
+},
+{
+"file": "p069-2.webp",
+"page": 69,
+"chapter": "Managing Files and Sets",
+"width": 374,
+"height": 390,
+"captions_on_page": [
+"The Edit Button in the Browser.",
+"Label option next to each label.",
+"Editing Shown and Hidden Collections in the Browser."
+]
+},
+{
+"file": "p070-1.webp",
+"page": 70,
+"chapter": "Managing Files and Sets",
+"width": 291,
+"height": 381,
+"captions_on_page": [
+"To exit Edit Mode, press the “Done” button.",
+"The Done Button in the Browser.",
+"Browser Items and Their Assigned Colors in the Content Pane."
+]
+},
+{
+"file": "p070-2.webp",
+"page": 70,
+"chapter": "Managing Files and Sets",
+"width": 428,
+"height": 285,
+"captions_on_page": [
+"To exit Edit Mode, press the “Done” button.",
+"The Done Button in the Browser.",
+"Browser Items and Their Assigned Colors in the Content Pane."
+]
+},
+{
+"file": "p073-1.webp",
+"page": 73,
+"chapter": "Managing Files and Sets",
+"width": 765,
+"height": 459,
+"captions_on_page": [
+"Available Updates for Installed Packs Appear in the Browser.",
+"Downloadable Packs Appear in the Browser.",
+"Press the Download Icon to Download a Pack."
+]
+},
+{
+"file": "p073-2.webp",
+"page": 73,
+"chapter": "Managing Files and Sets",
+"width": 765,
+"height": 428,
+"captions_on_page": [
+"Available Updates for Installed Packs Appear in the Browser.",
+"Downloadable Packs Appear in the Browser.",
+"Press the Download Icon to Download a Pack."
+]
+},
+{
+"file": "p073-3.webp",
+"page": 73,
+"chapter": "Managing Files and Sets",
+"width": 549,
+"height": 198,
+"captions_on_page": [
+"Available Updates for Installed Packs Appear in the Browser.",
+"Downloadable Packs Appear in the Browser.",
+"Press the Download Icon to Download a Pack."
+]
+},
+{
+"file": "p074-1.webp",
+"page": 74,
+"chapter": "Managing Files and Sets",
+"width": 552,
+"height": 200,
+"captions_on_page": [
+"To resume a paused download, press the download icon again.",
+"When the download is complete, you can install the Pack by pressing the Install button.",
+"Press the Install Button to Install a Pack."
+]
+},
+{
+"file": "p074-2.webp",
+"page": 74,
+"chapter": "Managing Files and Sets",
+"width": 554,
+"height": 198,
+"captions_on_page": [
+"To resume a paused download, press the download icon again.",
+"When the download is complete, you can install the Pack by pressing the Install button.",
+"Press the Install Button to Install a Pack."
+]
+},
+{
+"file": "p075-1.webp",
+"page": 75,
+"chapter": "Managing Files and Sets",
+"width": 554,
+"height": 255,
+"captions_on_page": [
+"Show or Hide the Size of Packs in the Browser.",
+"Note that deleted Packs will appear in your list of Available Packs.",
+"Show or Hide Downloadable Packs in the Browser.",
+"Add Folder button in the browser’s sidebar."
+]
+},
+{
+"file": "p075-2.webp",
+"page": 75,
+"chapter": "Managing Files and Sets",
+"width": 1006,
+"height": 262,
+"captions_on_page": [
+"Show or Hide the Size of Packs in the Browser.",
+"Note that deleted Packs will appear in your list of Available Packs.",
+"Show or Hide Downloadable Packs in the Browser.",
+"Add Folder button in the browser’s sidebar."
+]
+},
+{
+"file": "p076-1.webp",
+"page": 76,
+"chapter": "Managing Files and Sets",
+"width": 735,
+"height": 366,
+"captions_on_page": [
+"The Browser’s Search Field."
+]
+},
+{
+"file": "p077-1.webp",
+"page": 77,
+"chapter": "Managing Files and Sets",
+"width": 756,
+"height": 1094,
+"captions_on_page": [
+"Tab at the bottom of the browser.",
+"The Preview Switch."
+]
+},
+{
+"file": "p078-1.webp",
+"page": 78,
+"chapter": "Managing Files and Sets",
+"width": 298,
+"height": 268,
+"captions_on_page": [
+"You can select Live Clips in the browser to load them into the Preview Tab.",
+"The previewing volume can be adjusted using the mixer’s Preview Volume knob.",
+"The Preview Volume Knob."
+]
+},
+{
+"file": "p079-1.webp",
+"page": 79,
+"chapter": "Managing Files and Sets",
+"width": 1110,
+"height": 410,
+"captions_on_page": [
+"Dropping a Clip to Create a New Track.",
+"The Hot-Swap Button in an Impulse Slot."
+]
+},
+{
+"file": "p079-2.webp",
+"page": 79,
+"chapter": "Managing Files and Sets",
+"width": 804,
+"height": 137,
+"captions_on_page": [
+"Dropping a Clip to Create a New Track.",
+"The Hot-Swap Button in an Impulse Slot."
+]
+},
+{
+"file": "p080-1.webp",
+"page": 80,
+"chapter": "Managing Files and Sets",
+"width": 757,
+"height": 354,
+"captions_on_page": [
+"The Browser in Hot-Swap Mode."
+]
+},
+{
+"file": "p081-1.webp",
+"page": 81,
+"chapter": "Managing Files and Sets",
+"width": 1004,
+"height": 698,
+"captions_on_page": [
+"Show Cloud option to On.",
+"Cloud Options in Live’s Preferences."
+]
+},
+{
+"file": "p082-1.webp",
+"page": 82,
+"chapter": "Managing Files and Sets",
+"width": 766,
+"height": 1326,
+"captions_on_page": [
+"Signing in to Ableton Cloud in Live."
+]
+},
+{
+"file": "p084-1.webp",
+"page": 84,
+"chapter": "Managing Files and Sets",
+"width": 995,
+"height": 473,
+"captions_on_page": [
+"Preferences for the Decoding Cache."
+]
+},
+{
+"file": "p085-1.webp",
+"page": 85,
+"chapter": "Managing Files and Sets",
+"width": 515,
+"height": 382,
+"captions_on_page": [
+"The analysis files themselves do not appear in Live’s browser.",
+"The Render Dialog’s Selection Options."
+]
+},
+{
+"file": "p086-1.webp",
+"page": 86,
+"chapter": "Managing Files and Sets",
+"width": 521,
+"height": 482,
+"captions_on_page": [
+"The Rendered Track Chooser."
+]
+},
+{
+"file": "p087-1.webp",
+"page": 87,
+"chapter": "Managing Files and Sets",
+"width": 519,
+"height": 424,
+"captions_on_page": [
+"Audio Rendering Options."
+]
+},
+{
+"file": "p088-1.webp",
+"page": 88,
+"chapter": "Managing Files and Sets",
+"width": 521,
+"height": 408,
+"captions_on_page": [
+"Audio Encoding Options."
+]
+},
+{
+"file": "p089-1.webp",
+"page": 89,
+"chapter": "Managing Files and Sets",
+"width": 518,
+"height": 243,
+"captions_on_page": [
+"Video Rendering Options."
+]
+},
+{
+"file": "p090-1.webp",
+"page": 90,
+"chapter": "Managing Files and Sets",
+"width": 845,
+"height": 307,
+"captions_on_page": [
+"Waiting for External Devices to Become Silent."
+]
+},
+{
+"file": "p091-1.webp",
+"page": 91,
+"chapter": "Managing Files and Sets",
+"width": 843,
+"height": 310,
+"captions_on_page": [
+"Real-Time Rendering in Progress."
+]
+},
+{
+"file": "p094-1.webp",
+"page": 94,
+"chapter": "Managing Files and Sets",
+"width": 949,
+"height": 168,
+"captions_on_page": [
+"Session View Drop Area for Importing Live Sets."
+]
+},
+{
+"file": "p095-1.webp",
+"page": 95,
+"chapter": "Managing Files and Sets",
+"width": 798,
+"height": 503,
+"captions_on_page": [
+"Arrangement View Drop Area for Importing Live Sets.",
+"Unfolding a Set to Reveal its Contents."
+]
+},
+{
+"file": "p095-2.webp",
+"page": 95,
+"chapter": "Managing Files and Sets",
+"width": 657,
+"height": 504,
+"captions_on_page": [
+"Arrangement View Drop Area for Importing Live Sets.",
+"Unfolding a Set to Reveal its Contents."
+]
+},
+{
+"file": "p096-1.webp",
+"page": 96,
+"chapter": "Managing Files and Sets",
+"width": 416,
+"height": 275,
+"captions_on_page": [
+"The Devices Icon in an Expanded Live Set.",
+"Revealing the Session View Clips Contained in a Set."
+]
+},
+{
+"file": "p096-2.webp",
+"page": 96,
+"chapter": "Managing Files and Sets",
+"width": 658,
+"height": 504,
+"captions_on_page": [
+"The Devices Icon in an Expanded Live Set.",
+"Revealing the Session View Clips Contained in a Set."
+]
+},
+{
+"file": "p098-1.webp",
+"page": 98,
+"chapter": "Managing Files and Sets",
+"width": 1064,
+"height": 674,
+"captions_on_page": [
+"Multiple Template Sets in the User Library.",
+"Every Entry in the File Reference List is a Drop Target for Files."
+]
+},
+{
+"file": "p098-2.webp",
+"page": 98,
+"chapter": "Managing Files and Sets",
+"width": 602,
+"height": 264,
+"captions_on_page": [
+"Multiple Template Sets in the User Library.",
+"Every Entry in the File Reference List is a Drop Target for Files."
+]
+},
+{
+"file": "p099-1.webp",
+"page": 99,
+"chapter": "Managing Files and Sets",
+"width": 559,
+"height": 112,
+"captions_on_page": [
+"The File Reference List’s Hot-Swap Button.",
+"The File Reference List’s Edit Switch.",
+"The File Reference List’s Location Column."
+]
+},
+{
+"file": "p099-2.webp",
+"page": 99,
+"chapter": "Managing Files and Sets",
+"width": 558,
+"height": 112,
+"captions_on_page": [
+"The File Reference List’s Hot-Swap Button.",
+"The File Reference List’s Edit Switch.",
+"The File Reference List’s Location Column."
+]
+},
+{
+"file": "p099-3.webp",
+"page": 99,
+"chapter": "Managing Files and Sets",
+"width": 557,
+"height": 215,
+"captions_on_page": [
+"The File Reference List’s Hot-Swap Button.",
+"The File Reference List’s Edit Switch.",
+"The File Reference List’s Location Column."
+]
+},
+{
+"file": "p100-1.webp",
+"page": 100,
+"chapter": "Managing Files and Sets",
+"width": 1070,
+"height": 682,
+"captions_on_page": [
+"A Live Set and its Recordings in a Live Project Folder."
+]
+},
+{
+"file": "p101-1.webp",
+"page": 101,
+"chapter": "Managing Files and Sets",
+"width": 1068,
+"height": 682,
+"captions_on_page": [
+"A Second Version of the Live Set Has Been Added to the Project.",
+"Samba Project next to Tango Project."
+]
+},
+{
+"file": "p102-1.webp",
+"page": 102,
+"chapter": "Managing Files and Sets",
+"width": 1066,
+"height": 684,
+"captions_on_page": [
+"A New Project Was Added Next to Tango Project.",
+"A New Project Was Added by Saving a Live Set Outside its Original Project."
+]
+},
+{
+"file": "p102-2.webp",
+"page": 102,
+"chapter": "Managing Files and Sets",
+"width": 1068,
+"height": 678,
+"captions_on_page": [
+"A New Project Was Added Next to Tango Project.",
+"A New Project Was Added by Saving a Live Set Outside its Original Project."
+]
+},
+{
+"file": "p104-1.webp",
+"page": 104,
+"chapter": "Managing Files and Sets",
+"width": 595,
+"height": 297,
+"captions_on_page": [
+"The File Manager’s List of Missing Files."
+]
+},
+{
+"file": "p105-1.webp",
+"page": 105,
+"chapter": "Managing Files and Sets",
+"width": 600,
+"height": 573,
+"captions_on_page": [
+"Automatic Repair Options in the File Manager.",
+"To select the folder, click the associated Set Folder button."
+]
+},
+{
+"file": "p106-1.webp",
+"page": 106,
+"chapter": "Managing Files and Sets",
+"width": 591,
+"height": 774,
+"captions_on_page": [
+"Options for Collecting External Files."
+]
+},
+{
+"file": "p107-1.webp",
+"page": 107,
+"chapter": "Managing Files and Sets",
+"width": 601,
+"height": 567,
+"captions_on_page": [
+"The File Manager’s Collect and Save Button."
+]
+},
+{
+"file": "p113-1.webp",
+"page": 113,
+"chapter": "Arrangement View",
+"width": 1400,
+"height": 368,
+"captions_on_page": [
+"A Piece of Music in the Arrangement View."
+]
+},
+{
+"file": "p114-1.webp",
+"page": 114,
+"chapter": "Arrangement View",
+"width": 1400,
+"height": 285,
+"captions_on_page": [
+"Navigating the Arrangement View."
+]
+},
+{
+"file": "p115-1.webp",
+"page": 115,
+"chapter": "Arrangement View",
+"width": 622,
+"height": 61,
+"captions_on_page": [
+"The Play and Stop Buttons in the Control Bar."
+]
+},
+{
+"file": "p116-1.webp",
+"page": 116,
+"chapter": "Arrangement View",
+"width": 225,
+"height": 423,
+"captions_on_page": [
+"Arrangement Playback Begins from the Insert Marker.",
+"MIDI note’s start time.",
+"Scrubbing Arrangement Playback."
+]
+},
+{
+"file": "p116-2.webp",
+"page": 116,
+"chapter": "Arrangement View",
+"width": 761,
+"height": 311,
+"captions_on_page": [
+"Arrangement Playback Begins from the Insert Marker.",
+"MIDI note’s start time.",
+"Scrubbing Arrangement Playback."
+]
+},
+{
+"file": "p117-1.webp",
+"page": 117,
+"chapter": "Arrangement View",
+"width": 406,
+"height": 66,
+"captions_on_page": [
+"Setting the Play Position in the Arrangement Position Fields.",
+"Using Locators to Launch Play in the Arrangement."
+]
+},
+{
+"file": "p117-2.webp",
+"page": 117,
+"chapter": "Arrangement View",
+"width": 643,
+"height": 352,
+"captions_on_page": [
+"Setting the Play Position in the Arrangement Position Fields.",
+"Using Locators to Launch Play in the Arrangement."
+]
+},
+{
+"file": "p118-1.webp",
+"page": 118,
+"chapter": "Arrangement View",
+"width": 396,
+"height": 227,
+"captions_on_page": [
+"The Locator Controls."
+]
+},
+{
+"file": "p119-1.webp",
+"page": 119,
+"chapter": "Arrangement View",
+"width": 660,
+"height": 188,
+"captions_on_page": [
+"Time Signature Changes."
+]
+},
+{
+"file": "p120-1.webp",
+"page": 120,
+"chapter": "Arrangement View",
+"width": 592,
+"height": 63,
+"captions_on_page": [
+"LED in the upper left corner.",
+"A Fragmentary Bar and its Resolution Options."
+]
+},
+{
+"file": "p120-2.webp",
+"page": 120,
+"chapter": "Arrangement View",
+"width": 534,
+"height": 170,
+"captions_on_page": [
+"LED in the upper left corner.",
+"A Fragmentary Bar and its Resolution Options."
+]
+},
+{
+"file": "p121-1.webp",
+"page": 121,
+"chapter": "Arrangement View",
+"width": 507,
+"height": 63,
+"captions_on_page": [
+"The Control Bar’s Loop Switch.",
+"The Loop Start Fields (Left) and the Loop Length Fields (Right)."
+]
+},
+{
+"file": "p121-2.webp",
+"page": 121,
+"chapter": "Arrangement View",
+"width": 501,
+"height": 64,
+"captions_on_page": [
+"The Control Bar’s Loop Switch.",
+"The Loop Start Fields (Left) and the Loop Length Fields (Right)."
+]
+},
+{
+"file": "p122-1.webp",
+"page": 122,
+"chapter": "Arrangement View",
+"width": 525,
+"height": 388,
+"captions_on_page": [
+"The Arrangement’s Loop Brace."
+]
+},
+{
+"file": "p123-1.webp",
+"page": 123,
+"chapter": "Arrangement View",
+"width": 1065,
+"height": 151,
+"captions_on_page": [
+"Moving a Clip.",
+"Dragging a clip moves it to another song position or track.",
+"Changing a Clip’s Length.",
+"Dragging a clip’s left or right edge changes the clip’s length.",
+"The beginning and end of audio clips in the Arrangement View have adjustable volume fades.",
+"Additionally, adjacent clips on the same audio track can be crossfaded."
+]
+},
+{
+"file": "p123-2.webp",
+"page": 123,
+"chapter": "Arrangement View",
+"width": 390,
+"height": 182,
+"captions_on_page": [
+"Moving a Clip.",
+"Dragging a clip moves it to another song position or track.",
+"Changing a Clip’s Length.",
+"Dragging a clip’s left or right edge changes the clip’s length.",
+"The beginning and end of audio clips in the Arrangement View have adjustable volume fades.",
+"Additionally, adjacent clips on the same audio track can be crossfaded."
+]
+},
+{
+"file": "p124-1.webp",
+"page": 124,
+"chapter": "Arrangement View",
+"width": 792,
+"height": 286,
+"captions_on_page": [
+"Fades in the Arrangement View.",
+"Create menu."
+]
+},
+{
+"file": "p125-1.webp",
+"page": 125,
+"chapter": "Arrangement View",
+"width": 592,
+"height": 180,
+"captions_on_page": [
+"Crossfaded Clips.",
+"Automatically Create Short Fades At Clip Edges."
+]
+},
+{
+"file": "p125-2.webp",
+"page": 125,
+"chapter": "Arrangement View",
+"width": 987,
+"height": 314,
+"captions_on_page": [
+"Crossfaded Clips.",
+"Automatically Create Short Fades At Clip Edges."
+]
+},
+{
+"file": "p126-1.webp",
+"page": 126,
+"chapter": "Arrangement View",
+"width": 456,
+"height": 220,
+"captions_on_page": [
+"Adjusting an Unfolded Track’s Height."
+]
+},
+{
+"file": "p127-1.webp",
+"page": 127,
+"chapter": "Arrangement View",
+"width": 652,
+"height": 465,
+"captions_on_page": [
+"Clicking the Loop Brace to Select the Loop for Editing."
+]
+},
+{
+"file": "p129-1.webp",
+"page": 129,
+"chapter": "Arrangement View",
+"width": 518,
+"height": 263,
+"captions_on_page": [
+"Time command affects all tracks, not only the selected ones.",
+"The Split command can divide a clip or isolate part of it."
+]
+},
+{
+"file": "p129-2.webp",
+"page": 129,
+"chapter": "Arrangement View",
+"width": 518,
+"height": 263,
+"captions_on_page": [
+"Time command affects all tracks, not only the selected ones.",
+"The Split command can divide a clip or isolate part of it."
+]
+},
+{
+"file": "p130-1.webp",
+"page": 130,
+"chapter": "Arrangement View",
+"width": 567,
+"height": 256,
+"captions_on_page": [
+"The Result of Splitting a Clip."
+]
+},
+{
+"file": "p131-1.webp",
+"page": 131,
+"chapter": "Arrangement View",
+"width": 878,
+"height": 699,
+"captions_on_page": [
+"Consolidating Several Clips Into a New Clip."
+]
+},
+{
+"file": "p132-1.webp",
+"page": 132,
+"chapter": "Arrangement View",
+"width": 506,
+"height": 633,
+"captions_on_page": [
+"The Link Tracks Command.",
+"Linked tracks display a linked-track indicator button in their headers."
+]
+},
+{
+"file": "p133-1.webp",
+"page": 133,
+"chapter": "Arrangement View",
+"width": 608,
+"height": 326,
+"captions_on_page": [
+"A Track’s Linked-Track Indicator Button.",
+"Unlink Track(s) command.",
+"The Unlink Track(s) Command."
+]
+},
+{
+"file": "p133-2.webp",
+"page": 133,
+"chapter": "Arrangement View",
+"width": 506,
+"height": 633,
+"captions_on_page": [
+"A Track’s Linked-Track Indicator Button.",
+"Unlink Track(s) command.",
+"The Unlink Track(s) Command."
+]
+},
+{
+"file": "p136-1.webp",
+"page": 136,
+"chapter": "Session View",
+"width": 764,
+"height": 539,
+"captions_on_page": [
+"The Controls for a Session View Clip.",
+"They can even be mapped to MIDI note ranges so that they play chromatically."
+]
+},
+{
+"file": "p137-1.webp",
+"page": 137,
+"chapter": "Session View",
+"width": 408,
+"height": 62,
+"captions_on_page": [
+"Live Set by pressing the Control Bar’s Stop button twice.",
+"The Arrangement Position Fields and the Stop Button.",
+"Group Slots and Group Launch Buttons."
+]
+},
+{
+"file": "p137-2.webp",
+"page": 137,
+"chapter": "Session View",
+"width": 609,
+"height": 270,
+"captions_on_page": [
+"Live Set by pressing the Control Bar’s Stop button twice.",
+"The Arrangement Position Fields and the Stop Button.",
+"Group Slots and Group Launch Buttons."
+]
+},
+{
+"file": "p138-1.webp",
+"page": 138,
+"chapter": "Session View",
+"width": 420,
+"height": 346,
+"captions_on_page": [
+"Resized Session View Tracks.",
+"A Scene in the Session View."
+]
+},
+{
+"file": "p140-1.webp",
+"page": 140,
+"chapter": "Session View",
+"width": 1220,
+"height": 294,
+"captions_on_page": [
+"These Scenes Will Change the Tempo and Time Signature.",
+"The Scene View is where scene properties can be set and adjusted."
+]
+},
+{
+"file": "p141-1.webp",
+"page": 141,
+"chapter": "Session View",
+"width": 324,
+"height": 376,
+"captions_on_page": [
+"The Scene View.",
+"Tempo and Time Signature Controls in the Scene View."
+]
+},
+{
+"file": "p141-2.webp",
+"page": 141,
+"chapter": "Session View",
+"width": 324,
+"height": 376,
+"captions_on_page": [
+"The Scene View.",
+"Tempo and Time Signature Controls in the Scene View."
+]
+},
+{
+"file": "p142-1.webp",
+"page": 142,
+"chapter": "Session View",
+"width": 324,
+"height": 376,
+"captions_on_page": [
+"Follow Action Controls in the Scene View.",
+"Note that this also applies when multiple scenes are selected.",
+"A Track Playing a Looping Session Clip."
+]
+},
+{
+"file": "p142-2.webp",
+"page": 142,
+"chapter": "Session View",
+"width": 192,
+"height": 127,
+"captions_on_page": [
+"Follow Action Controls in the Scene View.",
+"Note that this also applies when multiple scenes are selected.",
+"A Track Playing a Looping Session Clip."
+]
+},
+{
+"file": "p143-1.webp",
+"page": 143,
+"chapter": "Session View",
+"width": 194,
+"height": 147,
+"captions_on_page": []
+},
+{
+"file": "p143-2.webp",
+"page": 143,
+"chapter": "Session View",
+"width": 305,
+"height": 99,
+"captions_on_page": []
+},
+{
+"file": "p143-3.webp",
+"page": 143,
+"chapter": "Session View",
+"width": 194,
+"height": 145,
+"captions_on_page": []
+},
+{
+"file": "p144-1.webp",
+"page": 144,
+"chapter": "Session View",
+"width": 691,
+"height": 358,
+"captions_on_page": [
+"Dropping Multiple Clips Into the Session View."
+]
+},
+{
+"file": "p145-1.webp",
+"page": 145,
+"chapter": "Session View",
+"width": 461,
+"height": 269,
+"captions_on_page": [
+"Slots Without Clip Stop Buttons."
+]
+},
+{
+"file": "p146-1.webp",
+"page": 146,
+"chapter": "Session View",
+"width": 450,
+"height": 187,
+"captions_on_page": [
+"The Control Bar’s Arrangement Record Button.",
+"To finish recording, press the Arrangement Record button again, or stop playback.",
+"The Arrangement Selector."
+]
+},
+{
+"file": "p147-1.webp",
+"page": 147,
+"chapter": "Session View",
+"width": 432,
+"height": 443,
+"captions_on_page": [
+"The Back to Arrangement Button in the Session View.",
+"The Back to Arrangement Button in the Arrangement View.",
+"The Stop All Clips Button."
+]
+},
+{
+"file": "p149-1.webp",
+"page": 149,
+"chapter": "Clip View",
+"width": 1304,
+"height": 329,
+"captions_on_page": [
+"The Clip View is where clip properties can be set and adjusted.",
+"The Clip View with Clip Tabs Arranged Horizontally."
+]
+},
+{
+"file": "p150-1.webp",
+"page": 150,
+"chapter": "Clip View",
+"width": 950,
+"height": 211,
+"captions_on_page": [
+"Clicking the Clip Overview Opens the Clip View.",
+"Clicking a Session View Track Status Field Opens the Clip View.",
+"Creating a Clip Multi-Selection."
+]
+},
+{
+"file": "p150-2.webp",
+"page": 150,
+"chapter": "Clip View",
+"width": 764,
+"height": 332,
+"captions_on_page": [
+"Clicking the Clip Overview Opens the Clip View.",
+"Clicking a Session View Track Status Field Opens the Clip View.",
+"Creating a Clip Multi-Selection."
+]
+},
+{
+"file": "p152-1.webp",
+"page": 152,
+"chapter": "Clip View",
+"width": 1400,
+"height": 289,
+"captions_on_page": [
+"The Clip View for a MIDI Clip."
+]
+},
+{
+"file": "p153-1.webp",
+"page": 153,
+"chapter": "Clip View",
+"width": 702,
+"height": 395,
+"captions_on_page": [
+"Clip View Tabs Arranged Horizontally.",
+"Clip View Panels Arranged Vertically."
+]
+},
+{
+"file": "p153-2.webp",
+"page": 153,
+"chapter": "Clip View",
+"width": 357,
+"height": 398,
+"captions_on_page": [
+"Clip View Tabs Arranged Horizontally.",
+"Clip View Panels Arranged Vertically."
+]
+},
+{
+"file": "p154-1.webp",
+"page": 154,
+"chapter": "Clip View",
+"width": 694,
+"height": 389,
+"captions_on_page": [
+"The Clip Activator Switch.",
+"The Sample Properties in the Clip View Title Bar.",
+"Clicking on the sample properties from Clip View will open the sample file in the browser."
+]
+},
+{
+"file": "p154-2.webp",
+"page": 154,
+"chapter": "Clip View",
+"width": 694,
+"height": 389,
+"captions_on_page": [
+"The Clip Activator Switch.",
+"The Sample Properties in the Clip View Title Bar.",
+"Clicking on the sample properties from Clip View will open the sample file in the browser."
+]
+},
+{
+"file": "p155-1.webp",
+"page": 155,
+"chapter": "Clip View",
+"width": 694,
+"height": 388,
+"captions_on_page": [
+"In vertical Clip View arrangement, these settings are displayed in clip panels.",
+"Clip Panels.",
+"Clip tabs and panels can be accessed using keyboard shortcuts."
+]
+},
+{
+"file": "p155-2.webp",
+"page": 155,
+"chapter": "Clip View",
+"width": 351,
+"height": 578,
+"captions_on_page": [
+"In vertical Clip View arrangement, these settings are displayed in clip panels.",
+"Clip Panels.",
+"Clip tabs and panels can be accessed using keyboard shortcuts."
+]
+},
+{
+"file": "p157-1.webp",
+"page": 157,
+"chapter": "Clip View",
+"width": 1050,
+"height": 452,
+"captions_on_page": [
+"The Clip Zoom/Scroll Area.",
+"The Clip Overview."
+]
+},
+{
+"file": "p157-2.webp",
+"page": 157,
+"chapter": "Clip View",
+"width": 842,
+"height": 217,
+"captions_on_page": [
+"The Clip Zoom/Scroll Area.",
+"The Clip Overview."
+]
+},
+{
+"file": "p158-1.webp",
+"page": 158,
+"chapter": "Clip View",
+"width": 1051,
+"height": 383,
+"captions_on_page": [
+"The Follow Switch.",
+"The Clip Start and End Markers."
+]
+},
+{
+"file": "p159-1.webp",
+"page": 159,
+"chapter": "Clip View",
+"width": 346,
+"height": 383,
+"captions_on_page": [
+"Use the Clip Start and End Controls to Change Clip Length.",
+"The Clip Scrub Area."
+]
+},
+{
+"file": "p159-2.webp",
+"page": 159,
+"chapter": "Clip View",
+"width": 1066,
+"height": 454,
+"captions_on_page": [
+"Use the Clip Start and End Controls to Change Clip Length.",
+"The Clip Scrub Area."
+]
+},
+{
+"file": "p160-1.webp",
+"page": 160,
+"chapter": "Clip View",
+"width": 346,
+"height": 383,
+"captions_on_page": [
+"The Loop Controls."
+]
+},
+{
+"file": "p161-1.webp",
+"page": 161,
+"chapter": "Clip View",
+"width": 926,
+"height": 392,
+"captions_on_page": [
+"Setting the Clip to Run Into a Loop."
+]
+},
+{
+"file": "p162-1.webp",
+"page": 162,
+"chapter": "Clip View",
+"width": 346,
+"height": 383,
+"captions_on_page": [
+"The Clip Time Signature Fields.",
+"The Clip Groove Chooser."
+]
+},
+{
+"file": "p162-2.webp",
+"page": 162,
+"chapter": "Clip View",
+"width": 346,
+"height": 383,
+"captions_on_page": [
+"The Clip Time Signature Fields.",
+"The Clip Groove Chooser."
+]
+},
+{
+"file": "p163-1.webp",
+"page": 163,
+"chapter": "Clip View",
+"width": 697,
+"height": 386,
+"captions_on_page": [
+"The Save Default Clip Button."
+]
+},
+{
+"file": "p164-1.webp",
+"page": 164,
+"chapter": "Clip View",
+"width": 351,
+"height": 390,
+"captions_on_page": [
+"The Scale Controls.",
+"The Bank and Program Controls."
+]
+},
+{
+"file": "p164-2.webp",
+"page": 164,
+"chapter": "Clip View",
+"width": 349,
+"height": 389,
+"captions_on_page": [
+"The Scale Controls.",
+"The Bank and Program Controls."
+]
+},
+{
+"file": "p165-1.webp",
+"page": 165,
+"chapter": "Clip View",
+"width": 347,
+"height": 352,
+"captions_on_page": [
+"The Warp Controls.",
+"Bar’s Tempo control.",
+"The Control Bar’s Tempo Field."
+]
+},
+{
+"file": "p166-1.webp",
+"page": 166,
+"chapter": "Clip View",
+"width": 347,
+"height": 350,
+"captions_on_page": [
+"The Clip Fade Switch.",
+"Automatically Create Short Fades At Clip Edges."
+]
+},
+{
+"file": "p167-1.webp",
+"page": 167,
+"chapter": "Clip View",
+"width": 347,
+"height": 352,
+"captions_on_page": [
+"The RAM Mode Switch."
+]
+},
+{
+"file": "p168-1.webp",
+"page": 168,
+"chapter": "Clip View",
+"width": 347,
+"height": 352,
+"captions_on_page": [
+"The High Quality Switch."
+]
+},
+{
+"file": "p169-1.webp",
+"page": 169,
+"chapter": "Clip View",
+"width": 347,
+"height": 352,
+"captions_on_page": [
+"The Clip Gain and Pitch Controls.",
+"The Gain slider, calibrated in dB, changes the clip gain.",
+"The Launch Sample Editor Button."
+]
+},
+{
+"file": "p169-2.webp",
+"page": 169,
+"chapter": "Clip View",
+"width": 347,
+"height": 352,
+"captions_on_page": [
+"The Clip Gain and Pitch Controls.",
+"The Gain slider, calibrated in dB, changes the clip gain.",
+"The Launch Sample Editor Button."
+]
+},
+{
+"file": "p170-1.webp",
+"page": 170,
+"chapter": "Clip View",
+"width": 347,
+"height": 352,
+"captions_on_page": [
+"The Reverse Button.",
+"Set is saved, new samples remain at the location specified by the Temporary Folder."
+]
+},
+{
+"file": "p172-1.webp",
+"page": 172,
+"chapter": "Clip View",
+"width": 364,
+"height": 391,
+"captions_on_page": [
+"The Notes Tab."
+]
+},
+{
+"file": "p173-1.webp",
+"page": 173,
+"chapter": "Clip View",
+"width": 826,
+"height": 1000,
+"captions_on_page": [
+"Preferences.",
+"The Record Warp Launch Options in Live’s Preferences."
+]
+},
+{
+"file": "p176-1.webp",
+"page": 176,
+"chapter": "Audio Clips, Tempo, and Warping",
+"width": 510,
+"height": 60,
+"captions_on_page": [
+"The Tap Button.",
+"Tap Tempo button once every beat, the tempo of the Live Set will follow your tapping.",
+"The Key Map Mode Switch.",
+"Live receives in a row, the more precisely it will be able to conclude the desired tempo."
+]
+},
+{
+"file": "p176-2.webp",
+"page": 176,
+"chapter": "Audio Clips, Tempo, and Warping",
+"width": 444,
+"height": 68,
+"captions_on_page": [
+"The Tap Button.",
+"Tap Tempo button once every beat, the tempo of the Live Set will follow your tapping.",
+"The Key Map Mode Switch.",
+"Live receives in a row, the more precisely it will be able to conclude the desired tempo."
+]
+},
+{
+"file": "p179-1.webp",
+"page": 179,
+"chapter": "Audio Clips, Tempo, and Warping",
+"width": 1400,
+"height": 269,
+"captions_on_page": [
+"Double-Clicking In the Sample Creates a Warp Marker.",
+"The Follow Switch in the Control Bar."
+]
+},
+{
+"file": "p180-1.webp",
+"page": 180,
+"chapter": "Audio Clips, Tempo, and Warping",
+"width": 1350,
+"height": 407,
+"captions_on_page": [
+"Transient Markers."
+]
+},
+{
+"file": "p181-1.webp",
+"page": 181,
+"chapter": "Audio Clips, Tempo, and Warping",
+"width": 1400,
+"height": 386,
+"captions_on_page": [
+"Warping is, of course, an optional property of clips.",
+"A Two-Bar Loop as It Appears in the Clip View, by Default."
+]
+},
+{
+"file": "p182-1.webp",
+"page": 182,
+"chapter": "Audio Clips, Tempo, and Warping",
+"width": 913,
+"height": 405,
+"captions_on_page": [
+"Setting the Warp Markers for a Poorly Cut Loop."
+]
+},
+{
+"file": "p183-1.webp",
+"page": 183,
+"chapter": "Audio Clips, Tempo, and Warping",
+"width": 1140,
+"height": 403,
+"captions_on_page": [
+"Using Warp Markers to Manipulate the Groove.",
+"Warp/Launch Preferences)."
+]
+},
+{
+"file": "p184-1.webp",
+"page": 184,
+"chapter": "Audio Clips, Tempo, and Warping",
+"width": 1400,
+"height": 493,
+"captions_on_page": [
+"Auto-Warp’s Results in the Clip View.",
+"The Metronome Switch."
+]
+},
+{
+"file": "p185-1.webp",
+"page": 185,
+"chapter": "Audio Clips, Tempo, and Warping",
+"width": 567,
+"height": 401,
+"captions_on_page": [
+"Using the Context Menu to Direct Auto-Warp.",
+"Warping a Selected Portion of a Sample."
+]
+},
+{
+"file": "p185-2.webp",
+"page": 185,
+"chapter": "Audio Clips, Tempo, and Warping",
+"width": 566,
+"height": 229,
+"captions_on_page": [
+"Using the Context Menu to Direct Auto-Warp.",
+"Warping a Selected Portion of a Sample."
+]
+},
+{
+"file": "p187-1.webp",
+"page": 187,
+"chapter": "Audio Clips, Tempo, and Warping",
+"width": 540,
+"height": 324,
+"captions_on_page": [
+"Quantizing Audio Samples."
+]
+},
+{
+"file": "p192-1.webp",
+"page": 192,
+"chapter": "Editing MIDI Notes and Velocities",
+"width": 1374,
+"height": 283,
+"captions_on_page": [
+"The MIDI Note Editor."
+]
+},
+{
+"file": "p193-1.webp",
+"page": 193,
+"chapter": "Editing MIDI Notes and Velocities",
+"width": 570,
+"height": 319,
+"captions_on_page": [
+"These Buttons Toggle the Visibility of Velocity and Chance Editor Lanes.",
+"The Control Bar’s Draw Mode Switch."
+]
+},
+{
+"file": "p193-2.webp",
+"page": 193,
+"chapter": "Editing MIDI Notes and Velocities",
+"width": 442,
+"height": 67,
+"captions_on_page": [
+"These Buttons Toggle the Visibility of Velocity and Chance Editor Lanes.",
+"The Control Bar’s Draw Mode Switch."
+]
+},
+{
+"file": "p194-1.webp",
+"page": 194,
+"chapter": "Editing MIDI Notes and Velocities",
+"width": 943,
+"height": 475,
+"captions_on_page": [
+"Previewing MIDI Notes.",
+"Note Scale Position Is Shown Vertically and Beat-Time Horizontally."
+]
+},
+{
+"file": "p194-2.webp",
+"page": 194,
+"chapter": "Editing MIDI Notes and Velocities",
+"width": 958,
+"height": 479,
+"captions_on_page": [
+"Previewing MIDI Notes.",
+"Note Scale Position Is Shown Vertically and Beat-Time Horizontally."
+]
+},
+{
+"file": "p195-1.webp",
+"page": 195,
+"chapter": "Editing MIDI Notes and Velocities",
+"width": 1036,
+"height": 672,
+"captions_on_page": [
+"MIDI Editor Navigation."
+]
+},
+{
+"file": "p195-2.webp",
+"page": 195,
+"chapter": "Editing MIDI Notes and Velocities",
+"width": 1036,
+"height": 672,
+"captions_on_page": [
+"MIDI Editor Navigation."
+]
+},
+{
+"file": "p195-3.webp",
+"page": 195,
+"chapter": "Editing MIDI Notes and Velocities",
+"width": 1036,
+"height": 672,
+"captions_on_page": [
+"MIDI Editor Navigation."
+]
+},
+{
+"file": "p195-4.webp",
+"page": 195,
+"chapter": "Editing MIDI Notes and Velocities",
+"width": 1036,
+"height": 672,
+"captions_on_page": [
+"MIDI Editor Navigation."
+]
+},
+{
+"file": "p195-5.webp",
+"page": 195,
+"chapter": "Editing MIDI Notes and Velocities",
+"width": 1036,
+"height": 672,
+"captions_on_page": [
+"MIDI Editor Navigation."
+]
+},
+{
+"file": "p195-6.webp",
+"page": 195,
+"chapter": "Editing MIDI Notes and Velocities",
+"width": 1026,
+"height": 630,
+"captions_on_page": [
+"MIDI Editor Navigation."
+]
+},
+{
+"file": "p196-1.webp",
+"page": 196,
+"chapter": "Editing MIDI Notes and Velocities",
+"width": 1093,
+"height": 347,
+"captions_on_page": [
+"The Control Bar’s Follow Switch.",
+"Enlarge the MIDI Editor by Dragging the Window Split Between Session and Clip Views."
+]
+},
+{
+"file": "p198-1.webp",
+"page": 198,
+"chapter": "Editing MIDI Notes and Velocities",
+"width": 1106,
+"height": 392,
+"captions_on_page": [
+"Key Tracks Belonging to the Selected Scale Are Highlighted.",
+"Setting a Preference for Spelling a Clip’s Notes."
+]
+},
+{
+"file": "p198-2.webp",
+"page": 198,
+"chapter": "Editing MIDI Notes and Velocities",
+"width": 575,
+"height": 351,
+"captions_on_page": [
+"Key Tracks Belonging to the Selected Scale Are Highlighted.",
+"Setting a Preference for Spelling a Clip’s Notes."
+]
+},
+{
+"file": "p199-1.webp",
+"page": 199,
+"chapter": "Editing MIDI Notes and Velocities",
+"width": 602,
+"height": 202,
+"captions_on_page": [
+"The Fold Button Extracts Key Tracks Containing Notes.",
+"Use the Loop/Region Markers to Select a Specific Region of the Clip to Play."
+]
+},
+{
+"file": "p199-2.webp",
+"page": 199,
+"chapter": "Editing MIDI Notes and Velocities",
+"width": 1305,
+"height": 456,
+"captions_on_page": [
+"The Fold Button Extracts Key Tracks Containing Notes.",
+"Use the Loop/Region Markers to Select a Specific Region of the Clip to Play."
+]
+},
+{
+"file": "p202-1.webp",
+"page": 202,
+"chapter": "Editing MIDI Notes and Velocities",
+"width": 628,
+"height": 480,
+"captions_on_page": [
+"Changing Note Length."
+]
+},
+{
+"file": "p204-1.webp",
+"page": 204,
+"chapter": "Editing MIDI Notes and Velocities",
+"width": 574,
+"height": 492,
+"captions_on_page": [
+"Live highlights the velocity marker for whichever note your mouse is hovering over.",
+"Changing Note Velocity."
+]
+},
+{
+"file": "p205-1.webp",
+"page": 205,
+"chapter": "Editing MIDI Notes and Velocities",
+"width": 1400,
+"height": 321,
+"captions_on_page": [
+"Drawing Identical Velocities (Left) and a Crescendo (Right)."
+]
+},
+{
+"file": "p206-1.webp",
+"page": 206,
+"chapter": "Editing MIDI Notes and Velocities",
+"width": 344,
+"height": 384,
+"captions_on_page": [
+"The Randomize Button.",
+"The Randomize Range Slider."
+]
+},
+{
+"file": "p206-2.webp",
+"page": 206,
+"chapter": "Editing MIDI Notes and Velocities",
+"width": 344,
+"height": 384,
+"captions_on_page": [
+"The Randomize Button.",
+"The Randomize Range Slider."
+]
+},
+{
+"file": "p207-1.webp",
+"page": 207,
+"chapter": "Editing MIDI Notes and Velocities",
+"width": 344,
+"height": 384,
+"captions_on_page": [
+"The Velocity Range slider can be used in addition to the Randomize button or on its own.",
+"The Velocity Range Slider.",
+"The Velocity Editor Showing Note-Off Velocities."
+]
+},
+{
+"file": "p207-2.webp",
+"page": 207,
+"chapter": "Editing MIDI Notes and Velocities",
+"width": 865,
+"height": 423,
+"captions_on_page": [
+"The Velocity Range slider can be used in addition to the Randomize button or on its own.",
+"The Velocity Range Slider.",
+"The Velocity Editor Showing Note-Off Velocities."
+]
+},
+{
+"file": "p208-1.webp",
+"page": 208,
+"chapter": "Editing MIDI Notes and Velocities",
+"width": 1118,
+"height": 364,
+"captions_on_page": [
+"The Chance Editor."
+]
+},
+{
+"file": "p209-1.webp",
+"page": 209,
+"chapter": "Editing MIDI Notes and Velocities",
+"width": 344,
+"height": 384,
+"captions_on_page": [
+"The Randomize Button.",
+"The Randomize Range Slider."
+]
+},
+{
+"file": "p209-2.webp",
+"page": 209,
+"chapter": "Editing MIDI Notes and Velocities",
+"width": 344,
+"height": 384,
+"captions_on_page": [
+"The Randomize Button.",
+"The Randomize Range Slider."
+]
+},
+{
+"file": "p210-1.webp",
+"page": 210,
+"chapter": "Editing MIDI Notes and Velocities",
+"width": 1290,
+"height": 374,
+"captions_on_page": [
+"MIDI Note Stretch Markers.",
+"When the mouse is between the Note Stretch markers, a “pseudo” stretch marker will appear."
+]
+},
+{
+"file": "p212-1.webp",
+"page": 212,
+"chapter": "Editing MIDI Notes and Velocities",
+"width": 747,
+"height": 387,
+"captions_on_page": [
+"Multi-Clip Loop Bars in the MIDI Note Editor."
+]
+},
+{
+"file": "p213-1.webp",
+"page": 213,
+"chapter": "Editing MIDI Notes and Velocities",
+"width": 738,
+"height": 443,
+"captions_on_page": [
+"The Focus Button Toggles Focus Mode."
+]
+},
+{
+"file": "p217-1.webp",
+"page": 217,
+"chapter": "Editing MPE",
+"width": 996,
+"height": 741,
+"captions_on_page": [
+"MPE Mode in the Link/Tempo/MIDI Preferences for that controller.",
+"Enabling MPE Mode for a MIDI Controller."
+]
+},
+{
+"file": "p218-1.webp",
+"page": 218,
+"chapter": "Editing MPE",
+"width": 1400,
+"height": 321,
+"captions_on_page": [
+"We will look at viewing and editing MPE data in the following sections.",
+"A MIDI Clip with MPE Data in the Clip View."
+]
+},
+{
+"file": "p219-1.webp",
+"page": 219,
+"chapter": "Editing MPE",
+"width": 830,
+"height": 395,
+"captions_on_page": [
+"These Buttons Toggle Visibility of Expression Lanes."
+]
+},
+{
+"file": "p220-1.webp",
+"page": 220,
+"chapter": "Editing MPE",
+"width": 1249,
+"height": 514,
+"captions_on_page": [
+"Select a Note to View Its Expression Envelopes.",
+"A Breakpoint’s Expression Value."
+]
+},
+{
+"file": "p220-2.webp",
+"page": 220,
+"chapter": "Editing MPE",
+"width": 800,
+"height": 332,
+"captions_on_page": [
+"Select a Note to View Its Expression Envelopes.",
+"A Breakpoint’s Expression Value."
+]
+},
+{
+"file": "p221-1.webp",
+"page": 221,
+"chapter": "Editing MPE",
+"width": 781,
+"height": 319,
+"captions_on_page": [
+"To Move all Breakpoints Within the Selection, Drag Any One of Them."
+]
+},
+{
+"file": "p222-1.webp",
+"page": 222,
+"chapter": "Editing MPE",
+"width": 990,
+"height": 371,
+"captions_on_page": [
+"A Curved Envelope Segment."
+]
+},
+{
+"file": "p223-1.webp",
+"page": 223,
+"chapter": "Editing MPE",
+"width": 905,
+"height": 342,
+"captions_on_page": [
+"Pitch, Slide and Pressure expression lanes.",
+"Holding [B] while editing with the mouse temporarily toggles Draw Mode.",
+"Drawing an Envelope."
+]
+},
+{
+"file": "p225-1.webp",
+"page": 225,
+"chapter": "Editing MPE",
+"width": 299,
+"height": 719,
+"captions_on_page": []
+},
+{
+"file": "p226-1.webp",
+"page": 226,
+"chapter": "Recording New Clips",
+"width": 583,
+"height": 834,
+"captions_on_page": [
+"The MPE Settings in the I/O Section."
+]
+},
+{
+"file": "p227-1.webp",
+"page": 227,
+"chapter": "Editing MPE",
+"width": 681,
+"height": 412,
+"captions_on_page": [
+"The MPE Setttings in a Plug-in Context Menu.",
+"The MPE/Multi-channel Settings."
+]
+},
+{
+"file": "p227-2.webp",
+"page": 227,
+"chapter": "Editing MPE",
+"width": 473,
+"height": 306,
+"captions_on_page": [
+"The MPE Setttings in a Plug-in Context Menu.",
+"The MPE/Multi-channel Settings."
+]
+},
+{
+"file": "p229-1.webp",
+"page": 229,
+"chapter": "Converting Audio to MIDI",
+"width": 537,
+"height": 344,
+"captions_on_page": [
+"Context Menu Commands For Converting Audio To MIDI."
+]
+},
+{
+"file": "p230-1.webp",
+"page": 230,
+"chapter": "Converting Audio to MIDI",
+"width": 484,
+"height": 341,
+"captions_on_page": [
+"The Slicing Dialog."
+]
+},
+{
+"file": "p231-1.webp",
+"page": 231,
+"chapter": "Converting Audio to MIDI",
+"width": 1400,
+"height": 540,
+"captions_on_page": [
+"Note: Live will take a few moments to process all of this information.",
+"Rearranging the Sliced MIDI Data.",
+"Rack’s pads onto each other to swap their note mappings."
+]
+},
+{
+"file": "p233-1.webp",
+"page": 233,
+"chapter": "Converting Audio to MIDI",
+"width": 1012,
+"height": 390,
+"captions_on_page": [
+"The Melody to MIDI Instrument Rack."
+]
+},
+{
+"file": "p235-1.webp",
+"page": 235,
+"chapter": "Using Grooves",
+"width": 658,
+"height": 719,
+"captions_on_page": [
+"Groove Files in the Browser."
+]
+},
+{
+"file": "p236-1.webp",
+"page": 236,
+"chapter": "Using Grooves",
+"width": 343,
+"height": 376,
+"captions_on_page": [
+"The Hot-Swap Groove Button.",
+"The Groove Pool Selector Button."
+]
+},
+{
+"file": "p236-2.webp",
+"page": 236,
+"chapter": "Using Grooves",
+"width": 690,
+"height": 158,
+"captions_on_page": [
+"The Hot-Swap Groove Button.",
+"The Groove Pool Selector Button."
+]
+},
+{
+"file": "p237-1.webp",
+"page": 237,
+"chapter": "Using Grooves",
+"width": 943,
+"height": 354,
+"captions_on_page": [
+"The Groove Pool."
+]
+},
+{
+"file": "p238-1.webp",
+"page": 238,
+"chapter": "Using Grooves",
+"width": 343,
+"height": 376,
+"captions_on_page": [
+"The Commit Groove Button.",
+"Markers at the appropriate positions in the clip.",
+"After pressing Commit, the clip’s Groove chooser selection is automatically set to None."
+]
+},
+{
+"file": "p239-1.webp",
+"page": 239,
+"chapter": "Using Grooves",
+"width": 860,
+"height": 479,
+"captions_on_page": [
+"Extract Grooves From Audio or MIDI Clips.",
+"Note: grooves cannot be extracted from clips in the Intro and Lite Editions.",
+"This section presents some tips for getting the most out of grooves."
+]
+},
+{
+"file": "p241-1.webp",
+"page": 241,
+"chapter": "Launching Clips",
+"width": 348,
+"height": 388,
+"captions_on_page": [
+"View clips are not launched but played according to their positions in the Arrangement.",
+"The Clip Launch Settings in a Clip Tab."
+]
+},
+{
+"file": "p242-1.webp",
+"page": 242,
+"chapter": "Launching Clips",
+"width": 352,
+"height": 391,
+"captions_on_page": [
+"The Clip Launch Chooser."
+]
+},
+{
+"file": "p243-1.webp",
+"page": 243,
+"chapter": "Launching Clips",
+"width": 354,
+"height": 391,
+"captions_on_page": [
+"The Legato Mode Switch."
+]
+},
+{
+"file": "p244-1.webp",
+"page": 244,
+"chapter": "Launching Clips",
+"width": 354,
+"height": 391,
+"captions_on_page": [
+"The Clip Quantization Chooser.",
+"The Velocity Amount Field."
+]
+},
+{
+"file": "p244-2.webp",
+"page": 244,
+"chapter": "Launching Clips",
+"width": 354,
+"height": 391,
+"captions_on_page": [
+"The Clip Quantization Chooser.",
+"The Velocity Amount Field."
+]
+},
+{
+"file": "p245-1.webp",
+"page": 245,
+"chapter": "Launching Clips",
+"width": 354,
+"height": 391,
+"captions_on_page": [
+"Using the Nudge Backward/Forward Buttons to Jump Through a Clip.",
+"The Scrub Control in MIDI Map Mode."
+]
+},
+{
+"file": "p245-2.webp",
+"page": 245,
+"chapter": "Launching Clips",
+"width": 354,
+"height": 389,
+"captions_on_page": [
+"Using the Nudge Backward/Forward Buttons to Jump Through a Clip.",
+"The Scrub Control in MIDI Map Mode."
+]
+},
+{
+"file": "p246-1.webp",
+"page": 246,
+"chapter": "Launching Clips",
+"width": 232,
+"height": 196,
+"captions_on_page": [
+"The Follow Action Controls."
+]
+},
+{
+"file": "p248-1.webp",
+"page": 248,
+"chapter": "Launching Clips",
+"width": 314,
+"height": 160,
+"captions_on_page": [
+"Assigning a Follow Action to a Clip Changes Its Clip Launch Button.",
+"Follow Actions circumvent global quantization but not clip quantization.",
+"The Enable Follow Actions Globally button."
+]
+},
+{
+"file": "p248-2.webp",
+"page": 248,
+"chapter": "Launching Clips",
+"width": 214,
+"height": 642,
+"captions_on_page": [
+"Assigning a Follow Action to a Clip Changes Its Clip Launch Button.",
+"Follow Actions circumvent global quantization but not clip quantization.",
+"The Enable Follow Actions Globally button."
+]
+},
+{
+"file": "p249-1.webp",
+"page": 249,
+"chapter": "Launching Clips",
+"width": 574,
+"height": 261,
+"captions_on_page": [
+"Creating a Group With the Two Clips."
+]
+},
+{
+"file": "p249-2.webp",
+"page": 249,
+"chapter": "Launching Clips",
+"width": 573,
+"height": 186,
+"captions_on_page": [
+"Creating a Group With the Two Clips."
+]
+},
+{
+"file": "p253-1.webp",
+"page": 253,
+"chapter": "Routing and I/O",
+"width": 1400,
+"height": 435,
+"captions_on_page": [
+"The Mixer’s In/Out Section and Mixer Section Selectors."
+]
+},
+{
+"file": "p254-1.webp",
+"page": 254,
+"chapter": "Routing and I/O",
+"width": 383,
+"height": 246,
+"captions_on_page": [
+"MIDI inputs and outputs.",
+"Audio and MIDI Track Arm Buttons."
+]
+},
+{
+"file": "p256-1.webp",
+"page": 256,
+"chapter": "Routing and I/O",
+"width": 777,
+"height": 147,
+"captions_on_page": [
+"The MIDI Ports List in the Preferences."
+]
+},
+{
+"file": "p260-1.webp",
+"page": 260,
+"chapter": "Routing and I/O",
+"width": 932,
+"height": 732,
+"captions_on_page": [
+"Two Ways to Route Track A into Track B."
+]
+},
+{
+"file": "p261-1.webp",
+"page": 261,
+"chapter": "Routing and I/O",
+"width": 380,
+"height": 377,
+"captions_on_page": [
+"Tap Points for Track Routing."
+]
+},
+{
+"file": "p262-1.webp",
+"page": 262,
+"chapter": "Routing and I/O",
+"width": 955,
+"height": 732,
+"captions_on_page": [
+"Tap Points for Every Chain in a Track."
+]
+},
+{
+"file": "p263-1.webp",
+"page": 263,
+"chapter": "Routing and I/O",
+"width": 952,
+"height": 378,
+"captions_on_page": [
+"This section presents several internal routing examples in more detail.",
+"An Example Setup for Post-Effects Recording.",
+"Monitor radio buttons are set to Off."
+]
+},
+{
+"file": "p264-1.webp",
+"page": 264,
+"chapter": "Routing and I/O",
+"width": 763,
+"height": 734,
+"captions_on_page": [
+"Recording the Output of a Complex Instrument in Audio Tracks.",
+"Submixing the Individual Drums of a Drum Kit."
+]
+},
+{
+"file": "p264-2.webp",
+"page": 264,
+"chapter": "Routing and I/O",
+"width": 764,
+"height": 380,
+"captions_on_page": [
+"Recording the Output of a Complex Instrument in Audio Tracks.",
+"Submixing the Individual Drums of a Drum Kit."
+]
+},
+{
+"file": "p265-1.webp",
+"page": 265,
+"chapter": "Routing and I/O",
+"width": 763,
+"height": 341,
+"captions_on_page": []
+},
+{
+"file": "p266-1.webp",
+"page": 266,
+"chapter": "Routing and I/O",
+"width": 766,
+"height": 586,
+"captions_on_page": [
+"Feeding an Additional MIDI Track Into an Existing MIDI Track to Reuse its Instrument.",
+"The Instrument Has Been Isolated in a Dedicated Track."
+]
+},
+{
+"file": "p266-2.webp",
+"page": 266,
+"chapter": "Routing and I/O",
+"width": 743,
+"height": 607,
+"captions_on_page": [
+"Feeding an Additional MIDI Track Into an Existing MIDI Track to Reuse its Instrument.",
+"The Instrument Has Been Isolated in a Dedicated Track."
+]
+},
+{
+"file": "p267-1.webp",
+"page": 267,
+"chapter": "Routing and I/O",
+"width": 761,
+"height": 727,
+"captions_on_page": [
+"Using Impulse’s Individual Outs to Separately Process Sample Slots."
+]
+},
+{
+"file": "p268-1.webp",
+"page": 268,
+"chapter": "Routing and I/O",
+"width": 951,
+"height": 670,
+"captions_on_page": [
+"Tracks Feeding MIDI to and Tapping Audio From the Parts of a Multi-Timbral Instrument."
+]
+},
+{
+"file": "p270-1.webp",
+"page": 270,
+"chapter": "Routing and I/O",
+"width": 763,
+"height": 660,
+"captions_on_page": [
+"Routing a Speech Signal Into a Vocoder’s Sidechain Input.",
+"Type chooser to tap the string track’s Post FX signal."
+]
+},
+{
+"file": "p271-1.webp",
+"page": 271,
+"chapter": "Routing and I/O",
+"width": 764,
+"height": 412,
+"captions_on_page": [
+"Using an Auxiliary MIDI Track to Layer Instruments."
+]
+},
+{
+"file": "p273-1.webp",
+"page": 273,
+"chapter": "Mixing",
+"width": 949,
+"height": 591,
+"captions_on_page": [
+"The Arrangement View Mixer."
+]
+},
+{
+"file": "p274-1.webp",
+"page": 274,
+"chapter": "Mixing",
+"width": 762,
+"height": 388,
+"captions_on_page": [
+"The Session View Mixer."
+]
+},
+{
+"file": "p275-1.webp",
+"page": 275,
+"chapter": "Mixing",
+"width": 242,
+"height": 281,
+"captions_on_page": [
+"The Mixer Section Selectors.",
+"The Mixer Controls.",
+"RMS meters give a better impression of perceived loudness."
+]
+},
+{
+"file": "p275-2.webp",
+"page": 275,
+"chapter": "Mixing",
+"width": 1299,
+"height": 304,
+"captions_on_page": [
+"The Mixer Section Selectors.",
+"The Mixer Controls.",
+"RMS meters give a better impression of perceived loudness."
+]
+},
+{
+"file": "p275-3.webp",
+"page": 275,
+"chapter": "Mixing",
+"width": 237,
+"height": 219,
+"captions_on_page": [
+"The Mixer Section Selectors.",
+"The Mixer Controls.",
+"RMS meters give a better impression of perceived loudness."
+]
+},
+{
+"file": "p275-4.webp",
+"page": 275,
+"chapter": "Mixing",
+"width": 576,
+"height": 245,
+"captions_on_page": [
+"The Mixer Section Selectors.",
+"The Mixer Controls.",
+"RMS meters give a better impression of perceived loudness."
+]
+},
+{
+"file": "p276-1.webp",
+"page": 276,
+"chapter": "Mixing",
+"width": 1383,
+"height": 744,
+"captions_on_page": [
+"Solo option in the Record/Warp/Launch Preferences is deactivated.",
+"The Session Mixer’s Possibilities."
+]
+},
+{
+"file": "p278-1.webp",
+"page": 278,
+"chapter": "Mixing",
+"width": 1125,
+"height": 216,
+"captions_on_page": [
+"Tracks are Represented by Track Title Bars.",
+"Tracks are deleted using the Edit menu’s Delete command.",
+"Group Track(s) within a new Group Track."
+]
+},
+{
+"file": "p279-1.webp",
+"page": 279,
+"chapter": "Mixing",
+"width": 803,
+"height": 450,
+"captions_on_page": []
+},
+{
+"file": "p279-2.webp",
+"page": 279,
+"chapter": "Mixing",
+"width": 542,
+"height": 298,
+"captions_on_page": []
+},
+{
+"file": "p280-1.webp",
+"page": 280,
+"chapter": "Mixing",
+"width": 572,
+"height": 254,
+"captions_on_page": [
+"Solo Button of a Group Track Containing a Soloed Nested Group Track."
+]
+},
+{
+"file": "p281-1.webp",
+"page": 281,
+"chapter": "Mixing",
+"width": 644,
+"height": 222,
+"captions_on_page": [
+"The Send Controls and Pre/Post Toggle.",
+"Enable All Sends."
+]
+},
+{
+"file": "p282-1.webp",
+"page": 282,
+"chapter": "Mixing",
+"width": 681,
+"height": 489,
+"captions_on_page": [
+"The Crossfader and Selector.",
+"Choose from Seven Crossfader Curves.",
+"The chart below details the power level and response of each crossfader curve."
+]
+},
+{
+"file": "p284-1.webp",
+"page": 284,
+"chapter": "Mixing",
+"width": 1010,
+"height": 318,
+"captions_on_page": [
+"Crossfade Assign Buttons."
+]
+},
+{
+"file": "p285-1.webp",
+"page": 285,
+"chapter": "Mixing",
+"width": 517,
+"height": 556,
+"captions_on_page": [
+"The Cueing-Related Session Mixer Controls."
+]
+},
+{
+"file": "p285-2.webp",
+"page": 285,
+"chapter": "Mixing",
+"width": 453,
+"height": 465,
+"captions_on_page": [
+"The Cueing-Related Session Mixer Controls."
+]
+},
+{
+"file": "p286-1.webp",
+"page": 286,
+"chapter": "Mixing",
+"width": 1388,
+"height": 208,
+"captions_on_page": [
+"The Track Delay Control and Selector."
+]
+},
+{
+"file": "p288-1.webp",
+"page": 288,
+"chapter": "Recording New Clips",
+"width": 1008,
+"height": 319,
+"captions_on_page": [
+"The Track In/Out Section in the Arrangement (Left) and Session View (Right).",
+"Track Arm Buttons in the Arrangement (Left) and Session (Right) Mixers."
+]
+},
+{
+"file": "p289-1.webp",
+"page": 289,
+"chapter": "Recording New Clips",
+"width": 1325,
+"height": 450,
+"captions_on_page": [
+"Device View.",
+"Recording Into the Arrangement."
+]
+},
+{
+"file": "p291-1.webp",
+"page": 291,
+"chapter": "Recording New Clips",
+"width": 1034,
+"height": 688,
+"captions_on_page": [
+"Recording Into the Session View.",
+"Record button again."
+]
+},
+{
+"file": "p292-1.webp",
+"page": 292,
+"chapter": "Recording New Clips",
+"width": 1174,
+"height": 70,
+"captions_on_page": [
+"The New Button Appears in the Control Bar When Key Map Mode Is Active."
+]
+},
+{
+"file": "p293-1.webp",
+"page": 293,
+"chapter": "Recording New Clips",
+"width": 924,
+"height": 772,
+"captions_on_page": [
+"Record button will toggle between playback and overdub.",
+"Step Recording in the MIDI Editor."
+]
+},
+{
+"file": "p296-1.webp",
+"page": 296,
+"chapter": "Recording New Clips",
+"width": 407,
+"height": 69,
+"captions_on_page": [
+"The Count-In is Displayed in the Control Bar."
+]
+},
+{
+"file": "p298-1.webp",
+"page": 298,
+"chapter": "Recording New Clips",
+"width": 578,
+"height": 339,
+"captions_on_page": [
+"The Scene Up/Down Buttons.",
+"A Track Launch Button.",
+"The Step Recording Arrows."
+]
+},
+{
+"file": "p298-2.webp",
+"page": 298,
+"chapter": "Recording New Clips",
+"width": 578,
+"height": 339,
+"captions_on_page": [
+"The Scene Up/Down Buttons.",
+"A Track Launch Button.",
+"The Step Recording Arrows."
+]
+},
+{
+"file": "p298-3.webp",
+"page": 298,
+"chapter": "Recording New Clips",
+"width": 531,
+"height": 242,
+"captions_on_page": [
+"The Scene Up/Down Buttons.",
+"A Track Launch Button.",
+"The Step Recording Arrows."
+]
+},
+{
+"file": "p302-1.webp",
+"page": 302,
+"chapter": "Comping",
+"width": 1097,
+"height": 455,
+"captions_on_page": [
+"A Track’s Main Lane (Above) and Its Take Lanes (Below)."
+]
+},
+{
+"file": "p302-2.webp",
+"page": 302,
+"chapter": "Comping",
+"width": 1097,
+"height": 455,
+"captions_on_page": [
+"A Track’s Main Lane (Above) and Its Take Lanes (Below)."
+]
+},
+{
+"file": "p304-1.webp",
+"page": 304,
+"chapter": "Comping",
+"width": 580,
+"height": 150,
+"captions_on_page": [
+"The Audition Take Lane Button."
+]
+},
+{
+"file": "p305-1.webp",
+"page": 305,
+"chapter": "Comping",
+"width": 1042,
+"height": 529,
+"captions_on_page": [
+"Replacing Part of a Clip with Content from a Different Take Lane."
+]
+},
+{
+"file": "p306-1.webp",
+"page": 306,
+"chapter": "Comping",
+"width": 1076,
+"height": 450,
+"captions_on_page": [
+"A Clip’s Source Material Highlighted in a Take Lane.",
+"Drag to Adjust the Split Point Between Two Adjacent Parts of a Comp."
+]
+},
+{
+"file": "p306-2.webp",
+"page": 306,
+"chapter": "Comping",
+"width": 1011,
+"height": 448,
+"captions_on_page": [
+"A Clip’s Source Material Highlighted in a Take Lane.",
+"Drag to Adjust the Split Point Between Two Adjacent Parts of a Comp."
+]
+},
+{
+"file": "p308-1.webp",
+"page": 308,
+"chapter": "Working with Instruments and Effects",
+"width": 215,
+"height": 400,
+"captions_on_page": [
+"Devices Can Be Folded."
+]
+},
+{
+"file": "p311-1.webp",
+"page": 311,
+"chapter": "Working with Instruments and Effects",
+"width": 675,
+"height": 151,
+"captions_on_page": [
+"Device Activator Switches.",
+"The Level Meters Between Devices in a Chain."
+]
+},
+{
+"file": "p311-2.webp",
+"page": 311,
+"chapter": "Working with Instruments and Effects",
+"width": 1254,
+"height": 392,
+"captions_on_page": [
+"Device Activator Switches.",
+"The Level Meters Between Devices in a Chain."
+]
+},
+{
+"file": "p312-1.webp",
+"page": 312,
+"chapter": "Working with Instruments and Effects",
+"width": 786,
+"height": 698,
+"captions_on_page": [
+"Presets in the Browser."
+]
+},
+{
+"file": "p313-1.webp",
+"page": 313,
+"chapter": "Working with Instruments and Effects",
+"width": 908,
+"height": 145,
+"captions_on_page": [
+"The Hot-Swap Presets Button.",
+"You can create and save any number of your own presets in the browser’s User Library.",
+"The Save Preset Button."
+]
+},
+{
+"file": "p313-2.webp",
+"page": 313,
+"chapter": "Working with Instruments and Effects",
+"width": 908,
+"height": 145,
+"captions_on_page": [
+"The Hot-Swap Presets Button.",
+"You can create and save any number of your own presets in the browser’s User Library.",
+"The Save Preset Button."
+]
+},
+{
+"file": "p314-1.webp",
+"page": 314,
+"chapter": "Working with Instruments and Effects",
+"width": 625,
+"height": 565,
+"captions_on_page": [
+"The Default Presets folders in the User Library."
+]
+},
+{
+"file": "p319-1.webp",
+"page": 319,
+"chapter": "Working with Instruments and Effects",
+"width": 768,
+"height": 392,
+"captions_on_page": [
+"A VST Plug-In in the Device View.",
+"The Plug-In Unfold Button."
+]
+},
+{
+"file": "p319-2.webp",
+"page": 319,
+"chapter": "Working with Instruments and Effects",
+"width": 513,
+"height": 212,
+"captions_on_page": [
+"A VST Plug-In in the Device View.",
+"The Plug-In Unfold Button."
+]
+},
+{
+"file": "p320-1.webp",
+"page": 320,
+"chapter": "Working with Instruments and Effects",
+"width": 513,
+"height": 212,
+"captions_on_page": [
+"The Show/Hide Plug-In Window Button."
+]
+},
+{
+"file": "p321-1.webp",
+"page": 321,
+"chapter": "Working with Instruments and Effects",
+"width": 498,
+"height": 392,
+"captions_on_page": [
+"The Configure Button.",
+"Macro mappings, Live will warn you before proceeding."
+]
+},
+{
+"file": "p323-1.webp",
+"page": 323,
+"chapter": "Working with Instruments and Effects",
+"width": 488,
+"height": 388,
+"captions_on_page": [
+"Plug-In Sidechain Parameters.",
+"Sources section."
+]
+},
+{
+"file": "p324-1.webp",
+"page": 324,
+"chapter": "Working with Instruments and Effects",
+"width": 638,
+"height": 265,
+"captions_on_page": [
+"Setting up VST Plug-In Sources for Windows.",
+"Setting up VST Plug-In Sources for macOS."
+]
+},
+{
+"file": "p324-2.webp",
+"page": 324,
+"chapter": "Working with Instruments and Effects",
+"width": 529,
+"height": 459,
+"captions_on_page": [
+"Setting up VST Plug-In Sources for Windows.",
+"Setting up VST Plug-In Sources for macOS."
+]
+},
+{
+"file": "p326-1.webp",
+"page": 326,
+"chapter": "Working with Instruments and Effects",
+"width": 366,
+"height": 120,
+"captions_on_page": [
+"The VST Plug-In Preset Chooser.",
+"Renaming a VST Plug-In Preset.",
+"The VST Load Preset or Bank Button (Left) and Save Preset or Bank Button (Right)."
+]
+},
+{
+"file": "p326-2.webp",
+"page": 326,
+"chapter": "Working with Instruments and Effects",
+"width": 366,
+"height": 120,
+"captions_on_page": [
+"The VST Plug-In Preset Chooser.",
+"Renaming a VST Plug-In Preset.",
+"The VST Load Preset or Bank Button (Left) and Save Preset or Bank Button (Right)."
+]
+},
+{
+"file": "p326-3.webp",
+"page": 326,
+"chapter": "Working with Instruments and Effects",
+"width": 366,
+"height": 120,
+"captions_on_page": [
+"The VST Plug-In Preset Chooser.",
+"Renaming a VST Plug-In Preset.",
+"The VST Load Preset or Bank Button (Left) and Save Preset or Bank Button (Right)."
+]
+},
+{
+"file": "p327-1.webp",
+"page": 327,
+"chapter": "Working with Instruments and Effects",
+"width": 1041,
+"height": 391,
+"captions_on_page": [
+"An Audio Units Plug-In.",
+"Units plug-ins so that they appear in Live’s browser.",
+"Note that you can always turn this option off later if you decide not to use Audio Units.",
+"Activating Audio Units Plug-Ins."
+]
+},
+{
+"file": "p327-2.webp",
+"page": 327,
+"chapter": "Working with Instruments and Effects",
+"width": 489,
+"height": 181,
+"captions_on_page": [
+"An Audio Units Plug-In.",
+"Units plug-ins so that they appear in Live’s browser.",
+"Note that you can always turn this option off later if you decide not to use Audio Units.",
+"Activating Audio Units Plug-Ins."
+]
+},
+{
+"file": "p328-1.webp",
+"page": 328,
+"chapter": "Working with Instruments and Effects",
+"width": 512,
+"height": 200,
+"captions_on_page": [
+"Opening an Audio Units Plug-In Window."
+]
+},
+{
+"file": "p331-1.webp",
+"page": 331,
+"chapter": "Instrument, Drum and Effect Racks",
+"width": 1400,
+"height": 274,
+"captions_on_page": [
+"Inside An Audio Effect Rack."
+]
+},
+{
+"file": "p333-1.webp",
+"page": 333,
+"chapter": "Instrument, Drum and Effect Racks",
+"width": 485,
+"height": 392,
+"captions_on_page": [
+"The Macro Controls.",
+"One unique property of Racks are their Macro Controls."
+]
+},
+{
+"file": "p334-1.webp",
+"page": 334,
+"chapter": "Instrument, Drum and Effect Racks",
+"width": 1400,
+"height": 365,
+"captions_on_page": [
+"Components of an Effect Rack."
+]
+},
+{
+"file": "p334-2.webp",
+"page": 334,
+"chapter": "Instrument, Drum and Effect Racks",
+"width": 1400,
+"height": 273,
+"captions_on_page": [
+"Components of an Effect Rack."
+]
+},
+{
+"file": "p335-1.webp",
+"page": 335,
+"chapter": "Instrument, Drum and Effect Racks",
+"width": 1400,
+"height": 247,
+"captions_on_page": [
+"Components of a Drum Rack.",
+"Rack is being used."
+]
+},
+{
+"file": "p336-1.webp",
+"page": 336,
+"chapter": "Instrument, Drum and Effect Racks",
+"width": 1343,
+"height": 484,
+"captions_on_page": [
+"Navigate Racks Quickly Via a Context Menu.",
+"The Chain List in an Audio Effect Rack."
+]
+},
+{
+"file": "p336-2.webp",
+"page": 336,
+"chapter": "Instrument, Drum and Effect Racks",
+"width": 578,
+"height": 390,
+"captions_on_page": [
+"Navigate Racks Quickly Via a Context Menu.",
+"The Chain List in an Audio Effect Rack."
+]
+},
+{
+"file": "p337-1.webp",
+"page": 337,
+"chapter": "Instrument, Drum and Effect Racks",
+"width": 578,
+"height": 390,
+"captions_on_page": [
+"Auto Select in an Audio Effect Rack."
+]
+},
+{
+"file": "p339-1.webp",
+"page": 339,
+"chapter": "Instrument, Drum and Effect Racks",
+"width": 1400,
+"height": 354,
+"captions_on_page": [
+"The Key Zone Editor.",
+"Key zone fade ranges attenuate the velocities of notes entering a chain."
+]
+},
+{
+"file": "p340-1.webp",
+"page": 340,
+"chapter": "Instrument, Drum and Effect Racks",
+"width": 1400,
+"height": 358,
+"captions_on_page": [
+"The Velocity Zone Editor.",
+"Velocity zone fade ranges attenuate the velocities of notes entering a chain.",
+"The Chain Select Editor."
+]
+},
+{
+"file": "p340-2.webp",
+"page": 340,
+"chapter": "Instrument, Drum and Effect Racks",
+"width": 1400,
+"height": 358,
+"captions_on_page": [
+"The Velocity Zone Editor.",
+"Velocity zone fade ranges attenuate the velocities of notes entering a chain.",
+"The Chain Select Editor."
+]
+},
+{
+"file": "p341-1.webp",
+"page": 341,
+"chapter": "Instrument, Drum and Effect Racks",
+"width": 906,
+"height": 359,
+"captions_on_page": [
+"Using Chain Select Zones to Create Effects Presets."
+]
+},
+{
+"file": "p342-1.webp",
+"page": 342,
+"chapter": "Instrument, Drum and Effect Racks",
+"width": 1262,
+"height": 364,
+"captions_on_page": [
+"Crossfading Between Effects Presets Using Chain Select Zones."
+]
+},
+{
+"file": "p343-1.webp",
+"page": 343,
+"chapter": "Instrument, Drum and Effect Racks",
+"width": 1297,
+"height": 334,
+"captions_on_page": [
+"The Chain List in a Drum Rack.",
+"Send, and Return sections, and the Auto Select button."
+]
+},
+{
+"file": "p344-1.webp",
+"page": 344,
+"chapter": "Instrument, Drum and Effect Racks",
+"width": 578,
+"height": 466,
+"captions_on_page": [
+"Drum Rack itself and the last selected pad."
+]
+},
+{
+"file": "p346-1.webp",
+"page": 346,
+"chapter": "Instrument, Drum and Effect Racks",
+"width": 568,
+"height": 404,
+"captions_on_page": [
+"Macro Controls is saved in the Live Set.",
+"These Selector Buttons Set the Amount of Visible Macro Controls.",
+"Making Macro Control Assignments in Map Mode.",
+"Once you have set up your ideal mapping, the rest of the Rack can be hidden away."
+]
+},
+{
+"file": "p346-2.webp",
+"page": 346,
+"chapter": "Instrument, Drum and Effect Racks",
+"width": 1255,
+"height": 392,
+"captions_on_page": [
+"Macro Controls is saved in the Live Set.",
+"These Selector Buttons Set the Amount of Visible Macro Controls.",
+"Making Macro Control Assignments in Map Mode.",
+"Once you have set up your ideal mapping, the rest of the Rack can be hidden away."
+]
+},
+{
+"file": "p348-1.webp",
+"page": 348,
+"chapter": "Instrument, Drum and Effect Racks",
+"width": 568,
+"height": 404,
+"captions_on_page": [
+"This Button Randomizes Macro Controls."
+]
+},
+{
+"file": "p349-1.webp",
+"page": 349,
+"chapter": "Instrument, Drum and Effect Racks",
+"width": 447,
+"height": 404,
+"captions_on_page": [
+"Macro Control Variations.",
+"This Selector Button Opens the Macro Control Variations View.",
+"Edit menu or the [right-click](Win) / [CTRL-click](Mac) context menu."
+]
+},
+{
+"file": "p349-2.webp",
+"page": 349,
+"chapter": "Instrument, Drum and Effect Racks",
+"width": 568,
+"height": 404,
+"captions_on_page": [
+"Macro Control Variations.",
+"This Selector Button Opens the Macro Control Variations View.",
+"Edit menu or the [right-click](Win) / [CTRL-click](Mac) context menu."
+]
+},
+{
+"file": "p350-1.webp",
+"page": 350,
+"chapter": "Instrument, Drum and Effect Racks",
+"width": 1182,
+"height": 727,
+"captions_on_page": [
+"Mixing Rack Chains in the Session View."
+]
+},
+{
+"file": "p351-1.webp",
+"page": 351,
+"chapter": "Instrument, Drum and Effect Racks",
+"width": 1400,
+"height": 304,
+"captions_on_page": [
+"Extracting Drum Chains in the Mixer Extracts MIDI Data."
+]
+},
+{
+"file": "p354-1.webp",
+"page": 354,
+"chapter": "Automation and Editing Envelopes",
+"width": 956,
+"height": 392,
+"captions_on_page": [
+"Volume, Pan and the Track Activator Switch Have Been Automated."
+]
+},
+{
+"file": "p355-1.webp",
+"page": 355,
+"chapter": "Automation and Editing Envelopes",
+"width": 400,
+"height": 756,
+"captions_on_page": [
+"Controls for Recording Session Automation.",
+"Record/Warp/Launch Preferences."
+]
+},
+{
+"file": "p356-1.webp",
+"page": 356,
+"chapter": "Automation and Editing Envelopes",
+"width": 904,
+"height": 214,
+"captions_on_page": [
+"The Session Automation Recording Preference."
+]
+},
+{
+"file": "p357-1.webp",
+"page": 357,
+"chapter": "Automation and Editing Envelopes",
+"width": 641,
+"height": 61,
+"captions_on_page": [
+"Re-Enable Automation button lights up.",
+"The Re-Enable Automation Button."
+]
+},
+{
+"file": "p358-1.webp",
+"page": 358,
+"chapter": "Automation and Editing Envelopes",
+"width": 1080,
+"height": 482,
+"captions_on_page": [
+"Automation Envelopes in the Arrangement View."
+]
+},
+{
+"file": "p360-1.webp",
+"page": 360,
+"chapter": "Automation and Editing Envelopes",
+"width": 651,
+"height": 280,
+"captions_on_page": [
+"Drawing an Envelope."
+]
+},
+{
+"file": "p361-1.webp",
+"page": 361,
+"chapter": "Automation and Editing Envelopes",
+"width": 619,
+"height": 252,
+"captions_on_page": [
+"A Breakpoint’s Automation Value.",
+"To Move all Breakpoints Within the Selection, Drag Any One of Them."
+]
+},
+{
+"file": "p361-2.webp",
+"page": 361,
+"chapter": "Automation and Editing Envelopes",
+"width": 637,
+"height": 254,
+"captions_on_page": [
+"A Breakpoint’s Automation Value.",
+"To Move all Breakpoints Within the Selection, Drag Any One of Them."
+]
+},
+{
+"file": "p362-1.webp",
+"page": 362,
+"chapter": "Automation and Editing Envelopes",
+"width": 730,
+"height": 265,
+"captions_on_page": [
+"A Curved Envelope Segment.",
+"The Handles Allow You to Stretch or Skew Envelopes."
+]
+},
+{
+"file": "p362-2.webp",
+"page": 362,
+"chapter": "Automation and Editing Envelopes",
+"width": 844,
+"height": 286,
+"captions_on_page": [
+"A Curved Envelope Segment.",
+"The Handles Allow You to Stretch or Skew Envelopes."
+]
+},
+{
+"file": "p363-1.webp",
+"page": 363,
+"chapter": "Automation and Editing Envelopes",
+"width": 844,
+"height": 284,
+"captions_on_page": [
+"While Dragging a Handle, A Rectangle Indicates the Amount of Stretching or Skewing."
+]
+},
+{
+"file": "p364-1.webp",
+"page": 364,
+"chapter": "Automation and Editing Envelopes",
+"width": 652,
+"height": 284,
+"captions_on_page": [
+"The Simplify Envelope Command Removes Unnecessary Breakpoints.",
+"Automation Shapes Inserted into an Envelope."
+]
+},
+{
+"file": "p364-2.webp",
+"page": 364,
+"chapter": "Automation and Editing Envelopes",
+"width": 652,
+"height": 284,
+"captions_on_page": [
+"The Simplify Envelope Command Removes Unnecessary Breakpoints.",
+"Automation Shapes Inserted into an Envelope."
+]
+},
+{
+"file": "p364-3.webp",
+"page": 364,
+"chapter": "Automation and Editing Envelopes",
+"width": 818,
+"height": 288,
+"captions_on_page": [
+"The Simplify Envelope Command Removes Unnecessary Breakpoints.",
+"Automation Shapes Inserted into an Envelope."
+]
+},
+{
+"file": "p365-1.webp",
+"page": 365,
+"chapter": "Automation and Editing Envelopes",
+"width": 841,
+"height": 316,
+"captions_on_page": [
+"The Two Rows Contain Different Types of Automation Shapes.",
+"Lock Envelopes switch does just that.",
+"You can also choose to lock envelopes from the Options menu.",
+"The Lock Envelopes Switch."
+]
+},
+{
+"file": "p365-2.webp",
+"page": 365,
+"chapter": "Automation and Editing Envelopes",
+"width": 924,
+"height": 334,
+"captions_on_page": [
+"The Two Rows Contain Different Types of Automation Shapes.",
+"Lock Envelopes switch does just that.",
+"You can also choose to lock envelopes from the Options menu.",
+"The Lock Envelopes Switch."
+]
+},
+{
+"file": "p366-1.webp",
+"page": 366,
+"chapter": "Automation and Editing Envelopes",
+"width": 1066,
+"height": 294,
+"captions_on_page": [
+"The Tempo Envelope."
+]
+},
+{
+"file": "p367-1.webp",
+"page": 367,
+"chapter": "Clip Envelopes",
+"width": 1019,
+"height": 384,
+"captions_on_page": [
+"The Clip View’s Envelopes Tab."
+]
+},
+{
+"file": "p369-1.webp",
+"page": 369,
+"chapter": "Clip Envelopes",
+"width": 986,
+"height": 384,
+"captions_on_page": [
+"The Transposition Envelope with Steps (Top) and Ramps (Bottom)."
+]
+},
+{
+"file": "p369-2.webp",
+"page": 369,
+"chapter": "Clip Envelopes",
+"width": 986,
+"height": 384,
+"captions_on_page": [
+"The Transposition Envelope with Steps (Top) and Ramps (Bottom)."
+]
+},
+{
+"file": "p370-1.webp",
+"page": 370,
+"chapter": "Clip Envelopes",
+"width": 653,
+"height": 243,
+"captions_on_page": [
+"Texture Mode, or choose a smaller value for the Granulation Resolution in Beats Mode.",
+"Imposing a Volume Envelope on a Sample."
+]
+},
+{
+"file": "p370-2.webp",
+"page": 370,
+"chapter": "Clip Envelopes",
+"width": 653,
+"height": 243,
+"captions_on_page": [
+"Texture Mode, or choose a smaller value for the Granulation Resolution in Beats Mode.",
+"Imposing a Volume Envelope on a Sample."
+]
+},
+{
+"file": "p371-1.webp",
+"page": 371,
+"chapter": "Clip Envelopes",
+"width": 1038,
+"height": 392,
+"captions_on_page": [
+"Repeating Steps and Slowing Time with the Sample Offset Envelope."
+]
+},
+{
+"file": "p373-1.webp",
+"page": 373,
+"chapter": "Clip Envelopes",
+"width": 346,
+"height": 391,
+"captions_on_page": [
+"Toggle Between Editing Automation and Modulation Envelopes.",
+"LEDs Indicate Existing Automation and Modulation Envelopes for the Selected Parameter."
+]
+},
+{
+"file": "p373-2.webp",
+"page": 373,
+"chapter": "Clip Envelopes",
+"width": 346,
+"height": 392,
+"captions_on_page": [
+"Toggle Between Editing Automation and Modulation Envelopes.",
+"LEDs Indicate Existing Automation and Modulation Envelopes for the Selected Parameter."
+]
+},
+{
+"file": "p374-1.webp",
+"page": 374,
+"chapter": "Clip Envelopes",
+"width": 488,
+"height": 379,
+"captions_on_page": []
+},
+{
+"file": "p374-2.webp",
+"page": 374,
+"chapter": "Clip Envelopes",
+"width": 420,
+"height": 381,
+"captions_on_page": []
+},
+{
+"file": "p375-1.webp",
+"page": 375,
+"chapter": "Clip Envelopes",
+"width": 1060,
+"height": 392,
+"captions_on_page": [
+"A MIDI Controller Clip Envelope."
+]
+},
+{
+"file": "p376-1.webp",
+"page": 376,
+"chapter": "Clip Envelopes",
+"width": 1216,
+"height": 384,
+"captions_on_page": [
+"Using a Clip Envelope to Create a Fade-Out Over Several Repetitions of a Loop."
+]
+},
+{
+"file": "p377-1.webp",
+"page": 377,
+"chapter": "Clip Envelopes",
+"width": 716,
+"height": 285,
+"captions_on_page": [
+"Now, as you play the clip, you can hear the one-bar loop fading out over eight bars.",
+"The Sample (Left) and Envelope (Right) Start Marker."
+]
+},
+{
+"file": "p377-2.webp",
+"page": 377,
+"chapter": "Clip Envelopes",
+"width": 716,
+"height": 285,
+"captions_on_page": [
+"Now, as you play the clip, you can hear the one-bar loop fading out over eight bars.",
+"The Sample (Left) and Envelope (Right) Start Marker."
+]
+},
+{
+"file": "p379-1.webp",
+"page": 379,
+"chapter": "Clip Envelopes",
+"width": 1024,
+"height": 384,
+"captions_on_page": [
+"Clip Envelopes and Warp Markers Can Be Adjusted Together."
+]
+},
+{
+"file": "p382-1.webp",
+"page": 382,
+"chapter": "Working with Video",
+"width": 978,
+"height": 401,
+"captions_on_page": [
+"A Video Clip in the Arrangement View.",
+"Reverse and Crop."
+]
+},
+{
+"file": "p383-1.webp",
+"page": 383,
+"chapter": "Working with Video",
+"width": 1400,
+"height": 552,
+"captions_on_page": [
+"The Video Window in the Arrangement View."
+]
+},
+{
+"file": "p384-1.webp",
+"page": 384,
+"chapter": "Working with Video",
+"width": 942,
+"height": 392,
+"captions_on_page": [
+"Setting a Video Clip as Tempo Leader."
+]
+},
+{
+"file": "p386-1.webp",
+"page": 386,
+"chapter": "Working with Video",
+"width": 717,
+"height": 366,
+"captions_on_page": [
+"A Video Clip at the Start of the Arrangement.",
+"Dragging the Start Marker behind the Pre-Roll."
+]
+},
+{
+"file": "p386-2.webp",
+"page": 386,
+"chapter": "Working with Video",
+"width": 601,
+"height": 392,
+"captions_on_page": [
+"A Video Clip at the Start of the Arrangement.",
+"Dragging the Start Marker behind the Pre-Roll."
+]
+},
+{
+"file": "p387-1.webp",
+"page": 387,
+"chapter": "Working with Video",
+"width": 774,
+"height": 365,
+"captions_on_page": [
+"The Video Clip and the Final Clip of Music.",
+"The Video Clip with Pre-Roll Restored."
+]
+},
+{
+"file": "p387-2.webp",
+"page": 387,
+"chapter": "Working with Video",
+"width": 778,
+"height": 367,
+"captions_on_page": [
+"The Video Clip and the Final Clip of Music.",
+"The Video Clip with Pre-Roll Restored."
+]
+},
+{
+"file": "p389-1.webp",
+"page": 389,
+"chapter": "Live Audio Effect Reference",
+"width": 634,
+"height": 376,
+"captions_on_page": [
+"The Amp Effect."
+]
+},
+{
+"file": "p392-1.webp",
+"page": 392,
+"chapter": "Live Audio Effect Reference",
+"width": 804,
+"height": 376,
+"captions_on_page": [
+"The Auto Filter Effect."
+]
+},
+{
+"file": "p395-1.webp",
+"page": 395,
+"chapter": "Live Audio Effect Reference",
+"width": 408,
+"height": 376,
+"captions_on_page": [
+"The Auto Pan Effect."
+]
+},
+{
+"file": "p396-1.webp",
+"page": 396,
+"chapter": "Live Audio Effect Reference",
+"width": 674,
+"height": 376,
+"captions_on_page": [
+"The Offset control shifts the start point of each LFO along its waveform.",
+"The device’s influence on incoming signals is set with the Amount control.",
+"The Beat Repeat Effect."
+]
+},
+{
+"file": "p398-1.webp",
+"page": 398,
+"chapter": "Live Audio Effect Reference",
+"width": 182,
+"height": 376,
+"captions_on_page": [
+"The Cabinet Effect."
+]
+},
+{
+"file": "p400-1.webp",
+"page": 400,
+"chapter": "Live Audio Effect Reference",
+"width": 494,
+"height": 376,
+"captions_on_page": [
+"The Channel EQ Effect.",
+"EQ, fine-tuned to provide musical results for a variety of audio material."
+]
+},
+{
+"file": "p402-1.webp",
+"page": 402,
+"chapter": "Live Audio Effect Reference",
+"width": 604,
+"height": 376,
+"captions_on_page": [
+"The Chorus Effect."
+]
+},
+{
+"file": "p403-1.webp",
+"page": 403,
+"chapter": "Live Audio Effect Reference",
+"width": 490,
+"height": 376,
+"captions_on_page": [
+"The Chorus-Ensemble Effect."
+]
+},
+{
+"file": "p405-1.webp",
+"page": 405,
+"chapter": "Live Audio Effect Reference",
+"width": 742,
+"height": 376,
+"captions_on_page": [
+"The Compressor Effect.",
+"A compressor’s two most important parameters are the Threshold and the compression Ratio."
+]
+},
+{
+"file": "p407-1.webp",
+"page": 407,
+"chapter": "Live Audio Effect Reference",
+"width": 480,
+"height": 376,
+"captions_on_page": [
+"Compressor’s Transfer Curve."
+]
+},
+{
+"file": "p407-2.webp",
+"page": 407,
+"chapter": "Live Audio Effect Reference",
+"width": 742,
+"height": 376,
+"captions_on_page": [
+"Compressor’s Transfer Curve."
+]
+},
+{
+"file": "p409-1.webp",
+"page": 409,
+"chapter": "Live Audio Effect Reference",
+"width": 1080,
+"height": 376,
+"captions_on_page": [
+"The Compressor Device With Sidechain Section."
+]
+},
+{
+"file": "p412-1.webp",
+"page": 412,
+"chapter": "Live Audio Effect Reference",
+"width": 1006,
+"height": 376,
+"captions_on_page": [
+"The Corpus Effect.",
+"Corpus’s Resonator Parameters."
+]
+},
+{
+"file": "p412-2.webp",
+"page": 412,
+"chapter": "Live Audio Effect Reference",
+"width": 1006,
+"height": 376,
+"captions_on_page": [
+"The Corpus Effect.",
+"Corpus’s Resonator Parameters."
+]
+},
+{
+"file": "p415-1.webp",
+"page": 415,
+"chapter": "Live Audio Effect Reference",
+"width": 1006,
+"height": 376,
+"captions_on_page": [
+"Corpus’s LFO Section.",
+"Amount control sets how much the LFO affects the frequency.",
+"Spin amount."
+]
+},
+{
+"file": "p416-1.webp",
+"page": 416,
+"chapter": "Live Audio Effect Reference",
+"width": 188,
+"height": 341,
+"captions_on_page": [
+"The LFO Stereo Mode Icons.",
+"Corpus’s Filter Section."
+]
+},
+{
+"file": "p416-2.webp",
+"page": 416,
+"chapter": "Live Audio Effect Reference",
+"width": 1002,
+"height": 373,
+"captions_on_page": [
+"The LFO Stereo Mode Icons.",
+"Corpus’s Filter Section."
+]
+},
+{
+"file": "p417-1.webp",
+"page": 417,
+"chapter": "Live Audio Effect Reference",
+"width": 1002,
+"height": 373,
+"captions_on_page": [
+"Corpus’s Global Parameters.",
+"Corpus’s Sidechain Parameters."
+]
+},
+{
+"file": "p417-2.webp",
+"page": 417,
+"chapter": "Live Audio Effect Reference",
+"width": 1183,
+"height": 376,
+"captions_on_page": [
+"Corpus’s Global Parameters.",
+"Corpus’s Sidechain Parameters."
+]
+},
+{
+"file": "p418-1.webp",
+"page": 418,
+"chapter": "Live Audio Effect Reference",
+"width": 742,
+"height": 376,
+"captions_on_page": [
+"The Delay Effect."
+]
+},
+{
+"file": "p421-1.webp",
+"page": 421,
+"chapter": "Live Audio Effect Reference",
+"width": 536,
+"height": 376,
+"captions_on_page": [
+"The Drum Buss Effect."
+]
+},
+{
+"file": "p423-1.webp",
+"page": 423,
+"chapter": "Live Audio Effect Reference",
+"width": 392,
+"height": 376,
+"captions_on_page": [
+"The Dynamic Tube Effect."
+]
+},
+{
+"file": "p424-1.webp",
+"page": 424,
+"chapter": "Live Audio Effect Reference",
+"width": 1026,
+"height": 376,
+"captions_on_page": [
+"Note that if Envelope is set to zero, they will have no effect.",
+"Cut or boost the device’s final signal level with the Output dial.",
+"The Echo Effect."
+]
+},
+{
+"file": "p425-1.webp",
+"page": 425,
+"chapter": "Live Audio Effect Reference",
+"width": 1026,
+"height": 376,
+"captions_on_page": [
+"Mode settings will apply the changes to both sides.",
+"Echo’s Tunnel Visualization."
+]
+},
+{
+"file": "p426-1.webp",
+"page": 426,
+"chapter": "Live Audio Effect Reference",
+"width": 1026,
+"height": 376,
+"captions_on_page": [
+"Echo’s Filter.",
+"Echo’s Modulation Tab."
+]
+},
+{
+"file": "p426-2.webp",
+"page": 426,
+"chapter": "Live Audio Effect Reference",
+"width": 1026,
+"height": 376,
+"captions_on_page": [
+"Echo’s Filter.",
+"Echo’s Modulation Tab."
+]
+},
+{
+"file": "p427-1.webp",
+"page": 427,
+"chapter": "Live Audio Effect Reference",
+"width": 1026,
+"height": 376,
+"captions_on_page": [
+"Mod Filter adjusts the amount of modulation that is applied to the filter.",
+"Echo’s Character Tab."
+]
+},
+{
+"file": "p429-1.webp",
+"page": 429,
+"chapter": "Live Audio Effect Reference",
+"width": 964,
+"height": 376,
+"captions_on_page": [
+"The EQ Eight Effect."
+]
+},
+{
+"file": "p430-1.webp",
+"page": 430,
+"chapter": "Live Audio Effect Reference",
+"width": 964,
+"height": 376,
+"captions_on_page": [
+"EQ Eight’s Controls With the Display Expanded."
+]
+},
+{
+"file": "p432-1.webp",
+"page": 432,
+"chapter": "Live Audio Effect Reference",
+"width": 300,
+"height": 376,
+"captions_on_page": [
+"The EQ Three Effect.",
+"These buttons are especially handy if assigned to computer keys."
+]
+},
+{
+"file": "p433-1.webp",
+"page": 433,
+"chapter": "Live Audio Effect Reference",
+"width": 316,
+"height": 376,
+"captions_on_page": [
+"The Erosion Effect."
+]
+},
+{
+"file": "p434-1.webp",
+"page": 434,
+"chapter": "Live Audio Effect Reference",
+"width": 284,
+"height": 376,
+"captions_on_page": [
+"The External Audio Effect.",
+"The Invert button inverts the phase of the processed signal coming back into Live."
+]
+},
+{
+"file": "p435-1.webp",
+"page": 435,
+"chapter": "Live Audio Effect Reference",
+"width": 930,
+"height": 376,
+"captions_on_page": [
+"Hardware Latency slider is disabled.",
+"The Filter Delay Effect."
+]
+},
+{
+"file": "p437-1.webp",
+"page": 437,
+"chapter": "Live Audio Effect Reference",
+"width": 656,
+"height": 376,
+"captions_on_page": [
+"The Flanger Effect.",
+"Flanger uses two parallel time-modulated delays to create flanging effects."
+]
+},
+{
+"file": "p438-1.webp",
+"page": 438,
+"chapter": "Live Audio Effect Reference",
+"width": 394,
+"height": 376,
+"captions_on_page": [
+"Adjusting the HiPass control will cut low frequencies from the delayed signal.",
+"The Frequency Shifter Effect."
+]
+},
+{
+"file": "p441-1.webp",
+"page": 441,
+"chapter": "Live Audio Effect Reference",
+"width": 882,
+"height": 376,
+"captions_on_page": [
+"Spread values.",
+"The Gate Effect."
+]
+},
+{
+"file": "p443-1.webp",
+"page": 443,
+"chapter": "Live Audio Effect Reference",
+"width": 556,
+"height": 376,
+"captions_on_page": [
+"Gate on the pad’s track and choosing the drum loop’s track as the sidechain input.",
+"The Glue Compressor Effect."
+]
+},
+{
+"file": "p445-1.webp",
+"page": 445,
+"chapter": "Live Audio Effect Reference",
+"width": 892,
+"height": 376,
+"captions_on_page": [
+"The Glue Compressor With Sidechain Section."
+]
+},
+{
+"file": "p446-1.webp",
+"page": 446,
+"chapter": "Live Audio Effect Reference",
+"width": 758,
+"height": 376,
+"captions_on_page": [
+"The Grain Delay Effect."
+]
+},
+{
+"file": "p448-1.webp",
+"page": 448,
+"chapter": "Live Audio Effect Reference",
+"width": 1254,
+"height": 376,
+"captions_on_page": [
+"The Hybrid Reverb Effect."
+]
+},
+{
+"file": "p450-1.webp",
+"page": 450,
+"chapter": "Live Audio Effect Reference",
+"width": 1254,
+"height": 376,
+"captions_on_page": [
+"Routing chooser, the Blend knob will not have an effect.",
+"Hybrid Reverb’s Convolution Reverb Section.",
+"Large Rooms, Made for Drums, Halls, Plates, Springs, Bigger Spaces, Textures, and User."
+]
+},
+{
+"file": "p451-1.webp",
+"page": 451,
+"chapter": "Live Audio Effect Reference",
+"width": 1254,
+"height": 376,
+"captions_on_page": [
+"Hybrid Reverb’s Algorithmic Reverb Section.",
+"Each algorithm and their unique parameters are described in further detail below."
+]
+},
+{
+"file": "p455-1.webp",
+"page": 455,
+"chapter": "Live Audio Effect Reference",
+"width": 1254,
+"height": 376,
+"captions_on_page": [
+"Hybrid Reverb’s EQ Section."
+]
+},
+{
+"file": "p456-1.webp",
+"page": 456,
+"chapter": "Live Audio Effect Reference",
+"width": 230,
+"height": 376,
+"captions_on_page": [
+"The Limiter Effect."
+]
+},
+{
+"file": "p457-1.webp",
+"page": 457,
+"chapter": "Live Audio Effect Reference",
+"width": 794,
+"height": 376,
+"captions_on_page": [
+"The Looper Effect."
+]
+},
+{
+"file": "p462-1.webp",
+"page": 462,
+"chapter": "Live Audio Effect Reference",
+"width": 960,
+"height": 376,
+"captions_on_page": [
+"The Multiband Dynamics Effect."
+]
+},
+{
+"file": "p467-1.webp",
+"page": 467,
+"chapter": "Live Audio Effect Reference",
+"width": 1134,
+"height": 376,
+"captions_on_page": [
+"The Multiband Dynamics Device With Sidechain Section."
+]
+},
+{
+"file": "p469-1.webp",
+"page": 469,
+"chapter": "Live Audio Effect Reference",
+"width": 220,
+"height": 376,
+"captions_on_page": [
+"The Overdrive Effect."
+]
+},
+{
+"file": "p470-1.webp",
+"page": 470,
+"chapter": "Live Audio Effect Reference",
+"width": 276,
+"height": 376,
+"captions_on_page": [
+"The Pedal Effect.",
+"The global Output knob adjusts the overall output gain of the device."
+]
+},
+{
+"file": "p473-1.webp",
+"page": 473,
+"chapter": "Live Audio Effect Reference",
+"width": 780,
+"height": 376,
+"captions_on_page": [
+"The Phaser Effect."
+]
+},
+{
+"file": "p474-1.webp",
+"page": 474,
+"chapter": "Live Audio Effect Reference",
+"width": 546,
+"height": 376,
+"captions_on_page": [
+"The Phaser-Flanger Effect."
+]
+},
+{
+"file": "p476-1.webp",
+"page": 476,
+"chapter": "Live Audio Effect Reference",
+"width": 900,
+"height": 376,
+"captions_on_page": [
+"The Phaser-Flanger Effect’s Unfolded View.",
+"Hertz; otherwise, the Rate dial will sync the LFO with the song tempo.",
+"This can be seen in the main display’s visualization."
+]
+},
+{
+"file": "p478-1.webp",
+"page": 478,
+"chapter": "Live Audio Effect Reference",
+"width": 294,
+"height": 376,
+"captions_on_page": [
+"Release times.",
+"The Redux Effect."
+]
+},
+{
+"file": "p480-1.webp",
+"page": 480,
+"chapter": "Live Audio Effect Reference",
+"width": 166,
+"height": 376,
+"captions_on_page": [
+"The Redux Legacy Effect.",
+"The Downsample section has two parameters: ”Downsample” and a downsample Mode switch."
+]
+},
+{
+"file": "p481-1.webp",
+"page": 481,
+"chapter": "Live Audio Effect Reference",
+"width": 790,
+"height": 376,
+"captions_on_page": [
+"Turning off Bit Reduction results in modest CPU savings.",
+"The Resonators Effect."
+]
+},
+{
+"file": "p483-1.webp",
+"page": 483,
+"chapter": "Live Audio Effect Reference",
+"width": 1024,
+"height": 376,
+"captions_on_page": [
+"The Reverb Effect."
+]
+},
+{
+"file": "p484-1.webp",
+"page": 484,
+"chapter": "Live Audio Effect Reference",
+"width": 1024,
+"height": 376,
+"captions_on_page": [
+"Reverb’s Input Filter Section.",
+"Reverb’s Early Reflections Section."
+]
+},
+{
+"file": "p484-2.webp",
+"page": 484,
+"chapter": "Live Audio Effect Reference",
+"width": 1024,
+"height": 376,
+"captions_on_page": [
+"Reverb’s Input Filter Section.",
+"Reverb’s Early Reflections Section."
+]
+},
+{
+"file": "p485-1.webp",
+"page": 485,
+"chapter": "Live Audio Effect Reference",
+"width": 1024,
+"height": 376,
+"captions_on_page": [
+"Reverb’s Diffusion Network Section.",
+"The Diffusion Network creates the reverberant tail that follows the early reflections."
+]
+},
+{
+"file": "p486-1.webp",
+"page": 486,
+"chapter": "Live Audio Effect Reference",
+"width": 1024,
+"height": 376,
+"captions_on_page": [
+"Reverb’s Chorus Section.",
+"Reverb’s Global Settings."
+]
+},
+{
+"file": "p486-2.webp",
+"page": 486,
+"chapter": "Live Audio Effect Reference",
+"width": 1024,
+"height": 376,
+"captions_on_page": [
+"Reverb’s Chorus Section.",
+"Reverb’s Global Settings."
+]
+},
+{
+"file": "p487-1.webp",
+"page": 487,
+"chapter": "Live Audio Effect Reference",
+"width": 1024,
+"height": 376,
+"captions_on_page": [
+"Reverb’s Output Section.",
+"Diffuse controls and adjust the effect’s overall Dry/Wet mix."
+]
+},
+{
+"file": "p488-1.webp",
+"page": 488,
+"chapter": "Live Audio Effect Reference",
+"width": 716,
+"height": 376,
+"captions_on_page": [
+"The Saturator Effect.",
+"Soft Sine, Medium Curve and Hard Curve modes soften signal clipping to varying degrees.",
+"Sinoid Fold mode can be good for special effects."
+]
+},
+{
+"file": "p490-1.webp",
+"page": 490,
+"chapter": "Live Audio Effect Reference",
+"width": 749,
+"height": 372,
+"captions_on_page": [
+"The Shifter Effect.",
+"Shifter’s Tuning and Delay Section."
+]
+},
+{
+"file": "p490-2.webp",
+"page": 490,
+"chapter": "Live Audio Effect Reference",
+"width": 749,
+"height": 373,
+"captions_on_page": [
+"The Shifter Effect.",
+"Shifter’s Tuning and Delay Section."
+]
+},
+{
+"file": "p491-1.webp",
+"page": 491,
+"chapter": "Live Audio Effect Reference",
+"width": 749,
+"height": 373,
+"captions_on_page": [
+"Shifter’s LFO Section.",
+"You can modulate the left and right stereo channels using Shifter’s LFO."
+]
+},
+{
+"file": "p492-1.webp",
+"page": 492,
+"chapter": "Live Audio Effect Reference",
+"width": 749,
+"height": 373,
+"captions_on_page": [
+"Shifter’s Envelope Follower."
+]
+},
+{
+"file": "p493-1.webp",
+"page": 493,
+"chapter": "Live Audio Effect Reference",
+"width": 748,
+"height": 373,
+"captions_on_page": [
+"Hertz in the Freq and Ring modes.",
+"The Shifter Mode Section.",
+"Three different Shifter Mode button switches are available: Pitch, Freq, and Ring.",
+"Drive is only available in Ring mode."
+]
+},
+{
+"file": "p494-1.webp",
+"page": 494,
+"chapter": "Live Audio Effect Reference",
+"width": 927,
+"height": 375,
+"captions_on_page": [
+"Shifter’s Sidechain Parameters.",
+"In MIDI mode, you will see a drop-down menu where you can select an external MIDI source."
+]
+},
+{
+"file": "p495-1.webp",
+"page": 495,
+"chapter": "Live Audio Effect Reference",
+"width": 1032,
+"height": 376,
+"captions_on_page": [
+"The Spectral Resonator Effect."
+]
+},
+{
+"file": "p499-1.webp",
+"page": 499,
+"chapter": "Live Audio Effect Reference",
+"width": 1142,
+"height": 376,
+"captions_on_page": [
+"The Spectral Time Effect.",
+"On and Delay On buttons."
+]
+},
+{
+"file": "p500-1.webp",
+"page": 500,
+"chapter": "Live Audio Effect Reference",
+"width": 1142,
+"height": 376,
+"captions_on_page": [
+"Spectral Time and monitoring the output.",
+"Spectral Time’s Freezer Section.",
+"Fade In and Fade Out time of the frozen signal in milliseconds."
+]
+}
+]
+}

@@ -30,8 +30,10 @@ export function envPath(e: Adsr, w = 200, height = 64, points = 120): string {
   return Array.from({ length: points + 1 }, (_, i) => `${i === 0 ? "M" : "L"}${((i / points) * w).toFixed(1)} ${(height - 5 - envLevel(e, (i / points) * total, held) * (height - 10)).toFixed(1)}`).join(" ");
 }
 /** Two cycles of an LFO shape. */
-export function lfoPath(shape: SynthState["lfo1Shape"], w = 200, height = 64, points = 160): string {
-  return Array.from({ length: points + 1 }, (_, i) => `${i === 0 ? "M" : "L"}${((i / points) * w).toFixed(1)} ${(height / 2 - lfoValue(shape, (i / points) * 2 - 1e-9) * (height / 2 - 6)).toFixed(1)}`).join(" ");
+/** `oneWay` draws it as it is used then: squeezed into the top half, never dipping below the middle line. */
+export function lfoPath(shape: SynthState["lfo1Shape"], oneWay = false, w = 200, height = 64, points = 160): string {
+  const at = (t: number) => { const v = lfoValue(shape, t); return oneWay ? (v + 1) / 2 : v; };
+  return Array.from({ length: points + 1 }, (_, i) => `${i === 0 ? "M" : "L"}${((i / points) * w).toFixed(1)} ${(height / 2 - at((i / points) * 2 - 1e-9) * (height / 2 - 6)).toFixed(1)}`).join(" ");
 }
 
 /** One cycle of a wave, drawn from its harmonics and start phase: the same recipe the sound is made from. */
@@ -59,11 +61,11 @@ function Display({ module, synth, note }: { module: Module; synth: Synth; note: 
     if (module.id === "sub") return wavePath(SINE, 0);
     if (module.id === "env1") return envPath(adsr(s, 1));
     if (module.id === "env2") return envPath(adsr(s, 2));
-    if (module.source) return lfoPath(s[`${module.source as "lfo1"}Shape`]);
+    if (module.source) return lfoPath(s[`${module.source as "lfo1"}Shape`], s[`${module.source as "lfo1"}Way`] === "up");
     return NOISE_PATH;
-  }, [module, s.shape, s.table, s.position, s.phase, s.bShape, s.bPhase, s.envA, s.envD, s.envS, s.envR, s.env2A, s.env2D, s.env2S, s.env2R, s.lfo1Shape, s.lfo2Shape, s.lfo3Shape]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [module, s.shape, s.table, s.position, s.phase, s.bShape, s.bPhase, s.envA, s.envD, s.envS, s.envR, s.env2A, s.env2D, s.env2S, s.env2R, s.lfo1Shape, s.lfo2Shape, s.lfo3Shape, s.lfo1Way, s.lfo2Way, s.lfo3Way]); // eslint-disable-line react-hooks/exhaustive-deps
   if (module.id === "filter") return <FilterCurve synth={synth} note={note} compact />;
-  return <svg className="mod-wave" viewBox="0 0 200 64" preserveAspectRatio="none" role="img" aria-label={`${module.name} wave`}><path d={d} /></svg>;
+  return <svg className="mod-wave" viewBox="0 0 200 64" preserveAspectRatio="none" role="img" aria-label={`${module.name} wave`}>{module.source?.startsWith("lfo") && <line className="mod-mid" x1="0" x2="200" y1="32" y2="32" />}<path d={d} /></svg>;
 }
 
 export function Rack({ synth, show, all, lesson, note }: { synth: Synth; show: Panel[]; all: boolean; lesson: PlayableLesson; note: number | null }) {

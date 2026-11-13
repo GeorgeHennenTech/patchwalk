@@ -405,3 +405,5 @@ label.mod-head { cursor: pointer; }
 .synth:not(.plain) .view.env svg { background: #0c0510; border-color: var(--glow); box-shadow: 0 0 10px -2px var(--glow); }
 .synth:not(.plain) .env-line { stroke: var(--glow); filter: drop-shadow(0 0 3px var(--glow)); }
 .synth:not(.plain) .env-handle { fill: var(--glow); stroke: #0c0510; }
+
+.mod-mid { stroke: var(--line); stroke-width: 1; stroke-dasharray: 3 3; vector-effect: non-scaling-stroke; }

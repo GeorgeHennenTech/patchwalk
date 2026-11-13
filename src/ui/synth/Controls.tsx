@@ -96,7 +96,7 @@ function Knob({ id, synth, spot }: { id: keyof SynthState; synth: Synth; spot: b
       {!box && (
         <svg viewBox="-6 -6 60 60" aria-hidden>
           {mods.map((m, i) => {
-            const [from, to] = ringSpan(t, m.amount, m.source.kind);
+            const [from, to] = ringSpan(t, m.amount, m.oneWay ? "env" : "lfo");
             return <path key={m.source.id} className="knob-ring" style={{ stroke: m.source.color, filter: `drop-shadow(0 0 2.5px ${m.source.color})` }} d={arc(degrees(from), Math.max(degrees(to), degrees(from) + 1), 24.5 + i * 3.4)}><title>{`${m.source.name} moves this`}</title></path>;
           })}
           <path className="knob-track" d={arc(-SWEEP / 2, SWEEP / 2, 20)} />

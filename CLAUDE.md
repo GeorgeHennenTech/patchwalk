@@ -150,7 +150,9 @@ Added after the first eight milestones (owner asked for all four in one go):
     plan's C3.3 on curves and hold is not built because the envelopes have neither).
     `lessons/chapter4.ts` holds the LFO chapter (C4.1 to C4.3 and the checkpoint C4.C; C4.4 tempo sync, C4.5
     trigger modes and C4.6 drawn shapes wait for those controls).
-    **Thirty-two playable lessons; chapters 0 to 4 are built.**
+    `lessons/chapter5.ts` holds the modulation chapter (C5.1, C5.2, C5.6 and the checkpoint C5.C; C5.3 velocity
+    and key position, C5.4 macros and C5.5 scaling a route wait for those controls).
+    **Thirty-six playable lessons; chapters 0 to 5 are started or built.**
   - `src/ui/PlayView.tsx` ("Lessons" tab) and `src/ui/synth/` — spotlighted controls per step, live targets,
     scope, spectrum, meter, on-screen keyboard, Hold, blind ear checks, recap, guide remarks and suggestion.
   - "Hear it first" demos (`demo` on a lesson), match-by-ear rounds (`rounds`, compared by `src/course/match.ts`:
@@ -201,8 +203,7 @@ Added after the first eight milestones (owner asked for all four in one go):
     knob it moves wears a glowing ring of that colour showing the stretch it sweeps (`ringSpan`), one ring per
     source. Panels sit in a row under the oscillators and filter, as in Serum. Measured in a headless browser:
     attack/decay/sustain/release shape the level as set, a 4 Hz LFO on level gives 4 swells a second, and
-    LFOs and Env 2 move pitch and cutoff. In Chromium a square LFO reached about 85% of the set depth; other
-    shapes were not measured for depth. Not done: wavetable position and resonance as destinations, more than
+    LFOs and Env 2 move pitch and cutoff. (A square LFO first measured about 85% of the set depth; fixed later, see the modulation chapter.) Not done: wavetable position and resonance as destinations, more than
     one destination per source, drag-to-assign, tempo sync, and any lessons (chapters 3-5 are not scripted).
   - **Synth skin (13 Nov 2026).** The synth is a velvet-black instrument in both colour schemes (variables are
     re-scoped on `.synth`): fabric name patches on the module headers with the name on a solid tab, neon-pink
@@ -219,8 +220,17 @@ Added after the first eight milestones (owner asked for all four in one go):
     judges times and rates as ratios (within double or half). No blind ear checks for chapter 3 yet.
   - **LFO chapter (13 Nov 2026).** LFO lessons use Hold. An LFO panel shows its shape whenever its controls
     are on screen. In match-by-ear, a sound with an LFO plays for 2.8 s so its movement can be heard.
+  - **Modulation chapter (13 Nov 2026).** Each LFO has a direction switch (`lfoNWay`: both ways, or one way,
+    which squeezes the swing to half and lifts it so it runs from the knob to the full depth; `Route.oneWay`
+    also covers envelopes and drives the ring's shape). "LFO 1 rate" is a destination (two octaves of speed at
+    100%, through the LFO oscillator's detune), so sources are all created before any are connected. **LFO
+    shapes are now built from their harmonics with the browser's scaling off** (`setLfoShape`): the built-in
+    square reached only about 86% depth, which put a one-way trill out of tune. Measured after the change:
+    both ways 220/880 Hz and one way 440/880 Hz on a 440 Hz note at 100%, saw and triangle full range, and a
+    4 Hz tremolo driven one octave each way by a square LFO gave about 8 then 2 swells a second.
   - Not built yet: effects, MIDI input, a shared tempo clock, envelope curves and hold, LFO sync, trigger
-    modes and drawn shapes. Chapter 5 (the modulation system) is next in the plan and has no scripts yet.
+    modes and drawn shapes, velocity, macros, a mod wheel. Next in the plan is chapter 6 (reshaping the
+    source: warp, sync, FM, ring modulation), all of which need new oscillator features first.
   - The old ten Serum-task lessons are now the "Serum tasks" tab.
 - **Pictures and lesson links in answers (13 Nov 2026, owner's rule).** When the guide cites a page that has
   pictures, the pictures are shown with the answer **every time**: code attaches them (`images` on a passage,
@@ -244,7 +254,7 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
 - **Private, single-user.** The owner has said this program is strictly for them and will never be distributed.
   Design for one user; do not add accounts, sharing or public pages. Rule 4 still applies to the name and look.
 - **Course:** `docs/CURRICULUM.md` maps 16 tracks and about 400 lessons (one line each); `docs/lessons/` holds
-  fully scripted lessons in a fixed shape (27 so far, all drafts); `docs/COURSE_PLAN.md` describes the practice
+  fully scripted lessons in a fixed shape (30 so far, all drafts); `docs/COURSE_PLAN.md` describes the practice
   synth and lesson engine. A university programme's topic list was used only as a coverage checklist.
   See also `docs/COURSE_PLAN.md`. Guided lessons on a built-in practice synth; lessons can be taken in any
   order; each lesson is its own data file so chapters are easy to add. Tracks are to grow well beyond synthesis
@@ -325,7 +335,7 @@ use explicit `.js` import suffixes so they load as plain Node ESM.
 - New knowledge cards: copy `knowledge-cards/_template.md`. Avoid numbers in cards. Only add reading links
   that have been opened and checked.
 - **Lesson labels.** Codes such as `C2.5` are for code, scripts and plans only. The learner sees lessons grouped
-  under chapter names ("Sound itself", "Oscillators", "Filters", "Envelopes", "LFOs"; `CHAPTERS` in `src/course/lessons/index.ts`),
+  under chapter names ("Sound itself", "Oscillators", "Filters", "Envelopes", "LFOs", "Modulation"; `CHAPTERS` in `src/course/lessons/index.ts`),
   numbered within the chapter, with "Filters · lesson 5 of 8" above the title. A test stops lesson text from
   citing another lesson by code. Add the chapter's name to `CHAPTERS` when starting a new chapter.
 - Skin: content must stay on solid panels for legibility; fabric textures are for chrome only (header, tabs,

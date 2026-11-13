@@ -8,10 +8,11 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 - [ ] Envelope curves and hold (needs new envelope controls first)
 - [x] LFO lessons: three lessons and a checkpoint
 - [ ] LFO lessons that need new controls: tempo sync, trigger modes with rise and delay, drawing a shape
-- [ ] Modulation-system lessons (chapter 5 of the plan)
-- [ ] Blind ear checks for the filter, envelope and LFO lessons
+- [x] Modulation lessons: routes and amounts, one way or both ways, modulating a modulator, and a checkpoint
+- [ ] Modulation lessons that need new controls: velocity and key position as sources, macros, scaling a route (mod wheel)
+- [ ] Blind ear checks for the filter, envelope, LFO and modulation lessons
 - [ ] Pulse-width lesson in the oscillator chapter
-- [ ] Remaining synthesis chapters from the course plan (32 of about 77 lessons built)
+- [ ] Remaining synthesis chapters from the course plan (36 of about 77 lessons built)
 
 ## Synth
 - [x] Filter with a draggable curve
@@ -27,7 +28,8 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 - [ ] Effects: distortion, chorus, delay, reverb, EQ, compressor
 - [ ] MIDI keyboard input
 - [ ] More views: stereo, tuner, loudness meter
-- [ ] Find out why a square LFO measured about 15% shallow
+- [x] LFO shapes now reach exactly full depth (the browser's built-in square was about 15% shallow)
+- [x] One-way or both-ways switch on each LFO; LFO 1 rate as a destination
 
 ## Guide and library
 - [x] Pictures from a cited page appear in the guide's answer, every time
@@ -57,6 +59,6 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 - [x] Upload the Ableton manual, pages 1 to 500
 - [x] Upload the rest of the Ableton manual
 - [ ] Find more books for the library (EPUB or text-based PDF)
-- [ ] Review the 32 knowledge cards and 27 lesson scripts (all drafts)
+- [ ] Review the 32 knowledge cards and 30 lesson scripts (all drafts)
 - [ ] Probe presets: start with the ten most useful (the assistant has explained what to do)
 - [ ] Keep reporting how things sound and feel

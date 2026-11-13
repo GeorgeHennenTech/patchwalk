@@ -11,9 +11,10 @@ export const NOISES = ["white", "pink"] as const;
 const FILTER_TYPES = ["low", "high", "band", "notch"] as const;
 const SLOPES = ["12", "24"] as const;
 /** Settings an envelope or LFO can move. "none" means it is not connected. */
-export const MOD_DESTS = ["none", "cutoff", "fine", "bFine", "aLevelDb", "bLevelDb", "subLevelDb", "noiseLevelDb"] as const;
+export const MOD_DESTS = ["none", "cutoff", "fine", "bFine", "aLevelDb", "bLevelDb", "subLevelDb", "noiseLevelDb", "lfo1Rate"] as const;
+const WAYS = ["both", "up"] as const;
 export type Dest = (typeof MOD_DESTS)[number];
-export const DEST_NAMES: Record<Dest, string> = { none: "Nothing", cutoff: "Filter cutoff", fine: "Osc A pitch", bFine: "Osc B pitch", aLevelDb: "Osc A level", bLevelDb: "Osc B level", subLevelDb: "Sub level", noiseLevelDb: "Noise level" };
+export const DEST_NAMES: Record<Dest, string> = { none: "Nothing", cutoff: "Filter cutoff", fine: "Osc A pitch", bFine: "Osc B pitch", aLevelDb: "Osc A level", bLevelDb: "Osc B level", subLevelDb: "Sub level", noiseLevelDb: "Noise level", lfo1Rate: "LFO 1 rate" };
 
 export interface SynthState {
   /** Master level in dB. 0 is the loudest the lesson synth goes. */
@@ -86,6 +87,8 @@ export interface SynthState {
   lfo1Rate: number; lfo1Shape: Shape; lfo1Dest: Dest; lfo1Amount: number;
   lfo2Rate: number; lfo2Shape: Shape; lfo2Dest: Dest; lfo2Amount: number;
   lfo3Rate: number; lfo3Shape: Shape; lfo3Dest: Dest; lfo3Amount: number;
+  /** Whether each LFO pushes its destination both ways from the knob ("both") or one way only ("up"). */
+  lfo1Way: (typeof WAYS)[number]; lfo2Way: (typeof WAYS)[number]; lfo3Way: (typeof WAYS)[number];
 }
 
 export const INITIAL: SynthState = {
@@ -99,6 +102,7 @@ export const INITIAL: SynthState = {
   lfo1Rate: 2, lfo1Shape: "sine", lfo1Dest: "none", lfo1Amount: 30,
   lfo2Rate: 5, lfo2Shape: "triangle", lfo2Dest: "none", lfo2Amount: 30,
   lfo3Rate: 0.5, lfo3Shape: "saw", lfo3Dest: "none", lfo3Amount: 30,
+  lfo1Way: "both", lfo2Way: "both", lfo3Way: "both",
 };
 
 export type Group = "Master" | "Oscillator A" | "Unison" | "Oscillator B" | "Sub" | "Noise" | "Filter" | "Envelope 1" | "Envelope 2" | "LFO 1" | "LFO 2" | "LFO 3";
@@ -182,6 +186,7 @@ function lfo(n: 1 | 2 | 3): Record<string, ParamSpec> {
     [`${prefix}Shape`]: { id: `${prefix}Shape`, label: `${name} shape`, group, kind: "choice", choices: SHAPES, names: SHAPE_NAMES },
     [`${prefix}Rate`]: { id: `${prefix}Rate`, label: `${name} rate`, group, kind: "range", min: 0.05, max: 30, step: 0.01, log: true, unit: "Hz" },
     ...source(prefix, group, name),
+    [`${prefix}Way`]: { id: `${prefix}Way`, label: `${name} direction`, group, kind: "choice", choices: WAYS, names: { both: "Both ways", up: "One way" } },
   };
 }
 

@@ -599,7 +599,7 @@ import { CHAPTER_4 } from "../src/course/lessons/chapter4";
 describe("chapter 4 lessons", () => {
   const st = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
   it("the LFO chapter follows the envelopes and starts from real settings", () => {
-    expect(LESSONS.map((l) => l.id).slice(28)).toEqual(["C4.1", "C4.2", "C4.3", "C4.C"]);
+    expect(LESSONS.map((l) => l.id).slice(28, 32)).toEqual(["C4.1", "C4.2", "C4.3", "C4.C"]);
     for (const l of CHAPTER_4) for (const k of Object.keys(l.initial ?? {})) expect(k in INITIAL, `${l.id}: ${k}`).toBe(true);
     expect(placeOf(LESSONS.find((l) => l.id === "C4.2")!).chapter).toBe("LFOs");
   });
@@ -618,5 +618,32 @@ describe("chapter 4 lessons", () => {
     expect(compareSetting("lfo1Rate", { ...INITIAL, lfo1Rate: 4 }, { lfo1Rate: 6 })).toBe("match");
     expect(compareSetting("lfo1Rate", { ...INITIAL, lfo1Rate: 1 }, { lfo1Rate: 6 })).toBe("too low");
     expect(compareSetting("lfo1Dest", { ...INITIAL, lfo1Dest: "aLevelDb" }, { lfo1Dest: "fine" })).toBe("different");
+  });
+});
+
+import { CHAPTER_5 } from "../src/course/lessons/chapter5";
+
+describe("chapter 5: routes, direction, and modulating a modulator", () => {
+  const st = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
+  it("the modulation chapter follows the LFOs and starts from real settings", () => {
+    expect(LESSONS.map((l) => l.id).slice(32)).toEqual(["C5.1", "C5.2", "C5.6", "C5.C"]);
+    for (const l of CHAPTER_5) for (const k of Object.keys(l.initial ?? {})) expect(k in INITIAL, `${l.id}: ${k}`).toBe(true);
+  });
+  it("an LFO set to one way pushes one side only, like an envelope; both ways is the default", () => {
+    const s: SynthState = { ...INITIAL, lfo1Dest: "fine", lfo1Amount: 20, lfo2Dest: "cutoff", lfo2Way: "up", env2Dest: "cutoff" };
+    expect(routes(s).map((r) => [r.source.id, r.oneWay])).toEqual([["env2", true], ["lfo1", false], ["lfo2", true]]);
+    expect(modDepth("lfo1Rate", 50)).toBe(1200); // one octave of speed, in cents
+  });
+  it("steps check the wiring, and remarks list or compute it", () => {
+    expect(st("C5.1", 1).check(base({}, { lfo1Dest: "cutoff", lfo1Amount: 0 }))).toBe(true);
+    const three = base({ played: { mouse: 1, keys: 0, midi: 0 } }, { lfo1Dest: "cutoff", lfo1Amount: 40, lfo3Dest: "cutoff", env2Dest: "cutoff" });
+    expect(st("C5.1", 5).check(three)).toBe(true);
+    expect(st("C5.1", 5).remark!(three)).toBe("Your routes: Env 2 to filter cutoff at 50%; LFO 1 to filter cutoff at 40%; LFO 3 to filter cutoff at 30%. Listed like that, it is what Serum calls the mod matrix.");
+    expect(st("C5.2", 2).check(base({}, { lfo1Dest: "fine", lfo1Way: "up", lfo1Shape: "square", lfo1Rate: 2, lfo1Amount: 17 }))).toBe(true);
+    expect(st("C5.2", 2).check(base({}, { lfo1Dest: "fine", lfo1Way: "both", lfo1Shape: "square", lfo1Rate: 2, lfo1Amount: 17 }))).toBe(false);
+    expect(st("C5.2", 2).remark!(base({}, { lfo1Amount: 17 }))).toMatch(/^17% of 12 semitones is about 2\.0 semitones\./);
+    const modmod = base({}, { lfo1Rate: 3, lfo2Dest: "lfo1Rate", lfo2Rate: 0.3, lfo2Amount: 50 });
+    expect(st("C5.6", 1).check(base({}, { lfo2Dest: "lfo1Rate", lfo2Rate: 0.3, lfo2Amount: 60 }))).toBe(true);
+    expect(st("C5.6", 1).remark!(modmod)).toContain("about 1.0 octaves either side of its setting: from roughly 1.5 to 6 wobbles a second");
   });
 });

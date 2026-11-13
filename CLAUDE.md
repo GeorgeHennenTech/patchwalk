@@ -281,6 +281,11 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   See also `docs/COURSE_PLAN.md`. Guided lessons on a built-in practice synth; lessons can be taken in any
   order; each lesson is its own data file so chapters are easy to add. Tracks are to grow well beyond synthesis
   (acoustics, psychoacoustics, sound design, effects, ear training, mixing).
+- **Two tracks added by the owner on 13 Nov 2026, planned and not built:** physical modelling
+  (`docs/PHYSICAL_MODELING.md`, about 60 lessons; needs AudioWorklet engines because the browser's ready-made
+  delay cannot loop faster than one 128-sample block) and bioacoustics with hearing and illusions
+  (`docs/BIOACOUSTICS.md`, about 45 lessons; teaches mechanisms, never claims an artist's method or that sound
+  alters the brain; explanations wait for texts in the library).
 - **Teacher/guide:** one consistent voice, remembers progress, comments on what the learner just did, answers
   questions. Patch facts stay strict (rule 5). Concept answers come from a private library of the owner's texts
   via retrieval, with citations. This is retrieval, not model training.

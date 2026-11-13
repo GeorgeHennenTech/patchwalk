@@ -57,6 +57,15 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 - [ ] Lessons on Serum itself: the matrix tab and the rest of its specialist features (50 planned)
 - [ ] The full curriculum: about 475 lessons across 17 tracks
 
+## New tracks the owner asked for (13 Nov 2026)
+- [ ] Physical modelling: string engine and the plucked-string chapter (plan in docs/PHYSICAL_MODELING.md, about 60 lessons)
+- [ ] Physical modelling: bars, bells and plates (resonator bank)
+- [ ] Physical modelling: drums, tubes and breath, bodies and hybrids
+- [ ] Bioacoustics: formant filters on the synth, then "how animals make sound" (plan in docs/BIOACOUSTICS.md, about 45 lessons)
+- [ ] Bioacoustics: animal signals, choruses and soundscapes
+- [ ] The ear and illusions: a listening-lab page for the hearing and illusion lessons
+- [ ] Source texts for bioacoustics and hearing (none in the library yet; the explanations wait for them)
+
 ## Rebuild-a-patch accuracy
 - [ ] Use the manual's screenshots to fix display values (for example sustain in dB)
 - [ ] Replace guessed control labels with the manual's names

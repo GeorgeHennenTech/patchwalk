@@ -175,6 +175,8 @@ could make to settle them. None have been made. Effect parameters are shown exac
 | `COURSE_PLAN.md` | The practice synth and lesson engine: lesson anatomy, how controls appear, 77 synthesis lessons in 11 chapters, an eight-stage build order (A to H). |
 | `CURRICULUM.md` | The whole course map: 17 tracks, about 475 lessons, one line each (acoustics, psychoacoustics, synthesis, methods, sound design, effects, ear training, rhythm, theory, sampling, arrangement, genres, mixing, mastering, procedural audio, projects, Serum specifics). |
 | `SERUM_EXTRAS.md` | Track S: 50 lessons on Serum 2 itself, with manual page references. |
+| `PHYSICAL_MODELING.md` | Track Q (owner asked 13 Nov 2026): about 60 lessons on physical modelling and the new engines they need. Planned, not built. |
+| `BIOACOUSTICS.md` | Track R (same day): about 45 lessons on bioacoustics, hearing and illusions, aimed at the psychedelic quality the owner wants. Planned; explanations wait for source texts. Makes no claims about any artist's methods or about sound altering the brain. |
 | `GENRES.md` | The owner's closed list of 92 genres, each to use an eight-lesson template; also what they declined. |
 | `COVERAGE_SYNTORIAL.md` | Mapping of Syntorial's lesson titles onto our lessons, and what was added as a result. |
 | `lessons/` | Thirty fully scripted lessons (C0.1 to C0.4, C1.1 to C1.8, C2.1 to C2.7, C3.1, C3.2, C3.4 to C3.6, C4.1 to C4.3, C5.1 to C5.3, C5.6, and C5M.1 to C5M.8) in a fixed shape. |

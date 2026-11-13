@@ -393,6 +393,16 @@ Longer guided pieces of work that pull tracks together.
 
 ---
 
+## Q. Physical modelling (about 60) — Uses: new sample-by-sample engines
+Added at the owner's request on 13 Nov 2026. Full plan in `docs/PHYSICAL_MODELING.md`: strings, bars and bells,
+drums, tubes and breath, bodies and hybrids, and the same ideas in Ableton's Collision, Tension, Electric and
+Corpus. Replaces the one-line lessons D5.1 to D5.3.
+
+## R. Bioacoustics and the psychedelic ear (about 45) — Uses: Synth, Lab, track Q
+Added at the owner's request on 13 Nov 2026. Full plan in `docs/BIOACOUSTICS.md`: how animals make sound,
+animal signals as sound design, choruses and soundscapes, what the ear does to sound, illusions and
+ambiguity. Its explanations wait for source texts in the library.
+
 ## Coverage check against a university electronic-music programme
 The owner supplied the course list for Berklee Online's electronic music production and sound design programme.
 Only its topics were used, as a checklist. No course text was read or copied.

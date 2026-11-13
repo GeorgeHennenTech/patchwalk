@@ -2,7 +2,7 @@
   "framework": "vite",
   "functions": {
     "api/lesson.ts": { "maxDuration": 120 },
-    "api/ask.ts": { "maxDuration": 120, "includeFiles": "{library,knowledge-cards}/**" }
+    "api/ask.ts": { "maxDuration": 120, "includeFiles": "{library/*.json,knowledge-cards/*.md}" }
   },
   "headers": [{ "source": "/(.*)", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }] }]
 }

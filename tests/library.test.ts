@@ -111,3 +111,25 @@ describe("the library stays on the server", () => {
     }
   });
 });
+
+describe("library images", () => {
+  const dir = join(ROOT, "library", "images", "serum-2-user-guide");
+  it.skipIf(!existsSync(dir))("every indexed image exists, has a page in the guide, and nothing is unindexed", () => {
+    const index = JSON.parse(readFileSync(join(dir, "index.json"), "utf8")) as { images: { file: string; page: number; width: number; height: number }[] };
+    const files = readdirSync(dir).filter((f) => f.endsWith(".webp")).sort();
+    expect(index.images.map((i) => i.file).sort()).toEqual(files);
+    expect(files.length).toBeGreaterThan(300);
+    for (const i of index.images) {
+      expect(i.file).toMatch(/^p\d{3}-\d+\.webp$/);
+      expect(Number(i.file.slice(1, 4))).toBe(i.page);
+      expect(i.page).toBeGreaterThan(0);
+      expect(i.page).toBeLessThanOrEqual(354);
+      expect(i.width).toBeGreaterThanOrEqual(90);
+    }
+  });
+  it("images are not shipped with the server functions or the browser build", () => {
+    const vercel = readFileSync(join(ROOT, "vercel.json"), "utf8");
+    expect(vercel).toContain("library/*.json");
+    expect(vercel).not.toMatch(/library\/\*\*|\{library,/);
+  });
+});

@@ -185,6 +185,19 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   it. Library text must never be imported by anything under `src/` (a test enforces this), bundled into the
   browser build, or shown in full in the UI; only the few passages retrieved for a question go to the model.
   To add a text: one JSON file in `library/` shaped `{ id, title, pages: [{ page, chapter, text }] }`.
+- **Library images.** `library/images/<book-id>/` holds the pictures embedded in a book's PDF plus an
+  `index.json` (file, page, chapter, size, and caption candidates found on the same page). For the Serum 2 User
+  Guide: 413 images from 247 pages, about 6 MB. The owner wants these in the repo only, for the assistant and
+  the guide to consult or to place in a lesson when useful; there is deliberately no gallery in the app, and
+  they are not deployed with the server functions. Same privacy rules as library text.
+  **Standard procedure for every new book: extract text and images together** (`pdftotext` in reading order;
+  `pdfimages -all -p`, drop masks, tiny images and duplicates, convert to WebP). Drawn (vector) diagrams are
+  not embedded pictures and are not captured by this; render the page with `pdftoppm` and crop if one is needed.
+- **Read off the guide's own screenshots (not yet used in code):** the envelope display shows sustain in dB
+  (e.g. "-14.3 dB") and times as "0.5 ms", "1.15 s", "15 ms" (`p186-1.webp`), which supports reading stored
+  envelope times as seconds and means `Env.kParamSustain` needs a dB conversion; the oscillator panel shows
+  OCT, SEM, FIN, CRS, WT POS, UNISON, DETUNE, BLEND, PHASE, RAND, PAN, LEVEL (`p049-1.webp`); the filter panel
+  shows CUTOFF, RES, PAN, DRIVE, FAT, MIX, LEVEL (`p135-1.webp`).
 
 ## Commands
 - `npm run dev` — app at http://localhost:5173; `/api/lesson` is served locally too. Put the key in `.env.local`.

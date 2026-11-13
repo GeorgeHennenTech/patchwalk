@@ -206,6 +206,10 @@ Smaller items to pick up when convenient:
 
 - The system check does not show why a first attempt was rejected; surface the first attempt's reasons so
   validator strictness can be judged.
+- Use the manual's screenshots in `library/images/` to improve display values: sustain is shown in dB, and the
+  panels confirm many control names. Mark anything taken from them as `documented`, not `verified`.
+- The in-app guide cannot show library images in its answers yet. If wanted, serve them from a
+  password-protected server route; never bundle them into the browser build.
 - A few registry labels still use earlier guesses where the manual has names (unison DETUNE, BLEND, WIDTH;
   PORTA, CURVE, ALWAYS, SCALED). Changing them means updating test expectations.
 - MIDI keyboard input for the practice synth.
@@ -239,11 +243,11 @@ Ask about these only when relevant; do not block on them.
 - **The Serum 2 User Guide PDFs** are not in the repo; the extracted text in `library/` is, and that is all the
   guide needs. The owner does not have to re-upload anything for the guide to work in a new chat. The PDF would
   only be needed to redo the extraction (they split it into four parts last time because of size).
-- **Images from books (asked for, not yet agreed).** The owner asked whether images and diagrams can be
-  extracted from PDFs alongside the text and stored for review or use in lessons. It is possible (`pdfimages`
-  for embedded pictures, `pdftoppm` plus cropping for drawn diagrams). They were asked whether to do this for
-  the Serum manual and had not answered when this was written. If they say yes, the PDFs must be uploaded
-  again in a new session, and this should become the standard procedure for every book: text and images.
+- **Images from books are extracted and stored.** `library/images/serum-2-user-guide/` holds 413 pictures from
+  the manual with an `index.json`. The owner wants them in the repo only, for you and the guide to consult or
+  to place in a lesson when useful, with no gallery in the app. For every new book, extract text and images
+  together; the procedure is in `CLAUDE.md` under "Library images". The manual's screenshots also show how
+  Serum displays values (for example sustain in dB), which can replace some guessed conversions.
 - **Network access.** The old session ran in a cloud environment named "patchwalk" that allows Higgsfield's
   image host, Wikipedia, Ableton's Learning Synths and Sound On Sound. Other sites were blocked; Vercel's own
   site was unreachable. If you need a new site, propose adding it and explain why.

@@ -1,0 +1,4871 @@
+{
+"source": "Serum 2 User Guide",
+"note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text.",
+"images": [
+{
+"file": "p001-1.webp",
+"page": 1,
+"chapter": "",
+"width": 902,
+"height": 332,
+"captions_on_page": []
+},
+{
+"file": "p001-2.webp",
+"page": 1,
+"chapter": "",
+"width": 1157,
+"height": 343,
+"captions_on_page": []
+},
+{
+"file": "p013-1.webp",
+"page": 13,
+"chapter": "Welcome",
+"width": 1400,
+"height": 871,
+"captions_on_page": [
+"Serum Main Screen",
+"Registering Serum"
+]
+},
+{
+"file": "p014-1.webp",
+"page": 14,
+"chapter": "Welcome",
+"width": 393,
+"height": 297,
+"captions_on_page": [
+"Getting in Touch",
+"Downloading Serum",
+"Xfer Records User Menu",
+"Installing Serum"
+]
+},
+{
+"file": "p015-1.webp",
+"page": 15,
+"chapter": "Welcome",
+"width": 127,
+"height": 150,
+"captions_on_page": [
+"Uninstalling Serum on Windows-based PCs"
+]
+},
+{
+"file": "p016-1.webp",
+"page": 16,
+"chapter": "Exploring Serum",
+"width": 1190,
+"height": 740,
+"captions_on_page": [
+"Serum Interface"
+]
+},
+{
+"file": "p017-1.webp",
+"page": 17,
+"chapter": "Exploring Serum",
+"width": 344,
+"height": 262,
+"captions_on_page": [
+"Exploring Sound Design in Serum",
+"Serum Oscillators"
+]
+},
+{
+"file": "p018-1.webp",
+"page": 18,
+"chapter": "Getting Started",
+"width": 684,
+"height": 66,
+"captions_on_page": [
+"Adding Serum to a Track",
+"Loading a Serum Preset",
+"Serum Presets Menu"
+]
+},
+{
+"file": "p019-1.webp",
+"page": 19,
+"chapter": "Getting Started",
+"width": 1190,
+"height": 740,
+"captions_on_page": [
+"Serum Presets Browser",
+"Click the",
+"Presets Showing Play Buttons",
+"Click the",
+"Preset Playing"
+]
+},
+{
+"file": "p019-2.webp",
+"page": 19,
+"chapter": "Getting Started",
+"width": 248,
+"height": 82,
+"captions_on_page": [
+"Serum Presets Browser",
+"Click the",
+"Presets Showing Play Buttons",
+"Click the",
+"Preset Playing"
+]
+},
+{
+"file": "p019-3.webp",
+"page": 19,
+"chapter": "Getting Started",
+"width": 248,
+"height": 82,
+"captions_on_page": [
+"Serum Presets Browser",
+"Click the",
+"Presets Showing Play Buttons",
+"Click the",
+"Preset Playing"
+]
+},
+{
+"file": "p020-1.webp",
+"page": 20,
+"chapter": "Getting Started",
+"width": 901,
+"height": 1170,
+"captions_on_page": [
+"Creating a New Sound"
+]
+},
+{
+"file": "p021-1.webp",
+"page": 21,
+"chapter": "Getting Started",
+"width": 480,
+"height": 66,
+"captions_on_page": [
+"Saving Changes"
+]
+},
+{
+"file": "p021-2.webp",
+"page": 21,
+"chapter": "Getting Started",
+"width": 480,
+"height": 66,
+"captions_on_page": [
+"Saving Changes"
+]
+},
+{
+"file": "p022-1.webp",
+"page": 22,
+"chapter": "Getting Started",
+"width": 344,
+"height": 387,
+"captions_on_page": [
+"Embedding Content When Saving a Preset",
+"Embed Indicator",
+"Dragging Audio to Your DAW"
+]
+},
+{
+"file": "p022-2.webp",
+"page": 22,
+"chapter": "Getting Started",
+"width": 164,
+"height": 117,
+"captions_on_page": [
+"Embedding Content When Saving a Preset",
+"Embed Indicator",
+"Dragging Audio to Your DAW"
+]
+},
+{
+"file": "p023-1.webp",
+"page": 23,
+"chapter": "Getting Started",
+"width": 354,
+"height": 293,
+"captions_on_page": [
+"Dragging Audio to Your DAW",
+"Exploring Basic Operations"
+]
+},
+{
+"file": "p024-1.webp",
+"page": 24,
+"chapter": "Getting Started",
+"width": 344,
+"height": 387,
+"captions_on_page": [
+"Tooltip Help",
+"Tooltip Showing Modulation Sources"
+]
+},
+{
+"file": "p024-2.webp",
+"page": 24,
+"chapter": "Getting Started",
+"width": 304,
+"height": 356,
+"captions_on_page": [
+"Tooltip Help",
+"Tooltip Showing Modulation Sources"
+]
+},
+{
+"file": "p025-1.webp",
+"page": 25,
+"chapter": "Getting Started",
+"width": 646,
+"height": 84,
+"captions_on_page": [
+"Using the Serum Keyboard",
+"Serum Keyboard",
+"Using Knobs and Sliders",
+"Click-Dragging a Knob"
+]
+},
+{
+"file": "p025-2.webp",
+"page": 25,
+"chapter": "Getting Started",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Using the Serum Keyboard",
+"Serum Keyboard",
+"Using Knobs and Sliders",
+"Click-Dragging a Knob"
+]
+},
+{
+"file": "p026-1.webp",
+"page": 26,
+"chapter": "Getting Started",
+"width": 357,
+"height": 440,
+"captions_on_page": [
+"Right-Click Context Menu"
+]
+},
+{
+"file": "p027-1.webp",
+"page": 27,
+"chapter": "Getting Started",
+"width": 684,
+"height": 66,
+"captions_on_page": [
+"Undo and Redo",
+"Undo and Redo Buttons",
+"Click the",
+"Click the",
+"Controlling the Main Output Volume",
+"Main Volume"
+]
+},
+{
+"file": "p027-2.webp",
+"page": 27,
+"chapter": "Getting Started",
+"width": 167,
+"height": 167,
+"captions_on_page": [
+"Undo and Redo",
+"Undo and Redo Buttons",
+"Click the",
+"Click the",
+"Controlling the Main Output Volume",
+"Main Volume"
+]
+},
+{
+"file": "p027-3.webp",
+"page": 27,
+"chapter": "Getting Started",
+"width": 102,
+"height": 66,
+"captions_on_page": [
+"Undo and Redo",
+"Undo and Redo Buttons",
+"Click the",
+"Click the",
+"Controlling the Main Output Volume",
+"Main Volume"
+]
+},
+{
+"file": "p028-1.webp",
+"page": 28,
+"chapter": "Getting Started",
+"width": 270,
+"height": 116,
+"captions_on_page": [
+"Using Oscillators and Filters",
+"Enabling an Oscillator or Filter",
+"Enabling OSC B",
+"OSC B Enabled"
+]
+},
+{
+"file": "p028-2.webp",
+"page": 28,
+"chapter": "Getting Started",
+"width": 270,
+"height": 116,
+"captions_on_page": [
+"Using Oscillators and Filters",
+"Enabling an Oscillator or Filter",
+"Enabling OSC B",
+"OSC B Enabled"
+]
+},
+{
+"file": "p028-3.webp",
+"page": 28,
+"chapter": "Getting Started",
+"width": 204,
+"height": 150,
+"captions_on_page": [
+"Using Oscillators and Filters",
+"Enabling an Oscillator or Filter",
+"Enabling OSC B",
+"OSC B Enabled"
+]
+},
+{
+"file": "p028-4.webp",
+"page": 28,
+"chapter": "Getting Started",
+"width": 204,
+"height": 150,
+"captions_on_page": [
+"Using Oscillators and Filters",
+"Enabling an Oscillator or Filter",
+"Enabling OSC B",
+"OSC B Enabled"
+]
+},
+{
+"file": "p029-1.webp",
+"page": 29,
+"chapter": "Getting Started",
+"width": 538,
+"height": 638,
+"captions_on_page": [
+"Choosing Oscillator or Filter Options",
+"Choosing a Wavetable",
+"Using Pitch Controls",
+"Oscillator Pitch Controls"
+]
+},
+{
+"file": "p029-2.webp",
+"page": 29,
+"chapter": "Getting Started",
+"width": 270,
+"height": 195,
+"captions_on_page": [
+"Choosing Oscillator or Filter Options",
+"Choosing a Wavetable",
+"Using Pitch Controls",
+"Oscillator Pitch Controls"
+]
+},
+{
+"file": "p030-1.webp",
+"page": 30,
+"chapter": "Getting Started",
+"width": 355,
+"height": 320,
+"captions_on_page": [
+"Setting the Octave or Semitone Mode",
+"Selecting the Mode"
+]
+},
+{
+"file": "p031-1.webp",
+"page": 31,
+"chapter": "Getting Started",
+"width": 381,
+"height": 387,
+"captions_on_page": [
+"Routing an Oscillator or Filter",
+"Accessing the Signal Routing Settings"
+]
+},
+{
+"file": "p032-1.webp",
+"page": 32,
+"chapter": "Getting Started",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Filter Routing and Busses",
+"Routing Menu"
+]
+},
+{
+"file": "p032-2.webp",
+"page": 32,
+"chapter": "Getting Started",
+"width": 270,
+"height": 197,
+"captions_on_page": [
+"Filter Routing and Busses",
+"Routing Menu"
+]
+},
+{
+"file": "p033-1.webp",
+"page": 33,
+"chapter": "Getting Started",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Accessing the Oscillator or Filter Menu",
+"Oscillator Menu",
+"Locking a Module"
+]
+},
+{
+"file": "p036-1.webp",
+"page": 36,
+"chapter": "Getting Started",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Pitch Bend Tracking",
+"Pitch Bend Tracking Enabled",
+"Resizing the UI",
+"Resize Menu"
+]
+},
+{
+"file": "p036-2.webp",
+"page": 36,
+"chapter": "Getting Started",
+"width": 515,
+"height": 948,
+"captions_on_page": [
+"Pitch Bend Tracking",
+"Pitch Bend Tracking Enabled",
+"Resizing the UI",
+"Resize Menu"
+]
+},
+{
+"file": "p037-1.webp",
+"page": 37,
+"chapter": "Using Wavetable Oscillators",
+"width": 1190,
+"height": 740,
+"captions_on_page": []
+},
+{
+"file": "p038-1.webp",
+"page": 38,
+"chapter": "Using Wavetable Oscillators",
+"width": 270,
+"height": 168,
+"captions_on_page": [
+"Anatomy of a Serum Wavetable",
+"Wavetable Frames"
+]
+},
+{
+"file": "p039-1.webp",
+"page": 39,
+"chapter": "Using Wavetable Oscillators",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Using Wavetables",
+"Exploring the Waveform Display"
+]
+},
+{
+"file": "p039-2.webp",
+"page": 39,
+"chapter": "Using Wavetable Oscillators",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Using Wavetables",
+"Exploring the Waveform Display"
+]
+},
+{
+"file": "p040-1.webp",
+"page": 40,
+"chapter": "Using Wavetable Oscillators",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Choosing a New Wavetable",
+"Choosing a Wavetable",
+"Editing a Waveform",
+"Click the",
+"Wavetable Editor Button"
+]
+},
+{
+"file": "p040-2.webp",
+"page": 40,
+"chapter": "Using Wavetable Oscillators",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Choosing a New Wavetable",
+"Choosing a Wavetable",
+"Editing a Waveform",
+"Click the",
+"Wavetable Editor Button"
+]
+},
+{
+"file": "p041-1.webp",
+"page": 41,
+"chapter": "Using Wavetable Oscillators",
+"width": 1190,
+"height": 740,
+"captions_on_page": [
+"Wavetable Editor",
+"Oscillator Phase Control"
+]
+},
+{
+"file": "p041-2.webp",
+"page": 41,
+"chapter": "Using Wavetable Oscillators",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Wavetable Editor",
+"Oscillator Phase Control"
+]
+},
+{
+"file": "p042-1.webp",
+"page": 42,
+"chapter": "Using Wavetable Oscillators",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Randomizing the Phase",
+"Oscillator Random Control"
+]
+},
+{
+"file": "p044-1.webp",
+"page": 44,
+"chapter": "Using Wavetable Oscillators",
+"width": 540,
+"height": 320,
+"captions_on_page": [
+"Setting Phase Memory",
+"Phase Memory Menu",
+"All Voices",
+"Per Voice"
+]
+},
+{
+"file": "p045-1.webp",
+"page": 45,
+"chapter": "Using Wavetable Oscillators",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Wavetable Position",
+"Oscillator WT POS Control",
+"Wavetable Unison Control"
+]
+},
+{
+"file": "p045-2.webp",
+"page": 45,
+"chapter": "Using Wavetable Oscillators",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Wavetable Position",
+"Oscillator WT POS Control",
+"Wavetable Unison Control"
+]
+},
+{
+"file": "p046-1.webp",
+"page": 46,
+"chapter": "Using Wavetable Oscillators",
+"width": 270,
+"height": 195,
+"captions_on_page": [
+"Click the",
+"Wavetable Unison Settings"
+]
+},
+{
+"file": "p049-1.webp",
+"page": 49,
+"chapter": "Using Wavetable Oscillators",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Wavetable Warp Control",
+"Exploring the Warp Modes",
+"Wavetable Warp Menu"
+]
+},
+{
+"file": "p049-2.webp",
+"page": 49,
+"chapter": "Using Wavetable Oscillators",
+"width": 270,
+"height": 337,
+"captions_on_page": [
+"Wavetable Warp Control",
+"Exploring the Warp Modes",
+"Wavetable Warp Menu"
+]
+},
+{
+"file": "p057-1.webp",
+"page": 57,
+"chapter": "Using Wavetable Oscillators",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Wavetable Pan Control",
+"Wavetable Level Control"
+]
+},
+{
+"file": "p057-2.webp",
+"page": 57,
+"chapter": "Using Wavetable Oscillators",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Wavetable Pan Control",
+"Wavetable Level Control"
+]
+},
+{
+"file": "p058-1.webp",
+"page": 58,
+"chapter": "Using Multisample Instruments",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Selecting a Multisample Instrument",
+"Multisample in the Oscillator Menu"
+]
+},
+{
+"file": "p059-1.webp",
+"page": 59,
+"chapter": "Using Multisample Instruments",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Multisample Instrument",
+"Multisample Instrument Menu"
+]
+},
+{
+"file": "p059-2.webp",
+"page": 59,
+"chapter": "Using Multisample Instruments",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Multisample Instrument",
+"Multisample Instrument Menu"
+]
+},
+{
+"file": "p060-1.webp",
+"page": 60,
+"chapter": "Using Multisample Instruments",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Multisample Instrument Loaded"
+]
+},
+{
+"file": "p060-2.webp",
+"page": 60,
+"chapter": "Using Multisample Instruments",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Multisample Instrument Loaded"
+]
+},
+{
+"file": "p061-1.webp",
+"page": 61,
+"chapter": "Using Multisample Instruments",
+"width": 270,
+"height": 197,
+"captions_on_page": [
+"Setting the Multisample Envelope",
+"Multisample Envelope Pane"
+]
+},
+{
+"file": "p062-1.webp",
+"page": 62,
+"chapter": "Using Multisample Instruments",
+"width": 270,
+"height": 127,
+"captions_on_page": [
+"Velocity Track",
+"Setting Multisample Parameters",
+"Multisample Parameters"
+]
+},
+{
+"file": "p063-1.webp",
+"page": 63,
+"chapter": "Using Multisample Instruments",
+"width": 538,
+"height": 388,
+"captions_on_page": [
+"Click the",
+"Multisample Unison Settings"
+]
+},
+{
+"file": "p067-1.webp",
+"page": 67,
+"chapter": "Using Multisample Instruments",
+"width": 270,
+"height": 339,
+"captions_on_page": [
+"Switch to Wavetable Menu"
+]
+},
+{
+"file": "p067-2.webp",
+"page": 67,
+"chapter": "Using Multisample Instruments",
+"width": 474,
+"height": 416,
+"captions_on_page": [
+"Switch to Wavetable Menu"
+]
+},
+{
+"file": "p069-1.webp",
+"page": 69,
+"chapter": "Using Sample Instruments",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Selecting the Sampler",
+"Sample in the Oscillator Menu",
+"Sample Instrument"
+]
+},
+{
+"file": "p069-2.webp",
+"page": 69,
+"chapter": "Using Sample Instruments",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Selecting the Sampler",
+"Sample in the Oscillator Menu",
+"Sample Instrument"
+]
+},
+{
+"file": "p070-1.webp",
+"page": 70,
+"chapter": "Using Sample Instruments",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Sample Menu",
+"Sample Instrument Loaded"
+]
+},
+{
+"file": "p070-2.webp",
+"page": 70,
+"chapter": "Using Sample Instruments",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Sample Menu",
+"Sample Instrument Loaded"
+]
+},
+{
+"file": "p071-1.webp",
+"page": 71,
+"chapter": "Using Sample Instruments",
+"width": 270,
+"height": 197,
+"captions_on_page": [
+"Setting the Sample Start and End",
+"Setting Sample Start and End",
+"Performing Sample Operations",
+"Sample Operations Menu"
+]
+},
+{
+"file": "p071-2.webp",
+"page": 71,
+"chapter": "Using Sample Instruments",
+"width": 270,
+"height": 414,
+"captions_on_page": [
+"Setting the Sample Start and End",
+"Setting Sample Start and End",
+"Performing Sample Operations",
+"Sample Operations Menu"
+]
+},
+{
+"file": "p074-1.webp",
+"page": 74,
+"chapter": "Using Sample Instruments",
+"width": 270,
+"height": 197,
+"captions_on_page": [
+"Slicing Samples",
+"Auto Slicing",
+"Auto Slicing"
+]
+},
+{
+"file": "p074-2.webp",
+"page": 74,
+"chapter": "Using Sample Instruments",
+"width": 270,
+"height": 197,
+"captions_on_page": [
+"Slicing Samples",
+"Auto Slicing",
+"Auto Slicing"
+]
+},
+{
+"file": "p075-1.webp",
+"page": 75,
+"chapter": "Using Sample Instruments",
+"width": 270,
+"height": 197,
+"captions_on_page": [
+"Zooming In and Out",
+"Manual Slicing",
+"Manually Adjusting Slices"
+]
+},
+{
+"file": "p075-2.webp",
+"page": 75,
+"chapter": "Using Sample Instruments",
+"width": 270,
+"height": 197,
+"captions_on_page": [
+"Zooming In and Out",
+"Manual Slicing",
+"Manually Adjusting Slices"
+]
+},
+{
+"file": "p076-1.webp",
+"page": 76,
+"chapter": "Using Sample Instruments",
+"width": 270,
+"height": 534,
+"captions_on_page": [
+"Slicing Options",
+"Extra Slicing Options"
+]
+},
+{
+"file": "p077-1.webp",
+"page": 77,
+"chapter": "Using Sample Instruments",
+"width": 270,
+"height": 396,
+"captions_on_page": [
+"Loop Menu",
+"Sample Loop Menu",
+"Fwd Loop"
+]
+},
+{
+"file": "p079-1.webp",
+"page": 79,
+"chapter": "Using Sample Instruments",
+"width": 270,
+"height": 197,
+"captions_on_page": [
+"Setting the Loop Start and End",
+"Setting Loop Start and End",
+"Setting the Crossfade",
+"Click the",
+"Setting a Loop Cross Fade"
+]
+},
+{
+"file": "p079-2.webp",
+"page": 79,
+"chapter": "Using Sample Instruments",
+"width": 344,
+"height": 320,
+"captions_on_page": [
+"Setting the Loop Start and End",
+"Setting Loop Start and End",
+"Setting the Crossfade",
+"Click the",
+"Setting a Loop Cross Fade"
+]
+},
+{
+"file": "p080-1.webp",
+"page": 80,
+"chapter": "Using Sample Instruments",
+"width": 270,
+"height": 127,
+"captions_on_page": [
+"Setting Sample Parameters",
+"Sample Parameters",
+"Sample Scan Menu"
+]
+},
+{
+"file": "p080-2.webp",
+"page": 80,
+"chapter": "Using Sample Instruments",
+"width": 270,
+"height": 530,
+"captions_on_page": [
+"Setting Sample Parameters",
+"Sample Parameters",
+"Sample Scan Menu"
+]
+},
+{
+"file": "p081-1.webp",
+"page": 81,
+"chapter": "Using Sample Instruments",
+"width": 270,
+"height": 197,
+"captions_on_page": [
+"Click the",
+"Sample Unison Settings"
+]
+},
+{
+"file": "p084-1.webp",
+"page": 84,
+"chapter": "Using Sample Instruments",
+"width": 474,
+"height": 394,
+"captions_on_page": [
+"Switching a Sample to a Wavetable",
+"Switch to Wavetable in",
+"Switch to Wavetable Menu"
+]
+},
+{
+"file": "p085-1.webp",
+"page": 85,
+"chapter": "Using Granular Synthesis",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Selecting Granular Synthesis",
+"Granular in the Oscillator Menu"
+]
+},
+{
+"file": "p086-1.webp",
+"page": 86,
+"chapter": "Using Granular Synthesis",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Granular Synthesis",
+"Granular Menu"
+]
+},
+{
+"file": "p086-2.webp",
+"page": 86,
+"chapter": "Using Granular Synthesis",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Granular Synthesis",
+"Granular Menu"
+]
+},
+{
+"file": "p087-1.webp",
+"page": 87,
+"chapter": "Using Granular Synthesis",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Granular Sample Loaded",
+"Setting the Sample Start and End",
+"Setting Sample Start and End"
+]
+},
+{
+"file": "p087-2.webp",
+"page": 87,
+"chapter": "Using Granular Synthesis",
+"width": 270,
+"height": 197,
+"captions_on_page": [
+"Granular Sample Loaded",
+"Setting the Sample Start and End",
+"Setting Sample Start and End"
+]
+},
+{
+"file": "p088-1.webp",
+"page": 88,
+"chapter": "Using Granular Synthesis",
+"width": 270,
+"height": 449,
+"captions_on_page": [
+"Performing Granular Operations",
+"Granular Operations Menu"
+]
+},
+{
+"file": "p089-1.webp",
+"page": 89,
+"chapter": "Using Granular Synthesis",
+"width": 270,
+"height": 451,
+"captions_on_page": [
+"Loop Menu",
+"Setting Loop Grains",
+"Granular Loop Menu",
+"Setting Manual Mode",
+"Manual Mode"
+]
+},
+{
+"file": "p089-2.webp",
+"page": 89,
+"chapter": "Using Granular Synthesis",
+"width": 270,
+"height": 196,
+"captions_on_page": [
+"Loop Menu",
+"Setting Loop Grains",
+"Granular Loop Menu",
+"Setting Manual Mode",
+"Manual Mode"
+]
+},
+{
+"file": "p090-1.webp",
+"page": 90,
+"chapter": "Using Granular Synthesis",
+"width": 270,
+"height": 197,
+"captions_on_page": [
+"Setting the Loop Start and End",
+"Setting Loop Start and End",
+"Setting the Crossfade",
+"Click the",
+"Setting a Loop Cross Fade"
+]
+},
+{
+"file": "p090-2.webp",
+"page": 90,
+"chapter": "Using Granular Synthesis",
+"width": 344,
+"height": 320,
+"captions_on_page": [
+"Setting the Loop Start and End",
+"Setting Loop Start and End",
+"Setting the Crossfade",
+"Click the",
+"Setting a Loop Cross Fade"
+]
+},
+{
+"file": "p091-1.webp",
+"page": 91,
+"chapter": "Using Granular Synthesis",
+"width": 270,
+"height": 197,
+"captions_on_page": [
+"Window Amount",
+"Click the",
+"Grain Amplitude Window Settings"
+]
+},
+{
+"file": "p093-1.webp",
+"page": 93,
+"chapter": "Using Granular Synthesis",
+"width": 270,
+"height": 197,
+"captions_on_page": [
+"Exp Dec Rev",
+"Click the",
+"Granular Unison Settings"
+]
+},
+{
+"file": "p096-1.webp",
+"page": 96,
+"chapter": "Using Granular Synthesis",
+"width": 270,
+"height": 197,
+"captions_on_page": [
+"Setting the X|Y Control",
+"X|Y Control",
+"Y Axis Menu"
+]
+},
+{
+"file": "p096-2.webp",
+"page": 96,
+"chapter": "Using Granular Synthesis",
+"width": 540,
+"height": 682,
+"captions_on_page": [
+"Setting the X|Y Control",
+"X|Y Control",
+"Y Axis Menu"
+]
+},
+{
+"file": "p098-1.webp",
+"page": 98,
+"chapter": "Using Granular Synthesis",
+"width": 540,
+"height": 682,
+"captions_on_page": [
+"Y Axis Modulation Menu",
+"Setting Granular Parameters",
+"Granular Parameters"
+]
+},
+{
+"file": "p098-2.webp",
+"page": 98,
+"chapter": "Using Granular Synthesis",
+"width": 270,
+"height": 125,
+"captions_on_page": [
+"Y Axis Modulation Menu",
+"Setting Granular Parameters",
+"Granular Parameters"
+]
+},
+{
+"file": "p099-1.webp",
+"page": 99,
+"chapter": "Using Granular Synthesis",
+"width": 270,
+"height": 125,
+"captions_on_page": [
+"Click the",
+"Click the",
+"Granular Warp Settings"
+]
+},
+{
+"file": "p100-1.webp",
+"page": 100,
+"chapter": "Using Granular Synthesis",
+"width": 310,
+"height": 552,
+"captions_on_page": [
+"Granular Scan Menu"
+]
+},
+{
+"file": "p102-1.webp",
+"page": 102,
+"chapter": "Using Granular Synthesis",
+"width": 270,
+"height": 125,
+"captions_on_page": [
+"Setting the Grain Randomization",
+"Grain Randomization"
+]
+},
+{
+"file": "p103-1.webp",
+"page": 103,
+"chapter": "Using Granular Synthesis",
+"width": 274,
+"height": 236,
+"captions_on_page": [
+"Reversing the Grain Playback Direction Randomization",
+"Grain Randomization",
+"Switching a Sample to a Wavetable",
+"Switch to Wavetable Menu"
+]
+},
+{
+"file": "p103-2.webp",
+"page": 103,
+"chapter": "Using Granular Synthesis",
+"width": 474,
+"height": 394,
+"captions_on_page": [
+"Reversing the Grain Playback Direction Randomization",
+"Grain Randomization",
+"Switching a Sample to a Wavetable",
+"Switch to Wavetable Menu"
+]
+},
+{
+"file": "p104-1.webp",
+"page": 104,
+"chapter": "Using Spectral Synthesis",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Selecting Spectral Synthesis",
+"Spectral in the Oscillator Menu"
+]
+},
+{
+"file": "p105-1.webp",
+"page": 105,
+"chapter": "Using Spectral Synthesis",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Spectral Synthesis",
+"Spectral Menu"
+]
+},
+{
+"file": "p105-2.webp",
+"page": 105,
+"chapter": "Using Spectral Synthesis",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Spectral Synthesis",
+"Spectral Menu"
+]
+},
+{
+"file": "p106-1.webp",
+"page": 106,
+"chapter": "Using Spectral Synthesis",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Spectral Waveform",
+"Setting the Sample Start and End",
+"Setting Sample Start and End"
+]
+},
+{
+"file": "p106-2.webp",
+"page": 106,
+"chapter": "Using Spectral Synthesis",
+"width": 270,
+"height": 197,
+"captions_on_page": [
+"Spectral Waveform",
+"Setting the Sample Start and End",
+"Setting Sample Start and End"
+]
+},
+{
+"file": "p107-1.webp",
+"page": 107,
+"chapter": "Using Spectral Synthesis",
+"width": 270,
+"height": 197,
+"captions_on_page": [
+"Setting Sample Hi and Low",
+"Post Warp",
+"Modulating the Low Frequency"
+]
+},
+{
+"file": "p107-2.webp",
+"page": 107,
+"chapter": "Using Spectral Synthesis",
+"width": 470,
+"height": 469,
+"captions_on_page": [
+"Setting Sample Hi and Low",
+"Post Warp",
+"Modulating the Low Frequency"
+]
+},
+{
+"file": "p108-1.webp",
+"page": 108,
+"chapter": "Using Spectral Synthesis",
+"width": 270,
+"height": 476,
+"captions_on_page": [
+"Performing Sample Operations",
+"Spectral Context Menu",
+"Showing the Waveform Display",
+"Waveform Display"
+]
+},
+{
+"file": "p108-2.webp",
+"page": 108,
+"chapter": "Using Spectral Synthesis",
+"width": 270,
+"height": 197,
+"captions_on_page": [
+"Performing Sample Operations",
+"Spectral Context Menu",
+"Showing the Waveform Display",
+"Waveform Display"
+]
+},
+{
+"file": "p109-1.webp",
+"page": 109,
+"chapter": "Using Spectral Synthesis",
+"width": 270,
+"height": 429,
+"captions_on_page": [
+"Loop Menu",
+"Spectral Loop Menu",
+"Setting Manual Mode",
+"Manual Mode"
+]
+},
+{
+"file": "p109-2.webp",
+"page": 109,
+"chapter": "Using Spectral Synthesis",
+"width": 270,
+"height": 196,
+"captions_on_page": [
+"Loop Menu",
+"Spectral Loop Menu",
+"Setting Manual Mode",
+"Manual Mode"
+]
+},
+{
+"file": "p110-1.webp",
+"page": 110,
+"chapter": "Using Spectral Synthesis",
+"width": 270,
+"height": 197,
+"captions_on_page": [
+"Setting the Loop Start and End",
+"Setting Loop Start and End",
+"Setting the Crossfade",
+"Click the",
+"Setting a Loop Cross Fade"
+]
+},
+{
+"file": "p110-2.webp",
+"page": 110,
+"chapter": "Using Spectral Synthesis",
+"width": 344,
+"height": 320,
+"captions_on_page": [
+"Setting the Loop Start and End",
+"Setting Loop Start and End",
+"Setting the Crossfade",
+"Click the",
+"Setting a Loop Cross Fade"
+]
+},
+{
+"file": "p111-1.webp",
+"page": 111,
+"chapter": "Using Spectral Synthesis",
+"width": 270,
+"height": 197,
+"captions_on_page": [
+"Click the",
+"Spectral Unison Settings"
+]
+},
+{
+"file": "p114-1.webp",
+"page": 114,
+"chapter": "Using Spectral Synthesis",
+"width": 270,
+"height": 197,
+"captions_on_page": [
+"Setting the X|Y Control",
+"X|Y Control",
+"Y Axis Menu"
+]
+},
+{
+"file": "p114-2.webp",
+"page": 114,
+"chapter": "Using Spectral Synthesis",
+"width": 540,
+"height": 671,
+"captions_on_page": [
+"Setting the X|Y Control",
+"X|Y Control",
+"Y Axis Menu"
+]
+},
+{
+"file": "p115-1.webp",
+"page": 115,
+"chapter": "Using Spectral Synthesis",
+"width": 540,
+"height": 683,
+"captions_on_page": [
+"Spec Flt Cutoff",
+"Spec Flt Wet/Dry",
+"Freq Lo",
+"Freq Hi",
+"Y Axis Modulation Menu"
+]
+},
+{
+"file": "p116-1.webp",
+"page": 116,
+"chapter": "Using Spectral Synthesis",
+"width": 270,
+"height": 127,
+"captions_on_page": [
+"Setting Spectral Parameters",
+"Spectral Parameters",
+"Spectral Scan Menu"
+]
+},
+{
+"file": "p116-2.webp",
+"page": 116,
+"chapter": "Using Spectral Synthesis",
+"width": 270,
+"height": 608,
+"captions_on_page": [
+"Setting Spectral Parameters",
+"Spectral Parameters",
+"Spectral Scan Menu"
+]
+},
+{
+"file": "p117-1.webp",
+"page": 117,
+"chapter": "Using Spectral Synthesis",
+"width": 270,
+"height": 127,
+"captions_on_page": [
+"Creating a Custom Curve",
+"Filter Display"
+]
+},
+{
+"file": "p118-1.webp",
+"page": 118,
+"chapter": "Using Spectral Synthesis",
+"width": 162,
+"height": 117,
+"captions_on_page": [
+"Spectral Filter Mask Editor"
+]
+},
+{
+"file": "p118-2.webp",
+"page": 118,
+"chapter": "Using Spectral Synthesis",
+"width": 530,
+"height": 350,
+"captions_on_page": [
+"Spectral Filter Mask Editor"
+]
+},
+{
+"file": "p118-3.webp",
+"page": 118,
+"chapter": "Using Spectral Synthesis",
+"width": 530,
+"height": 350,
+"captions_on_page": [
+"Spectral Filter Mask Editor"
+]
+},
+{
+"file": "p119-1.webp",
+"page": 119,
+"chapter": "Using Spectral Synthesis",
+"width": 161,
+"height": 119,
+"captions_on_page": []
+},
+{
+"file": "p119-2.webp",
+"page": 119,
+"chapter": "Using Spectral Synthesis",
+"width": 163,
+"height": 118,
+"captions_on_page": []
+},
+{
+"file": "p119-3.webp",
+"page": 119,
+"chapter": "Using Spectral Synthesis",
+"width": 162,
+"height": 118,
+"captions_on_page": []
+},
+{
+"file": "p119-4.webp",
+"page": 119,
+"chapter": "Using Spectral Synthesis",
+"width": 162,
+"height": 118,
+"captions_on_page": []
+},
+{
+"file": "p119-5.webp",
+"page": 119,
+"chapter": "Using Spectral Synthesis",
+"width": 162,
+"height": 123,
+"captions_on_page": []
+},
+{
+"file": "p120-1.webp",
+"page": 120,
+"chapter": "Using Spectral Synthesis",
+"width": 530,
+"height": 380,
+"captions_on_page": [
+"Choosing a Filter Preset",
+"Filter Presets Menu",
+"Choosing a Wavetable",
+"Filter Menu"
+]
+},
+{
+"file": "p120-2.webp",
+"page": 120,
+"chapter": "Using Spectral Synthesis",
+"width": 270,
+"height": 384,
+"captions_on_page": [
+"Choosing a Filter Preset",
+"Filter Presets Menu",
+"Choosing a Wavetable",
+"Filter Menu"
+]
+},
+{
+"file": "p121-1.webp",
+"page": 121,
+"chapter": "Using Spectral Synthesis",
+"width": 270,
+"height": 125,
+"captions_on_page": [
+"Filter Selected",
+"Setting the Warp Mode"
+]
+},
+{
+"file": "p122-1.webp",
+"page": 122,
+"chapter": "Using Spectral Synthesis",
+"width": 474,
+"height": 416,
+"captions_on_page": [
+"Switching a Sample to a Wavetable",
+"Switch to Wavetable Menu"
+]
+},
+{
+"file": "p123-1.webp",
+"page": 123,
+"chapter": "Using the Sub Oscillator",
+"width": 1190,
+"height": 740,
+"captions_on_page": [
+"Sub Oscillator"
+]
+},
+{
+"file": "p128-1.webp",
+"page": 128,
+"chapter": "Using the Noise Oscillator",
+"width": 1190,
+"height": 740,
+"captions_on_page": [
+"Noise Oscillator"
+]
+},
+{
+"file": "p129-1.webp",
+"page": 129,
+"chapter": "Using the Noise Oscillator",
+"width": 100,
+"height": 320,
+"captions_on_page": [
+"Exploring the Noise Oscillator",
+"Enabling the Noise Osc",
+"Noise Osc Enabled",
+"Loading a Preset",
+"Noise Menu"
+]
+},
+{
+"file": "p129-2.webp",
+"page": 129,
+"chapter": "Using the Noise Oscillator",
+"width": 100,
+"height": 320,
+"captions_on_page": [
+"Exploring the Noise Oscillator",
+"Enabling the Noise Osc",
+"Noise Osc Enabled",
+"Loading a Preset",
+"Noise Menu"
+]
+},
+{
+"file": "p129-3.webp",
+"page": 129,
+"chapter": "Using the Noise Oscillator",
+"width": 225,
+"height": 320,
+"captions_on_page": [
+"Exploring the Noise Oscillator",
+"Enabling the Noise Osc",
+"Noise Osc Enabled",
+"Loading a Preset",
+"Noise Menu"
+]
+},
+{
+"file": "p133-1.webp",
+"page": 133,
+"chapter": "Using the Filter Modules",
+"width": 1190,
+"height": 740,
+"captions_on_page": [
+"Serum Filter Modules"
+]
+},
+{
+"file": "p134-1.webp",
+"page": 134,
+"chapter": "Using the Filter Modules",
+"width": 204,
+"height": 320,
+"captions_on_page": [
+"Exploring the Filter Modules",
+"Routing an Oscillator",
+"Filter Routing"
+]
+},
+{
+"file": "p134-2.webp",
+"page": 134,
+"chapter": "Using the Filter Modules",
+"width": 204,
+"height": 320,
+"captions_on_page": [
+"Exploring the Filter Modules",
+"Routing an Oscillator",
+"Filter Routing"
+]
+},
+{
+"file": "p134-3.webp",
+"page": 134,
+"chapter": "Using the Filter Modules",
+"width": 204,
+"height": 264,
+"captions_on_page": [
+"Exploring the Filter Modules",
+"Routing an Oscillator",
+"Filter Routing"
+]
+},
+{
+"file": "p135-1.webp",
+"page": 135,
+"chapter": "Using the Filter Modules",
+"width": 204,
+"height": 320,
+"captions_on_page": [
+"Filter Menu",
+"Filter Types and Var Parameter Functions",
+"MG Low",
+"State-Variable Low-Pass"
+]
+},
+{
+"file": "p140-1.webp",
+"page": 140,
+"chapter": "Using the Filter Modules",
+"width": 204,
+"height": 167,
+"captions_on_page": [
+"Filter Display Options",
+"Filter Display Menu"
+]
+},
+{
+"file": "p140-2.webp",
+"page": 140,
+"chapter": "Using the Filter Modules",
+"width": 204,
+"height": 168,
+"captions_on_page": [
+"Filter Display Options",
+"Filter Display Menu"
+]
+},
+{
+"file": "p140-3.webp",
+"page": 140,
+"chapter": "Using the Filter Modules",
+"width": 226,
+"height": 320,
+"captions_on_page": [
+"Filter Display Options",
+"Filter Display Menu"
+]
+},
+{
+"file": "p141-1.webp",
+"page": 141,
+"chapter": "Using the Filter Modules",
+"width": 204,
+"height": 167,
+"captions_on_page": [
+"Setting Filter Parameters",
+"Use the"
+]
+},
+{
+"file": "p142-1.webp",
+"page": 142,
+"chapter": "Using the Filter Modules",
+"width": 204,
+"height": 198,
+"captions_on_page": [
+"Graphical Adjustments",
+"Drive Clean Mode"
+]
+},
+{
+"file": "p142-2.webp",
+"page": 142,
+"chapter": "Using the Filter Modules",
+"width": 236,
+"height": 323,
+"captions_on_page": [
+"Graphical Adjustments",
+"Drive Clean Mode"
+]
+},
+{
+"file": "p144-1.webp",
+"page": 144,
+"chapter": "Using the Mixer",
+"width": 1190,
+"height": 740,
+"captions_on_page": [
+"Exploring the Mixer"
+]
+},
+{
+"file": "p144-2.webp",
+"page": 144,
+"chapter": "Using the Mixer",
+"width": 506,
+"height": 68,
+"captions_on_page": [
+"Exploring the Mixer"
+]
+},
+{
+"file": "p145-1.webp",
+"page": 145,
+"chapter": "Using the Mixer",
+"width": 1188,
+"height": 320,
+"captions_on_page": [
+"Mixer for the Init Patch",
+"Oscillator Header",
+"Oscillator Channel",
+"Oscillator Channel Menu"
+]
+},
+{
+"file": "p145-2.webp",
+"page": 145,
+"chapter": "Using the Mixer",
+"width": 110,
+"height": 320,
+"captions_on_page": [
+"Mixer for the Init Patch",
+"Oscillator Header",
+"Oscillator Channel",
+"Oscillator Channel Menu"
+]
+},
+{
+"file": "p145-3.webp",
+"page": 145,
+"chapter": "Using the Mixer",
+"width": 110,
+"height": 320,
+"captions_on_page": [
+"Mixer for the Init Patch",
+"Oscillator Header",
+"Oscillator Channel",
+"Oscillator Channel Menu"
+]
+},
+{
+"file": "p146-1.webp",
+"page": 146,
+"chapter": "Using the Mixer",
+"width": 108,
+"height": 65,
+"captions_on_page": [
+"Sending to the Busses",
+"Sending to the Busses"
+]
+},
+{
+"file": "p147-1.webp",
+"page": 147,
+"chapter": "Using the Mixer",
+"width": 108,
+"height": 143,
+"captions_on_page": [
+"Setting Pan and Levels",
+"Setting Pan and Levels"
+]
+},
+{
+"file": "p148-1.webp",
+"page": 148,
+"chapter": "Using the Mixer",
+"width": 112,
+"height": 320,
+"captions_on_page": [
+"Mixing Filters",
+"Filter Channel Menu",
+"Filter Channel Menu",
+"Filter Adjustments"
+]
+},
+{
+"file": "p148-2.webp",
+"page": 148,
+"chapter": "Using the Mixer",
+"width": 110,
+"height": 320,
+"captions_on_page": [
+"Mixing Filters",
+"Filter Channel Menu",
+"Filter Channel Menu",
+"Filter Adjustments"
+]
+},
+{
+"file": "p148-3.webp",
+"page": 148,
+"chapter": "Using the Mixer",
+"width": 110,
+"height": 110,
+"captions_on_page": [
+"Mixing Filters",
+"Filter Channel Menu",
+"Filter Channel Menu",
+"Filter Adjustments"
+]
+},
+{
+"file": "p150-1.webp",
+"page": 150,
+"chapter": "Using the Mixer",
+"width": 220,
+"height": 320,
+"captions_on_page": [
+"Mixing the Busses",
+"Click the",
+"Mixing Busses",
+"Filter Channel Menu",
+"Setting Levels",
+"Setting Levels"
+]
+},
+{
+"file": "p150-2.webp",
+"page": 150,
+"chapter": "Using the Mixer",
+"width": 110,
+"height": 320,
+"captions_on_page": [
+"Mixing the Busses",
+"Click the",
+"Mixing Busses",
+"Filter Channel Menu",
+"Setting Levels",
+"Setting Levels"
+]
+},
+{
+"file": "p150-3.webp",
+"page": 150,
+"chapter": "Using the Mixer",
+"width": 108,
+"height": 143,
+"captions_on_page": [
+"Mixing the Busses",
+"Click the",
+"Mixing Busses",
+"Filter Channel Menu",
+"Setting Levels",
+"Setting Levels"
+]
+},
+{
+"file": "p151-1.webp",
+"page": 151,
+"chapter": "Using the Mixer",
+"width": 198,
+"height": 320,
+"captions_on_page": [
+"Setting the Main and Direct Levels",
+"Click the",
+"Setting Main and Direct Levels"
+]
+},
+{
+"file": "p152-1.webp",
+"page": 152,
+"chapter": "Using Serum FX",
+"width": 1190,
+"height": 740,
+"captions_on_page": [
+"Using the FX Module",
+"Click the"
+]
+},
+{
+"file": "p152-2.webp",
+"page": 152,
+"chapter": "Using Serum FX",
+"width": 506,
+"height": 68,
+"captions_on_page": [
+"Using the FX Module",
+"Click the"
+]
+},
+{
+"file": "p153-1.webp",
+"page": 153,
+"chapter": "Using Serum FX",
+"width": 1190,
+"height": 740,
+"captions_on_page": [
+"Click the",
+"Selecting a Rack",
+"Serum FX Racks"
+]
+},
+{
+"file": "p153-2.webp",
+"page": 153,
+"chapter": "Using Serum FX",
+"width": 377,
+"height": 253,
+"captions_on_page": [
+"Click the",
+"Selecting a Rack",
+"Serum FX Racks"
+]
+},
+{
+"file": "p154-1.webp",
+"page": 154,
+"chapter": "Using Serum FX",
+"width": 1188,
+"height": 393,
+"captions_on_page": [
+"Loading Rack Presets",
+"FX Presets Menu",
+"Acid Dist Delay Rack Preset"
+]
+},
+{
+"file": "p154-2.webp",
+"page": 154,
+"chapter": "Using Serum FX",
+"width": 428,
+"height": 315,
+"captions_on_page": [
+"Loading Rack Presets",
+"FX Presets Menu",
+"Acid Dist Delay Rack Preset"
+]
+},
+{
+"file": "p155-1.webp",
+"page": 155,
+"chapter": "Using Serum FX",
+"width": 1188,
+"height": 391,
+"captions_on_page": [
+"Adding Modules",
+"Click the",
+"Adding an FX Module",
+"Module Added to the Rack"
+]
+},
+{
+"file": "p155-2.webp",
+"page": 155,
+"chapter": "Using Serum FX",
+"width": 268,
+"height": 498,
+"captions_on_page": [
+"Adding Modules",
+"Click the",
+"Adding an FX Module",
+"Module Added to the Rack"
+]
+},
+{
+"file": "p156-1.webp",
+"page": 156,
+"chapter": "Using Serum FX",
+"width": 1188,
+"height": 444,
+"captions_on_page": [
+"Reordering Modules",
+"Reordering Modules",
+"Copying a Module",
+"Copying a Module"
+]
+},
+{
+"file": "p156-2.webp",
+"page": 156,
+"chapter": "Using Serum FX",
+"width": 1190,
+"height": 275,
+"captions_on_page": [
+"Reordering Modules",
+"Reordering Modules",
+"Copying a Module",
+"Copying a Module"
+]
+},
+{
+"file": "p157-1.webp",
+"page": 157,
+"chapter": "Using Serum FX",
+"width": 1188,
+"height": 391,
+"captions_on_page": [
+"Bypassing a Module",
+"Bypass Effect Button",
+"Removing a Module",
+"Click the",
+"Remove an FX Module"
+]
+},
+{
+"file": "p157-2.webp",
+"page": 157,
+"chapter": "Using Serum FX",
+"width": 265,
+"height": 175,
+"captions_on_page": [
+"Bypassing a Module",
+"Bypass Effect Button",
+"Removing a Module",
+"Click the",
+"Remove an FX Module"
+]
+},
+{
+"file": "p159-1.webp",
+"page": 159,
+"chapter": "Using Serum FX",
+"width": 783,
+"height": 523,
+"captions_on_page": [
+"Modulating FX Parameters"
+]
+},
+{
+"file": "p160-1.webp",
+"page": 160,
+"chapter": "Using Serum FX",
+"width": 742,
+"height": 303,
+"captions_on_page": [
+"Exploring FX Module Operations",
+"Click the",
+"Module Menu",
+"Save FX Preset",
+"Save as Default Preset",
+"Duplicate FX Module",
+"Remove FX Module"
+]
+},
+{
+"file": "p161-1.webp",
+"page": 161,
+"chapter": "Using Serum FX",
+"width": 876,
+"height": 69,
+"captions_on_page": [
+"Exploring Individual FX Modules",
+"Bode Module"
+]
+},
+{
+"file": "p162-1.webp",
+"page": 162,
+"chapter": "Using Serum FX",
+"width": 876,
+"height": 69,
+"captions_on_page": [
+"Chorus Module",
+"Compressor Module"
+]
+},
+{
+"file": "p162-2.webp",
+"page": 162,
+"chapter": "Using Serum FX",
+"width": 876,
+"height": 99,
+"captions_on_page": [
+"Chorus Module",
+"Compressor Module"
+]
+},
+{
+"file": "p164-1.webp",
+"page": 164,
+"chapter": "Using Serum FX",
+"width": 876,
+"height": 99,
+"captions_on_page": [
+"Convolve Module"
+]
+},
+{
+"file": "p165-1.webp",
+"page": 165,
+"chapter": "Using Serum FX",
+"width": 876,
+"height": 99,
+"captions_on_page": [
+"Delay Module"
+]
+},
+{
+"file": "p167-1.webp",
+"page": 167,
+"chapter": "Using Serum FX",
+"width": 876,
+"height": 99,
+"captions_on_page": [
+"Manipulating the Delay Filter",
+"Distortion Module"
+]
+},
+{
+"file": "p167-2.webp",
+"page": 167,
+"chapter": "Using Serum FX",
+"width": 135,
+"height": 87,
+"captions_on_page": [
+"Manipulating the Delay Filter",
+"Distortion Module"
+]
+},
+{
+"file": "p167-3.webp",
+"page": 167,
+"chapter": "Using Serum FX",
+"width": 135,
+"height": 87,
+"captions_on_page": [
+"Manipulating the Delay Filter",
+"Distortion Module"
+]
+},
+{
+"file": "p167-4.webp",
+"page": 167,
+"chapter": "Using Serum FX",
+"width": 135,
+"height": 87,
+"captions_on_page": [
+"Manipulating the Delay Filter",
+"Distortion Module"
+]
+},
+{
+"file": "p168-1.webp",
+"page": 168,
+"chapter": "Using Serum FX",
+"width": 174,
+"height": 87,
+"captions_on_page": []
+},
+{
+"file": "p169-1.webp",
+"page": 169,
+"chapter": "Using Serum FX",
+"width": 876,
+"height": 99,
+"captions_on_page": [
+"Equalizer Module"
+]
+},
+{
+"file": "p170-1.webp",
+"page": 170,
+"chapter": "Using Serum FX",
+"width": 876,
+"height": 99,
+"captions_on_page": [
+"Filter Module"
+]
+},
+{
+"file": "p171-1.webp",
+"page": 171,
+"chapter": "Using Serum FX",
+"width": 122,
+"height": 87,
+"captions_on_page": [
+"Graphical Adjustments"
+]
+},
+{
+"file": "p171-2.webp",
+"page": 171,
+"chapter": "Using Serum FX",
+"width": 122,
+"height": 87,
+"captions_on_page": [
+"Graphical Adjustments"
+]
+},
+{
+"file": "p172-1.webp",
+"page": 172,
+"chapter": "Using Serum FX",
+"width": 122,
+"height": 87,
+"captions_on_page": [
+"Flanger Module"
+]
+},
+{
+"file": "p172-2.webp",
+"page": 172,
+"chapter": "Using Serum FX",
+"width": 122,
+"height": 87,
+"captions_on_page": [
+"Flanger Module"
+]
+},
+{
+"file": "p172-3.webp",
+"page": 172,
+"chapter": "Using Serum FX",
+"width": 846,
+"height": 69,
+"captions_on_page": [
+"Flanger Module"
+]
+},
+{
+"file": "p173-1.webp",
+"page": 173,
+"chapter": "Using Serum FX",
+"width": 876,
+"height": 69,
+"captions_on_page": [
+"Hyper/Dimension Module"
+]
+},
+{
+"file": "p174-1.webp",
+"page": 174,
+"chapter": "Using Serum FX",
+"width": 876,
+"height": 69,
+"captions_on_page": [
+"Phaser Module"
+]
+},
+{
+"file": "p175-1.webp",
+"page": 175,
+"chapter": "Using Serum FX",
+"width": 876,
+"height": 99,
+"captions_on_page": [
+"Reverb Module"
+]
+},
+{
+"file": "p177-1.webp",
+"page": 177,
+"chapter": "Using Serum FX",
+"width": 876,
+"height": 89,
+"captions_on_page": [
+"Splitter L/H",
+"Splitter L/H Module"
+]
+},
+{
+"file": "p178-1.webp",
+"page": 178,
+"chapter": "Using Serum FX",
+"width": 1188,
+"height": 387,
+"captions_on_page": [
+"Splitter L/H Module Example"
+]
+},
+{
+"file": "p179-1.webp",
+"page": 179,
+"chapter": "Using Serum FX",
+"width": 876,
+"height": 89,
+"captions_on_page": [
+"Splitter L/M/H",
+"Splitter L/M/H Module",
+"Splitter L/M/H Module Example"
+]
+},
+{
+"file": "p179-2.webp",
+"page": 179,
+"chapter": "Using Serum FX",
+"width": 1188,
+"height": 387,
+"captions_on_page": [
+"Splitter L/M/H",
+"Splitter L/M/H Module",
+"Splitter L/M/H Module Example"
+]
+},
+{
+"file": "p180-1.webp",
+"page": 180,
+"chapter": "Using Serum FX",
+"width": 876,
+"height": 89,
+"captions_on_page": [
+"Splitter MS",
+"Splitter M/S Module"
+]
+},
+{
+"file": "p181-1.webp",
+"page": 181,
+"chapter": "Using Serum FX",
+"width": 1188,
+"height": 387,
+"captions_on_page": [
+"Splitter M/S Module Example"
+]
+},
+{
+"file": "p182-1.webp",
+"page": 182,
+"chapter": "Using Serum FX",
+"width": 876,
+"height": 69,
+"captions_on_page": [
+"Utility Module"
+]
+},
+{
+"file": "p183-1.webp",
+"page": 183,
+"chapter": "Exploring Sound Modulation",
+"width": 1400,
+"height": 871,
+"captions_on_page": [
+"Serum Sound Modulation",
+"Using Envelopes"
+]
+},
+{
+"file": "p184-1.webp",
+"page": 184,
+"chapter": "Exploring Sound Modulation",
+"width": 1190,
+"height": 740,
+"captions_on_page": [
+"Serum Envelopes",
+"Configuring Envelopes",
+"Click the",
+"Envelope Operations"
+]
+},
+{
+"file": "p184-2.webp",
+"page": 184,
+"chapter": "Exploring Sound Modulation",
+"width": 352,
+"height": 260,
+"captions_on_page": [
+"Serum Envelopes",
+"Configuring Envelopes",
+"Click the",
+"Envelope Operations"
+]
+},
+{
+"file": "p186-1.webp",
+"page": 186,
+"chapter": "Exploring Sound Modulation",
+"width": 354,
+"height": 261,
+"captions_on_page": [
+"Modifying Envelopes",
+"Graphical Envelope Edits",
+"Curve Adjustments"
+]
+},
+{
+"file": "p186-2.webp",
+"page": 186,
+"chapter": "Exploring Sound Modulation",
+"width": 352,
+"height": 142,
+"captions_on_page": [
+"Modifying Envelopes",
+"Graphical Envelope Edits",
+"Curve Adjustments"
+]
+},
+{
+"file": "p187-1.webp",
+"page": 187,
+"chapter": "Exploring Sound Modulation",
+"width": 516,
+"height": 583,
+"captions_on_page": [
+"Assigning an Envelope to a Control",
+"Bypass and Remove Assignments"
+]
+},
+{
+"file": "p187-2.webp",
+"page": 187,
+"chapter": "Exploring Sound Modulation",
+"width": 352,
+"height": 260,
+"captions_on_page": [
+"Assigning an Envelope to a Control",
+"Bypass and Remove Assignments"
+]
+},
+{
+"file": "p188-1.webp",
+"page": 188,
+"chapter": "Exploring Sound Modulation",
+"width": 1190,
+"height": 740,
+"captions_on_page": [
+"Using LFOs",
+"Serum LFOs",
+"Configuring LFOs",
+"Select an LFO",
+"LFO Operations"
+]
+},
+{
+"file": "p188-2.webp",
+"page": 188,
+"chapter": "Exploring Sound Modulation",
+"width": 522,
+"height": 260,
+"captions_on_page": [
+"Using LFOs",
+"Serum LFOs",
+"Configuring LFOs",
+"Select an LFO",
+"LFO Operations"
+]
+},
+{
+"file": "p189-1.webp",
+"page": 189,
+"chapter": "Exploring Sound Modulation",
+"width": 522,
+"height": 260,
+"captions_on_page": [
+"Drawing an LFO Graph",
+"LFO Graph Tools",
+"Ramp Up",
+"Ramp Down"
+]
+},
+{
+"file": "p193-1.webp",
+"page": 193,
+"chapter": "Exploring Sound Modulation",
+"width": 930,
+"height": 450,
+"captions_on_page": [
+"Using the LFO Editor",
+"Click the",
+"LFO Editor"
+]
+},
+{
+"file": "p194-1.webp",
+"page": 194,
+"chapter": "Exploring Sound Modulation",
+"width": 522,
+"height": 437,
+"captions_on_page": [
+"Assigning an LFO to a Control",
+"Mod Source with One Destination Assigned"
+]
+},
+{
+"file": "p194-2.webp",
+"page": 194,
+"chapter": "Exploring Sound Modulation",
+"width": 238,
+"height": 168,
+"captions_on_page": [
+"Assigning an LFO to a Control",
+"Mod Source with One Destination Assigned"
+]
+},
+{
+"file": "p195-1.webp",
+"page": 195,
+"chapter": "Exploring Sound Modulation",
+"width": 205,
+"height": 133,
+"captions_on_page": [
+"Hovering to Show Destinations",
+"Bypass and Remove Assignments",
+"Setting the Modulator Depth",
+"Setting Modulator Depth"
+]
+},
+{
+"file": "p195-2.webp",
+"page": 195,
+"chapter": "Exploring Sound Modulation",
+"width": 522,
+"height": 260,
+"captions_on_page": [
+"Hovering to Show Destinations",
+"Bypass and Remove Assignments",
+"Setting the Modulator Depth",
+"Setting Modulator Depth"
+]
+},
+{
+"file": "p195-3.webp",
+"page": 195,
+"chapter": "Exploring Sound Modulation",
+"width": 98,
+"height": 64,
+"captions_on_page": [
+"Hovering to Show Destinations",
+"Bypass and Remove Assignments",
+"Setting the Modulator Depth",
+"Setting Modulator Depth"
+]
+},
+{
+"file": "p197-1.webp",
+"page": 197,
+"chapter": "Exploring Sound Modulation",
+"width": 522,
+"height": 463,
+"captions_on_page": [
+"Copying a Wavetable to an LFO"
+]
+},
+{
+"file": "p198-1.webp",
+"page": 198,
+"chapter": "Exploring Sound Modulation",
+"width": 397,
+"height": 384,
+"captions_on_page": [
+"Modulating LFO Points"
+]
+},
+{
+"file": "p199-1.webp",
+"page": 199,
+"chapter": "Exploring Sound Modulation",
+"width": 672,
+"height": 348,
+"captions_on_page": [
+"Modulating LFO Points Using Menus",
+"LFO Point Bus Menu"
+]
+},
+{
+"file": "p200-1.webp",
+"page": 200,
+"chapter": "Exploring Sound Modulation",
+"width": 522,
+"height": 260,
+"captions_on_page": [
+"Using Context Menus with Controls",
+"Menu Option",
+"Mod Source",
+"Edit Custom Curve",
+"Bypass Modulator"
+]
+},
+{
+"file": "p202-1.webp",
+"page": 202,
+"chapter": "Exploring Sound Modulation",
+"width": 1190,
+"height": 740,
+"captions_on_page": [
+"Serum Velocity and Notes",
+"Velocity Settings",
+"Velocity Graph"
+]
+},
+{
+"file": "p202-2.webp",
+"page": 202,
+"chapter": "Exploring Sound Modulation",
+"width": 150,
+"height": 170,
+"captions_on_page": [
+"Serum Velocity and Notes",
+"Velocity Settings",
+"Velocity Graph"
+]
+},
+{
+"file": "p203-1.webp",
+"page": 203,
+"chapter": "Exploring Sound Modulation",
+"width": 148,
+"height": 136,
+"captions_on_page": [
+"Drawing the Graph",
+"Modified Velocity Graph"
+]
+},
+{
+"file": "p203-2.webp",
+"page": 203,
+"chapter": "Exploring Sound Modulation",
+"width": 148,
+"height": 136,
+"captions_on_page": [
+"Drawing the Graph",
+"Modified Velocity Graph"
+]
+},
+{
+"file": "p203-3.webp",
+"page": 203,
+"chapter": "Exploring Sound Modulation",
+"width": 148,
+"height": 136,
+"captions_on_page": [
+"Drawing the Graph",
+"Modified Velocity Graph"
+]
+},
+{
+"file": "p203-4.webp",
+"page": 203,
+"chapter": "Exploring Sound Modulation",
+"width": 148,
+"height": 136,
+"captions_on_page": [
+"Drawing the Graph",
+"Modified Velocity Graph"
+]
+},
+{
+"file": "p203-5.webp",
+"page": 203,
+"chapter": "Exploring Sound Modulation",
+"width": 150,
+"height": 170,
+"captions_on_page": [
+"Drawing the Graph",
+"Modified Velocity Graph"
+]
+},
+{
+"file": "p204-1.webp",
+"page": 204,
+"chapter": "Exploring Sound Modulation",
+"width": 304,
+"height": 399,
+"captions_on_page": [
+"Modulating a Control",
+"Velocity Modulating Cutoff",
+"Note Settings",
+"Note Graph"
+]
+},
+{
+"file": "p204-2.webp",
+"page": 204,
+"chapter": "Exploring Sound Modulation",
+"width": 150,
+"height": 170,
+"captions_on_page": [
+"Modulating a Control",
+"Velocity Modulating Cutoff",
+"Note Settings",
+"Note Graph"
+]
+},
+{
+"file": "p205-1.webp",
+"page": 205,
+"chapter": "Exploring Sound Modulation",
+"width": 150,
+"height": 170,
+"captions_on_page": [
+"Drawing the Graph",
+"Modified Note Graph",
+"Modulating a Control",
+"Note Modulating Resonance"
+]
+},
+{
+"file": "p205-2.webp",
+"page": 205,
+"chapter": "Exploring Sound Modulation",
+"width": 304,
+"height": 349,
+"captions_on_page": [
+"Drawing the Graph",
+"Modified Note Graph",
+"Modulating a Control",
+"Note Modulating Resonance"
+]
+},
+{
+"file": "p206-1.webp",
+"page": 206,
+"chapter": "Exploring Sound Modulation",
+"width": 1190,
+"height": 740,
+"captions_on_page": [
+"Using Macros",
+"Macros Pane"
+]
+},
+{
+"file": "p207-1.webp",
+"page": 207,
+"chapter": "Exploring Sound Modulation",
+"width": 344,
+"height": 409,
+"captions_on_page": [
+"Assigning a Macro",
+"Assigning a Macro to a Control",
+"Macro with One Destination Assigned"
+]
+},
+{
+"file": "p207-2.webp",
+"page": 207,
+"chapter": "Exploring Sound Modulation",
+"width": 344,
+"height": 274,
+"captions_on_page": [
+"Assigning a Macro",
+"Assigning a Macro to a Control",
+"Macro with One Destination Assigned"
+]
+},
+{
+"file": "p208-1.webp",
+"page": 208,
+"chapter": "Exploring Sound Modulation",
+"width": 328,
+"height": 405,
+"captions_on_page": [
+"Hovering to Show Destinations",
+"Using an Oscillator as a Modulator"
+]
+},
+{
+"file": "p208-2.webp",
+"page": 208,
+"chapter": "Exploring Sound Modulation",
+"width": 710,
+"height": 638,
+"captions_on_page": [
+"Hovering to Show Destinations",
+"Using an Oscillator as a Modulator"
+]
+},
+{
+"file": "p209-1.webp",
+"page": 209,
+"chapter": "Using the Modulation Matrix",
+"width": 1190,
+"height": 740,
+"captions_on_page": [
+"Serum Modulation Matrix"
+]
+},
+{
+"file": "p210-1.webp",
+"page": 210,
+"chapter": "Using the Modulation Matrix",
+"width": 506,
+"height": 68,
+"captions_on_page": [
+"Exploring the Modulation Matrix",
+"Accessing the Modulation Matrix"
+]
+},
+{
+"file": "p212-1.webp",
+"page": 212,
+"chapter": "Using the Modulation Matrix",
+"width": 1190,
+"height": 740,
+"captions_on_page": [
+"Click the"
+]
+},
+{
+"file": "p213-1.webp",
+"page": 213,
+"chapter": "Using the Modulation Matrix",
+"width": 1188,
+"height": 320,
+"captions_on_page": [
+"Moving Modulations in the Matrix",
+"Moving a Modulation",
+"Bypassing a Modulation",
+"Removing a Modulation"
+]
+},
+{
+"file": "p214-1.webp",
+"page": 214,
+"chapter": "Using the Modulation Matrix",
+"width": 616,
+"height": 320,
+"captions_on_page": [
+"Performing Matrix Operations",
+"Click the",
+"Modulation Matrix Menu",
+"Assignments on",
+"Preset Change)",
+"Create Vibrato",
+"Create Velo->Amp",
+"Apply and Delete"
+]
+},
+{
+"file": "p215-1.webp",
+"page": 215,
+"chapter": "Setting Voicing and Portamento",
+"width": 1190,
+"height": 740,
+"captions_on_page": [
+"Serum Voicing and Portamento",
+"Voicing Settings",
+"Serum Voicing Controls"
+]
+},
+{
+"file": "p215-2.webp",
+"page": 215,
+"chapter": "Setting Voicing and Portamento",
+"width": 152,
+"height": 91,
+"captions_on_page": [
+"Serum Voicing and Portamento",
+"Voicing Settings",
+"Serum Voicing Controls"
+]
+},
+{
+"file": "p217-1.webp",
+"page": 217,
+"chapter": "Setting Voicing and Portamento",
+"width": 333,
+"height": 181,
+"captions_on_page": [
+"Limiting Polyphony",
+"Serum Voicing Controls",
+"Voice Steal Priority",
+"Portamento Settings",
+"Serum Portamento Controls"
+]
+},
+{
+"file": "p217-2.webp",
+"page": 217,
+"chapter": "Setting Voicing and Portamento",
+"width": 152,
+"height": 90,
+"captions_on_page": [
+"Limiting Polyphony",
+"Serum Voicing Controls",
+"Voice Steal Priority",
+"Portamento Settings",
+"Serum Portamento Controls"
+]
+},
+{
+"file": "p219-1.webp",
+"page": 219,
+"chapter": "Using Clips",
+"width": 1190,
+"height": 740,
+"captions_on_page": [
+"Click the",
+"Serum Clip Mode"
+]
+},
+{
+"file": "p220-1.webp",
+"page": 220,
+"chapter": "Using Clips",
+"width": 1190,
+"height": 740,
+"captions_on_page": [
+"Exploring the CLIP Module",
+"Clips Interface"
+]
+},
+{
+"file": "p221-1.webp",
+"page": 221,
+"chapter": "Using Clips",
+"width": 164,
+"height": 119,
+"captions_on_page": [
+"Setting Global Parameters",
+"Global Clip Settings",
+"Bank Menu"
+]
+},
+{
+"file": "p221-2.webp",
+"page": 221,
+"chapter": "Using Clips",
+"width": 257,
+"height": 215,
+"captions_on_page": [
+"Setting Global Parameters",
+"Global Clip Settings",
+"Bank Menu"
+]
+},
+{
+"file": "p222-1.webp",
+"page": 222,
+"chapter": "Using Clips",
+"width": 1190,
+"height": 740,
+"captions_on_page": [
+"Bank Loaded",
+"Creating a New Clip Bank",
+"Creating a New Clip Bank"
+]
+},
+{
+"file": "p222-2.webp",
+"page": 222,
+"chapter": "Using Clips",
+"width": 436,
+"height": 323,
+"captions_on_page": [
+"Bank Loaded",
+"Creating a New Clip Bank",
+"Creating a New Clip Bank"
+]
+},
+{
+"file": "p223-1.webp",
+"page": 223,
+"chapter": "Using Clips",
+"width": 164,
+"height": 119,
+"captions_on_page": [
+"Saving Clip Banks",
+"Clip Bank Modified",
+"Save Clip Bank"
+]
+},
+{
+"file": "p223-2.webp",
+"page": 223,
+"chapter": "Using Clips",
+"width": 437,
+"height": 257,
+"captions_on_page": [
+"Saving Clip Banks",
+"Clip Bank Modified",
+"Save Clip Bank"
+]
+},
+{
+"file": "p224-1.webp",
+"page": 224,
+"chapter": "Using Clips",
+"width": 1024,
+"height": 527,
+"captions_on_page": [
+"Working with the Piano Roll",
+"Piano Roll",
+"Clip Slots"
+]
+},
+{
+"file": "p224-2.webp",
+"page": 224,
+"chapter": "Using Clips",
+"width": 874,
+"height": 89,
+"captions_on_page": [
+"Working with the Piano Roll",
+"Piano Roll",
+"Clip Slots"
+]
+},
+{
+"file": "p225-1.webp",
+"page": 225,
+"chapter": "Using Clips",
+"width": 401,
+"height": 376,
+"captions_on_page": [
+"Adding Notes to the Piano Roll",
+"Selecting Notes"
+]
+},
+{
+"file": "p225-2.webp",
+"page": 225,
+"chapter": "Using Clips",
+"width": 354,
+"height": 202,
+"captions_on_page": [
+"Adding Notes to the Piano Roll",
+"Selecting Notes"
+]
+},
+{
+"file": "p226-1.webp",
+"page": 226,
+"chapter": "Using Clips",
+"width": 354,
+"height": 202,
+"captions_on_page": [
+"Moving a Note",
+"Keyboard Shortcut"
+]
+},
+{
+"file": "p228-1.webp",
+"page": 228,
+"chapter": "Using Clips",
+"width": 225,
+"height": 143,
+"captions_on_page": [
+"Setting the Grid Size",
+"Grid Menu",
+"Zooming the Piano Roll"
+]
+},
+{
+"file": "p228-2.webp",
+"page": 228,
+"chapter": "Using Clips",
+"width": 1024,
+"height": 529,
+"captions_on_page": [
+"Setting the Grid Size",
+"Grid Menu",
+"Zooming the Piano Roll"
+]
+},
+{
+"file": "p229-1.webp",
+"page": 229,
+"chapter": "Using Clips",
+"width": 1024,
+"height": 529,
+"captions_on_page": [
+"Clicking the",
+"Piano Roll Zoomed"
+]
+},
+{
+"file": "p230-1.webp",
+"page": 230,
+"chapter": "Using Clips",
+"width": 1024,
+"height": 529,
+"captions_on_page": [
+"Folding the Piano Roll",
+"Piano Roll with Notes Added",
+"Click the",
+"Piano Roll Folded"
+]
+},
+{
+"file": "p230-2.webp",
+"page": 230,
+"chapter": "Using Clips",
+"width": 665,
+"height": 529,
+"captions_on_page": [
+"Folding the Piano Roll",
+"Piano Roll with Notes Added",
+"Click the",
+"Piano Roll Folded"
+]
+},
+{
+"file": "p231-1.webp",
+"page": 231,
+"chapter": "Using Clips",
+"width": 1024,
+"height": 529,
+"captions_on_page": []
+},
+{
+"file": "p232-1.webp",
+"page": 232,
+"chapter": "Using Clips",
+"width": 1023,
+"height": 529,
+"captions_on_page": [
+"Managing the Clip Length",
+"Changing the Clip Length",
+"Clip Marker Menu"
+]
+},
+{
+"file": "p232-2.webp",
+"page": 232,
+"chapter": "Using Clips",
+"width": 350,
+"height": 355,
+"captions_on_page": [
+"Managing the Clip Length",
+"Changing the Clip Length",
+"Clip Marker Menu"
+]
+},
+{
+"file": "p233-1.webp",
+"page": 233,
+"chapter": "Using Clips",
+"width": 164,
+"height": 374,
+"captions_on_page": [
+"Wrap Clip to",
+"Begin Here",
+"Configuring Clip Settings",
+"CLIP Field",
+"Clip Settings"
+]
+},
+{
+"file": "p236-1.webp",
+"page": 236,
+"chapter": "Using Clips",
+"width": 106,
+"height": 84,
+"captions_on_page": [
+"Triggering Clips",
+"Clip Slot with Play Button",
+"Clip Keyboard"
+]
+},
+{
+"file": "p236-2.webp",
+"page": 236,
+"chapter": "Using Clips",
+"width": 114,
+"height": 84,
+"captions_on_page": [
+"Triggering Clips",
+"Clip Slot with Play Button",
+"Clip Keyboard"
+]
+},
+{
+"file": "p237-1.webp",
+"page": 237,
+"chapter": "Using Clips",
+"width": 1190,
+"height": 740,
+"captions_on_page": [
+"Recording Your Clips",
+"Recording Clips",
+"Recording In Progress",
+"Recorded Notes Appear in Red"
+]
+},
+{
+"file": "p237-2.webp",
+"page": 237,
+"chapter": "Using Clips",
+"width": 164,
+"height": 87,
+"captions_on_page": [
+"Recording Your Clips",
+"Recording Clips",
+"Recording In Progress",
+"Recorded Notes Appear in Red"
+]
+},
+{
+"file": "p237-3.webp",
+"page": 237,
+"chapter": "Using Clips",
+"width": 154,
+"height": 81,
+"captions_on_page": [
+"Recording Your Clips",
+"Recording Clips",
+"Recording In Progress",
+"Recorded Notes Appear in Red"
+]
+},
+{
+"file": "p238-1.webp",
+"page": 238,
+"chapter": "Using Clips",
+"width": 1214,
+"height": 758,
+"captions_on_page": [
+"Click the",
+"Click the"
+]
+},
+{
+"file": "p239-1.webp",
+"page": 239,
+"chapter": "Using Clips",
+"width": 150,
+"height": 175,
+"captions_on_page": [
+"Managing MIDI Out",
+"MIDI Out Menu",
+"MIDI Out Data",
+"Routing MIDI to Another Instrument"
+]
+},
+{
+"file": "p239-2.webp",
+"page": 239,
+"chapter": "Using Clips",
+"width": 150,
+"height": 87,
+"captions_on_page": [
+"Managing MIDI Out",
+"MIDI Out Menu",
+"MIDI Out Data",
+"Routing MIDI to Another Instrument"
+]
+},
+{
+"file": "p240-1.webp",
+"page": 240,
+"chapter": "Using Clips",
+"width": 325,
+"height": 128,
+"captions_on_page": [
+"Logic Pro X Instrument Tracks",
+"Expanded Track Information",
+"Logic Pro X Instrument Tracks"
+]
+},
+{
+"file": "p240-2.webp",
+"page": 240,
+"chapter": "Using Clips",
+"width": 235,
+"height": 401,
+"captions_on_page": [
+"Logic Pro X Instrument Tracks",
+"Expanded Track Information",
+"Logic Pro X Instrument Tracks"
+]
+},
+{
+"file": "p240-3.webp",
+"page": 240,
+"chapter": "Using Clips",
+"width": 400,
+"height": 100,
+"captions_on_page": [
+"Logic Pro X Instrument Tracks",
+"Expanded Track Information",
+"Logic Pro X Instrument Tracks"
+]
+},
+{
+"file": "p241-1.webp",
+"page": 241,
+"chapter": "Using Clips",
+"width": 1190,
+"height": 295,
+"captions_on_page": [
+"Configuring the Clip Module",
+"CLIP Menu",
+"Lock Module",
+"MIDI Input Trigger",
+"Using Macros",
+"Click the"
+]
+},
+{
+"file": "p241-2.webp",
+"page": 241,
+"chapter": "Using Clips",
+"width": 311,
+"height": 88,
+"captions_on_page": [
+"Configuring the Clip Module",
+"CLIP Menu",
+"Lock Module",
+"MIDI Input Trigger",
+"Using Macros",
+"Click the"
+]
+},
+{
+"file": "p242-1.webp",
+"page": 242,
+"chapter": "Using Clips",
+"width": 506,
+"height": 481,
+"captions_on_page": [
+"Assigning a Macro to a Control",
+"Macro with One Destination Assigned"
+]
+},
+{
+"file": "p242-2.webp",
+"page": 242,
+"chapter": "Using Clips",
+"width": 548,
+"height": 128,
+"captions_on_page": [
+"Assigning a Macro to a Control",
+"Macro with One Destination Assigned"
+]
+},
+{
+"file": "p243-1.webp",
+"page": 243,
+"chapter": "Using Clips",
+"width": 420,
+"height": 166,
+"captions_on_page": [
+"Hovering to Show Destinations"
+]
+},
+{
+"file": "p244-1.webp",
+"page": 244,
+"chapter": "Using the Arpeggiator",
+"width": 1190,
+"height": 740,
+"captions_on_page": [
+"Click the",
+"Serum Arpeggiator"
+]
+},
+{
+"file": "p245-1.webp",
+"page": 245,
+"chapter": "Using the Arpeggiator",
+"width": 1024,
+"height": 320,
+"captions_on_page": [
+"Exploring the Arpeggiator",
+"Arpeggiator Module"
+]
+},
+{
+"file": "p246-1.webp",
+"page": 246,
+"chapter": "Using the Arpeggiator",
+"width": 171,
+"height": 138,
+"captions_on_page": [
+"Setting Global Parameters",
+"Global Arpeggiator Settings",
+"Bank Menu",
+"Launch Quant Setting"
+]
+},
+{
+"file": "p246-2.webp",
+"page": 246,
+"chapter": "Using the Arpeggiator",
+"width": 310,
+"height": 166,
+"captions_on_page": [
+"Setting Global Parameters",
+"Global Arpeggiator Settings",
+"Bank Menu",
+"Launch Quant Setting"
+]
+},
+{
+"file": "p247-1.webp",
+"page": 247,
+"chapter": "Using the Arpeggiator",
+"width": 381,
+"height": 230,
+"captions_on_page": [
+"Creating a New Arp Bank",
+"Note: Initializing the",
+"Creating a New Arp Bank",
+"Saving Arp Banks",
+"Arp Bank Modified"
+]
+},
+{
+"file": "p247-2.webp",
+"page": 247,
+"chapter": "Using the Arpeggiator",
+"width": 171,
+"height": 138,
+"captions_on_page": [
+"Creating a New Arp Bank",
+"Note: Initializing the",
+"Creating a New Arp Bank",
+"Saving Arp Banks",
+"Arp Bank Modified"
+]
+},
+{
+"file": "p248-1.webp",
+"page": 248,
+"chapter": "Using the Arpeggiator",
+"width": 381,
+"height": 230,
+"captions_on_page": [
+"Saving an Arp Bank",
+"Setting the Arp Pattern",
+"Pattern Settings"
+]
+},
+{
+"file": "p248-2.webp",
+"page": 248,
+"chapter": "Using the Arpeggiator",
+"width": 212,
+"height": 138,
+"captions_on_page": [
+"Saving an Arp Bank",
+"Setting the Arp Pattern",
+"Pattern Settings"
+]
+},
+{
+"file": "p249-1.webp",
+"page": 249,
+"chapter": "Using the Arpeggiator",
+"width": 1188,
+"height": 353,
+"captions_on_page": [
+"Creating a Custom Pattern",
+"Pattern Option",
+"Arp Editor",
+"Loading a Pattern",
+"Creating an Arp Pattern"
+]
+},
+{
+"file": "p249-2.webp",
+"page": 249,
+"chapter": "Using the Arpeggiator",
+"width": 208,
+"height": 141,
+"captions_on_page": [
+"Creating a Custom Pattern",
+"Pattern Option",
+"Arp Editor",
+"Loading a Pattern",
+"Creating an Arp Pattern"
+]
+},
+{
+"file": "p249-3.webp",
+"page": 249,
+"chapter": "Using the Arpeggiator",
+"width": 296,
+"height": 204,
+"captions_on_page": [
+"Creating a Custom Pattern",
+"Pattern Option",
+"Arp Editor",
+"Loading a Pattern",
+"Creating an Arp Pattern"
+]
+},
+{
+"file": "p250-1.webp",
+"page": 250,
+"chapter": "Using the Arpeggiator",
+"width": 297,
+"height": 204,
+"captions_on_page": [
+"Creating a New Pattern",
+"Creating an Arp Pattern",
+"Configuring the Pattern Settings",
+"Pattern Option"
+]
+},
+{
+"file": "p250-2.webp",
+"page": 250,
+"chapter": "Using the Arpeggiator",
+"width": 164,
+"height": 353,
+"captions_on_page": [
+"Creating a New Pattern",
+"Creating an Arp Pattern",
+"Configuring the Pattern Settings",
+"Pattern Option"
+]
+},
+{
+"file": "p252-1.webp",
+"page": 252,
+"chapter": "Using the Arpeggiator",
+"width": 162,
+"height": 84,
+"captions_on_page": [
+"Saving a Pattern",
+"Pattern Modified",
+"Saving a Pattern",
+"Renaming a Pattern",
+"Renaming a Pattern"
+]
+},
+{
+"file": "p252-2.webp",
+"page": 252,
+"chapter": "Using the Arpeggiator",
+"width": 253,
+"height": 189,
+"captions_on_page": [
+"Saving a Pattern",
+"Pattern Modified",
+"Saving a Pattern",
+"Renaming a Pattern",
+"Renaming a Pattern"
+]
+},
+{
+"file": "p252-3.webp",
+"page": 252,
+"chapter": "Using the Arpeggiator",
+"width": 253,
+"height": 189,
+"captions_on_page": [
+"Saving a Pattern",
+"Pattern Modified",
+"Saving a Pattern",
+"Renaming a Pattern",
+"Renaming a Pattern"
+]
+},
+{
+"file": "p253-1.webp",
+"page": 253,
+"chapter": "Using the Arpeggiator",
+"width": 1024,
+"height": 353,
+"captions_on_page": [
+"Using the Arp Graph Editor",
+"Graph Editor",
+"Saving a Pattern"
+]
+},
+{
+"file": "p253-2.webp",
+"page": 253,
+"chapter": "Using the Arpeggiator",
+"width": 294,
+"height": 351,
+"captions_on_page": [
+"Using the Arp Graph Editor",
+"Graph Editor",
+"Saving a Pattern"
+]
+},
+{
+"file": "p254-1.webp",
+"page": 254,
+"chapter": "Using the Arpeggiator",
+"width": 486,
+"height": 412,
+"captions_on_page": [
+"Transpose Settings",
+"Transpose Settings",
+"Transpose Range Shape Menu"
+]
+},
+{
+"file": "p254-2.webp",
+"page": 254,
+"chapter": "Using the Arpeggiator",
+"width": 143,
+"height": 138,
+"captions_on_page": [
+"Transpose Settings",
+"Transpose Settings",
+"Transpose Range Shape Menu"
+]
+},
+{
+"file": "p255-1.webp",
+"page": 255,
+"chapter": "Using the Arpeggiator",
+"width": 1162,
+"height": 422,
+"captions_on_page": []
+},
+{
+"file": "p255-2.webp",
+"page": 255,
+"chapter": "Using the Arpeggiator",
+"width": 1162,
+"height": 422,
+"captions_on_page": []
+},
+{
+"file": "p255-3.webp",
+"page": 255,
+"chapter": "Using the Arpeggiator",
+"width": 1162,
+"height": 422,
+"captions_on_page": []
+},
+{
+"file": "p256-1.webp",
+"page": 256,
+"chapter": "Using the Arpeggiator",
+"width": 1162,
+"height": 422,
+"captions_on_page": []
+},
+{
+"file": "p256-2.webp",
+"page": 256,
+"chapter": "Using the Arpeggiator",
+"width": 1128,
+"height": 422,
+"captions_on_page": []
+},
+{
+"file": "p256-3.webp",
+"page": 256,
+"chapter": "Using the Arpeggiator",
+"width": 1129,
+"height": 422,
+"captions_on_page": []
+},
+{
+"file": "p257-1.webp",
+"page": 257,
+"chapter": "Using the Arpeggiator",
+"width": 1118,
+"height": 422,
+"captions_on_page": [
+"Thumb Up",
+"Thumb UD"
+]
+},
+{
+"file": "p257-2.webp",
+"page": 257,
+"chapter": "Using the Arpeggiator",
+"width": 1134,
+"height": 421,
+"captions_on_page": [
+"Thumb Up",
+"Thumb UD"
+]
+},
+{
+"file": "p258-1.webp",
+"page": 258,
+"chapter": "Using the Arpeggiator",
+"width": 1118,
+"height": 422,
+"captions_on_page": [
+"Pinky Up",
+"Pinky UD"
+]
+},
+{
+"file": "p258-2.webp",
+"page": 258,
+"chapter": "Using the Arpeggiator",
+"width": 1134,
+"height": 422,
+"captions_on_page": [
+"Pinky Up",
+"Pinky UD"
+]
+},
+{
+"file": "p259-1.webp",
+"page": 259,
+"chapter": "Using the Arpeggiator",
+"width": 1128,
+"height": 422,
+"captions_on_page": []
+},
+{
+"file": "p259-2.webp",
+"page": 259,
+"chapter": "Using the Arpeggiator",
+"width": 1128,
+"height": 422,
+"captions_on_page": []
+},
+{
+"file": "p259-3.webp",
+"page": 259,
+"chapter": "Using the Arpeggiator",
+"width": 1118,
+"height": 422,
+"captions_on_page": []
+},
+{
+"file": "p260-1.webp",
+"page": 260,
+"chapter": "Using the Arpeggiator",
+"width": 1134,
+"height": 422,
+"captions_on_page": []
+},
+{
+"file": "p260-2.webp",
+"page": 260,
+"chapter": "Using the Arpeggiator",
+"width": 1130,
+"height": 422,
+"captions_on_page": []
+},
+{
+"file": "p260-3.webp",
+"page": 260,
+"chapter": "Using the Arpeggiator",
+"width": 1114,
+"height": 422,
+"captions_on_page": []
+},
+{
+"file": "p261-1.webp",
+"page": 261,
+"chapter": "Using the Arpeggiator",
+"width": 1110,
+"height": 421,
+"captions_on_page": [
+"Playback Settings",
+"Playback Settings"
+]
+},
+{
+"file": "p261-2.webp",
+"page": 261,
+"chapter": "Using the Arpeggiator",
+"width": 1133,
+"height": 422,
+"captions_on_page": [
+"Playback Settings",
+"Playback Settings"
+]
+},
+{
+"file": "p261-3.webp",
+"page": 261,
+"chapter": "Using the Arpeggiator",
+"width": 251,
+"height": 138,
+"captions_on_page": [
+"Playback Settings",
+"Playback Settings"
+]
+},
+{
+"file": "p262-1.webp",
+"page": 262,
+"chapter": "Using the Arpeggiator",
+"width": 126,
+"height": 138,
+"captions_on_page": [
+"Retrigger Settings",
+"Retrigger Settings",
+"Velocity Settings",
+"Velocity Settings"
+]
+},
+{
+"file": "p262-2.webp",
+"page": 262,
+"chapter": "Using the Arpeggiator",
+"width": 109,
+"height": 138,
+"captions_on_page": [
+"Retrigger Settings",
+"Retrigger Settings",
+"Velocity Settings",
+"Velocity Settings"
+]
+},
+{
+"file": "p263-1.webp",
+"page": 263,
+"chapter": "Using the Arpeggiator",
+"width": 874,
+"height": 89,
+"captions_on_page": [
+"Managing Arpeggiators",
+"Arpeggiator Slots",
+"Rename Pattern",
+"Copy Pattern",
+"Paste Pattern",
+"Erase Pattern",
+"Show Pattern Names"
+]
+},
+{
+"file": "p263-2.webp",
+"page": 263,
+"chapter": "Using the Arpeggiator",
+"width": 95,
+"height": 105,
+"captions_on_page": [
+"Managing Arpeggiators",
+"Arpeggiator Slots",
+"Rename Pattern",
+"Copy Pattern",
+"Paste Pattern",
+"Erase Pattern",
+"Show Pattern Names"
+]
+},
+{
+"file": "p264-1.webp",
+"page": 264,
+"chapter": "Using the Arpeggiator",
+"width": 106,
+"height": 84,
+"captions_on_page": [
+"Triggering the Arpeggiator",
+"Arpeggiator Slot with Play Button",
+"Arpeggiator Keyboard"
+]
+},
+{
+"file": "p265-1.webp",
+"page": 265,
+"chapter": "Using the Arpeggiator",
+"width": 150,
+"height": 87,
+"captions_on_page": [
+"Managing MIDI Out",
+"MIDI Out Pane",
+"MIDI Out Data",
+"MIDI Out Menu"
+]
+},
+{
+"file": "p265-2.webp",
+"page": 265,
+"chapter": "Using the Arpeggiator",
+"width": 150,
+"height": 87,
+"captions_on_page": [
+"Managing MIDI Out",
+"MIDI Out Pane",
+"MIDI Out Data",
+"MIDI Out Menu"
+]
+},
+{
+"file": "p265-3.webp",
+"page": 265,
+"chapter": "Using the Arpeggiator",
+"width": 150,
+"height": 175,
+"captions_on_page": [
+"Managing MIDI Out",
+"MIDI Out Pane",
+"MIDI Out Data",
+"MIDI Out Menu"
+]
+},
+{
+"file": "p266-1.webp",
+"page": 266,
+"chapter": "Using the Arpeggiator",
+"width": 303,
+"height": 84,
+"captions_on_page": [
+"Configuring the Arp Module",
+"ARP Menu",
+"Lock Module",
+"MIDI Input Trigger"
+]
+},
+{
+"file": "p267-1.webp",
+"page": 267,
+"chapter": "Using the Keyboard",
+"width": 646,
+"height": 84,
+"captions_on_page": [
+"Serum Keyboard",
+"Keyboard Transpose"
+]
+},
+{
+"file": "p267-2.webp",
+"page": 267,
+"chapter": "Using the Keyboard",
+"width": 646,
+"height": 84,
+"captions_on_page": [
+"Serum Keyboard",
+"Keyboard Transpose"
+]
+},
+{
+"file": "p268-1.webp",
+"page": 268,
+"chapter": "Using the Keyboard",
+"width": 646,
+"height": 84,
+"captions_on_page": [
+"Setting the Key and Scale",
+"Key and Scale",
+"Scale Options"
+]
+},
+{
+"file": "p268-2.webp",
+"page": 268,
+"chapter": "Using the Keyboard",
+"width": 646,
+"height": 512,
+"captions_on_page": [
+"Setting the Key and Scale",
+"Key and Scale",
+"Scale Options"
+]
+},
+{
+"file": "p269-1.webp",
+"page": 269,
+"chapter": "Using the Keyboard",
+"width": 646,
+"height": 84,
+"captions_on_page": [
+"Setting Swing",
+"Oscillator Mapping",
+"Oscillator Mapping"
+]
+},
+{
+"file": "p269-2.webp",
+"page": 269,
+"chapter": "Using the Keyboard",
+"width": 646,
+"height": 84,
+"captions_on_page": [
+"Setting Swing",
+"Oscillator Mapping",
+"Oscillator Mapping"
+]
+},
+{
+"file": "p270-1.webp",
+"page": 270,
+"chapter": "Using the Keyboard",
+"width": 1172,
+"height": 390,
+"captions_on_page": [
+"Oscillator Mapping Editor",
+"Key Mapping",
+"Setting the Note Range"
+]
+},
+{
+"file": "p270-2.webp",
+"page": 270,
+"chapter": "Using the Keyboard",
+"width": 662,
+"height": 356,
+"captions_on_page": [
+"Oscillator Mapping Editor",
+"Key Mapping",
+"Setting the Note Range"
+]
+},
+{
+"file": "p270-3.webp",
+"page": 270,
+"chapter": "Using the Keyboard",
+"width": 125,
+"height": 65,
+"captions_on_page": [
+"Oscillator Mapping Editor",
+"Key Mapping",
+"Setting the Note Range"
+]
+},
+{
+"file": "p271-1.webp",
+"page": 271,
+"chapter": "Using the Keyboard",
+"width": 517,
+"height": 352,
+"captions_on_page": [
+"Moving a Note Range"
+]
+},
+{
+"file": "p271-2.webp",
+"page": 271,
+"chapter": "Using the Keyboard",
+"width": 388,
+"height": 226,
+"captions_on_page": [
+"Moving a Note Range"
+]
+},
+{
+"file": "p272-1.webp",
+"page": 272,
+"chapter": "Using the Keyboard",
+"width": 1172,
+"height": 390,
+"captions_on_page": [
+"Mapping Velocity Ranges",
+"Velocity Mapping",
+"Velocity Mapping Editor"
+]
+},
+{
+"file": "p272-2.webp",
+"page": 272,
+"chapter": "Using the Keyboard",
+"width": 125,
+"height": 65,
+"captions_on_page": [
+"Mapping Velocity Ranges",
+"Velocity Mapping",
+"Velocity Mapping Editor"
+]
+},
+{
+"file": "p273-1.webp",
+"page": 273,
+"chapter": "Using the Keyboard",
+"width": 662,
+"height": 356,
+"captions_on_page": [
+"Setting the Velocity Range",
+"Moving a Velocity Range"
+]
+},
+{
+"file": "p273-2.webp",
+"page": 273,
+"chapter": "Using the Keyboard",
+"width": 538,
+"height": 352,
+"captions_on_page": [
+"Setting the Velocity Range",
+"Moving a Velocity Range"
+]
+},
+{
+"file": "p274-1.webp",
+"page": 274,
+"chapter": "Using the Wavetable Editor",
+"width": 1190,
+"height": 740,
+"captions_on_page": [
+"Accessing the Editor",
+"Wavetable Editor"
+]
+},
+{
+"file": "p274-2.webp",
+"page": 274,
+"chapter": "Using the Wavetable Editor",
+"width": 270,
+"height": 197,
+"captions_on_page": [
+"Accessing the Editor",
+"Wavetable Editor"
+]
+},
+{
+"file": "p275-1.webp",
+"page": 275,
+"chapter": "Using the Wavetable Editor",
+"width": 1190,
+"height": 740,
+"captions_on_page": [
+"Using the Thumbnails",
+"Wavetable Editor Thumbnails",
+"Thumbnail Action"
+]
+},
+{
+"file": "p276-1.webp",
+"page": 276,
+"chapter": "Using the Wavetable Editor",
+"width": 1190,
+"height": 740,
+"captions_on_page": [
+"Using the Drawing Tools",
+"Wavetable Editor Toolbar and Grid Size",
+"Flat Line"
+]
+},
+{
+"file": "p278-1.webp",
+"page": 278,
+"chapter": "Using the Wavetable Editor",
+"width": 1190,
+"height": 740,
+"captions_on_page": [
+"FFT Area",
+"Wavetable Editor FFT Area"
+]
+},
+{
+"file": "p279-1.webp",
+"page": 279,
+"chapter": "Using the Wavetable Editor",
+"width": 1190,
+"height": 740,
+"captions_on_page": [
+"Wavetable Editor FFT Menu",
+"Menu Item",
+"Clear All",
+"Generate Saw"
+]
+},
+{
+"file": "p281-1.webp",
+"page": 281,
+"chapter": "Using the Wavetable Editor",
+"width": 1190,
+"height": 740,
+"captions_on_page": [
+"Exploring Common Frame Operations"
+]
+},
+{
+"file": "p282-1.webp",
+"page": 282,
+"chapter": "Using the Wavetable Editor",
+"width": 507,
+"height": 140,
+"captions_on_page": [
+"Copying and Pasting Frames",
+"Selecting Frames to Copy",
+"Inserting and Removing Frames",
+"Click the",
+"Menu Item"
+]
+},
+{
+"file": "p282-2.webp",
+"page": 282,
+"chapter": "Using the Wavetable Editor",
+"width": 607,
+"height": 139,
+"captions_on_page": [
+"Copying and Pasting Frames",
+"Selecting Frames to Copy",
+"Inserting and Removing Frames",
+"Click the",
+"Menu Item"
+]
+},
+{
+"file": "p284-1.webp",
+"page": 284,
+"chapter": "Using the Wavetable Editor",
+"width": 1190,
+"height": 740,
+"captions_on_page": [
+"Using the Formula Parser",
+"Exploring the Menu Commands",
+"Wavetable Editor Menu"
+]
+},
+{
+"file": "p290-1.webp",
+"page": 290,
+"chapter": "Using the Wavetable Editor",
+"width": 1034,
+"height": 304,
+"captions_on_page": [
+"Saving Wavetables",
+"Wavetable Modified",
+"Saving a Wavetable"
+]
+},
+{
+"file": "p290-2.webp",
+"page": 290,
+"chapter": "Using the Wavetable Editor",
+"width": 154,
+"height": 304,
+"captions_on_page": [
+"Saving Wavetables",
+"Wavetable Modified",
+"Saving a Wavetable"
+]
+},
+{
+"file": "p292-1.webp",
+"page": 292,
+"chapter": "Importing Audio as Wavetables",
+"width": 540,
+"height": 320,
+"captions_on_page": [
+"Import Audio Options"
+]
+},
+{
+"file": "p296-1.webp",
+"page": 296,
+"chapter": "Importing Audio as Wavetables",
+"width": 1190,
+"height": 740,
+"captions_on_page": [
+"Importing Single-Cycle Waveforms",
+"Importing a Single-Cycle Waveform"
+]
+},
+{
+"file": "p297-1.webp",
+"page": 297,
+"chapter": "Importing Audio as Wavetables",
+"width": 1190,
+"height": 740,
+"captions_on_page": [
+"Single-Cycle Waveform Imported",
+"Importing Multiple Single-Cycle Waveforms"
+]
+},
+{
+"file": "p297-2.webp",
+"page": 297,
+"chapter": "Importing Audio as Wavetables",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Single-Cycle Waveform Imported",
+"Importing Multiple Single-Cycle Waveforms"
+]
+},
+{
+"file": "p298-1.webp",
+"page": 298,
+"chapter": "Importing Audio as Wavetables",
+"width": 604,
+"height": 486,
+"captions_on_page": [
+"Using the Import Menu"
+]
+},
+{
+"file": "p300-1.webp",
+"page": 300,
+"chapter": "Importing Audio as Wavetables",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Importing a PNG File"
+]
+},
+{
+"file": "p301-1.webp",
+"page": 301,
+"chapter": "Importing Audio as Wavetables",
+"width": 270,
+"height": 196,
+"captions_on_page": [
+"LFO Ramp"
+]
+},
+{
+"file": "p301-2.webp",
+"page": 301,
+"chapter": "Importing Audio as Wavetables",
+"width": 270,
+"height": 196,
+"captions_on_page": [
+"LFO Ramp"
+]
+},
+{
+"file": "p301-3.webp",
+"page": 301,
+"chapter": "Importing Audio as Wavetables",
+"width": 522,
+"height": 259,
+"captions_on_page": [
+"LFO Ramp"
+]
+},
+{
+"file": "p302-1.webp",
+"page": 302,
+"chapter": "Importing Audio as Wavetables",
+"width": 867,
+"height": 353,
+"captions_on_page": [
+"Embedding Wavetables When Saving a Preset",
+"Missing Files Dialog"
+]
+},
+{
+"file": "p303-1.webp",
+"page": 303,
+"chapter": "Importing Audio as Wavetables",
+"width": 270,
+"height": 320,
+"captions_on_page": [
+"Click the",
+"Embed in Preset"
+]
+},
+{
+"file": "p307-1.webp",
+"page": 307,
+"chapter": "Using the Formula Parser",
+"width": 363,
+"height": 279,
+"captions_on_page": [
+"Exploring the Formula Presets Menu",
+"Formula Presets Menu",
+"Menu Item",
+"User Singles",
+"User Multis"
+]
+},
+{
+"file": "p308-1.webp",
+"page": 308,
+"chapter": "Using the Formula Parser",
+"width": 805,
+"height": 401,
+"captions_on_page": [
+"Saving Your Own Formulas",
+"Save Formula Dialog"
+]
+},
+{
+"file": "p309-1.webp",
+"page": 309,
+"chapter": "Using the Formula Parser",
+"width": 1190,
+"height": 618,
+"captions_on_page": [
+"Exploring Formula Parser Examples"
+]
+},
+{
+"file": "p310-1.webp",
+"page": 310,
+"chapter": "Using the Formula Parser",
+"width": 1188,
+"height": 616,
+"captions_on_page": []
+},
+{
+"file": "p312-1.webp",
+"page": 312,
+"chapter": "Exploring Global Settings",
+"width": 1400,
+"height": 871,
+"captions_on_page": [
+"Serum Global Settings",
+"Using the Global Module",
+"Accessing Serum Global Settings"
+]
+},
+{
+"file": "p312-2.webp",
+"page": 312,
+"chapter": "Exploring Global Settings",
+"width": 506,
+"height": 68,
+"captions_on_page": [
+"Serum Global Settings",
+"Using the Global Module",
+"Accessing Serum Global Settings"
+]
+},
+{
+"file": "p313-1.webp",
+"page": 313,
+"chapter": "Exploring Global Settings",
+"width": 423,
+"height": 320,
+"captions_on_page": [
+"Serum Global Preferences",
+"User Interface",
+"Help Tooltips"
+]
+},
+{
+"file": "p316-1.webp",
+"page": 316,
+"chapter": "Exploring Global Settings",
+"width": 406,
+"height": 318,
+"captions_on_page": [
+"Setting the Voice Control",
+"Select the Oscillators",
+"Voice Control Settings",
+"Loading a Preset",
+"Voice Control Menu"
+]
+},
+{
+"file": "p316-2.webp",
+"page": 316,
+"chapter": "Exploring Global Settings",
+"width": 406,
+"height": 318,
+"captions_on_page": [
+"Setting the Voice Control",
+"Select the Oscillators",
+"Voice Control Settings",
+"Loading a Preset",
+"Voice Control Menu"
+]
+},
+{
+"file": "p317-1.webp",
+"page": 317,
+"chapter": "Exploring Global Settings",
+"width": 406,
+"height": 318,
+"captions_on_page": [
+"Creating a New Configuration",
+"Initializing the Configuration",
+"Configuring the Voice Control",
+"Per Voice Settings"
+]
+},
+{
+"file": "p317-2.webp",
+"page": 317,
+"chapter": "Exploring Global Settings",
+"width": 406,
+"height": 318,
+"captions_on_page": [
+"Creating a New Configuration",
+"Initializing the Configuration",
+"Configuring the Voice Control",
+"Per Voice Settings"
+]
+},
+{
+"file": "p318-1.webp",
+"page": 318,
+"chapter": "Exploring Global Settings",
+"width": 406,
+"height": 318,
+"captions_on_page": [
+"Setting Randomization",
+"the PAN, DETUNE, CUTOFF, and",
+"Setting Randomization",
+"Setting the Scaling",
+"Scaling Settings"
+]
+},
+{
+"file": "p319-1.webp",
+"page": 319,
+"chapter": "Exploring Global Settings",
+"width": 370,
+"height": 115,
+"captions_on_page": [
+"Saving the Voice Control Settings",
+"Click the",
+"Setting the Quality",
+"Quality Settings",
+"Click the",
+"Quality Settings",
+"S1 Compatibility"
+]
+},
+{
+"file": "p319-2.webp",
+"page": 319,
+"chapter": "Exploring Global Settings",
+"width": 370,
+"height": 195,
+"captions_on_page": [
+"Saving the Voice Control Settings",
+"Click the",
+"Setting the Quality",
+"Quality Settings",
+"Click the",
+"Quality Settings",
+"S1 Compatibility"
+]
+},
+{
+"file": "p320-1.webp",
+"page": 320,
+"chapter": "Exploring Global Settings",
+"width": 370,
+"height": 95,
+"captions_on_page": [
+"Disable Smoothing",
+"Setting the Tuning",
+"Setting Concert Pitch",
+"Tuning Settings",
+"Using a Tuning File",
+"Tuning Menu"
+]
+},
+{
+"file": "p320-2.webp",
+"page": 320,
+"chapter": "Exploring Global Settings",
+"width": 401,
+"height": 218,
+"captions_on_page": [
+"Disable Smoothing",
+"Setting the Tuning",
+"Setting Concert Pitch",
+"Tuning Settings",
+"Using a Tuning File",
+"Tuning Menu"
+]
+},
+{
+"file": "p322-1.webp",
+"page": 322,
+"chapter": "Exploring Global Settings",
+"width": 738,
+"height": 263,
+"captions_on_page": [
+"Checking the Build Version and Date",
+"Serum Build and Date"
+]
+},
+{
+"file": "p323-1.webp",
+"page": 323,
+"chapter": "Appendix A: Using the Main Menu",
+"width": 451,
+"height": 586,
+"captions_on_page": [
+"Serum Main Menu"
+]
+},
+{
+"file": "p327-1.webp",
+"page": 327,
+"chapter": "Appendix B: Using the Presets Browser",
+"width": 1190,
+"height": 740,
+"captions_on_page": [
+"Click the",
+"Serum Presets Browser",
+"Navigating the Folders",
+"Presets Folders"
+]
+},
+{
+"file": "p327-2.webp",
+"page": 327,
+"chapter": "Appendix B: Using the Presets Browser",
+"width": 240,
+"height": 217,
+"captions_on_page": [
+"Click the",
+"Serum Presets Browser",
+"Navigating the Folders",
+"Presets Folders"
+]
+},
+{
+"file": "p328-1.webp",
+"page": 328,
+"chapter": "Appendix B: Using the Presets Browser",
+"width": 946,
+"height": 388,
+"captions_on_page": [
+"Presets in the Folder",
+"Loading a Preset",
+"Previewing Presets",
+"Presets Showing Play Buttons",
+"Click the",
+"Preset Playing"
+]
+},
+{
+"file": "p329-1.webp",
+"page": 329,
+"chapter": "Appendix B: Using the Presets Browser",
+"width": 946,
+"height": 303,
+"captions_on_page": [
+"Preset Macros",
+"Searching Presets",
+"Search Field",
+"Searching for Presets"
+]
+},
+{
+"file": "p330-1.webp",
+"page": 330,
+"chapter": "Appendix B: Using the Presets Browser",
+"width": 242,
+"height": 195,
+"captions_on_page": [
+"Searching Using Categories",
+"Searching Using Tags",
+"Searching Using Ratings"
+]
+},
+{
+"file": "p330-2.webp",
+"page": 330,
+"chapter": "Appendix B: Using the Presets Browser",
+"width": 242,
+"height": 195,
+"captions_on_page": [
+"Searching Using Categories",
+"Searching Using Tags",
+"Searching Using Ratings"
+]
+},
+{
+"file": "p330-3.webp",
+"page": 330,
+"chapter": "Appendix B: Using the Presets Browser",
+"width": 313,
+"height": 195,
+"captions_on_page": [
+"Searching Using Categories",
+"Searching Using Tags",
+"Searching Using Ratings"
+]
+},
+{
+"file": "p331-1.webp",
+"page": 331,
+"chapter": "Appendix B: Using the Presets Browser",
+"width": 946,
+"height": 582,
+"captions_on_page": [
+"Managing Your Presets",
+"Displaying and Editing Preset Metadata",
+"Preset Metadata"
+]
+},
+{
+"file": "p332-1.webp",
+"page": 332,
+"chapter": "Appendix B: Using the Presets Browser",
+"width": 242,
+"height": 671,
+"captions_on_page": [
+"Specifying the Category",
+"Preset Category",
+"Managing Tags",
+"Preset Tags"
+]
+},
+{
+"file": "p332-2.webp",
+"page": 332,
+"chapter": "Appendix B: Using the Presets Browser",
+"width": 240,
+"height": 168,
+"captions_on_page": [
+"Specifying the Category",
+"Preset Category",
+"Managing Tags",
+"Preset Tags"
+]
+},
+{
+"file": "p333-1.webp",
+"page": 333,
+"chapter": "Appendix B: Using the Presets Browser",
+"width": 704,
+"height": 276,
+"captions_on_page": [
+"Rating Presets",
+"Preset Tags",
+"Rating a Preset"
+]
+},
+{
+"file": "p333-2.webp",
+"page": 333,
+"chapter": "Appendix B: Using the Presets Browser",
+"width": 240,
+"height": 324,
+"captions_on_page": [
+"Rating Presets",
+"Preset Tags",
+"Rating a Preset"
+]
+},
+{
+"file": "p334-1.webp",
+"page": 334,
+"chapter": "Appendix B: Using the Presets Browser",
+"width": 291,
+"height": 277,
+"captions_on_page": [
+"Performing Standard Preset Operations",
+"Click the",
+"Presets Menu",
+"Show Preset in Finder",
+"Show Preset in Folder",
+"Load Random Preset",
+"Hybridize Favoring Selected"
+]
+},
+{
+"file": "p336-1.webp",
+"page": 336,
+"chapter": "Appendix B: Using the Presets Browser",
+"width": 704,
+"height": 249,
+"captions_on_page": [
+"Preset Menu",
+"Show in Finder/Folder"
+]
+},
+{
+"file": "p337-1.webp",
+"page": 337,
+"chapter": "Appendix B: Using the Presets Browser",
+"width": 946,
+"height": 303,
+"captions_on_page": [
+"Creating and Exporting a Pack",
+"Creating and Exporting a Pack",
+"Preset Pack Dialog"
+]
+},
+{
+"file": "p337-2.webp",
+"page": 337,
+"chapter": "Appendix B: Using the Presets Browser",
+"width": 736,
+"height": 452,
+"captions_on_page": [
+"Creating and Exporting a Pack",
+"Creating and Exporting a Pack",
+"Preset Pack Dialog"
+]
+},
+{
+"file": "p338-1.webp",
+"page": 338,
+"chapter": "Appendix B: Using the Presets Browser",
+"width": 736,
+"height": 452,
+"captions_on_page": [
+"Click the",
+"Sample Preset Pack",
+"Click the"
+]
+},
+{
+"file": "p339-1.webp",
+"page": 339,
+"chapter": "Appendix B: Using the Presets Browser",
+"width": 736,
+"height": 452,
+"captions_on_page": [
+"Preset Pack Details",
+"Click the",
+"Click the"
+]
+},
+{
+"file": "p344-1.webp",
+"page": 344,
+"chapter": "Appendix C: Exploring the Serum File Structure",
+"width": 828,
+"height": 465,
+"captions_on_page": [
+"Serum File Structure",
+"Arp Banks",
+"Clip Banks"
+]
+}
+]
+}

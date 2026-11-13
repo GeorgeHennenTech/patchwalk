@@ -95,15 +95,18 @@ export class Engine {
     for (const v of [...this.voices]) this.noteOff(v.note);
   }
 
-  /** Play a short tone that is independent of the learner's settings. Used by ear checks. */
-  audition(shape: Shape, hz: number, seconds = 0.9, when = 0): void {
+  /**
+   * Play a short tone that is independent of the learner's settings. Used by demos, ear checks and
+   * match-by-ear challenges. `gainDb` is relative to the master volume.
+   */
+  audition(shape: Shape, hz: number, seconds = 0.9, when = 0, gainDb = -8): void {
     const t = this.ctx.currentTime + when;
     const osc = this.ctx.createOscillator();
     osc.setPeriodicWave(this.wave(shape));
     osc.frequency.value = hz;
     const amp = this.ctx.createGain();
     amp.gain.setValueAtTime(0, t);
-    amp.gain.linearRampToValueAtTime(0.4, t + 0.01);
+    amp.gain.linearRampToValueAtTime(dbToGain(gainDb), t + 0.01);
     amp.gain.setTargetAtTime(0, t + seconds - 0.08, 0.02);
     osc.connect(amp).connect(this.master);
     osc.start(t);

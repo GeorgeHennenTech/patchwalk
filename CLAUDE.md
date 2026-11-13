@@ -139,6 +139,9 @@ Added after the first eight milestones (owner asked for all four in one go):
     `progress.ts` (finished lessons in localStorage, next-lesson suggestion, context note for the guide).
   - `src/ui/PlayView.tsx` ("Lessons" tab) and `src/ui/synth/` — spotlighted controls per step, live targets,
     scope, spectrum, meter, on-screen keyboard, Hold, blind ear checks, recap, guide remarks and suggestion.
+  - "Hear it first" demos (`demo` on a lesson), match-by-ear rounds (`rounds`, compared by `src/course/match.ts`:
+    feedback is "matches / too low / too high / different", never the target's numbers), and a browser
+    read-aloud button. Lesson C1.M is a four-round match-by-ear challenge. Seven lessons in total.
   - Verified in a headless browser with real audio: a 12 dB volume change moves the meter 12 dB; the square
     wave shows odd harmonics on the spectrum. **How it sounds has not been judged by a person yet.**
   - Not built yet: second oscillator, unison, sub, noise, phase, wavetables, filter, envelopes, LFOs, effects,
@@ -166,6 +169,9 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
 - **Teacher/guide:** one consistent voice, remembers progress, comments on what the learner just did, answers
   questions. Patch facts stay strict (rule 5). Concept answers come from a private library of the owner's texts
   via retrieval, with citations. This is retrieval, not model training.
+- **Voice.** The owner asked about generated voiceovers. Today there is only the browser's built-in read-aloud.
+  Options discussed: ElevenLabs (needs the owner's account and key; generate each narration once and store the
+  audio) or Higgsfield's audio tools (untested for narration). Awaiting the owner's choice.
 - **Mini DAW (later):** tracks, a step sequencer / piano roll, drums and samples, a mixer, for genre-writing
   lessons (glitch-hop, breakbeat, psydub...). Build the practice synth's audio engine with a shared tempo clock
   and more than one instrument in mind so it can become the DAW's instrument instead of being rewritten.

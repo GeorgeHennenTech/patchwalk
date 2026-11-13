@@ -215,3 +215,6 @@ details.card summary { cursor: pointer; font-weight: 700; }
 .ctl { flex-wrap: wrap; max-width: 100%; min-width: 0; }
 .synth-ctls .seg { flex-wrap: wrap; max-width: 100%; }
 @media (max-width: 640px) { .synth-ctls .seg button { padding: 6px 9px; } .ctl { flex-basis: 100%; } .stage-box { padding: 12px 10px; } }
+
+.hear-first { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin: 0 0 12px; }
+.exercise .synth { margin: 12px 0; }

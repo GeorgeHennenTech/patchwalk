@@ -62,7 +62,7 @@ describe("playable lessons", () => {
     expect(new Set(ids).size).toBe(ids.length);
     for (const l of LESSONS) {
       for (const b of l.buildsOn) expect(ids, `${l.id} builds on ${b}`).toContain(b);
-      expect(l.steps.length).toBeGreaterThanOrEqual(4);
+      expect(l.steps.length + (l.rounds?.length ?? 0), l.id).toBeGreaterThanOrEqual(4);
       expect(l.recap.length).toBe(3);
       l.steps.forEach((s, i) => {
         const start = { ...INITIAL, ...l.initial };
@@ -141,5 +141,41 @@ describe("progress and the guide's context", () => {
     expect(text).toContain("Lessons already finished: Playing the synth.");
     expect(text).toContain("not Serum");
     expect(text.length).toBeLessThan(2000);
+  });
+});
+
+import { allMatch, compareSetting, compareToTarget } from "../src/course/match";
+
+describe("hear it first, and match by ear", () => {
+  it("every demo is a short, audible, in-order set of tones", () => {
+    const withDemo = LESSONS.filter((l) => l.demo);
+    expect(withDemo.length).toBeGreaterThanOrEqual(5);
+    for (const l of withDemo) {
+      const tones = l.demo!.tones;
+      expect(tones.length, l.id).toBeGreaterThanOrEqual(2);
+      for (const t of tones) { expect(t.hz).toBeGreaterThan(40); expect(t.hz).toBeLessThan(4000); expect(t.gainDb ?? -8).toBeLessThanOrEqual(0); }
+      expect(tones.at(-1)!.at + tones.at(-1)!.seconds, l.id).toBeLessThan(6);
+      expect(tones.map((t) => t.at)).toEqual([...tones.map((t) => t.at)].sort((a, b) => a - b));
+    }
+    // the loudness demo really steps down by 6 dB each time
+    expect(LESSONS.find((l) => l.id === "C0.3")!.demo!.tones.map((t) => t.gainDb)).toEqual([-6, -12, -18]);
+  });
+  it("says which way a setting is off without revealing the target", () => {
+    expect(compareSetting("octave", { ...INITIAL, octave: 0 }, { octave: -1 })).toBe("too high");
+    expect(compareSetting("octave", { ...INITIAL, octave: -2 }, { octave: -1 })).toBe("too low");
+    expect(compareSetting("shape", { ...INITIAL, shape: "saw" }, { shape: "square" })).toBe("different");
+    expect(compareSetting("fine", { ...INITIAL, fine: 8 }, { fine: 0 })).toBe("match"); // within a few cents
+    expect(compareSetting("fine", { ...INITIAL, fine: 25 }, { fine: 0 })).toBe("too high");
+    const v = compareToTarget({ ...INITIAL, shape: "square", octave: -1, semitone: 5 }, { shape: "square", octave: -1, semitone: 7 }, ["shape", "octave", "semitone"]);
+    expect(v).toEqual({ shape: "match", octave: "match", semitone: "too low" });
+    expect(allMatch(v)).toBe(false);
+  });
+  it("every round starts unsolved, is solvable, and only compares what it shows", () => {
+    for (const l of LESSONS) for (const [i, r] of (l.rounds ?? []).entries()) {
+      const start = { ...INITIAL, ...r.from };
+      expect(allMatch(compareToTarget(start, r.target, r.match)), `${l.id} round ${i + 1} starts solved`).toBe(false);
+      expect(allMatch(compareToTarget({ ...start, ...r.target }, r.target, r.match)), `${l.id} round ${i + 1}`).toBe(true);
+      for (const k of r.match) expect(k in r.target, `${l.id} round ${i + 1} target has ${k}`).toBe(true);
+    }
   });
 });

@@ -28,11 +28,13 @@ export function suggestNext(lessons: PlayableLesson[], done: string[]): Playable
 
 /** A short, factual note for the guide about where the learner is. First line is the topic. */
 export function guideContext(lesson: PlayableLesson, stepIndex: number, settings: string, lessons: PlayableLesson[], done: string[]): string {
-  const step = lesson.steps[Math.min(stepIndex, lesson.steps.length - 1)]!;
+  const step = lesson.steps[Math.min(stepIndex, lesson.steps.length - 1)];
   const finished = lessons.filter((l) => done.includes(l.id)).map((l) => l.title);
   return [
     `${lesson.title}`,
-    `Practice-synth lesson ${lesson.id}. The learner is on step ${Math.min(stepIndex + 1, lesson.steps.length)} of ${lesson.steps.length}: ${step.do}`,
+    step
+      ? `Practice-synth lesson ${lesson.id}. The learner is on step ${Math.min(stepIndex + 1, lesson.steps.length)} of ${lesson.steps.length}: ${step.do}`
+      : `Practice-synth lesson ${lesson.id}: a match-by-ear challenge with a hidden target sound.`,
     `Practice synth settings right now: ${settings}.`,
     finished.length ? `Lessons already finished: ${finished.join("; ")}.` : "No lessons finished yet.",
     "The practice synth is this app's own teaching instrument, not Serum.",

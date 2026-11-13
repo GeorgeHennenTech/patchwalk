@@ -1,8 +1,13 @@
-import type { PlayableLesson, Snapshot } from "../types";
+import { noteToHz } from "../../synth/params";
+import type { DemoTone, PlayableLesson, Snapshot } from "../types";
 
 const anyNote = (s: Snapshot) => s.played.mouse + s.played.keys + s.played.midi;
 const within = (v: number | null, lo: number, hi: number) => v !== null && v >= lo && v <= hi;
 const hz = (n: number) => `${Math.round(n)} Hz`;
+
+const A3 = noteToHz(57), A4 = noteToHz(69);
+/** Tones one after another, each `len` seconds with a short gap. */
+const seq = (tones: Omit<DemoTone, "at" | "seconds">[], len = 0.8): DemoTone[] => tones.map((t, i) => ({ ...t, at: i * (len + 0.15), seconds: len }));
 
 /**
  * Playable lessons, converted from the scripts in docs/lessons/. Steps the practice synth cannot yet
@@ -30,6 +35,7 @@ export const LESSONS: PlayableLesson[] = [
   },
   {
     id: "C0.2", title: "Pitch is speed", buildsOn: ["C0.1"], minutes: 6, cardIds: ["oscillator-pitch"], initial: { freeHz: 300, shape: "sine" }, earCheck: "higher",
+    demo: { caption: "One tone at 220 Hz, then 440, then 880: the same note in three octaves.", tones: seq([{ shape: "sine", hz: 220 }, { shape: "sine", hz: 440 }, { shape: "sine", hz: 880 }]) },
     outcome: "Explain pitch as how fast a wave repeats, and predict what doubling or halving that speed does.",
     idea: [
       "A pitched sound is a shape that repeats. The number of repeats per second is its frequency, measured in hertz. More repeats per second sounds higher.",
@@ -48,6 +54,7 @@ export const LESSONS: PlayableLesson[] = [
   },
   {
     id: "C0.3", title: "Loud and quiet", buildsOn: ["C0.1"], minutes: 6, cardIds: ["oscillator-level"], initial: { volumeDb: -6 },
+    demo: { caption: "The same note three times, each 6 dB quieter than the last.", tones: seq([{ shape: "saw", hz: A3, gainDb: -6 }, { shape: "saw", hz: A3, gainDb: -12 }, { shape: "saw", hz: A3, gainDb: -18 }]) },
     outcome: "Read a level meter, say what a decibel change means in practice, and set a safe listening level.",
     idea: [
       "Level is how big the wave is. It is measured in decibels, a scale built on ratios, so equal decibel steps sound like equal steps in loudness.",
@@ -64,6 +71,7 @@ export const LESSONS: PlayableLesson[] = [
   },
   {
     id: "C0.4", title: "Tone colour", buildsOn: ["C0.2"], minutes: 7, cardIds: ["wavetable"], initial: { shape: "sine" }, shapes: ["sine", "saw"],
+    demo: { caption: "The same note as a pure tone, then as a bright one.", tones: seq([{ shape: "sine", hz: A3 }, { shape: "saw", hz: A3 }], 1.1) },
     outcome: "Explain why two sounds at the same pitch and loudness can sound different, and read that difference on a spectrum.",
     idea: [
       "Almost every pitched sound is a stack of simpler tones called harmonics: one at the pitch you hear, and others at whole multiples of it.",
@@ -79,6 +87,7 @@ export const LESSONS: PlayableLesson[] = [
   },
   {
     id: "C1.1", title: "The four basic shapes", buildsOn: ["C0.4"], minutes: 8, cardIds: ["wavetable"], initial: { shape: "sine" }, earCheck: "shape",
+    demo: { caption: "One note as sine, triangle, square and saw, in that order.", tones: seq([{ shape: "sine", hz: A3 }, { shape: "triangle", hz: A3 }, { shape: "square", hz: A3 }, { shape: "saw", hz: A3 }]) },
     outcome: "Recognise sine, triangle, saw and square by ear and by their spectra, and say roughly what each contains.",
     idea: [
       "The oscillator repeats a shape, and the shape decides the harmonics. A sine is a single harmonic. A triangle adds a few quiet odd harmonics.",
@@ -97,6 +106,7 @@ export const LESSONS: PlayableLesson[] = [
   },
   {
     id: "C1.2", title: "Octave, semitone and fine", buildsOn: ["C0.2"], minutes: 7, cardIds: ["oscillator-pitch"],
+    demo: { caption: "One key three ways: as played, an octave down, then up a fifth.", tones: seq([{ shape: "saw", hz: A4 }, { shape: "saw", hz: A4 / 2 }, { shape: "saw", hz: noteToHz(76) }]) },
     outcome: "Place an oscillator in a register and offset it by a musical interval or a few cents.",
     idea: [
       "Three controls move an oscillator relative to the key you press. Octave moves it in doublings. Semitone moves it in keyboard steps, twelve to the octave.",
@@ -113,6 +123,22 @@ export const LESSONS: PlayableLesson[] = [
     ],
     recap: ["Octave sets register.", "Semitones make intervals.", "Fine tune only matters next to another sound."],
     inSerum: "Start from Init and set Osc A’s OCT one step down. Save it and drop it into the “Oscillators and pitch” Serum task: the app checks the stored octave.",
+  },
+  {
+    id: "C1.M", title: "Match by ear: shape and pitch", buildsOn: ["C1.1", "C1.2"], minutes: 8, cardIds: [],
+    outcome: "Recreate a hidden sound using only your ears: pick its wave shape and find its octave and interval.",
+    idea: [
+      "This is the skill the whole course builds toward. You hear a target sound and your own sound on the same key, and you change your settings until the two match.",
+      "The target's settings stay hidden. When you check, the app tells you which settings match and which way the others are off, never the numbers.",
+    ],
+    steps: [],
+    rounds: [
+      { target: { shape: "square" }, match: ["shape"], from: { shape: "saw", octave: 0, semitone: 0, fine: 0 } },
+      { target: { shape: "saw", octave: -1 }, match: ["shape", "octave"], from: { shape: "sine", octave: 0, semitone: 0, fine: 0 } },
+      { target: { shape: "triangle", octave: 1, semitone: 0 }, match: ["shape", "octave", "semitone"], from: { shape: "saw", octave: 0, semitone: 0, fine: 0 } },
+      { target: { shape: "square", octave: -1, semitone: 7 }, match: ["shape", "octave", "semitone"], from: { shape: "sine", octave: 0, semitone: 0, fine: 0 } },
+    ],
+    recap: ["Listen for one quality at a time: colour first, then register, then interval.", "Switching quickly between target and yours makes differences obvious.", "Being told “too high” or “too low” is enough; you do not need the number."],
   },
 ];
 

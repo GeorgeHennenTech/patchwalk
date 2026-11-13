@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { LESSONS } from "../course/lessons";
+import { allMatch, compareToTarget, type MatchVerdict } from "../course/match";
 import { guideContext, loadDone, saveDone, suggestNext } from "../course/progress";
-import type { Panel, PlayableLesson } from "../course/types";
+import type { MatchRound, Panel, PlayableLesson } from "../course/types";
 import type { Card } from "../lesson/cards";
-import { INITIAL, noteToHz, PARAMS, SHAPES, type Shape, type SynthState } from "../synth/params";
+import { INITIAL, noteToHz, PARAMS, playedHz, SHAPES, type Shape, type SynthState } from "../synth/params";
 import { useSynth, type Synth } from "../synth/useSynth";
 import { AskBox } from "./Answer";
 import { Badge } from "./Badge";
@@ -37,6 +38,75 @@ function SynthPanel({ synth, show, lesson, all }: { synth: Synth; show: Panel[];
       </div>
       {(on("keyboard") || all) && <Keyboard synth={synth} />}
     </div>
+  );
+}
+
+/** Reads text with the browser's built-in voice. Free and instant; quality depends on the device. */
+function ReadAloud({ text }: { text: string }) {
+  const [on, setOn] = useState(false);
+  const can = typeof window !== "undefined" && "speechSynthesis" in window;
+  useEffect(() => () => { if (can) window.speechSynthesis.cancel(); }, [can]);
+  if (!can) return null;
+  const toggle = () => {
+    window.speechSynthesis.cancel();
+    if (on) { setOn(false); return; }
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.95;
+    u.onend = () => setOn(false);
+    u.onerror = () => setOn(false);
+    window.speechSynthesis.speak(u);
+    setOn(true);
+  };
+  return <button className="link" onClick={toggle}>{on ? "Stop reading" : "Read aloud"}</button>;
+}
+
+/** Match-by-ear: a hidden target, your sound on the same key, and feedback that never shows the numbers. */
+function MatchRounds({ rounds, synth, lesson, onPass }: { rounds: MatchRound[]; synth: Synth; lesson: PlayableLesson; onPass: () => void }) {
+  const [index, setIndex] = useState(0);
+  const [verdicts, setVerdicts] = useState<Record<string, MatchVerdict>>();
+  const [checks, setChecks] = useState(0);
+  const [log, setLog] = useState<string[]>([]);
+  const round = rounds[Math.min(index, rounds.length - 1)]!;
+  const finished = index >= rounds.length;
+  const NOTE = 57;
+  useEffect(() => {
+    if (!finished) { synth.setState(round.from); setVerdicts(undefined); setChecks(0); }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index]);
+  const hear = (state: SynthState) => synth.engine.current?.audition(state.shape, playedHz(state, NOTE), 1.1);
+  const target = { ...INITIAL, ...round.from, ...round.target };
+  const check = () => { setVerdicts(compareToTarget(synth.state, round.target, round.match)); setChecks(checks + 1); };
+  const matched = !!verdicts && allMatch(verdicts);
+  const next = () => {
+    setLog((l) => [...l, `Round ${index + 1}: matched in ${checks} ${checks === 1 ? "check" : "checks"}.`]);
+    if (index + 1 >= rounds.length) onPass();
+    setIndex(index + 1);
+  };
+  return (
+    <section className="exercise">
+      <h3>Match by ear <Badge kind={finished ? "ok" : "muted"}>{finished ? "all matched" : `round ${index + 1} of ${rounds.length}`}</Badge></h3>
+      {!finished && (
+        <>
+          <p>Listen to the target, then to yours. Change {round.match.map((k) => PARAMS[k]!.label.toLowerCase()).join(", ").replace(/, ([^,]*)$/, " and $1")} until they sound the same, then check.</p>
+          {!synth.running ? <button className="primary" onClick={() => void synth.start()}>Start audio</button> : (
+            <div className="toolbar">
+              <button className="primary" onClick={() => hear(target)}>Hear target</button>
+              <button className="choice" onClick={() => hear(synth.state)}>Hear mine</button>
+              <span className="spacer" />
+              <button className="primary" onClick={check}>Check</button>
+            </div>
+          )}
+          <SynthPanel synth={synth} show={round.match} lesson={lesson} all={false} />
+          {verdicts && (
+            <ul className="checks" role="status">
+              {round.match.map((k) => <li key={k} className={verdicts[k] === "match" ? "ok" : "no"}><span aria-hidden>{verdicts[k] === "match" ? "✓" : "✗"}</span> {PARAMS[k]!.label}: {verdicts[k] === "match" ? "matches" : verdicts[k] === "different" ? "not the same as the target" : `yours is ${verdicts[k]}`}</li>)}
+            </ul>
+          )}
+          {matched && <button className="primary" onClick={next}>{index + 1 >= rounds.length ? "Finish" : "Next round"}</button>}
+        </>
+      )}
+      {log.map((l) => <p key={l} className="remark"><strong>Guide:</strong> {l}</p>)}
+    </section>
   );
 }
 
@@ -92,11 +162,12 @@ export function PlayView({ cards }: { cards: Card[] }) {
   const [stepIndex, setStepIndex] = useState(0);
   const [remarks, setRemarks] = useState<Record<number, string>>({});
   const [earPassed, setEarPassed] = useState(false);
+  const [roundsPassed, setRoundsPassed] = useState(false);
   const [all, setAll] = useState(false);
   const [, tick] = useState(0);
   const lesson = LESSONS.find((l) => l.id === lessonId)!;
   const finishedSteps = stepIndex >= lesson.steps.length;
-  const step = lesson.steps[Math.min(stepIndex, lesson.steps.length - 1)]!;
+  const step = lesson.steps[Math.min(stepIndex, lesson.steps.length - 1)] ?? { do: "", show: [], hear: "", target: "", check: () => false };
   const begun = useRef("");
 
   useEffect(() => saveDone(done), [done]);
@@ -106,7 +177,7 @@ export function PlayView({ cards }: { cards: Card[] }) {
   // Entering a lesson: load its starting settings.
   useEffect(() => {
     synth.reset({ ...INITIAL, ...lesson.initial });
-    setStepIndex(0); setRemarks({}); setEarPassed(false); setAll(false);
+    setStepIndex(0); setRemarks({}); setEarPassed(false); setRoundsPassed(false); setAll(false);
     begun.current = "";
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lessonId]);
@@ -126,7 +197,12 @@ export function PlayView({ cards }: { cards: Card[] }) {
     if (remark) setRemarks((r) => ({ ...r, [stepIndex]: remark }));
     setStepIndex(stepIndex + 1);
   };
-  const complete = finishedSteps && (!lesson.earCheck || earPassed);
+  const complete = finishedSteps && (!lesson.earCheck || earPassed) && (!lesson.rounds || roundsPassed);
+  const inRounds = finishedSteps && !!lesson.rounds && !roundsPassed;
+  const playDemo = async () => {
+    await synth.start();
+    for (const t of lesson.demo?.tones ?? []) synth.engine.current?.audition(t.shape, t.hz, t.seconds, t.at, t.gainDb);
+  };
   useEffect(() => { if (complete && !done.includes(lesson.id)) setDone((d) => [...d, lesson.id]); }, [complete, done, lesson.id]);
 
   const lessonCards = lesson.cardIds.map((id) => cards.find((c) => c.id === id)).filter((c): c is Card => !!c);
@@ -149,17 +225,23 @@ export function PlayView({ cards }: { cards: Card[] }) {
       <article className="learn-body">
         <h2>{lesson.id} {lesson.title}</h2>
         <p><strong>You will be able to:</strong> {lesson.outcome}</p>
+        {lesson.demo && (
+          <p className="hear-first"><button className="primary" onClick={() => void playDemo()}>Hear it first</button> <span className="muted">{lesson.demo.caption}</span></p>
+        )}
         {lesson.idea.map((p) => <p key={p}>{p}</p>)}
+        <ReadAloud key={`read-${lesson.id}`} text={[lesson.outcome, ...lesson.idea].join(" ")} />
         {lessonCards.map((c) => (
           <details key={c.id} className="card"><summary>{c.title} {c.status !== "reviewed" && <Badge kind="warn" title="A first draft, not yet reviewed by the owner.">draft</Badge>}</summary><Markdown text={c.body} /></details>
         ))}
 
-        <div className="stage-box">
-          <SynthPanel synth={synth} show={finishedSteps ? [] : step.show} lesson={lesson} all={all || finishedSteps} />
-          <button className="link" onClick={() => setAll(!all)}>{all ? "Show only this step’s controls" : "Show the whole synth"}</button>
-        </div>
+        {!inRounds && (
+          <div className="stage-box">
+            <SynthPanel synth={synth} show={finishedSteps || !lesson.steps.length ? [] : step.show} lesson={lesson} all={all || finishedSteps} />
+            <button className="link" onClick={() => setAll(!all)}>{all ? "Show only this step’s controls" : "Show the whole synth"}</button>
+          </div>
+        )}
 
-        <ol className="steps">
+        {lesson.steps.length > 0 && <ol className="steps">
           {lesson.steps.map((s, i) => (
             <li key={i} className={i < stepIndex ? "done" : i === stepIndex ? "now" : "later"}>
               <div className="step-do"><span className="tick" aria-hidden>{i < stepIndex ? "✓" : i + 1}</span> {s.do}</div>
@@ -173,10 +255,11 @@ export function PlayView({ cards }: { cards: Card[] }) {
               {remarks[i] && <p className="remark"><strong>Guide:</strong> {remarks[i]}</p>}
             </li>
           ))}
-        </ol>
+        </ol>}
 
+        {finishedSteps && lesson.rounds && <MatchRounds key={`match-${lesson.id}`} rounds={lesson.rounds} synth={synth} lesson={lesson} onPass={() => setRoundsPassed(true)} />}
         {finishedSteps && lesson.earCheck && <EarCheck kind={lesson.earCheck} synth={synth} onPass={() => setEarPassed(true)} />}
-        {finishedSteps && (
+        {finishedSteps && !inRounds && (
           <section className="card">
             <h3>Recap {complete && <Badge kind="ok">lesson done</Badge>}</h3>
             <ul>{lesson.recap.map((r) => <li key={r}>{r}</li>)}</ul>

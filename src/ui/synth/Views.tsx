@@ -156,3 +156,39 @@ export function FilterCurve({ synth, note, spot }: { synth: Synth; note: number 
     </figure>
   );
 }
+
+/**
+ * The spectrum over time, scrolling left: newest on the right, low at the bottom, brighter meaning louder.
+ * Shows things a still spectrum cannot, such as a filter sweep or a beat, as shapes.
+ */
+export function Spectrogram({ synth }: { synth: Synth }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  const buf = useRef(new Float32Array(2048));
+  useFrame(() => {
+    const canvas = ref.current, an = synth.engine.current?.analyser;
+    if (!canvas) return;
+    const dpr = window.devicePixelRatio || 1, w = Math.round(canvas.clientWidth * dpr), h = Math.round(canvas.clientHeight * dpr);
+    if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+    if (!an || an.context.state !== "running" || w < 2) return;
+    const g = canvas.getContext("2d")!, step = Math.max(1, Math.round(dpr));
+    g.globalAlpha = 1;
+    // "copy" replaces the picture with its shifted self; the default would pile each frame on top of the last
+    g.globalCompositeOperation = "copy";
+    g.drawImage(canvas, -step, 0);
+    g.globalCompositeOperation = "source-over";
+    g.clearRect(w - step, 0, step, h);
+    an.getFloatFrequencyData(buf.current);
+    const nyquist = an.context.sampleRate / 2, lo = 40, hi = 16000;
+    g.fillStyle = getComputedStyle(canvas).getPropertyValue("--accent").trim() || "#c2186b";
+    for (let y = 0; y < h; y += step) {
+      const f = lo * (hi / lo) ** (1 - y / h);
+      const db = buf.current[Math.min(buf.current.length - 1, Math.round((f / nyquist) * buf.current.length))] ?? -120;
+      const level = Math.max(0, Math.min(1, (db + 100) / 60));
+      if (level <= 0.02) continue;
+      g.globalAlpha = level ** 1.5;
+      g.fillRect(w - step, y, step, step);
+    }
+    g.globalAlpha = 1;
+  }, true);
+  return <figure className="view"><canvas ref={ref} aria-label="Spectrogram" /><figcaption>Spectrogram: the spectrum over time. Newest on the right, higher pitch higher up, stronger colour means louder.</figcaption></figure>;
+}

@@ -199,6 +199,10 @@ Take these in order. After each, test, check in a browser, commit, push, and rep
    C2.1 to C2.7 and the checkpoint C2.C are scripted and playable. Oscillator A gained a level control. C2.7
    was adapted: this filter rings but does not truly self-oscillate, so the lesson feeds it noise and says so.
    Chapter 2 has no blind ear checks yet (each script names the one planned).
+   Also added at the owner's suggestion: a "Show:" row to switch the scope, spectrum, a new scrolling
+   spectrogram, the level meter and the filter curve on at any step (remembered; hidden in match-by-ear). The
+   owner wants the same toggles in the piano roll when the mini DAW exists; ideas not built yet are a stereo
+   (left/right) view, a tuner/pitch readout and a loudness meter.
 3. **Next: envelopes (C3)** with a draggable envelope drawing, then **LFOs and modulation (C4, C5)**.
 4. **Guide improvements** alongside: remember more than finished lessons (for example what the learner found
    hard), and add more texts to the library as the owner supplies them.

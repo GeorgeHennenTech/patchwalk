@@ -10,7 +10,7 @@ import { AskBox } from "./Answer";
 import { Badge } from "./Badge";
 import { Markdown } from "./Markdown";
 import { Control, Keyboard } from "./synth/Controls";
-import { FilterCurve, Meter, Scope, Spectrum } from "./synth/Views";
+import { FilterCurve, Meter, Scope, Spectrogram, Spectrum } from "./synth/Views";
 
 const GROUPS: Group[] = ["Master", "Oscillator A", "Unison", "Oscillator B", "Sub", "Noise", "Filter"];
 const describe = (s: SynthState) => [
@@ -25,16 +25,35 @@ const describe = (s: SynthState) => [
   s.filterOn ? `filter on (${PARAMS.filterType!.names![s.filterType]}, cutoff ${s.cutoff} Hz, resonance ${s.resonance}%, slope ${s.slope} dB per octave, drive ${s.drive}%, key tracking ${s.keyTrack}%)` : "filter off",
 ].join("; ");
 
-function SynthPanel({ synth, show, lesson, all, lastNote }: { synth: Synth; show: Panel[]; lesson: PlayableLesson; all: boolean; lastNote?: number | null }) {
-  const on = (p: Panel) => all || show.includes(p);
+/** Views of the sound the learner can switch on at any time, whatever the current step shows. */
+const VIEWS: { id: Panel; label: string }[] = [
+  { id: "scope", label: "Scope" }, { id: "spectrum", label: "Spectrum" }, { id: "spectrogram", label: "Spectrogram" }, { id: "meter", label: "Level" }, { id: "curve", label: "Filter curve" },
+];
+const VIEWS_KEY = "patchwalk.play.views";
+function loadViews(): Panel[] {
+  try { const v = JSON.parse(localStorage.getItem(VIEWS_KEY) ?? "[]"); return Array.isArray(v) ? VIEWS.map((x) => x.id).filter((id) => v.includes(id)) : []; } catch { return []; }
+}
+
+function SynthPanel({ synth, show, lesson, all, lastNote, extra = [], onExtra }: { synth: Synth; show: Panel[]; lesson: PlayableLesson; all: boolean; lastNote?: number | null; extra?: Panel[]; onExtra?: (p: Panel) => void }) {
+  const on = (p: Panel) => all || show.includes(p) || extra.includes(p);
   const ids = (Object.keys(PARAMS) as (keyof SynthState)[]).filter((id) => on(id) && (id !== "freeHz" || synth.state.freeHz !== null));
   const beat = beatHz(synth.state, synth.held.at(-1) ?? lastNote ?? 57);
   return (
     <div className="synth">
       {!synth.running && <button className="primary big" onClick={() => void synth.start()}>Start audio</button>}
+      {onExtra && (
+        <div className="view-toggles" role="group" aria-label="Views of the sound">
+          <span>Show:</span>
+          {VIEWS.map((v) => {
+            const fixed = all || show.includes(v.id);
+            return <button key={v.id} aria-pressed={on(v.id)} disabled={fixed} title={fixed ? "This step is using it" : undefined} onClick={() => onExtra(v.id)}>{v.label}</button>;
+          })}
+        </div>
+      )}
       <div className="synth-views">
         {on("scope") && <Scope synth={synth} />}
         {on("spectrum") && <Spectrum synth={synth} />}
+        {on("spectrogram") && <Spectrogram synth={synth} />}
         {on("curve") && <FilterCurve synth={synth} note={synth.held.at(-1) ?? lastNote ?? null} spot={show.includes("curve")} />}
       </div>
       {GROUPS.map((g) => {
@@ -189,6 +208,12 @@ export function PlayView({ cards }: { cards: Card[] }) {
   const [earPassed, setEarPassed] = useState(false);
   const [roundsPassed, setRoundsPassed] = useState(false);
   const [all, setAll] = useState(false);
+  const [views, setViews] = useState<Panel[]>(loadViews);
+  const toggleView = (p: Panel) => setViews((v) => {
+    const next = v.includes(p) ? v.filter((x) => x !== p) : [...v, p];
+    try { localStorage.setItem(VIEWS_KEY, JSON.stringify(next)); } catch { /* not remembered */ }
+    return next;
+  });
   const [, tick] = useState(0);
   const lesson = LESSONS.find((l) => l.id === lessonId)!;
   const finishedSteps = stepIndex >= lesson.steps.length;
@@ -264,7 +289,7 @@ export function PlayView({ cards }: { cards: Card[] }) {
 
         {!inRounds && (
           <div className="stage-box">
-            <SynthPanel synth={synth} show={finishedSteps || !lesson.steps.length ? [] : step.show} lesson={lesson} all={all || finishedSteps} lastNote={snap.lastNote} />
+            <SynthPanel synth={synth} show={finishedSteps || !lesson.steps.length ? [] : step.show} lesson={lesson} all={all || finishedSteps} lastNote={snap.lastNote} extra={views} onExtra={toggleView} />
             <button className="link" onClick={() => setAll(!all)}>{all ? "Show only this step’s controls" : "Show the whole synth"}</button>
           </div>
         )}

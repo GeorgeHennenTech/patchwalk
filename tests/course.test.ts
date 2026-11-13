@@ -31,7 +31,7 @@ describe("practice synth maths", () => {
     expect(dbToGain(-48)).toBe(0);
   });
   it("every lesson only reveals controls that exist, within their ranges", () => {
-    const panels = new Set(["start", "keyboard", "hold", "scope", "spectrum", "meter", "beat", "curve", "ack", ...Object.keys(PARAMS)]);
+    const panels = new Set(["start", "keyboard", "hold", "scope", "spectrum", "spectrogram", "meter", "beat", "curve", "ack", ...Object.keys(PARAMS)]);
     for (const l of LESSONS) for (const s of l.steps) for (const p of s.show) expect(panels.has(p), `${l.id}: ${p}`).toBe(true);
   });
 });

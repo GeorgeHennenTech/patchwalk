@@ -170,6 +170,10 @@ Added after the first eight milestones (owner asked for all four in one go):
     every type, both slopes, resonance and key tracking, and filter-off was unchanged from before. To measure
     the analyser, set its smoothing to 0 and average several reads: smoothing is applied per read, not per second.
     The filter does not truly self-oscillate: C2.7 feeds it noise and says so. No ear checks for chapter 2 yet.
+  - **Views on demand (13 Nov 2026).** A "Show:" row in the lesson synth lets the learner switch the scope,
+    spectrum, spectrogram (new: the spectrum scrolling over time), level meter and filter curve on at any
+    step; the choice is remembered in the browser. Hidden during match-by-ear, where seeing the target would
+    defeat the exercise. The views only need the engine's analyser, so the later mini DAW can reuse them.
   - Not built yet: envelopes, LFOs, modulation, effects, MIDI input, a shared tempo clock. Chapter 3
     (envelopes) is next and has no scripts yet.
   - The old ten Serum-task lessons are now the "Serum tasks" tab.

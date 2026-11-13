@@ -48,7 +48,7 @@ export function useSynth() {
   const sync = () => {
     const h = engine.current?.held ?? [];
     setHeld(h);
-    if (h.length === 0) track.current = trackAllReleased(track.current);
+    if (h.length === 0) track.current = trackAllReleased(track.current, now());
   };
 
   const noteOn = useCallback((note: number, source: "mouse" | "keys" | "midi") => {

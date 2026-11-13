@@ -11,11 +11,13 @@ export interface Track {
   flags: Record<string, boolean>;
   /** Clock time (seconds) at which the currently held note began, or null when nothing is held. */
   heldSince: number | null;
+  /** Longest finished hold since the step began, in seconds. */
+  longest: number;
   lastNote: number | null;
 }
 
 export const newTrack = (state: SynthState): Track => ({
-  start: state, played: { mouse: 0, keys: 0, midi: 0 }, notes: [], range: {}, changes: {}, flags: {}, heldSince: null, lastNote: null,
+  start: state, played: { mouse: 0, keys: 0, midi: 0 }, notes: [], range: {}, changes: {}, flags: {}, heldSince: null, longest: 0, lastNote: null,
 });
 
 export function trackState(t: Track, prev: SynthState, next: SynthState): Track {
@@ -43,7 +45,7 @@ export function trackNoteOn(t: Track, source: keyof Track["played"], note: numbe
   };
 }
 
-export const trackAllReleased = (t: Track): Track => ({ ...t, heldSince: null });
+export const trackAllReleased = (t: Track, now?: number): Track => ({ ...t, heldSince: null, longest: t.heldSince !== null && now !== undefined ? Math.max(t.longest, now - t.heldSince) : t.longest });
 export const trackFlag = (t: Track, flag: string): Track => ({ ...t, flags: { ...t.flags, [flag]: true } });
 
 export function snapshot(t: Track, state: SynthState, live: { audioRunning: boolean; held: number[]; holdOn: boolean; now: number }): Snapshot {
@@ -51,6 +53,7 @@ export function snapshot(t: Track, state: SynthState, live: { audioRunning: bool
     state, start: t.start, audioRunning: live.audioRunning, held: live.held, holdOn: live.holdOn,
     played: t.played, distinctNotes: t.notes.length,
     heldSeconds: t.heldSince !== null && live.held.length ? live.now - t.heldSince : 0,
+    longestHeld: Math.max(t.longest, t.heldSince !== null && live.held.length ? live.now - t.heldSince : 0),
     range: t.range, changes: t.changes, flags: t.flags,
     lastNote: live.held.length ? live.held[live.held.length - 1]! : t.lastNote,
   };

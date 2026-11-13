@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { effectiveCutoff, filterResponseDb } from "../../synth/filter";
+import { adsr, ENV1_COLOR, SOURCES } from "../../synth/mod";
+import { PARAMS, type SynthState } from "../../synth/params";
 import type { Synth } from "../../synth/useSynth";
+import { fromTravel, toTravel } from "./Controls";
 
 function useFrame(draw: () => void, active: boolean) {
   useEffect(() => {
@@ -191,4 +194,53 @@ export function Spectrogram({ synth }: { synth: Synth }) {
     g.globalAlpha = 1;
   }, true);
   return <figure className="view"><canvas ref={ref} aria-label="Spectrogram" /><figcaption>Spectrogram: the spectrum over time. Newest on the right, higher pitch higher up, stronger colour means louder.</figcaption></figure>;
+}
+
+const ENV = { w: 320, h: 110, pad: 10, stage: 0.26, hold: 0.16 };
+/**
+ * Where an envelope's three draggable points sit. Each timed stage takes up to a quarter of the width,
+ * following its knob's position, so short and long times both stay easy to grab. The drawing shows the shape
+ * and the order of the stages; it is not a ruler for seconds.
+ */
+export function envPoints(s: SynthState, which: 1 | 2) {
+  const k = which === 1 ? "env" : "env2";
+  const span = (ENV.w - 2 * ENV.pad) * ENV.stage, top = ENV.pad, bottom = ENV.h - ENV.pad;
+  const t = (key: "A" | "D" | "R") => toTravel(PARAMS[`${k}${key}`]!, s[`${k}${key}`]);
+  const level = bottom - (s[`${k}S`] / 100) * (bottom - top);
+  const a = ENV.pad + t("A") * span, d = a + t("D") * span, held = d + (ENV.w - 2 * ENV.pad) * ENV.hold, r = held + t("R") * span;
+  return { a: { x: a, y: top }, d: { x: d, y: level }, held: { x: held, y: level }, r: { x: r, y: bottom }, span, top, bottom };
+}
+
+/** An envelope you can drag: the top point sets attack, the middle one decay and sustain, the last one release. */
+export function EnvCurve({ synth, which, spot }: { synth: Synth; which: 1 | 2; spot?: boolean }) {
+  const s = synth.state, k = which === 1 ? "env" : "env2";
+  const p = envPoints(s, which), e = adsr(s, which);
+  const color = which === 1 ? ENV1_COLOR : SOURCES[0]!.color;
+  const drag = useRef<{ point: "a" | "d" | "r"; x: number; y: number; start: SynthState } | null>(null);
+  // decay and release ease toward their target, as the sound does
+  const ease = (from: { x: number; y: number }, to: { x: number; y: number }) => Array.from({ length: 13 }, (_, i) => { const u = i / 12; return `L${(from.x + (to.x - from.x) * u).toFixed(1)} ${(to.y + (from.y - to.y) * Math.exp(-u * 4)).toFixed(1)}`; }).join(" ");
+  const path = `M${ENV.pad} ${p.bottom} L${p.a.x.toFixed(1)} ${p.a.y} ${ease(p.a, p.d)} L${p.held.x.toFixed(1)} ${p.d.y.toFixed(1)} ${ease(p.held, p.r)}`;
+  const move = (ev: React.PointerEvent<SVGSVGElement>) => {
+    const g = drag.current;
+    if (!g) return;
+    const box = ev.currentTarget.getBoundingClientRect(), scale = ENV.w / box.width;
+    const dx = ((ev.clientX - g.x) * scale) / p.span, dy = ((g.y - ev.clientY) * scale) / (p.bottom - p.top);
+    const timed = (key: "A" | "D" | "R") => ({ [`${k}${key}`]: fromTravel(PARAMS[`${k}${key}`]!, toTravel(PARAMS[`${k}${key}`]!, g.start[`${k}${key}`]) + dx) });
+    const patch = g.point === "a" ? timed("A") : g.point === "r" ? timed("R") : { ...timed("D"), [`${k}S`]: Math.round(Math.min(100, Math.max(0, g.start[`${k}S`] + dy * 100))) };
+    synth.setState(patch as Partial<SynthState>);
+  };
+  const grab = (point: "a" | "d" | "r") => (ev: React.PointerEvent) => { ((ev.currentTarget as SVGCircleElement).ownerSVGElement ?? ev.currentTarget).setPointerCapture(ev.pointerId); drag.current = { point, x: ev.clientX, y: ev.clientY, start: s }; synth.flag(which === 1 ? "envelope" : "envelope2"); };
+  const handle = (point: "a" | "d" | "r", at: { x: number; y: number }, label: string) => <circle className="env-handle" cx={at.x} cy={at.y} r="7" onPointerDown={grab(point)}><title>{label}</title></circle>;
+  return (
+    <figure className={`view env${spot ? " spot" : ""}`} style={{ "--glow": color } as React.CSSProperties}>
+      <svg viewBox={`0 0 ${ENV.w} ${ENV.h}`} role="img" aria-label={`Envelope ${which}: attack ${Math.round(e.attack * 1000)} ms, decay ${Math.round(e.decay * 1000)} ms, sustain ${Math.round(e.sustain * 100)}%, release ${Math.round(e.release * 1000)} ms. Drag the points to change it.`}
+        onPointerMove={move} onPointerUp={() => { drag.current = null; }} onPointerCancel={() => { drag.current = null; }}>
+        <line className="env-key" x1={p.held.x} x2={p.held.x} y1={p.top - 4} y2={p.bottom} />
+        <text className="env-note" x={p.held.x + 4} y={p.top + 4}>key let go</text>
+        <path className="env-line" d={path} />
+        {handle("a", p.a, "Attack: drag sideways")}{handle("d", p.d, "Decay and sustain: drag sideways and up or down")}{handle("r", p.r, "Release: drag sideways")}
+      </svg>
+      <figcaption>Envelope {which}{which === 1 ? " (loudness)" : ""}: drag the first point for attack, the second for decay and sustain, the last for release. It shows the shape, not exact seconds.</figcaption>
+    </figure>
+  );
 }

@@ -17,6 +17,8 @@ export interface Snapshot {
   holdOn: boolean;
   /** Seconds the current note has been held without a break. */
   heldSeconds: number;
+  /** The longest any note has been held since the step began, in seconds: still counts after it is let go. */
+  longestHeld: number;
   /** Lowest and highest value each setting has taken since the step began. */
   range: Partial<Record<keyof SynthState, { min: number; max: number }>>;
   /** How many times each setting has changed since the step began. */
@@ -27,7 +29,7 @@ export interface Snapshot {
   flags: Record<string, boolean>;
 }
 
-export type Panel = "start" | "keyboard" | "hold" | "scope" | "spectrum" | "spectrogram" | "meter" | "beat" | "curve" | "ack" | keyof SynthState;
+export type Panel = "start" | "keyboard" | "hold" | "scope" | "spectrum" | "spectrogram" | "meter" | "beat" | "curve" | "envelope" | "envelope2" | "ack" | keyof SynthState;
 
 export interface LessonStep {
   do: string;

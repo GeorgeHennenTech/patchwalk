@@ -2,6 +2,7 @@ import { noteToHz } from "../../synth/params";
 import type { DemoTone, PlayableLesson, Snapshot } from "../types";
 import { CHAPTER_1 } from "./chapter1";
 import { CHAPTER_2 } from "./chapter2";
+import { CHAPTER_3 } from "./chapter3";
 
 const anyNote = (s: Snapshot) => s.played.mouse + s.played.keys + s.played.midi;
 const within = (v: number | null, lo: number, hi: number) => v !== null && v >= lo && v <= hi;
@@ -145,13 +146,13 @@ const BASE: PlayableLesson[] = [
 ];
 
 /** Every playable lesson, in suggested order. */
-export const LESSONS: PlayableLesson[] = [...BASE, ...CHAPTER_1, ...CHAPTER_2];
+export const LESSONS: PlayableLesson[] = [...BASE, ...CHAPTER_1, ...CHAPTER_2, ...CHAPTER_3];
 
 /**
  * Chapter names, by the number in a lesson's id ("C2.5" is in chapter 2). Ids are for code, scripts and
  * plans; the learner sees the chapter name, the lesson's place in it, and its title.
  */
-export const CHAPTERS: Record<string, string> = { "0": "Sound itself", "1": "Oscillators", "2": "Filters" };
+export const CHAPTERS: Record<string, string> = { "0": "Sound itself", "1": "Oscillators", "2": "Filters", "3": "Envelopes" };
 export const chapterOf = (lesson: PlayableLesson) => lesson.id.slice(1, lesson.id.indexOf("."));
 /** Where a lesson sits: its chapter's name, its number within the chapter, and how many the chapter has. */
 export function placeOf(lesson: PlayableLesson, lessons: PlayableLesson[] = LESSONS): { chapter: string; number: number; of: number } {

@@ -12,7 +12,7 @@ import { Badge } from "./Badge";
 import { Markdown } from "./Markdown";
 import { Control, Keyboard } from "./synth/Controls";
 import { Rack } from "./synth/Rack";
-import { FilterCurve, Meter, Scope, Spectrogram, Spectrum } from "./synth/Views";
+import { EnvCurve, FilterCurve, Meter, Scope, Spectrogram, Spectrum } from "./synth/Views";
 
 const describe = (s: SynthState) => [
   `volume ${s.volumeDb} dB`,
@@ -68,6 +68,8 @@ function SynthPanel({ synth, show, lesson, all, lastNote, extra = [], onExtra, p
       <div className="synth-views">
         {on("scope") && <Scope synth={synth} />}
         {on("spectrum") && <Spectrum synth={synth} />}
+        {show.includes("envelope") && <EnvCurve synth={synth} which={1} spot />}
+        {show.includes("envelope2") && <EnvCurve synth={synth} which={2} spot />}
         {on("spectrogram") && <Spectrogram synth={synth} />}
         {!all && !show.includes("curve") && extra.includes("curve") && <FilterCurve synth={synth} note={note} />}
       </div>

@@ -393,3 +393,15 @@ label.mod-head { cursor: pointer; }
 .source-image img { display: block; max-width: 100%; height: auto; max-height: 360px; width: auto; border: 2px solid var(--thread); border-radius: 10px; background: #fff; }
 .source-image figcaption { font-size: 12px; color: var(--muted); margin-top: 3px; }
 .related { margin: 10px 0 0; padding: 8px 12px; border: 2px dashed var(--accent); border-radius: 10px; background: var(--accent-soft); }
+
+/* Draggable envelope drawing */
+.view.env svg { display: block; width: 100%; height: 150px; background: var(--panel); border: 2px solid var(--thread); border-radius: 10px; touch-action: none; }
+.view.env.spot svg { box-shadow: 3px 3px 0 var(--accent); }
+.env-line { fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-linejoin: round; }
+.env-handle { fill: var(--accent); stroke: var(--panel); stroke-width: 2; cursor: grab; }
+.env-handle:active { cursor: grabbing; }
+.env-key { stroke: var(--line); stroke-width: 1; stroke-dasharray: 3 3; }
+.env-note { fill: var(--muted); font-size: 8px; dominant-baseline: hanging; }
+.synth:not(.plain) .view.env svg { background: #0c0510; border-color: var(--glow); box-shadow: 0 0 10px -2px var(--glow); }
+.synth:not(.plain) .env-line { stroke: var(--glow); filter: drop-shadow(0 0 3px var(--glow)); }
+.synth:not(.plain) .env-handle { fill: var(--glow); stroke: #0c0510; }

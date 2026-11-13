@@ -6,7 +6,7 @@ import { newTrack, snapshot, trackAllReleased, trackFlag, trackNoteOn, trackStat
 
 const base = (over: Partial<Snapshot> = {}, state: Partial<SynthState> = {}, start: Partial<SynthState> = {}): Snapshot => ({
   state: { ...INITIAL, ...state }, start: { ...INITIAL, ...start }, audioRunning: true, held: [], played: { mouse: 0, keys: 0, midi: 0 },
-  distinctNotes: 0, holdOn: false, heldSeconds: 0, range: {}, changes: {}, flags: {}, lastNote: null, ...over,
+  distinctNotes: 0, holdOn: false, heldSeconds: 0, longestHeld: 0, range: {}, changes: {}, flags: {}, lastNote: null, ...over,
 });
 const step = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
 
@@ -31,7 +31,7 @@ describe("practice synth maths", () => {
     expect(dbToGain(-48)).toBe(0);
   });
   it("every lesson only reveals controls that exist, within their ranges", () => {
-    const panels = new Set(["start", "keyboard", "hold", "scope", "spectrum", "spectrogram", "meter", "beat", "curve", "ack", ...Object.keys(PARAMS)]);
+    const panels = new Set(["start", "keyboard", "hold", "scope", "spectrum", "spectrogram", "meter", "beat", "curve", "envelope", "envelope2", "ack", ...Object.keys(PARAMS)]);
     for (const l of LESSONS) for (const s of l.steps) for (const p of s.show) expect(panels.has(p), `${l.id}: ${p}`).toBe(true);
   });
 });
@@ -53,6 +53,8 @@ describe("tracking what the learner does", () => {
     expect(s.heldSeconds).toBe(3.5);
     expect(s.flags.ack).toBe(true);
     expect(snapshot(trackAllReleased(t), INITIAL, { audioRunning: true, held: [], holdOn: false, now: 20 }).heldSeconds).toBe(0);
+    expect(s.longestHeld).toBe(3.5);
+    expect(snapshot(trackAllReleased(t, 14), INITIAL, { audioRunning: true, held: [], holdOn: false, now: 20 }).longestHeld).toBe(4);
   });
 });
 
@@ -352,7 +354,7 @@ describe("filter maths", () => {
 describe("chapter 2 lessons", () => {
   const st = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
   it("the filter chapter follows chapter 1 and uses only real settings and cards that exist", async () => {
-    expect(LESSONS.map((l) => l.id).slice(14)).toEqual(["C2.1", "C2.2", "C2.3", "C2.4", "C2.5", "C2.6", "C2.7", "C2.C"]);
+    expect(LESSONS.map((l) => l.id).slice(14, 22)).toEqual(["C2.1", "C2.2", "C2.3", "C2.4", "C2.5", "C2.6", "C2.7", "C2.C"]);
     const { readdirSync } = await import("node:fs");
     const cards = readdirSync("knowledge-cards").map((f) => f.replace(".md", ""));
     for (const l of CHAPTER_2) {
@@ -474,7 +476,6 @@ describe("envelopes and LFOs", () => {
   it("the starting patch is unchanged by them: full sustain, nothing connected", () => {
     expect(adsr(INITIAL, 1).sustain).toBe(1);
     expect(routes(INITIAL)).toEqual([]);
-    for (const l of LESSONS) for (const r of l.rounds ?? []) expect(routes({ ...INITIAL, ...r.from, ...r.target })).toEqual([]);
   });
   it("an envelope rises over the attack, eases to the sustain level, and fades after the note is let go", () => {
     const e = { attack: 0.1, decay: 0.4, sustain: 0.25, release: 0.2 };
@@ -542,5 +543,53 @@ describe("the guide points to lessons, and the keyboard shifts octaves", () => {
     expect(shiftOctave(0, -1)).toBe(-1);
     expect(shiftOctave(KEY_OCTAVES, 1)).toBe(KEY_OCTAVES);
     expect(shiftOctave(-KEY_OCTAVES, -1)).toBe(-KEY_OCTAVES);
+  });
+});
+
+import { CHAPTER_3 } from "../src/course/lessons/chapter3";
+import { envPoints } from "../src/ui/synth/Views";
+
+describe("chapter 3 lessons", () => {
+  const st = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
+  const hit = { played: { mouse: 2, keys: 0, midi: 0 } };
+  it("the envelope chapter follows the filters and starts from real settings", () => {
+    expect(LESSONS.map((l) => l.id).slice(22)).toEqual(["C3.1", "C3.2", "C3.4", "C3.5", "C3.6", "C3.C"]);
+    for (const l of CHAPTER_3) for (const k of Object.keys(l.initial ?? {})) expect(k in INITIAL, `${l.id}: ${k}`).toBe(true);
+    expect(placeOf(LESSONS.find((l) => l.id === "C3.4")!)).toEqual({ chapter: "Envelopes", number: 3, of: 6 });
+  });
+  it("C3.1 and C3.2: each stage is checked by its own setting, and shapes by all four", () => {
+    expect(st("C3.1", 1).check(base(hit, { envA: 500 }))).toBe(true);
+    expect(st("C3.1", 1).check(base(hit, { envA: 50 }))).toBe(false);
+    expect(st("C3.1", 2).check(base(hit, { envA: 5, envS: 0, envD: 300 }))).toBe(true);
+    expect(st("C3.1", 3).check(base({ longestHeld: 2.2 }, { envS: 50 }))).toBe(true); // still counts after the key is let go
+    expect(st("C3.1", 4).remark!(base(hit, { envA: 5, envD: 300, envS: 50, envR: 1000 }))).toBe("Your envelope now: attack 5 ms, decay 300 ms, sustain 50%, release 1.00 s. Three times and one level.");
+    expect(st("C3.1", 5).check(base({ ...hit, flags: { envelope: true } }))).toBe(true);
+    expect(st("C3.2", 1).check(base(hit, { envS: 0, envD: 300, envR: 200 }))).toBe(true);
+    expect(st("C3.2", 1).check(base(hit, { envS: 60, envD: 300, envR: 200 }))).toBe(false);
+    expect(st("C3.2", 2).check(base(hit, { envA: 600, envS: 80, envR: 1200 }))).toBe(true);
+  });
+  it("C3.4 to C3.6: the envelope has to be sent to the right place, and the remark does the arithmetic", () => {
+    expect(st("C3.4", 1).check(base(hit, { env2Dest: "cutoff" }))).toBe(true);
+    expect(st("C3.4", 1).check(base(hit, { env2Dest: "fine" }))).toBe(false);
+    expect(st("C3.4", 5).check(base(hit, { cutoff: 2000, env2Amount: -40 }))).toBe(true);
+    expect(st("C3.5", 1).remark!(base(hit, { env2Amount: 100, env2D: 60 }))).toBe("At 100% each note starts 12 semitones high and falls in 60 ms.");
+    expect(st("C3.5", 3).check(base(hit, { bOn: true, env2Dest: "bFine", env2Amount: 60 }))).toBe(true);
+    expect(st("C3.6", 1).check(base(hit, { filterType: "high" }))).toBe(true);
+    expect(st("C3.6", 3).check(base(hit, { filterType: "band", cutoff: 1000, env2Amount: -30 }))).toBe(true);
+  });
+  it("times are matched by ear as ratios: within double or half", () => {
+    expect(compareSetting("envA", { ...INITIAL, envA: 900 }, { envA: 500 })).toBe("match");
+    expect(compareSetting("envA", { ...INITIAL, envA: 1200 }, { envA: 500 })).toBe("too high");
+    expect(compareSetting("envR", { ...INITIAL, envR: 100 }, { envR: 1500 })).toBe("too low");
+    expect(compareSetting("env2Amount", { ...INITIAL, env2Amount: 70 }, { env2Amount: 85 })).toBe("match");
+    expect(compareSetting("env2Amount", { ...INITIAL, env2Amount: 60 }, { env2Amount: -60 })).toBe("too high");
+  });
+  it("the draggable envelope's points follow the settings in order: attack, decay and sustain, release", () => {
+    const quick = envPoints({ ...INITIAL, envA: 1, envD: 1, envS: 100, envR: 1 }, 1);
+    const slow = envPoints({ ...INITIAL, envA: 5000, envD: 5000, envS: 0, envR: 5000 }, 1);
+    expect(slow.a.x).toBeGreaterThan(quick.a.x);
+    expect(slow.d.y).toBe(slow.bottom); // no sustain: the middle point sits on the floor
+    expect(quick.d.y).toBe(quick.top);
+    for (const p of [quick, slow]) { expect(p.a.x).toBeLessThanOrEqual(p.d.x); expect(p.d.x).toBeLessThan(p.held.x); expect(p.held.x).toBeLessThanOrEqual(p.r.x); expect(p.r.x).toBeLessThanOrEqual(320); }
   });
 });

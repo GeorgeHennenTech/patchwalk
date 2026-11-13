@@ -295,6 +295,10 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   delay cannot loop faster than one 128-sample block) and bioacoustics with hearing and illusions
   (`docs/BIOACOUSTICS.md`, about 45 lessons; teaches mechanisms, never claims an artist's method or that sound
   alters the brain; explanations wait for texts in the library).
+- **Impact sounds (owner asked 13 Nov 2026):** `docs/IMPACTS.md`, about 50 lessons on hits, striking bass
+  notes, weight, making room, impact effects and contrast. Planned, not built.
+- **`docs/LITERATURE.md`** lists every text in the library, expected, or wanted. Texts are only taken in from
+  copies the owner has bought or borrowed, or that the maker or author gives away; never from piracy sites.
 - **Teacher/guide:** one consistent voice, remembers progress, comments on what the learner just did, answers
   questions. Patch facts stay strict (rule 5). Concept answers come from a private library of the owner's texts
   via retrieval, with citations. This is retrieval, not model training.

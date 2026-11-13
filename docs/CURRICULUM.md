@@ -403,6 +403,10 @@ Added at the owner's request on 13 Nov 2026. Full plan in `docs/BIOACOUSTICS.md`
 animal signals as sound design, choruses and soundscapes, what the ear does to sound, illusions and
 ambiguity. Its explanations wait for source texts in the library.
 
+## T. Impacts, hits and striking bass (about 50) — Uses: Synth, effects, DAW, track Q
+Added at the owner's request on 13 Nov 2026. Full plan in `docs/IMPACTS.md`: what an impact is, building hits,
+striking bass notes, weight and dirt, making room for the hit, impact effects, and why a drop lands.
+
 ## Coverage check against a university electronic-music programme
 The owner supplied the course list for Berklee Online's electronic music production and sound design programme.
 Only its topics were used, as a checklist. No course text was read or copied.

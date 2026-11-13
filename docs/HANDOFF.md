@@ -177,6 +177,8 @@ could make to settle them. None have been made. Effect parameters are shown exac
 | `SERUM_EXTRAS.md` | Track S: 50 lessons on Serum 2 itself, with manual page references. |
 | `PHYSICAL_MODELING.md` | Track Q (owner asked 13 Nov 2026): about 60 lessons on physical modelling and the new engines they need. Planned, not built. |
 | `BIOACOUSTICS.md` | Track R (same day): about 45 lessons on bioacoustics, hearing and illusions, aimed at the psychedelic quality the owner wants. Planned; explanations wait for source texts. Makes no claims about any artist's methods or about sound altering the brain. |
+| `IMPACTS.md` | Track T (owner asked 13 Nov 2026): about 50 lessons on impact sounds and making bass music hit harder. Planned, not built; T1, most of T2 and parts of T3 need nothing new on the synth. |
+| `LITERATURE.md` | Every text in the library, on its way, or wanted, with what each is for. The owner asked for this list on the to-do page; keep the two in step. |
 | `GENRES.md` | The owner's closed list of 92 genres, each to use an eight-lesson template; also what they declined. |
 | `COVERAGE_SYNTORIAL.md` | Mapping of Syntorial's lesson titles onto our lessons, and what was added as a result. |
 | `lessons/` | Thirty fully scripted lessons (C0.1 to C0.4, C1.1 to C1.8, C2.1 to C2.7, C3.1 to C3.6, C4.1 to C4.3, C5.1 to C5.3, C5.6, and C5M.1 to C5M.8) in a fixed shape. |
@@ -311,7 +313,9 @@ Ask about these only when relevant; do not block on them.
 - **Master Handbook of Acoustics, 7th ed., pages 1-500.** The uploaded files were named for a well-known
   piracy site, so the assistant did not take them in and told the owner why. Take the book in when the owner
   supplies a copy they have bought or borrowed (publisher ebook, library loan). Do not ingest the pirated
-  files if they appear again.
+  files if they appear again. **They did appear again the same day**, described as "the clean version": the
+  same five files, byte for byte (checked by checksum), with only the site's name removed from the file
+  names. Declined again. Compare checksums before accepting any later copy.
 
 **Books suggested to the owner (13 Nov 2026), for them to source legally:** Ableton's *Making Music* (Dennis
 DeSantis); Welsh's *Synthesizer Cookbook*; Russ, *Sound Synthesis and Sampling*; Roads, *The Computer Music

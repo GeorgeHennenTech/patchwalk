@@ -70,6 +70,8 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 - [ ] Take in six research papers the owner listed (FM synthesis, infrasound and loudness, groove and microtiming, bass and timing); the files have not arrived yet
 - [ ] Rhythm lessons drawing on the groove and microtiming papers
 - [ ] Master Handbook of Acoustics: waiting for a copy the owner has bought or borrowed (the uploaded copy came from a piracy site and was not taken in)
+- [ ] Impacts, hits and striking bass: about 50 lessons planned (docs/IMPACTS.md); the kick, sub-drop and bass-note lessons can be built on the synth as it is
+- [ ] Literature: the full list of what is in, on its way and wanted is docs/LITERATURE.md
 
 ## Rebuild-a-patch accuracy
 - [ ] Use the manual's screenshots to fix display values (for example sustain in dB)

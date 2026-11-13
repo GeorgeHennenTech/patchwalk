@@ -460,10 +460,10 @@ describe("knobs and the module rack", () => {
   });
   it("the wave drawn on an oscillator panel comes from its harmonics and start phase", () => {
     const y = (path: string, i: number) => Number(path.split(" L")[i]!.split(" ")[1]);
-    const sine = wavePath([0, 1], 0, 200, 64, 8);
+    const sine = wavePath([0, 1], 0, undefined, 200, 64, 8);
     expect(y(sine, 2)).toBeLessThan(10); // a quarter of the way through, a sine is at its top (small y)
     expect(y(sine, 6)).toBeGreaterThan(54);
-    const shifted = wavePath([0, 1], 0.5, 200, 64, 8);
+    const shifted = wavePath([0, 1], 0.5, undefined, 200, 64, 8);
     expect(y(shifted, 2)).toBeGreaterThan(54); // half a cycle later it is upside down
   });
 });
@@ -682,7 +682,7 @@ describe("macros", () => {
     expect(MACRO_DESTS[0]).toBe("none");
   });
   it("the macro chapter is listed after Modulation, and every recipe wires what it teaches", () => {
-    expect(CHAPTER_ORDER.map((c) => CHAPTERS[c])).toEqual(["Sound itself", "Oscillators", "Filters", "Envelopes", "LFOs", "Modulation", "Macros"]);
+    expect(CHAPTER_ORDER.map((c) => CHAPTERS[c])).toEqual(["Sound itself", "Oscillators", "Filters", "Envelopes", "LFOs", "Modulation", "Macros", "Reshaping the wave"]);
     expect(new Set(LESSONS.map((l) => chapterOf(l))).size).toBe(CHAPTER_ORDER.length);
     expect(MACRO_CHAPTER.map((l) => l.id)).toEqual(["C5M.1", "C5M.2", "C5M.3", "C5M.4", "C5M.5", "C5M.6", "C5M.7", "C5M.8", "C5M.C"]);
     for (const l of MACRO_CHAPTER.slice(0, 7)) {
@@ -811,5 +811,52 @@ describe("LFO tempo sync, start mode and drawn shapes", () => {
     expect(st("C4.6", 3).check(base({}, { lfo1Shape: "drawn", lfo1Steps: drawn }))).toBe(true);
     expect(st("C4.6", 3).check(base({}, { lfo1Shape: "drawn", lfo1Steps: drawn.map(() => 0) }))).toBe(false);
     expect(st("C4.6", 3).remark!(base({}, { lfo1Shape: "drawn", lfo1Steps: drawn }))).toContain("x x . . x . x . . . . . . . . .");
+  });
+});
+
+import { CHAPTER_6 } from "../src/course/lessons/chapter6";
+import { fmIndex, MOD_DESTS, spectrumA, warpPhase, WARPS } from "../src/synth/params";
+describe("warp, FM and ring modulation", () => {
+  const power = (s: Partial<SynthState>) => { const sp = spectrumA({ ...INITIAL, ...s }); return Array.from(sp.sin, (x, n) => x * x + sp.cos[n]! ** 2); };
+  it("every warp mode leaves the wave alone at an amount of zero and stays inside the cycle", () => {
+    for (const mode of WARPS) for (const p of [0, 0.1, 0.37, 0.5, 0.9]) {
+      expect(warpPhase(mode, 0, p)).toBeCloseTo(p, 9);
+      for (const amount of [25, 60, 100]) { const x = warpPhase(mode, amount, p); expect(x).toBeGreaterThanOrEqual(0); expect(x).toBeLessThanOrEqual(1); }
+    }
+    expect(spectrumA({ ...INITIAL, warp: "sync", warpAmount: 0 }).cos.every((c) => c === 0)).toBe(true);
+  });
+  it("sync at full plays a sine four times in a cycle, and at a third exactly twice", () => {
+    const full = power({ shape: "sine", warp: "sync", warpAmount: 100 });
+    expect(full[4]! / full.reduce((a, b) => a + b, 0)).toBeGreaterThan(0.999);
+    expect(warpPhase("sync", 100 / 3, 0.75)).toBeCloseTo(0.5, 6);
+  });
+  it("a fully mirrored saw is a triangle (odd harmonics only), and a squeezed square gains even ones", () => {
+    const tri = power({ shape: "saw", warp: "mirror", warpAmount: 100 });
+    expect(tri[2]! / tri[1]!).toBeLessThan(1e-6);
+    expect(tri[3]! / tri[1]!).toBeGreaterThan(0.009); expect(tri[3]! / tri[1]!).toBeLessThan(0.014); // a triangle's third harmonic is a ninth of its first
+    expect(power({ shape: "square" })[2]).toBe(0);
+    const pulse = power({ shape: "square", warp: "pd", warpAmount: 50 });
+    expect(pulse[2]! / pulse[1]!).toBeGreaterThan(0.05);
+  });
+  it("bending a sine adds harmonics without changing which is the lowest", () => {
+    const bent = power({ shape: "sine", warp: "bend", warpAmount: 70 });
+    expect(bent[1]).toBeGreaterThan(bent[2]!);
+    expect(bent[2]).toBeGreaterThan(0.01);
+  });
+  it("FM amount is an index, reachable by sources and macros; ring amount by macros", () => {
+    expect(fmIndex(0)).toBe(0); expect(fmIndex(30)).toBeCloseTo(2.4, 9);
+    expect(MOD_DESTS).toContain("fmAmount");
+    expect(modDepth("fmAmount", 100)).toBe(0.5);
+    for (const id of ["warpAmount", "fmAmount", "ringAmount"]) expect(MACRO_DESTS).toContain(id);
+  });
+  it("the chapter follows the macros, and its steps check the setting they teach", () => {
+    expect(CHAPTER_6.map((l) => l.id)).toEqual(["C6.1", "C6.2", "C6.3", "C6.4", "C6.5", "C6.C"]);
+    expect(LESSONS.findIndex((l) => l.id === "C6.1")).toBeGreaterThan(LESSONS.findIndex((l) => l.id === "C5M.C"));
+    const snap = (state: Partial<SynthState>, extra: Partial<Snapshot> = {}) => ({ ...snapshot(newTrack(INITIAL), { ...INITIAL, ...state }, { audioRunning: true, held: [57], holdOn: true, now: 0 }), ...extra }) as Snapshot;
+    const fm = CHAPTER_6[3]!, ring = CHAPTER_6[4]!;
+    expect(fm.steps[5]!.check(snap({ env2Dest: "fmAmount", env2Amount: 70 }, { played: { mouse: 1, keys: 0, midi: 0 } }))).toBe(true);
+    expect(fm.steps[5]!.check(snap({ env2Dest: "cutoff", env2Amount: 70 }, { played: { mouse: 1, keys: 0, midi: 0 } }))).toBe(false);
+    expect(ring.steps[1]!.remark!(snap({ ringAmount: 100, bSemitone: 7 }, { lastNote: 69 }))).toContain("1099 Hz");
+    expect(CHAPTER_6[0]!.steps[3]!.remark!(snap({ shape: "saw", warp: "mirror", warpAmount: 100 }))).toContain("39%");
   });
 });

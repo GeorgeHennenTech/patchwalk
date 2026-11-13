@@ -11,7 +11,10 @@ export const NOISES = ["white", "pink"] as const;
 const FILTER_TYPES = ["low", "high", "band", "notch"] as const;
 const SLOPES = ["12", "24"] as const;
 /** Settings an envelope or LFO can move. "none" means it is not connected. */
-export const MOD_DESTS = ["none", "cutoff", "fine", "bFine", "aLevelDb", "bLevelDb", "subLevelDb", "noiseLevelDb", "lfo1Rate", "noteLevel"] as const;
+export const MOD_DESTS = ["none", "cutoff", "fine", "bFine", "aLevelDb", "bLevelDb", "subLevelDb", "noiseLevelDb", "lfo1Rate", "noteLevel", "fmAmount"] as const;
+/** Ways of reshaping oscillator A's wave by reading it at an uneven speed. "none" leaves it alone. */
+export const WARPS = ["none", "bend", "mirror", "sync", "pd"] as const;
+export type Warp = (typeof WARPS)[number];
 const WAYS = ["both", "up"] as const;
 /** How an envelope falls during its decay and release: at an even rate, easing off, or dropping fast then lingering. */
 /** LFO shapes: the four basic waves, or sixteen steps the learner draws. */
@@ -24,7 +27,7 @@ const SYNCS = ["hz", "beat"] as const;
 const TRIGS = ["retrig", "free"] as const;
 export const BENDS = ["straight", "eased", "sharp"] as const;
 export type Dest = (typeof MOD_DESTS)[number];
-export const DEST_NAMES: Record<Dest, string> = { none: "Nothing", cutoff: "Filter cutoff", fine: "Osc A pitch", bFine: "Osc B pitch", aLevelDb: "Osc A level", bLevelDb: "Osc B level", subLevelDb: "Sub level", noiseLevelDb: "Noise level", lfo1Rate: "LFO 1 rate", noteLevel: "Note level" };
+export const DEST_NAMES: Record<Dest, string> = { none: "Nothing", cutoff: "Filter cutoff", fine: "Osc A pitch", bFine: "Osc B pitch", aLevelDb: "Osc A level", bLevelDb: "Osc B level", subLevelDb: "Sub level", noiseLevelDb: "Noise level", lfo1Rate: "LFO 1 rate", noteLevel: "Note level", fmAmount: "FM from B" };
 
 export interface SynthState {
   /** Master level in dB. 0 is the loudest the lesson synth goes. */
@@ -50,6 +53,12 @@ export interface SynthState {
   freeHz: number | null;
   /** Level of oscillator A in dB. The bottom of the range is silence. */
   aLevelDb: number;
+  /** Warp: how oscillator A's wave is reshaped (see `warpPhase`), and how far, 0..100. */
+  warp: Warp; warpAmount: number;
+  /** FM from B: how far oscillator B (heard or not) shakes A's pitch, 0..100. 100 is an index of FM_MAX_INDEX. */
+  fmAmount: number;
+  /** Ring modulation from B: 0 is A alone, 100 is A multiplied by B. */
+  ringAmount: number;
   // ---- unison on oscillator A
   voices: number;
   /** Total spread of the unison voices in cents (outermost voices are +/- half of this). */
@@ -126,6 +135,7 @@ const DEFAULT_STEPS: number[] = Array.from({ length: LFO_STEPS }, (_, i) => Numb
 
 export const INITIAL: SynthState = {
   volumeDb: -12, shape: "saw", table: "none", position: 0, octave: 0, semitone: 0, fine: 0, phase: 0, randomPhase: 0, freeHz: null, aLevelDb: 0,
+  warp: "none", warpAmount: 0, fmAmount: 0, ringAmount: 0,
   voices: 1, detune: 0, spread: 0,
   bOn: false, bShape: "saw", bOctave: 0, bSemitone: 0, bFine: 0, bPhase: 0, bLevelDb: 0,
   subOn: false, subOctave: -1, subLevelDb: -6, noiseOn: false, noiseType: "white", noiseLevelDb: -18,
@@ -181,6 +191,10 @@ const BASE_PARAMS: Record<string, ParamSpec> = {
   randomPhase: { id: "randomPhase", label: "Random phase", group: "Oscillator A", kind: "range", min: 0, max: 100, step: 5, unit: "%" },
   freeHz: { id: "freeHz", label: "Frequency", group: "Oscillator A", kind: "range", min: 55, max: 1760, step: 1, log: true, unit: "Hz" },
   aLevelDb: { id: "aLevelDb", label: "A level", group: "Oscillator A", kind: "range", min: -48, max: 0, step: 1, unit: "dB" },
+  warp: { id: "warp", label: "Warp", group: "Oscillator A", kind: "menu", choices: WARPS, names: { none: "Off", bend: "Bend", mirror: "Mirror", sync: "Sync", pd: "Squeeze" } },
+  warpAmount: { id: "warpAmount", label: "Warp amount", group: "Oscillator A", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
+  fmAmount: { id: "fmAmount", label: "FM from B", group: "Oscillator A", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
+  ringAmount: { id: "ringAmount", label: "Ring from B", group: "Oscillator A", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
   voices: { id: "voices", label: "Voices", group: "Unison", kind: "range", min: 1, max: 7, step: 1, unit: "" },
   detune: { id: "detune", label: "Detune", group: "Unison", kind: "range", min: 0, max: 100, step: 1, unit: "cents" },
   spread: { id: "spread", label: "Spread", group: "Unison", kind: "range", min: 0, max: 100, step: 5, unit: "%" },
@@ -349,4 +363,59 @@ export function brightness(h: Float32Array): number {
   let all = 0, high = 0;
   for (let n = 1; n < h.length; n++) { const e = h[n]! * h[n]!; all += e; if (n > 5) high += e; }
   return all ? high / all : 0;
+}
+
+/** FM: at 100% oscillator B swings A's frequency by this many times B's own frequency (the "index"). */
+export const FM_MAX_INDEX = 8;
+export const fmIndex = (amount: number) => (amount / 100) * FM_MAX_INDEX;
+/** Sync warp: at 100% the wave is run through this many times in one cycle. */
+export const SYNC_MAX = 4;
+
+/**
+ * Warp reads the wave at an uneven speed. `p` is how far through the cycle we are (0..1); the result is the
+ * place in the original wave to read. Every mode leaves the wave untouched at an amount of 0.
+ * - bend: slow at first, then faster and faster, squashing the wave toward the end of the cycle.
+ * - mirror: read forwards, then backwards; at 100% the turn is exactly halfway and the wave is symmetrical.
+ * - sync: read faster and start again when the cycle ends, however far the reading has got.
+ * - pd ("Squeeze"): the first half of the wave is hurried through and the second half takes the time left.
+ */
+export function warpPhase(mode: Warp, amount: number, p: number): number {
+  const a = Math.min(100, Math.max(0, amount)) / 100;
+  switch (mode) {
+    case "none": return p;
+    case "bend": return p ** (2 ** (2 * a));
+    case "mirror": { const turn = 1 - a / 2; return p <= turn ? p / turn : (1 - p) / (1 - turn); }
+    case "sync": { const x = p * (1 + (SYNC_MAX - 1) * a); return x - Math.floor(x); }
+    case "pd": { const knee = 0.5 - 0.45 * a; return p < knee ? (0.5 * p) / knee : 0.5 + (0.5 * (p - knee)) / (1 - knee); }
+  }
+}
+
+/** A wave as harmonics with both parts: `sin` alone describes the unwarped shapes; warping adds `cos`. */
+export interface Spectrum { sin: Float32Array; cos: Float32Array }
+const CYCLE = 2048;
+let warpCache: { key: string; value: Spectrum } | undefined;
+/**
+ * Oscillator A's harmonics after warp. The unwarped wave is drawn out as one cycle, read through
+ * `warpPhase`, and measured again as harmonics (the first HARMONICS of them, so nothing folds back).
+ */
+export function spectrumA(state: Pick<SynthState, "shape" | "table" | "position" | "warp" | "warpAmount">): Spectrum {
+  const h = harmonicsA(state);
+  if (state.warp === "none" || state.warpAmount <= 0) return { sin: h, cos: new Float32Array(h.length) };
+  const key = `${state.shape}|${state.table}|${state.position}|${state.warp}|${state.warpAmount}`;
+  if (warpCache?.key === key) return warpCache.value;
+  const base = new Float32Array(CYCLE + 1);
+  for (let i = 0; i <= CYCLE; i++) { let y = 0; for (let n = 1; n < h.length; n++) if (h[n]) y += h[n]! * Math.sin((2 * Math.PI * n * i) / CYCLE); base[i] = y; }
+  const warped = new Float32Array(CYCLE);
+  for (let i = 0; i < CYCLE; i++) {
+    const at = Math.min(1, Math.max(0, warpPhase(state.warp, state.warpAmount, i / CYCLE))) * CYCLE, k = Math.min(CYCLE - 1, Math.floor(at));
+    warped[i] = base[k]! + (base[k + 1]! - base[k]!) * (at - k);
+  }
+  const sin = new Float32Array(h.length), cos = new Float32Array(h.length);
+  for (let n = 1; n < h.length; n++) {
+    let s = 0, c = 0;
+    for (let i = 0; i < CYCLE; i++) { const x = (2 * Math.PI * n * i) / CYCLE; s += warped[i]! * Math.sin(x); c += warped[i]! * Math.cos(x); }
+    sin[n] = (2 * s) / CYCLE; cos[n] = (2 * c) / CYCLE;
+  }
+  warpCache = { key, value: { sin, cos } };
+  return warpCache.value;
 }

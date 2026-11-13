@@ -57,6 +57,8 @@ export function modDepth(dest: ModDest, amount: number): number {
   if (dest === "cutoff") return a * CUTOFF_OCTAVES * 1200;
   if (dest === "fine" || dest === "bFine") return a * PITCH_SEMITONES * 100;
   if (dest === "lfo1Rate") return a * RATE_OCTAVES * 1200;
+  // half the FM knob's travel, like every ring: the engine turns it into a swing of oscillator A's frequency
+  if (dest === "fmAmount") return a * 0.5;
   return dest === "none" ? 0 : a;
 }
 

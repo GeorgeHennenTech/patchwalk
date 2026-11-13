@@ -4,7 +4,7 @@
 import { applyMacros } from "./macros";
 import { adsr, fallConstant, isLevel, keyValue, lfoCoefficients, lfoHz, lfoStartPhase, modDepth, noteLevelBase, routes, velocityValue, type Adsr, type Route } from "./mod";
 import { DRIVE_RANGE, driveCurve, filterStages, resonanceTrim, type Stage } from "./filter";
-import { dbToGain, harmonic, harmonicsA, HARMONICS, playedHz, playedHzB, subHz, unisonOffsets, unisonPans, type Shape, type SynthState } from "./params";
+import { dbToGain, fmIndex, FM_MAX_INDEX, harmonic, spectrumA, HARMONICS, playedHz, playedHzB, subHz, unisonOffsets, unisonPans, type Shape, type SynthState } from "./params";
 
 const RAMP = 0.012; // seconds; short ramps avoid clicks when a value jumps
 const OSC_GAIN = 0.4;
@@ -19,6 +19,11 @@ interface Voice {
   out: GainNode;
   a: { osc: OscillatorNode; gain: GainNode; pan: StereoPannerNode }[];
   b?: { osc: OscillatorNode; gain: GainNode };
+  /**
+   * A silent copy of oscillator B that every note has, whether or not B is heard. `fm` scales it into a
+   * swing of A's frequency; `wet` is A multiplied by it (ring modulation) and `dry` is A left alone.
+   */
+  modB: { osc: OscillatorNode; fm: GainNode; dry: GainNode; wet: GainNode };
   sub?: { osc: OscillatorNode; gain: GainNode };
   noise?: { src: AudioBufferSourceNode; gain: GainNode };
   /** Every source feeds `mix`, then drive, then the two filter stages, then the resonance level trim. */
@@ -80,12 +85,12 @@ export class Engine {
    * time rotates harmonic n by n times the shift, which is why a half-cycle shift cancels a square against
    * itself but turns two saws into one an octave up.
    */
-  private wave(h: Float32Array, phase: number): PeriodicWave {
+  private wave(h: Float32Array, phase: number, cos?: Float32Array): PeriodicWave {
     const real = new Float32Array(h.length), imag = new Float32Array(h.length);
     for (let n = 1; n < h.length; n++) {
-      const angle = 2 * Math.PI * n * phase;
-      real[n] = h[n]! * Math.sin(angle);
-      imag[n] = h[n]! * Math.cos(angle);
+      const angle = 2 * Math.PI * n * phase, c = cos?.[n] ?? 0;
+      real[n] = h[n]! * Math.sin(angle) + c * Math.cos(angle);
+      imag[n] = h[n]! * Math.cos(angle) - c * Math.sin(angle);
     }
     return this.ctx.createPeriodicWave(real, imag);
   }
@@ -176,15 +181,16 @@ export class Engine {
     return dest === "aLevelDb" ? (OSC_GAIN / Math.sqrt(s.voices)) * dbToGain(s.aLevelDb) : dest === "bLevelDb" ? OSC_GAIN * dbToGain(s.bLevelDb)
       : dest === "subLevelDb" ? OSC_GAIN * dbToGain(s.subLevelDb) : dest === "noiseLevelDb" ? dbToGain(s.noiseLevelDb) : 1;
   }
-  private depthOf(s: SynthState, r: Route): number {
-    return modDepth(r.dest, r.amount) * (isLevel(r.dest) ? this.baseLevel(s, r.dest) : 1);
+  private depthOf(s: SynthState, r: Route, note: number): number {
+    return modDepth(r.dest, r.amount) * (isLevel(r.dest) ? this.baseLevel(s, r.dest) : r.dest === "fmAmount" ? FM_MAX_INDEX * playedHzB(s, note) : 1);
   }
   /** The audio settings a destination stands for on one note. */
   private targets(v: Voice, dest: Route["dest"]): AudioParam[] {
     switch (dest) {
       case "cutoff": return [v.filter.one.detune, v.filter.two.detune];
       case "fine": return v.a.map((x) => x.osc.detune);
-      case "bFine": return v.b ? [v.b.osc.detune] : [];
+      case "bFine": return v.b ? [v.b.osc.detune, v.modB.osc.detune] : [v.modB.osc.detune];
+      case "fmAmount": return [v.modB.fm.gain];
       case "aLevelDb": return v.a.map((x) => x.gain.gain);
       case "bLevelDb": return v.b ? [v.b.gain.gain] : [];
       case "subLevelDb": return v.sub ? [v.sub.gain.gain] : [];
@@ -218,7 +224,7 @@ export class Engine {
         this.scheduleEnvelope(src.offset, e, t);
       }
       const depth = this.ctx.createGain(), bias = this.ctx.createConstantSource();
-      const [swing, lift] = this.swingAndLift(s, route);
+      const [swing, lift] = this.swingAndLift(s, route, v.note);
       depth.gain.value = swing;
       bias.offset.value = lift;
       // everything a source sends passes through `fade`, which is how an LFO's rise (fade-in) is done
@@ -238,8 +244,8 @@ export class Engine {
    * An LFO swings from -1 to 1. Both ways, that is the whole depth each side of the knob. One way, it is
    * squeezed to half the size and lifted by the same amount, so it runs from the knob to the full depth.
    */
-  private swingAndLift(s: SynthState, route: Route): [number, number] {
-    const depth = this.depthOf(s, route);
+  private swingAndLift(s: SynthState, route: Route, note: number): [number, number] {
+    const depth = this.depthOf(s, route, note);
     if (route.source.kind !== "lfo") return [depth, 0];
     // a drawn shape's average is added back here, because the oscillator itself cannot carry it
     const mean = this.lfoMean(s, route.source.id as "lfo1");
@@ -272,6 +278,7 @@ export class Engine {
     for (const m of v.mods) if (m.route.source.kind === "env" && m.src instanceof ConstantSourceNode) this.scheduleRelease(m.src.offset, adsr(s, 2), t);
     for (const x of v.a) x.osc.stop(stopAt);
     v.b?.osc.stop(stopAt);
+    v.modB.osc.stop(stopAt);
     v.sub?.osc.stop(stopAt);
     v.noise?.src.stop(stopAt);
     for (const m of v.mods) { m.src.stop(stopAt); m.bias.stop(stopAt); }
@@ -292,22 +299,41 @@ export class Engine {
     const into = filter.mix;
 
     const offsets = unisonOffsets(s.voices, s.detune), pans = unisonPans(s.voices, s.spread);
-    const base = playedHz(s, note), hA = harmonicsA(s);
+    const base = playedHz(s, note), hA = spectrumA(s);
+    // Oscillator B again, unheard: the modulator for FM and ring modulation. It starts in step with the B you hear.
+    const modOsc = this.ctx.createOscillator();
+    modOsc.setPeriodicWave(this.wave(this.shapeHarmonics(s.bShape), s.bPhase / 360));
+    modOsc.frequency.value = playedHzB(s, note);
+    const modB = { osc: modOsc, fm: this.ctx.createGain(), dry: this.ctx.createGain(), wet: this.ctx.createGain() };
+    modB.fm.gain.value = fmIndex(s.fmAmount) * playedHzB(s, note);
+    modOsc.connect(modB.fm);
+    // ring modulation: `times` is a volume control that B itself turns, so what passes is A times B
+    const times = this.ctx.createGain();
+    times.gain.value = 0;
+    modOsc.connect(times.gain);
+    modB.dry.gain.value = 1 - s.ringAmount / 100;
+    modB.wet.gain.value = s.ringAmount / 100;
+    times.connect(modB.wet).connect(into);
+    modB.dry.connect(into);
+    modOsc.start(t);
     const a = offsets.map((cents, i) => {
       const osc = this.ctx.createOscillator();
       // The centre voice keeps the set phase; the others start elsewhere so a stack does not begin as one spike.
-      osc.setPeriodicWave(this.wave(hA, phaseA + (s.voices > 1 ? i / s.voices : 0)));
+      osc.setPeriodicWave(this.wave(hA.sin, phaseA + (s.voices > 1 ? i / s.voices : 0), hA.cos));
+      modB.fm.connect(osc.frequency);
       osc.frequency.value = base * 2 ** (cents / 1200);
       const gain = this.ctx.createGain();
       gain.gain.value = (OSC_GAIN / Math.sqrt(s.voices)) * dbToGain(s.aLevelDb);
       const pan = this.ctx.createStereoPanner();
       pan.pan.value = pans[i]!;
-      osc.connect(gain).connect(pan).connect(into);
+      osc.connect(gain).connect(pan);
+      pan.connect(modB.dry);
+      pan.connect(times);
       osc.start(t);
       return { osc, gain, pan };
     });
 
-    const voice: Voice = { note, phaseA, velocity, out, a, mods: [], filter, amp };
+    const voice: Voice = { note, phaseA, velocity, out, a, modB, mods: [], filter, amp };
     this.applyFilter(voice, s, true, t);
     if (s.bOn) {
       const osc = this.ctx.createOscillator();
@@ -361,8 +387,8 @@ export class Engine {
       this.voices = notes.map(([n, velocity]) => this.build(n, this.startPhase(), undefined, velocity));
       return;
     }
-    const waveA = next.shape !== prev.shape || next.table !== prev.table || next.position !== prev.position || next.phase !== prev.phase;
-    const hA = waveA ? harmonicsA(next) : undefined;
+    const waveA = next.shape !== prev.shape || next.table !== prev.table || next.position !== prev.position || next.phase !== prev.phase || next.warp !== prev.warp || next.warpAmount !== prev.warpAmount;
+    const hA = waveA ? spectrumA(next) : undefined;
     const offsets = unisonOffsets(next.voices, next.detune), pans = unisonPans(next.voices, next.spread);
     for (const v of this.voices) {
       this.applyFilter(v, next, false);
@@ -372,7 +398,7 @@ export class Engine {
         const route = routes(next).find((r) => r.source.id === m.route.source.id);
         if (!route) continue;
         m.route = route;
-        const [swing, lift] = this.swingAndLift(next, route);
+        const [swing, lift] = this.swingAndLift(next, route, v.note);
         m.depth.gain.setTargetAtTime(swing, t, RAMP);
         m.bias.offset.setTargetAtTime(lift, t, RAMP);
         if (m.src instanceof OscillatorNode) {
@@ -384,11 +410,16 @@ export class Engine {
       if (next.phase !== prev.phase) v.phaseA += (next.phase - prev.phase) / 360;
       const base = playedHz(next, v.note);
       v.a.forEach((x, i) => {
-        if (hA) x.osc.setPeriodicWave(this.wave(hA, v.phaseA + (next.voices > 1 ? i / next.voices : 0)));
+        if (hA) x.osc.setPeriodicWave(this.wave(hA.sin, v.phaseA + (next.voices > 1 ? i / next.voices : 0), hA.cos));
         x.osc.frequency.setTargetAtTime(base * 2 ** (offsets[i]! / 1200), t, RAMP);
         x.pan.pan.setTargetAtTime(pans[i]!, t, RAMP);
         if (next.aLevelDb !== prev.aLevelDb) x.gain.gain.setTargetAtTime((OSC_GAIN / Math.sqrt(next.voices)) * dbToGain(next.aLevelDb), t, RAMP);
       });
+      if (next.bShape !== prev.bShape || next.bPhase !== prev.bPhase) v.modB.osc.setPeriodicWave(this.wave(this.shapeHarmonics(next.bShape), next.bPhase / 360));
+      v.modB.osc.frequency.setTargetAtTime(playedHzB(next, v.note), t, RAMP);
+      v.modB.fm.gain.setTargetAtTime(fmIndex(next.fmAmount) * playedHzB(next, v.note), t, RAMP);
+      v.modB.dry.gain.setTargetAtTime(1 - next.ringAmount / 100, t, RAMP);
+      v.modB.wet.gain.setTargetAtTime(next.ringAmount / 100, t, RAMP);
       if (v.b) {
         if (next.bShape !== prev.bShape || next.bPhase !== prev.bPhase) v.b.osc.setPeriodicWave(this.wave(this.shapeHarmonics(next.bShape), next.bPhase / 360));
         v.b.osc.frequency.setTargetAtTime(playedHzB(next, v.note), t, RAMP);

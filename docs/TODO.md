@@ -7,7 +7,8 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 - [x] Envelope lessons: five lessons and a checkpoint, with an envelope drawing you can drag
 - [x] Envelope hold and fall shape (straight, eased, sharp), with a lesson
 - [x] Tempo, a click, and LFOs that sync to the beat, restart or run free, fade in, and can be drawn; three lessons
-- [ ] Then: warp, sync, FM and ring modulation (chapter 6, "reshaping the source")
+- [x] Warp, sync, FM and ring modulation on the synth, with five lessons and a by-ear checkpoint ("Reshaping the wave")
+- [ ] Knowledge cards for FM and ring modulation; lesson scripts for the six new lessons
 - [x] LFO lessons: three lessons and a checkpoint
 - [x] Modulation lessons: routes and amounts, one way or both ways, modulating a modulator, and a checkpoint
 - [x] Velocity and key position: as sources on the synth, and a lesson
@@ -16,7 +17,7 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 - [ ] Scaling a route with a second source (mod wheel) and its lesson
 - [ ] Blind ear checks for the filter, envelope, LFO and modulation lessons
 - [ ] Pulse-width lesson in the oscillator chapter
-- [ ] Remaining synthesis chapters from the course plan (50 lessons built)
+- [ ] Remaining synthesis chapters from the course plan (56 lessons built)
 
 ## Synth
 - [x] Filter with a draggable curve

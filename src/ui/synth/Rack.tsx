@@ -5,7 +5,7 @@ import { useMemo, useRef } from "react";
 import type { Panel, PlayableLesson } from "../../course/types";
 import { MACRO_COLORS } from "../../synth/macros";
 import { adsr, ENV1_COLOR, envLevel, lfoValue, SOURCES, type Adsr, type ModSource } from "../../synth/mod";
-import { harmonic, harmonicsA, HARMONICS, LFO_STEPS, MACRO_SLOTS, MACROS, PARAMS, type Group, type SynthState } from "../../synth/params";
+import { harmonic, spectrumA, HARMONICS, LFO_STEPS, MACRO_SLOTS, MACROS, PARAMS, type Group, type SynthState } from "../../synth/params";
 import type { Synth } from "../../synth/useSynth";
 import { Control, isBox } from "./Controls";
 import { FilterCurve } from "./Views";
@@ -40,13 +40,13 @@ export function lfoPath(shape: SynthState["lfo1Shape"], oneWay = false, steps?: 
 }
 
 /** One cycle of a wave, drawn from its harmonics and start phase: the same recipe the sound is made from. */
-export function wavePath(h: ArrayLike<number>, phaseCycles: number, w = 200, height = 64, points = 160): string {
+export function wavePath(h: ArrayLike<number>, phaseCycles: number, cos?: ArrayLike<number>, w = 200, height = 64, points = 160): string {
   const ys: number[] = [];
   let peak = 1e-9;
   for (let i = 0; i <= points; i++) {
     const t = i / points + phaseCycles;
     let y = 0;
-    for (let n = 1; n < h.length; n++) if (h[n]) y += h[n]! * Math.sin(2 * Math.PI * n * t);
+    for (let n = 1; n < h.length; n++) { if (h[n]) y += h[n]! * Math.sin(2 * Math.PI * n * t); if (cos?.[n]) y += cos[n]! * Math.cos(2 * Math.PI * n * t); }
     ys.push(y); peak = Math.max(peak, Math.abs(y));
   }
   return ys.map((y, i) => `${i === 0 ? "M" : "L"}${((i / points) * w).toFixed(1)} ${(height / 2 - (y / peak) * (height / 2 - 5)).toFixed(1)}`).join(" ");
@@ -60,7 +60,7 @@ function Display({ module, synth, note }: { module: Module; synth: Synth; note: 
   // drawn from what is actually playing, so a macro's push shows in the pictures
   const s = synth.effective;
   const d = useMemo(() => {
-    if (module.id === "a") return wavePath(harmonicsA(s), s.phase / 360);
+    if (module.id === "a") { const sp = spectrumA(s); return wavePath(sp.sin, s.phase / 360, sp.cos); }
     if (module.id === "b") return wavePath(shapeHarmonics(s.bShape), s.bPhase / 360);
     if (module.id === "sub") return wavePath(SINE, 0);
     if (module.id === "env1") return envPath(adsr(s, 1));
@@ -68,7 +68,7 @@ function Display({ module, synth, note }: { module: Module; synth: Synth; note: 
     if (module.source === "vel" || module.source === "key") return "";
     if (module.source) return lfoPath(s[`${module.source as "lfo1"}Shape`], s[`${module.source as "lfo1"}Way`] === "up", s[`${module.source as "lfo1"}Steps`]);
     return NOISE_PATH;
-  }, [module, s.shape, s.table, s.position, s.phase, s.bShape, s.bPhase, s.envA, s.envD, s.envS, s.envR, s.env2A, s.env2D, s.env2S, s.env2R, s.lfo1Shape, s.lfo2Shape, s.lfo3Shape, s.lfo1Way, s.lfo2Way, s.lfo3Way, s.lfo1Steps, s.lfo2Steps, s.lfo3Steps]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [module, s.shape, s.table, s.position, s.phase, s.warp, s.warpAmount, s.bShape, s.bPhase, s.envA, s.envD, s.envS, s.envR, s.env2A, s.env2D, s.env2S, s.env2R, s.lfo1Shape, s.lfo2Shape, s.lfo3Shape, s.lfo1Way, s.lfo2Way, s.lfo3Way, s.lfo1Steps, s.lfo2Steps, s.lfo3Steps]); // eslint-disable-line react-hooks/exhaustive-deps
   if (module.id === "filter") return <FilterCurve synth={synth} note={note} compact />;
   if (!d) return null;
   if (module.source?.startsWith("lfo") && synth.state[`${module.source as "lfo1"}Shape`] === "drawn") return <LfoDraw id={module.source as "lfo1"} synth={synth} />;

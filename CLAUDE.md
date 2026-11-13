@@ -155,7 +155,9 @@ Added after the first eight milestones (owner asked for all four in one go):
     `lessons/macros.ts` holds the macro chapter (C5M.1 to C5M.8 and the checkpoint C5M.C): most are "recipes",
     a few lines of data each that `recipe()` turns into a full lesson. **The owner wants many macro
     combinations: add to `RECIPES`.** Chapter order is `CHAPTER_ORDER`, not the key order of `CHAPTERS`.
-    **Fifty playable lessons.**
+    `lessons/chapter6.ts` holds "Reshaping the wave" (C6.1 bend and mirror, C6.2 sync, C6.3 squeeze and pulse
+    width, C6.4 FM, C6.5 ring modulation, and the checkpoint C6.C).
+    **Fifty-six playable lessons.**
   - `src/ui/PlayView.tsx` ("Lessons" tab) and `src/ui/synth/` — spotlighted controls per step, live targets,
     scope, spectrum, meter, on-screen keyboard, Hold, blind ear checks, recap, guide remarks and suggestion.
   - "Hear it first" demos (`demo` on a lesson), match-by-ear rounds (`rounds`, compared by `src/course/match.ts`:
@@ -268,10 +270,20 @@ Added after the first eight milestones (owner asked for all four in one go):
     drawn shape on pitch gave 883 and 312 Hz for steps of +1 and -0.5; a free square LFO was high in the
     first half of each clock second and low in the second; six clicks in three seconds at 120 bpm.
     Not built: Serum's ENVELOPE mode (play the shape once), Delay, smooth drawn curves.
-  - Not built yet: effects, MIDI input, a mod wheel, an editable matrix. **Owner's order for what comes
-    next (13 Nov 2026): warp, sync, FM and ring mod; the first impact lessons (they need nothing new); then
-    physical modelling and bioacoustics.** Next in the plan is chapter 6 (reshaping the
-    source: warp, sync, FM, ring modulation), all of which need new oscillator features first.
+  - **Warp, FM and ring modulation (13 Nov 2026).** Osc A has a Warp menu (Bend, Mirror, Sync, Squeeze) and
+    amount: `warpPhase` in `params.ts` says where in the wave to read, and `spectrumA` draws one cycle, reads
+    it through the warp and measures it again as 64 harmonics (sine and cosine parts), so warp is a new
+    wavetable, updated in place. Every note also has a silent copy of oscillator B (`modB`), whether or not B
+    is heard: "FM from B" scales it into A's frequency (100% is an index of 8, `fmIndex`) and "Ring from B"
+    crossfades A with A times B. "FM from B" is a destination for sources (100% covers half the knob); warp
+    amount and ring amount can be moved by macros only. Measured: ring at 100% with sines left only the sum
+    and difference, each 6 dB under the lone note; FM at an index of 2.4 removed the played frequency (52 dB
+    down) and at an index of 1 gave the expected sideband levels; sync at 100% played a sine at four times
+    the pitch and at 33% at twice; a fully mirrored saw had odd harmonics only.
+    Not built: warp amount and ring amount as source destinations, B shaken by A, Serum's other warp modes.
+  - Not built yet: effects, MIDI input, a mod wheel, an editable matrix. **Owner's order (13 Nov 2026), after
+    warp/FM/ring which is done: the first impact lessons (they need nothing new); then physical modelling
+    and bioacoustics.**
   - The old ten Serum-task lessons are now the "Serum tasks" tab.
 - **Pictures and lesson links in answers (13 Nov 2026, owner's rule).** When the guide cites a page that has
   pictures, the pictures are shown with the answer **every time**: code attaches them (`images` on a passage,
@@ -389,7 +401,7 @@ use explicit `.js` import suffixes so they load as plain Node ESM.
 - New knowledge cards: copy `knowledge-cards/_template.md`. Avoid numbers in cards. Only add reading links
   that have been opened and checked.
 - **Lesson labels.** Codes such as `C2.5` are for code, scripts and plans only. The learner sees lessons grouped
-  under chapter names ("Sound itself", "Oscillators", "Filters", "Envelopes", "LFOs", "Modulation", "Macros"; `CHAPTERS` in `src/course/lessons/index.ts`),
+  under chapter names ("Sound itself", "Oscillators", "Filters", "Envelopes", "LFOs", "Modulation", "Macros", "Reshaping the wave"; `CHAPTERS` in `src/course/lessons/index.ts`),
   numbered within the chapter, with "Filters · lesson 5 of 8" above the title. A test stops lesson text from
   citing another lesson by code. Add the chapter's name to `CHAPTERS` when starting a new chapter.
 - Skin: content must stay on solid panels for legibility; fabric textures are for chrome only (header, tabs,

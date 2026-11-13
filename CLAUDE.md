@@ -176,6 +176,14 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
 - **Voice.** The owner asked about generated voiceovers. Today there is only the browser's built-in read-aloud.
   Options discussed: ElevenLabs (needs the owner's account and key; generate each narration once and store the
   audio) or Higgsfield's audio tools (untested for narration). Awaiting the owner's choice.
+- **Owner's video walkthroughs (planned, not built).** The owner wants to record short screen-capture
+  walkthroughs (e.g. in Ableton) and have the guide pull up the right one when a question matches, such as
+  "how do I automate the BPM of my track?". Design agreed in principle: each video gets a small entry (title,
+  the question it answers, a short description or transcript, optional timestamps) that is indexed in the
+  library like any other passage, so the guide can answer from the owner's own words, cite the video, and the
+  app plays it. Video files are too big for git; host them elsewhere (options given to the owner: unlisted
+  YouTube, or private file storage on Vercel) and store only the entry and link in the repo. Awaiting the
+  owner's choice of hosting and whether they will narrate (a transcript makes matching much better).
 - **Mini DAW (later):** tracks, a step sequencer / piano roll, drums and samples, a mixer, for genre-writing
   lessons (glitch-hop, breakbeat, psydub...). Build the practice synth's audio engine with a shared tempo clock
   and more than one instrument in mind so it can become the DAW's instrument instead of being rewritten.

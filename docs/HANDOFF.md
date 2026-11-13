@@ -204,6 +204,14 @@ Take these in order. After each, test, check in a browser, commit, push, and rep
 
 Smaller items to pick up when convenient:
 
+- **Owner's video walkthroughs (planned, not built).** The owner wants to record short screen-capture
+  walkthroughs (e.g. in Ableton) and have the guide pull up the right one when a question matches, such as
+  "how do I automate the BPM of my track?". Design agreed in principle: each video gets a small entry (title,
+  the question it answers, a short description or transcript, optional timestamps) that is indexed in the
+  library like any other passage, so the guide can answer from the owner's own words, cite the video, and the
+  app plays it. Video files are too big for git; host them elsewhere (options given to the owner: unlisted
+  YouTube, or private file storage on Vercel) and store only the entry and link in the repo. Awaiting the
+  owner's choice of hosting and whether they will narrate (a transcript makes matching much better).
 - The system check does not show why a first attempt was rejected; surface the first attempt's reasons so
   validator strictness can be judged.
 - Use the manual's screenshots in `library/images/` to improve display values: sustain is shown in dB, and the
@@ -232,6 +240,9 @@ Ask about these only when relevant; do not block on them.
 5. **Review** of the knowledge cards and scripted lessons.
 6. **Probe presets** from `docs/PROBES.md`.
 7. **The cut-off end of the Syntorial list**, if there were more titles.
+8. **Sharing with a friend:** the owner asked how to share the site. They were told they can give out the
+   address and password, with the costs of doing so, and offered a separate guest password with the paid and
+   manual-backed features switched off. No answer yet; do not build it unasked.
 
 ---
 

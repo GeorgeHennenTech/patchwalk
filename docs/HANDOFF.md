@@ -269,6 +269,18 @@ something is finished or added, update both the page and `docs/TODO.md`.** Read 
 owner may have ticked or added things. In a new conversation, pass that URL to the Artifact tool to keep the
 same page.
 
+**The page is ranked (owner asked, 13 Nov 2026).** Open build items carry a `rank` number and items waiting
+on the owner an `ownerRank`; the page's "Order: priority" view lists them first, lowest number first. Current
+build order: (1) warp, sync, FM and ring modulation; (2) the first impact lessons; (3) effects; (4) an
+editable Matrix tab; (5) wavetable position and resonance as destinations; (6) formant filters and the first
+bioacoustics lessons; (7) the string engine for physical modelling; (8) more macro recipes; (9) blind ear
+checks; then Rift lessons, groove lessons, the mini DAW and the rest. When a new item is added, give it a
+rank that fits, or leave it unranked to sit in its section.
+
+A second mod, "patchwalk-usage", puts a row above the prompt with context fill, usage limits and session
+cost in the Patchwalk neons (`/usage-row` hides or shows it). Like the first, it lives only in the session's
+container, and whether the owner's desktop app draws it was not confirmed.
+
 A Claude Code mod ("patchwalk-todo", `/todo`) was tried first because the owner asked for one. In the
 owner's set-up (desktop app, cloud session) its side pane was never drawn, so the page replaced it. The mod
 only lived in that session's container.

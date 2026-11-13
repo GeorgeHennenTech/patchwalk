@@ -3,6 +3,7 @@
 // tempo clock (for the later mini DAW) can be added without rewriting it.
 import { applyMacros } from "./macros";
 import { adsr, fallConstant, isLevel, keyValue, lfoCoefficients, lfoHz, lfoStartPhase, modDepth, noteLevelBase, routes, velocityValue, type Adsr, type Route } from "./mod";
+import { FxChain } from "./fx";
 import { DRIVE_RANGE, driveCurve, filterStages, resonanceTrim, type Stage } from "./filter";
 import { dbToGain, fmIndex, FM_MAX_INDEX, harmonic, spectrumA, HARMONICS, playedHz, playedHzB, subHz, unisonOffsets, unisonPans, type Shape, type SynthState } from "./params";
 
@@ -42,6 +43,9 @@ export class Engine {
   readonly ctx: AudioContext;
   readonly analyser: AnalyserNode;
   private readonly master: GainNode;
+  /** The effects rack: every note goes in here, and it feeds the main volume. */
+  readonly fx: FxChain;
+  private fxRestore: ReturnType<typeof setTimeout> | undefined;
   private voices: Voice[] = [];
   private state: SynthState;
   private noiseBuffers: Partial<Record<"white" | "pink", AudioBuffer>> = {};
@@ -69,6 +73,8 @@ export class Engine {
     this.analyser.fftSize = 4096;
     this.analyser.smoothingTimeConstant = 0.6;
     this.master.connect(guard).connect(this.analyser).connect(ctx.destination);
+    this.fx = new FxChain(ctx, this.state);
+    this.fx.output.connect(this.master);
   }
 
   /** Browsers only allow sound after a click; call this from one. */
@@ -292,7 +298,7 @@ export class Engine {
     this.scheduleEnvelope(amp.gain, env, t);
     const out = this.ctx.createGain();
     out.gain.value = noteLevelBase(s);
-    amp.connect(out).connect(this.master);
+    amp.connect(out).connect(this.fx.input);
     const filter = { mix: this.ctx.createGain(), shaper: this.ctx.createWaveShaper(), one: this.ctx.createBiquadFilter(), two: this.ctx.createBiquadFilter(), trim: this.ctx.createGain(), drive: -1 };
     filter.mix.gain.value = 1 / DRIVE_RANGE; // the shaper's curve covers inputs of -1..1
     filter.mix.connect(filter.shaper).connect(filter.one).connect(filter.two).connect(filter.trim).connect(amp);
@@ -380,6 +386,7 @@ export class Engine {
     this.state = next;
     if (next.clickOn !== prev.clickOn || next.bpm !== prev.bpm) this.syncClick(next);
     if (next.volumeDb !== prev.volumeDb) this.master.gain.setTargetAtTime(dbToGain(next.volumeDb), t, RAMP);
+    if (!this.fxRestore) this.fx.apply(next);
     if (STRUCTURAL.some((k) => next[k] !== prev[k])) {
       // The set of sources changed: restart the sounding notes with the new layout.
       const notes = this.voices.map((v) => [v.note, v.velocity] as const);
@@ -478,6 +485,11 @@ export class Engine {
     const v = this.build(note, patch.phase / 360, at, velocity);
     this.state = keep;
     this.releaseAt(v, patch, at + seconds - 0.08);
+    // The effects are shared by every note, so for the length of this sound they are set to the patch's own,
+    // then handed back to the learner's settings a moment after it ends (long enough for a short tail).
+    setTimeout(() => this.fx.apply(patch), Math.max(0, when * 1000 - 20));
+    if (this.fxRestore) clearTimeout(this.fxRestore);
+    this.fxRestore = setTimeout(() => { this.fxRestore = undefined; this.fx.apply(this.state); }, (when + seconds) * 1000 + 700);
   }
 
   /**
@@ -506,6 +518,8 @@ export class Engine {
   dispose(): void {
     if (this.clickTimer) clearInterval(this.clickTimer);
     this.clickTimer = undefined;
+    if (this.fxRestore) clearTimeout(this.fxRestore);
+    this.fxRestore = undefined;
     this.allNotesOff();
   }
 

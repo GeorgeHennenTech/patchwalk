@@ -24,6 +24,8 @@ export const LFO_STEPS = 16;
 /** An LFO synced to the tempo repeats once every this many beats. */
 export const DIVISIONS = ["4", "2", "1", "1/2", "1/3", "1/4"] as const;
 const SYNCS = ["hz", "beat"] as const;
+export const DIST_TYPES = ["soft", "hard", "fold", "crush"] as const;
+const DELAY_SYNCS = ["ms", "beat"] as const;
 const TRIGS = ["retrig", "free"] as const;
 export const BENDS = ["straight", "eased", "sharp"] as const;
 export type Dest = (typeof MOD_DESTS)[number];
@@ -121,6 +123,19 @@ export interface SynthState {
   // ---- two sources that are fixed for the length of a note: how hard it was struck, and which key it was
   velDest: Dest; velAmount: number;
   keyDest: Dest; keyAmount: number;
+  // ---- effects, in the order the sound passes through them (see fx.ts)
+  distOn: boolean; distType: (typeof DIST_TYPES)[number];
+  /** Distortion drive 0..100 (how hard the signal is pushed into the shaping) and how much of the result is mixed in. */
+  distDrive: number; distMix: number;
+  /** EQ: three bands, each a boost or cut in dB. The middle band's frequency can be moved. */
+  eqOn: boolean; eqLow: number; eqMid: number; eqMidHz: number; eqHigh: number;
+  /** Compressor: threshold in dB, ratio (to one), attack and release in ms, and make-up gain in dB. */
+  compOn: boolean; compThreshold: number; compRatio: number; compAttack: number; compRelease: number; compMakeup: number;
+  chorusOn: boolean; chorusRate: number; chorusDepth: number; chorusMix: number;
+  /** Delay: echo spacing in ms or in beats, how much of each echo is fed back (0..95%), and the echo level. */
+  delayOn: boolean; delaySync: (typeof DELAY_SYNCS)[number]; delayDiv: (typeof DIVISIONS)[number]; delayTime: number; delayFeedback: number; delayMix: number;
+  /** Reverb: how long the tail takes to die away, in seconds, and its level. */
+  reverbOn: boolean; reverbSize: number; reverbMix: number;
   // ---- four macros: one knob each (0..100), a name, and three slots that each move another control.
   // A slot's destination is the id of any knob, or "none"; its amount is how much of that knob's travel
   // the macro covers when turned right up (-100..100). See macros.ts.
@@ -151,13 +166,19 @@ export const INITIAL: SynthState = {
   lfo2Sync: "hz", lfo2Div: "1", lfo2Trig: "retrig", lfo2Rise: 0, lfo2Steps: DEFAULT_STEPS,
   lfo3Sync: "hz", lfo3Div: "1", lfo3Trig: "retrig", lfo3Rise: 0, lfo3Steps: DEFAULT_STEPS,
   velDest: "none", velAmount: 60, keyDest: "none", keyAmount: 50,
+  distOn: false, distType: "soft", distDrive: 30, distMix: 100,
+  eqOn: false, eqLow: 0, eqMid: 0, eqMidHz: 1000, eqHigh: 0,
+  compOn: false, compThreshold: -24, compRatio: 4, compAttack: 10, compRelease: 150, compMakeup: 0,
+  chorusOn: false, chorusRate: 0.8, chorusDepth: 50, chorusMix: 50,
+  delayOn: false, delaySync: "ms", delayDiv: "1/2", delayTime: 300, delayFeedback: 40, delayMix: 35,
+  reverbOn: false, reverbSize: 2, reverbMix: 30,
   macro1: 0, macro1Name: "Macro 1", macro1Dest1: "none", macro1Amt1: 50, macro1Dest2: "none", macro1Amt2: 50, macro1Dest3: "none", macro1Amt3: 50,
   macro2: 0, macro2Name: "Macro 2", macro2Dest1: "none", macro2Amt1: 50, macro2Dest2: "none", macro2Amt2: 50, macro2Dest3: "none", macro2Amt3: 50,
   macro3: 0, macro3Name: "Macro 3", macro3Dest1: "none", macro3Amt1: 50, macro3Dest2: "none", macro3Amt2: 50, macro3Dest3: "none", macro3Amt3: 50,
   macro4: 0, macro4Name: "Macro 4", macro4Dest1: "none", macro4Amt1: 50, macro4Dest2: "none", macro4Amt2: 50, macro4Dest3: "none", macro4Amt3: 50,
 };
 
-export type Group = "Master" | "Oscillator A" | "Unison" | "Oscillator B" | "Sub" | "Noise" | "Filter" | "Envelope 1" | "Envelope 2" | "LFO 1" | "LFO 2" | "LFO 3" | "Velocity" | "Key position" | "Macro 1" | "Macro 2" | "Macro 3" | "Macro 4";
+export type Group = "Master" | "Oscillator A" | "Unison" | "Oscillator B" | "Sub" | "Noise" | "Filter" | "Envelope 1" | "Envelope 2" | "LFO 1" | "LFO 2" | "LFO 3" | "Velocity" | "Key position" | "Distortion" | "EQ" | "Compressor" | "Chorus" | "Delay" | "Reverb" | "Macro 1" | "Macro 2" | "Macro 3" | "Macro 4";
 
 export interface ParamSpec {
   id: keyof SynthState;
@@ -175,6 +196,7 @@ export interface ParamSpec {
   names?: Record<string, string>;
 }
 
+const DIVISION_NAMES = { "4": "4 beats (a bar)", "2": "2 beats", "1": "1 beat", "1/2": "Half a beat", "1/3": "A third of a beat", "1/4": "A quarter of a beat" };
 const SHAPE_NAMES = { sine: "Sine", triangle: "Triangle", square: "Square", saw: "Saw" };
 
 const BASE_PARAMS: Record<string, ParamSpec> = {
@@ -224,6 +246,34 @@ const BASE_PARAMS: Record<string, ParamSpec> = {
   ...lfo(1), ...lfo(2), ...lfo(3),
   ...source("vel", "Velocity", "Velocity"),
   ...source("key", "Key position", "Key position"),
+  distOn: { id: "distOn", label: "Distortion", group: "Distortion", kind: "toggle" },
+  distType: { id: "distType", label: "Distortion type", group: "Distortion", kind: "choice", choices: DIST_TYPES, names: { soft: "Soft clip", hard: "Hard clip", fold: "Fold", crush: "Crush" } },
+  distDrive: { id: "distDrive", label: "Distortion drive", group: "Distortion", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
+  distMix: { id: "distMix", label: "Distortion mix", group: "Distortion", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
+  eqOn: { id: "eqOn", label: "EQ", group: "EQ", kind: "toggle" },
+  eqLow: { id: "eqLow", label: "EQ low", group: "EQ", kind: "range", min: -18, max: 18, step: 0.5, unit: "dB" },
+  eqMid: { id: "eqMid", label: "EQ mid", group: "EQ", kind: "range", min: -18, max: 18, step: 0.5, unit: "dB" },
+  eqMidHz: { id: "eqMidHz", label: "EQ mid frequency", group: "EQ", kind: "range", min: 200, max: 5000, step: 1, log: true, unit: "Hz" },
+  eqHigh: { id: "eqHigh", label: "EQ high", group: "EQ", kind: "range", min: -18, max: 18, step: 0.5, unit: "dB" },
+  compOn: { id: "compOn", label: "Compressor", group: "Compressor", kind: "toggle" },
+  compThreshold: { id: "compThreshold", label: "Compressor threshold", group: "Compressor", kind: "range", min: -60, max: 0, step: 1, unit: "dB" },
+  compRatio: { id: "compRatio", label: "Compressor ratio", group: "Compressor", kind: "range", min: 1, max: 20, step: 0.5, unit: ":1" },
+  compAttack: { id: "compAttack", label: "Compressor attack", group: "Compressor", kind: "range", min: 1, max: 200, step: 1, log: true, unit: "ms" },
+  compRelease: { id: "compRelease", label: "Compressor release", group: "Compressor", kind: "range", min: 20, max: 1000, step: 1, log: true, unit: "ms" },
+  compMakeup: { id: "compMakeup", label: "Compressor make-up", group: "Compressor", kind: "range", min: 0, max: 24, step: 0.5, unit: "dB" },
+  chorusOn: { id: "chorusOn", label: "Chorus", group: "Chorus", kind: "toggle" },
+  chorusRate: { id: "chorusRate", label: "Chorus rate", group: "Chorus", kind: "range", min: 0.1, max: 5, step: 0.01, log: true, unit: "Hz" },
+  chorusDepth: { id: "chorusDepth", label: "Chorus depth", group: "Chorus", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
+  chorusMix: { id: "chorusMix", label: "Chorus mix", group: "Chorus", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
+  delayOn: { id: "delayOn", label: "Delay", group: "Delay", kind: "toggle" },
+  delaySync: { id: "delaySync", label: "Delay time in", group: "Delay", kind: "choice", choices: DELAY_SYNCS, names: { ms: "ms", beat: "Beats" } },
+  delayDiv: { id: "delayDiv", label: "Delay repeats every", group: "Delay", kind: "menu", choices: DIVISIONS, names: DIVISION_NAMES },
+  delayTime: { id: "delayTime", label: "Delay time", group: "Delay", kind: "range", min: 20, max: 1000, step: 1, log: true, unit: "ms" },
+  delayFeedback: { id: "delayFeedback", label: "Delay feedback", group: "Delay", kind: "range", min: 0, max: 95, step: 1, unit: "%" },
+  delayMix: { id: "delayMix", label: "Delay mix", group: "Delay", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
+  reverbOn: { id: "reverbOn", label: "Reverb", group: "Reverb", kind: "toggle" },
+  reverbSize: { id: "reverbSize", label: "Reverb size", group: "Reverb", kind: "range", min: 0.2, max: 8, step: 0.1, log: true, unit: "s" },
+  reverbMix: { id: "reverbMix", label: "Reverb mix", group: "Reverb", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
 };
 
 /** Whole-step settings shown as number boxes. A macro cannot move these. */
@@ -277,7 +327,7 @@ function lfo(n: 1 | 2 | 3): Record<string, ParamSpec> {
   return {
     [`${prefix}Shape`]: { id: `${prefix}Shape`, label: `${name} shape`, group, kind: "choice", choices: LFO_SHAPES, names: { ...SHAPE_NAMES, drawn: "Drawn" } },
     [`${prefix}Sync`]: { id: `${prefix}Sync`, label: `${name} speed in`, group, kind: "choice", choices: SYNCS, names: { hz: "Hz", beat: "Beats" } },
-    [`${prefix}Div`]: { id: `${prefix}Div`, label: `${name} repeats every`, group, kind: "menu", choices: DIVISIONS, names: { "4": "4 beats (a bar)", "2": "2 beats", "1": "1 beat", "1/2": "Half a beat", "1/3": "A third of a beat", "1/4": "A quarter of a beat" } },
+    [`${prefix}Div`]: { id: `${prefix}Div`, label: `${name} repeats every`, group, kind: "menu", choices: DIVISIONS, names: DIVISION_NAMES },
     [`${prefix}Trig`]: { id: `${prefix}Trig`, label: `${name} start`, group, kind: "choice", choices: TRIGS, names: { retrig: "Restart", free: "Free" } },
     [`${prefix}Rise`]: { id: `${prefix}Rise`, label: `${name} rise`, group, kind: "range", min: 0, max: 3000, step: 10, unit: "ms" },
     [`${prefix}Rate`]: { id: `${prefix}Rate`, label: `${name} rate`, group, kind: "range", min: 0.05, max: 30, step: 0.01, log: true, unit: "Hz" },

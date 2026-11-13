@@ -424,7 +424,7 @@ describe("how lessons are labelled for the learner", () => {
 });
 
 import { fromTravel, isBox, nudge, shortLabel, toTravel } from "../src/ui/synth/Controls";
-import { MACRO_MODULES, MOD_MODULES, MODULES, wavePath } from "../src/ui/synth/Rack";
+import { FX_MODULES, MACRO_MODULES, MOD_MODULES, MODULES, wavePath } from "../src/ui/synth/Rack";
 
 describe("knobs and the module rack", () => {
   it("a knob's travel covers its whole range, in octaves for wide-ranging settings, and snaps to steps", () => {
@@ -449,7 +449,7 @@ describe("knobs and the module rack", () => {
     expect(nudge(cutoff, 5000, -1, true)).toBe(4500);
   });
   it("every setting has a home: one module panel, or the main volume", () => {
-    const groups = [...MODULES, ...MOD_MODULES, ...MACRO_MODULES].flatMap((m) => m.groups);
+    const groups = [...MODULES, ...MOD_MODULES, ...FX_MODULES, ...MACRO_MODULES].flatMap((m) => m.groups);
     expect(new Set(groups).size).toBe(groups.length);
     for (const spec of Object.values(PARAMS)) expect(spec.group === "Master" || groups.includes(spec.group), spec.label).toBe(true);
     for (const m of MODULES) if (m.toggle) expect(PARAMS[m.toggle]!.kind).toBe("toggle");
@@ -682,7 +682,7 @@ describe("macros", () => {
     expect(MACRO_DESTS[0]).toBe("none");
   });
   it("the macro chapter is listed after Modulation, and every recipe wires what it teaches", () => {
-    expect(CHAPTER_ORDER.map((c) => CHAPTERS[c])).toEqual(["Sound itself", "Oscillators", "Filters", "Envelopes", "LFOs", "Modulation", "Macros", "Reshaping the wave", "Impacts"]);
+    expect(CHAPTER_ORDER.map((c) => CHAPTERS[c])).toEqual(["Sound itself", "Oscillators", "Filters", "Envelopes", "LFOs", "Modulation", "Macros", "Reshaping the wave", "Effects", "Impacts"]);
     expect(new Set(LESSONS.map((l) => chapterOf(l))).size).toBe(CHAPTER_ORDER.length);
     expect(MACRO_CHAPTER.map((l) => l.id)).toEqual(["C5M.1", "C5M.2", "C5M.3", "C5M.4", "C5M.5", "C5M.6", "C5M.7", "C5M.8", "C5M.C"]);
     for (const l of MACRO_CHAPTER.slice(0, 7)) {
@@ -884,5 +884,62 @@ describe("impact lessons", () => {
     expect(kick.steps[1]!.remark!(snap({ ...kick.initial, env2Dest: "aPitchWide", env2Amount: 50 }, { ...played, lastNote: 57 }))).toContain("about 220 Hz, falling to 55 Hz");
     expect(kick.steps[2]!.check(snap({ env2Dest: "aPitchWide", env2S: 0, env2D: 60, env2Bend: "sharp" }, played))).toBe(true);
     expect(kick.steps[2]!.check(snap({ env2Dest: "aPitchWide", env2S: 0, env2D: 400, env2Bend: "sharp" }, played))).toBe(false);
+  });
+});
+
+import { CHAPTER_7 } from "../src/course/lessons/chapter7";
+import { compAutoMakeupCancelDb, compReductionDb, crushLevels, delaySeconds, distCurve, distGain, distort, distTrim, echoesToSilence, FX_ORDER, reverbImpulse } from "../src/synth/fx";
+describe("effects", () => {
+  it("everything is off to begin with, and each effect has a switch", () => {
+    for (const id of FX_ORDER) { expect(INITIAL[`${id}On`]).toBe(false); expect(PARAMS[`${id}On`]!.kind).toBe("toggle"); }
+    expect(FX_MODULES.map((m) => m.name)).toEqual(["Distortion", "EQ", "Compressor", "Chorus", "Delay", "Reverb"]);
+  });
+  it("soft clip bends, hard clip cuts flat, fold turns back, crush rounds to steps; all stay within full level", () => {
+    expect(distGain(0)).toBe(1); expect(distGain(100)).toBe(32);
+    expect(distort("hard", 0, 0.5)).toBe(0.5);
+    expect(distort("hard", 100, 0.5)).toBe(1);
+    expect(distort("soft", 100, 0.5)).toBeGreaterThan(0.99);
+    expect(distort("soft", 0, 0.1)).toBeCloseTo(Math.tanh(0.1), 9);
+    // folded: 0.5 turned up 3 times is 1.5, which is turned back to 0.5
+    expect(distort("fold", (2 / 31) * 100, 0.5)).toBeCloseTo(0.5, 6);
+    expect(crushLevels(0)).toBe(64); expect(crushLevels(100)).toBe(1);
+    expect(distort("crush", 100, 0.4)).toBe(0); expect(distort("crush", 100, 0.6)).toBe(1);
+    for (const type of ["soft", "hard", "fold", "crush"] as const) {
+      const c = distCurve(type, 70);
+      expect(Math.max(...c)).toBeLessThanOrEqual(1); expect(Math.min(...c)).toBeGreaterThanOrEqual(-1);
+      expect(c[(c.length - 1) / 2]).toBeCloseTo(0, 9);
+      expect(c[10]).toBeCloseTo(-c[c.length - 11]!, 6); // the same both sides of zero
+    }
+    expect(distTrim("soft", 0)).toBe(1); expect(distTrim("soft", 100)).toBeLessThan(0.2); expect(distTrim("crush", 100)).toBe(1);
+  });
+  it("delay time is the knob, or a division of the beat; feedback sets how many echoes", () => {
+    expect(delaySeconds({ delaySync: "ms", delayDiv: "1/2", delayTime: 300, bpm: 120 })).toBeCloseTo(0.3, 9);
+    expect(delaySeconds({ delaySync: "beat", delayDiv: "1/2", delayTime: 300, bpm: 120 })).toBeCloseTo(0.25, 9);
+    expect(delaySeconds({ delaySync: "beat", delayDiv: "1", delayTime: 300, bpm: 90 })).toBeCloseTo(2 / 3, 9);
+    expect(echoesToSilence(0)).toBe(1); expect(echoesToSilence(50)).toBe(10); expect(echoesToSilence(75)).toBe(25);
+  });
+  it("the reverb's impulse dies away to a thousandth after its size, and is the same every time", () => {
+    const [l, r] = reverbImpulse(1, 8000);
+    const rms = (x: Float32Array, from: number) => Math.sqrt(x.slice(from, from + 400).reduce((s, v) => s + v * v, 0) / 400);
+    expect(20 * Math.log10(rms(l, 7600) / rms(l, 0))).toBeGreaterThan(-63);
+    expect(20 * Math.log10(rms(l, 7600) / rms(l, 0))).toBeLessThan(-50);
+    expect(l[100]).not.toBe(r[100]);
+    expect(reverbImpulse(1, 8000)[0][100]).toBe(l[100]);
+  });
+  it("the compressor's hidden boost is cancelled, so it only turns down until make-up is added", () => {
+    expect(compAutoMakeupCancelDb(0, 4)).toBeCloseTo(0, 9);
+    expect(compAutoMakeupCancelDb(-40, 20)).toBeCloseTo(-22.8, 6);
+    expect(compAutoMakeupCancelDb(-40, 1)).toBeCloseTo(0, 9);
+    expect(compReductionDb(16, 8)).toBe(14); expect(compReductionDb(-3, 8)).toBe(0);
+  });
+  it("the chapter sits between Reshaping the wave and Impacts, and its steps check the effect they teach", () => {
+    expect(CHAPTER_7.map((l) => l.id)).toEqual(["C7.1", "C7.2", "C7.3", "C7.4", "C7.5", "C7.6", "C7.C"]);
+    expect(CHAPTER_ORDER.indexOf("7")).toBe(CHAPTER_ORDER.indexOf("6") + 1);
+    const snap = (state: Partial<SynthState>, extra: Partial<Snapshot> = {}) => ({ ...snapshot(newTrack(INITIAL), { ...INITIAL, ...state }, { audioRunning: true, held: [57], holdOn: true, now: 0 }), ...extra }) as Snapshot;
+    expect(CHAPTER_7[0]!.steps[1]!.check(snap({ distOn: true }))).toBe(true);
+    expect(CHAPTER_7[0]!.steps[1]!.check(snap({ distOn: false }))).toBe(false);
+    expect(CHAPTER_7[4]!.steps[2]!.remark!(snap({ delayOn: true, delayFeedback: 75, delayTime: 300 }))).toContain("25 echoes, 7.5 seconds");
+    expect(CHAPTER_7[2]!.steps[1]!.check(snap({ compOn: true, compThreshold: -40, compRatio: 8 }, { velocity: { min: 30, max: 120 } }))).toBe(true);
+    expect(CHAPTER_7[2]!.steps[1]!.check(snap({ compOn: true, compThreshold: -40, compRatio: 8 }, { velocity: { min: 100, max: 120 } }))).toBe(false);
   });
 });

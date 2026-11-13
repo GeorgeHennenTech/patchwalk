@@ -4,11 +4,12 @@
 import { useMemo, useRef } from "react";
 import type { Panel, PlayableLesson } from "../../course/types";
 import { MACRO_COLORS } from "../../synth/macros";
+import { FX_NAMES, FX_ORDER } from "../../synth/fx";
 import { adsr, ENV1_COLOR, envLevel, lfoValue, SOURCES, type Adsr, type ModSource } from "../../synth/mod";
 import { harmonic, spectrumA, HARMONICS, LFO_STEPS, MACRO_SLOTS, MACROS, PARAMS, type Group, type SynthState } from "../../synth/params";
 import type { Synth } from "../../synth/useSynth";
 import { Control, isBox } from "./Controls";
-import { FilterCurve } from "./Views";
+import { FilterCurve, Reduction } from "./Views";
 
 export interface Module { id: string; name: string; groups: Group[]; toggle?: keyof SynthState; color?: string; source?: ModSource }
 export const MODULES: Module[] = [
@@ -24,6 +25,8 @@ export const MOD_MODULES: Module[] = [
   { id: "env1", name: "Env 1 · level", groups: ["Envelope 1"], color: ENV1_COLOR },
   ...SOURCES.map((x) => ({ id: x.id, name: x.name, groups: [x.kind === "env" ? "Envelope 2" : x.kind === "lfo" ? `LFO ${x.id.slice(3)}` : x.name] as Group[], color: x.color, source: x.id })),
 ];
+/** The effects, in the order the sound passes through them. */
+export const FX_MODULES: Module[] = FX_ORDER.map((id) => ({ id: `fx-${id}`, name: FX_NAMES[id], groups: [FX_NAMES[id]] as Group[], toggle: `${id}On` as keyof SynthState }));
 /** Macros get their own row and their own layout (see MacroPanel). */
 export const MACRO_MODULES: Module[] = MACROS.map((n) => ({ id: `macro${n}`, name: `Macro ${n}`, groups: [`Macro ${n}`] as Group[], color: MACRO_COLORS[n - 1] }));
 
@@ -65,7 +68,7 @@ function Display({ module, synth, note }: { module: Module; synth: Synth; note: 
     if (module.id === "sub") return wavePath(SINE, 0);
     if (module.id === "env1") return envPath(adsr(s, 1));
     if (module.id === "env2") return envPath(adsr(s, 2));
-    if (module.source === "vel" || module.source === "key") return "";
+    if (module.source === "vel" || module.source === "key" || module.id.startsWith("fx-")) return "";
     if (module.source) return lfoPath(s[`${module.source as "lfo1"}Shape`], s[`${module.source as "lfo1"}Way`] === "up", s[`${module.source as "lfo1"}Steps`]);
     return NOISE_PATH;
   }, [module, s.shape, s.table, s.position, s.phase, s.warp, s.warpAmount, s.bShape, s.bPhase, s.envA, s.envD, s.envS, s.envR, s.env2A, s.env2D, s.env2S, s.env2R, s.lfo1Shape, s.lfo2Shape, s.lfo3Shape, s.lfo1Way, s.lfo2Way, s.lfo3Way, s.lfo1Steps, s.lfo2Steps, s.lfo3Steps]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -103,6 +106,7 @@ export function Rack({ synth, show, all, lesson, note }: { synth: Synth; show: P
               {/* an LFO's shape is shown whenever its controls are, so a lesson can point at it */}
               {(all || m.source?.startsWith("lfo")) && <Display module={m} synth={synth} note={note} />}
               {curve && <FilterCurve synth={synth} note={note} spot />}
+              {m.id === "fx-comp" && <Reduction synth={synth} />}
               {kind("menu").map((id) => <Control key={id} id={id} synth={synth} spot={show.includes(id)} />)}
               {kind("choice").map((id) => <Control key={id} id={id} synth={synth} spot={show.includes(id)} only={!all && id === "shape" ? lesson.shapes : undefined} />)}
               {kind("box").length > 0 && <div className="mod-row">{kind("box").map((id) => <Control key={id} id={id} synth={synth} spot={show.includes(id)} />)}</div>}
@@ -119,7 +123,7 @@ export function Rack({ synth, show, all, lesson, note }: { synth: Synth; show: P
   const macros = MACRO_MODULES.filter((m, i) => all || (Object.keys(PARAMS) as Panel[]).some((id) => PARAMS[id as string]!.group === m.groups[0] && show.includes(id)) || show.includes(`macro${i + 1}Name` as Panel));
   return (
     <>
-      {row(MODULES, "sources")}{row(MOD_MODULES, "mods")}
+      {row(MODULES, "sources")}{row(MOD_MODULES, "mods")}{row(FX_MODULES, "fx")}
       {macros.length > 0 && <div className={`rack macros${all ? " full" : ""}`}>{macros.map((m) => <MacroPanel key={m.id} n={Number(m.id.slice(5))} color={m.color!} synth={synth} show={show} all={all} />)}</div>}
     </>
   );

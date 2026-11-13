@@ -5,11 +5,11 @@ import type { SynthState } from "../synth/params";
 export type MatchVerdict = "match" | "too low" | "too high" | "different";
 
 /** How close a numeric setting has to be to count. Pitch in cents is the only one with slack. */
-const TOLERANCE: Partial<Record<keyof SynthState, number>> = { fine: 10, bFine: 10, freeHz: 0, volumeDb: 2, detune: 12, position: 12, spread: 20, bLevelDb: 4, subLevelDb: 4, noiseLevelDb: 5, aLevelDb: 4, resonance: 20, drive: 25, keyTrack: 20, envS: 20, env2S: 20, env2Amount: 20, lfo1Amount: 20, lfo2Amount: 20, lfo3Amount: 20, warpAmount: 15, fmAmount: 12, ringAmount: 20, macro1: 12, macro2: 12, macro3: 12, macro4: 12 };
+const TOLERANCE: Partial<Record<keyof SynthState, number>> = { fine: 10, bFine: 10, freeHz: 0, volumeDb: 2, detune: 12, position: 12, spread: 20, bLevelDb: 4, subLevelDb: 4, noiseLevelDb: 5, aLevelDb: 4, resonance: 20, drive: 25, keyTrack: 20, envS: 20, env2S: 20, env2Amount: 20, lfo1Amount: 20, lfo2Amount: 20, lfo3Amount: 20, eqLow: 4, eqMid: 4, eqHigh: 4, distDrive: 20, distMix: 20, delayFeedback: 15, delayMix: 15, reverbMix: 15, chorusMix: 20, chorusDepth: 25, compThreshold: 8, compMakeup: 4, warpAmount: 15, fmAmount: 12, ringAmount: 20, macro1: 12, macro2: 12, macro3: 12, macro4: 12 };
 /** Cutoff is judged in octaves, as the ear hears it: within about a third of an octave counts. */
 const CUTOFF_OCTAVES = 0.4;
 /** Times and rates are judged as ratios too: within double or half counts, which is about how the ear hears them. */
-const RATIO_KEYS = new Set<keyof SynthState>(["envA", "envD", "envR", "env2A", "env2D", "env2R", "lfo1Rate", "lfo2Rate", "lfo3Rate"]);
+const RATIO_KEYS = new Set<keyof SynthState>(["envA", "envD", "envR", "env2A", "env2D", "env2R", "lfo1Rate", "lfo2Rate", "lfo3Rate", "delayTime", "reverbSize", "chorusRate", "eqMidHz", "compAttack", "compRelease", "compRatio"]);
 
 export function compareSetting(key: keyof SynthState, mine: SynthState, target: Partial<SynthState>): MatchVerdict {
   const a = mine[key], b = target[key];

@@ -6,6 +6,7 @@ import { CHAPTER_3 } from "./chapter3";
 import { CHAPTER_4 } from "./chapter4";
 import { CHAPTER_5 } from "./chapter5";
 import { CHAPTER_6 } from "./chapter6";
+import { CHAPTER_7 } from "./chapter7";
 import { IMPACT_CHAPTER } from "./impacts";
 import { MACRO_CHAPTER } from "./macros";
 
@@ -151,15 +152,15 @@ const BASE: PlayableLesson[] = [
 ];
 
 /** Every playable lesson, in suggested order. */
-export const LESSONS: PlayableLesson[] = [...BASE, ...CHAPTER_1, ...CHAPTER_2, ...CHAPTER_3, ...CHAPTER_4, ...CHAPTER_5, ...MACRO_CHAPTER, ...CHAPTER_6, ...IMPACT_CHAPTER];
+export const LESSONS: PlayableLesson[] = [...BASE, ...CHAPTER_1, ...CHAPTER_2, ...CHAPTER_3, ...CHAPTER_4, ...CHAPTER_5, ...MACRO_CHAPTER, ...CHAPTER_6, ...CHAPTER_7, ...IMPACT_CHAPTER];
 
 /**
  * Chapter names, by the number in a lesson's id ("C2.5" is in chapter 2). Ids are for code, scripts and
  * plans; the learner sees the chapter name, the lesson's place in it, and its title.
  */
-export const CHAPTERS: Record<string, string> = { "0": "Sound itself", "1": "Oscillators", "2": "Filters", "3": "Envelopes", "4": "LFOs", "5": "Modulation", "5M": "Macros", "6": "Reshaping the wave", "T": "Impacts" };
+export const CHAPTERS: Record<string, string> = { "0": "Sound itself", "1": "Oscillators", "2": "Filters", "3": "Envelopes", "4": "LFOs", "5": "Modulation", "5M": "Macros", "6": "Reshaping the wave", "7": "Effects", "T": "Impacts" };
 /** The order chapters are listed in. (An object's number-like keys sort themselves, which would misplace "5M".) */
-export const CHAPTER_ORDER = ["0", "1", "2", "3", "4", "5", "5M", "6", "T"];
+export const CHAPTER_ORDER = ["0", "1", "2", "3", "4", "5", "5M", "6", "7", "T"];
 export const chapterOf = (lesson: PlayableLesson) => lesson.id.slice(1, lesson.id.indexOf("."));
 /** Where a lesson sits: its chapter's name, its number within the chapter, and how many the chapter has. */
 export function placeOf(lesson: PlayableLesson, lessons: PlayableLesson[] = LESSONS): { chapter: string; number: number; of: number } {

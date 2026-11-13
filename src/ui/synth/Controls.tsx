@@ -16,7 +16,7 @@ const fmt = (id: string, v: number) => {
 };
 
 /** The name printed under a control. Its module panel already says which oscillator or section it belongs to. */
-export const shortLabel = (label: string) => label.replace(/^(A|B|Sub|Noise|Filter|Wave|Env \d|LFO \d|Velocity|Key position|Macro \d slot \d) /, "");
+export const shortLabel = (label: string) => label.replace(/^(A|B|Sub|Noise|Filter|Wave|Env \d|LFO \d|Velocity|Key position|Distortion|EQ|Compressor|Chorus|Delay|Reverb|Macro \d slot \d) /, "");
 
 /** Settings shown as a small number box (a few whole steps) and not as a knob. */
 const BOXES = new Set<string>(BOX_IDS);

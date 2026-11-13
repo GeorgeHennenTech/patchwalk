@@ -97,6 +97,23 @@ export function Meter({ synth }: { synth: Synth }) {
   );
 }
 
+/** How many dB the compressor is turning the sound down at this moment. */
+export function Reduction({ synth }: { synth: Synth }) {
+  const [db, setDb] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setDb(synth.engine.current ? synth.engine.current.fx.reduction : 0), 100);
+    return () => clearInterval(id);
+  }, [synth.engine]);
+  const pct = Math.max(0, Math.min(100, (-db / 30) * 100));
+  return (
+    <div className="ctl meter reduction">
+      <span className="ctl-name">Turning down by</span>
+      <div className="meter-bar" role="meter" aria-label="Compressor gain reduction" aria-valuemin={0} aria-valuemax={30} aria-valuenow={Math.round(-db)}><div style={{ width: `${pct}%` }} /></div>
+      <output>{`${(-db).toFixed(1)} dB`}</output>
+    </div>
+  );
+}
+
 const CURVE = { lo: 20, hi: 20000, top: 24, bottom: -48 };
 /** Where a frequency sits across the filter drawing (0..1), and back. Octaves are evenly spaced. */
 export const curveX = (hz: number) => Math.log(hz / CURVE.lo) / Math.log(CURVE.hi / CURVE.lo);

@@ -162,7 +162,9 @@ Added after the first eight milestones (owner asked for all four in one go):
     drops, a bass note as a hit, pitch at the front, and a by-ear checkpoint). They needed one new
     destination, "Osc A pitch, wide" (`aPitchWide`, four octaves at 100%; it has no knob, so no ring).
     Measured: at 25% a 440 Hz note started near 880 Hz and landed on 440; at 50%, near 1760 Hz.
-    **Sixty-three playable lessons.**
+    `lessons/chapter7.ts` holds "Effects" (C7.1 distortion, C7.2 EQ, C7.3 compression, C7.4 chorus, C7.5
+    delay, C7.6 reverb, and the checkpoint C7.C), listed between "Reshaping the wave" and "Impacts".
+    **Seventy playable lessons.**
   - `src/ui/PlayView.tsx` ("Lessons" tab) and `src/ui/synth/` — spotlighted controls per step, live targets,
     scope, spectrum, meter, on-screen keyboard, Hold, blind ear checks, recap, guide remarks and suggestion.
   - "Hear it first" demos (`demo` on a lesson), match-by-ear rounds (`rounds`, compared by `src/course/match.ts`:
@@ -286,7 +288,23 @@ Added after the first eight milestones (owner asked for all four in one go):
     down) and at an index of 1 gave the expected sideband levels; sync at 100% played a sine at four times
     the pitch and at 33% at twice; a fully mirrored saw had odd harmonics only.
     Not built: warp amount and ring amount as source destinations, B shaken by A, Serum's other warp modes.
-  - Not built yet: effects, MIDI input, a mod wheel, an editable matrix. **Owner's order (13 Nov 2026), after
+  - **Effects rack (13 Nov 2026).** `src/synth/fx.ts`: distortion (soft clip, hard clip, fold, crush; drive,
+    mix), a three-band EQ (shelves at 150 Hz and 5 kHz, a movable middle band), a compressor (threshold,
+    ratio, attack, release, make-up, and a live "Turning down by" meter), chorus, delay (ms or beats,
+    feedback) and reverb (generated noise impulse; size is the time to fall 60 dB). Fixed order, after the
+    notes and before the main volume, shared by all notes; every effect is always in the path and "off" turns
+    its own signal down, so switching never restarts notes. The first half of the file is pure maths shared
+    with tests; `FxChain` is the audio. **The browser's compressor adds its own make-up gain** (0.6 of the
+    reduction a full-level signal would get); `compAutoMakeupCancelDb` cancels it, with the knee at 0.
+    `auditionPatch` sets the shared effects to the patch's for the length of the sound and hands them back
+    0.7 s after it ends (`fxRestore`), so demos and match-by-ear targets can have their own effects.
+    Shown as a third rack row (`FX_MODULES`). All effect knobs are macro destinations; none is a source
+    destination yet. Measured: effects off left the level unchanged; hard clip added odd harmonics; EQ mid
+    +12 dB gave +12 dB; compressor output fell by the meter's reading (6.4 and 26.8 dB) and make-up of 12 dB
+    gave 12 dB back; a 300 ms delay at 50% feedback echoed about 6 dB down each time; reverb tails fell at
+    roughly 60 dB per "size". Not built: reordering, sidechain/ducking, multiband, effects as modulation
+    destinations, more reverb controls.
+  - Not built yet: MIDI input, a mod wheel, an editable matrix. **Owner's order (13 Nov 2026), after
     warp/FM/ring which is done: the first impact lessons (they need nothing new); then physical modelling
     and bioacoustics.**
   - The old ten Serum-task lessons are now the "Serum tasks" tab.
@@ -407,7 +425,7 @@ use explicit `.js` import suffixes so they load as plain Node ESM.
 - New knowledge cards: copy `knowledge-cards/_template.md`. Avoid numbers in cards. Only add reading links
   that have been opened and checked.
 - **Lesson labels.** Codes such as `C2.5` are for code, scripts and plans only. The learner sees lessons grouped
-  under chapter names ("Sound itself", "Oscillators", "Filters", "Envelopes", "LFOs", "Modulation", "Macros", "Reshaping the wave", "Impacts"; `CHAPTERS` in `src/course/lessons/index.ts`),
+  under chapter names ("Sound itself", "Oscillators", "Filters", "Envelopes", "LFOs", "Modulation", "Macros", "Reshaping the wave", "Effects", "Impacts"; `CHAPTERS` in `src/course/lessons/index.ts`),
   numbered within the chapter, with "Filters · lesson 5 of 8" above the title. A test stops lesson text from
   citing another lesson by code. Add the chapter's name to `CHAPTERS` when starting a new chapter.
 - Skin: content must stay on solid panels for legibility; fabric textures are for chrome only (header, tabs,

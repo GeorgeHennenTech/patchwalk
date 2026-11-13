@@ -14,11 +14,13 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 - [x] Velocity and key position: as sources on the synth, and a lesson
 - [x] Macro chapter: seven macro recipes, two macros on one sound, and a by-ear checkpoint
 - [x] First impact lessons: note start, kick, fall size and speed, sub drop, bass note as a hit, pitch at the front, checkpoint
+- [x] Effects rack (distortion, EQ, compressor, chorus, delay, reverb) and seven effects lessons
+- [ ] Effects: reordering, ducking (sidechain), multiband, and effects as modulation destinations
 - [ ] More macro recipes (the owner wants many; each is a few lines of data in the macro lesson file)
 - [ ] Scaling a route with a second source (mod wheel) and its lesson
 - [ ] Blind ear checks for the filter, envelope, LFO and modulation lessons
 - [ ] Pulse-width lesson in the oscillator chapter
-- [ ] Remaining synthesis chapters from the course plan (63 lessons built)
+- [ ] Remaining synthesis chapters from the course plan (70 lessons built)
 
 ## Synth
 - [x] Filter with a draggable curve

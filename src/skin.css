@@ -382,6 +382,13 @@ label.mod-head { cursor: pointer; }
 .pick.menu { flex-wrap: nowrap; }
 .pick select { flex: 1; min-width: 0; padding: 4px 6px; border-radius: 8px; border: 2px solid var(--line); background: var(--panel); color: var(--text); font: inherit; font-size: 13px; }
 .rack.mods .mod { flex: 1 1 190px; }
+/* the compressor's "turning down by" meter: a small strip, and room for the delay's menu */
+.mod .ctl.reduction { flex: 0 0 auto; flex-wrap: wrap; gap: 4px 8px; padding: 6px 8px; font-size: 12px; }
+.mod .ctl.reduction .ctl-name { min-width: 0; flex: 1 1 100%; font-weight: 600; }
+.mod .ctl.reduction output { min-width: 0; }
+.rack.fx .mod { flex: 1 1 170px; }
+.rack.fx .pick.menu { flex-wrap: wrap; }
+.rack.fx .pick.menu select { flex: 1 1 100%; }
 .synth.plain .mod.neon .mod-head span { text-decoration: underline; text-decoration-color: var(--glow); text-decoration-thickness: 3px; text-underline-offset: 3px; }
 .view-toggles .skin-toggle { margin-left: 8px; border-style: dashed; }
 .keys-wrap { display: flex; flex-direction: column; gap: 4px; }

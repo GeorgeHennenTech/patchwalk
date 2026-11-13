@@ -21,7 +21,7 @@ Last updated: 13 November 2026, after commit "Add the filter chapter to the prac
    ```bash
    npm test
    ```
-   Expect 304 passing tests, none skipped.
+   Expect 307 passing tests, none skipped.
 3. **Run it.** `npm run dev` serves the app at http://localhost:5173 including the two server functions.
    The Claude calls report "no API key" locally unless `.env.local` has `ANTHROPIC_API_KEY`; that is expected.
 4. **Then continue with section 8** without waiting for instructions, unless the owner's message says otherwise.
@@ -63,7 +63,7 @@ synthesis course with its own practice synth and an AI guide that answers from a
 | Tab | What it does |
 |---|---|
 | **Rebuild a patch** | Reads a `.SerumPreset` in the browser (never uploaded). Shows a sound-type guess, a lesson in signal-flow order at three difficulty levels, "Explain why" (Claude writes why each step works), envelope and LFO diagrams, a signal-flow view with a modulation map, an active-modules view, "compare your attempt", a display-value table and raw data. An ask box lets the guide answer about the patch. |
-| **Lessons** | The practice synth (two oscillators, unison, sub, noise, phase, generated wavetables, a filter with a draggable curve, two envelopes and three LFOs; shown as a rack of panels with knobs) and thirty-two playable lessons: chapters 0 to 4 (oscillators, filters, envelopes, LFOs), a match-by-ear lesson (C1.M) and the chapter checkpoints (C1.C, C2.C, C3.C, C4.C). Each lesson: optional "Hear it first" demo, idea text, a knowledge card, guided steps with only the needed controls shown and live targets, guide remarks written by code, optional blind ear check, optional match-by-ear rounds, recap, suggested next lesson, read-aloud, and an ask box. Any order; progress saved in the browser. |
+| **Lessons** | The practice synth (two oscillators, unison, sub, noise, phase, generated wavetables, a filter with a draggable curve, two envelopes and three LFOs; shown as a rack of panels with knobs) and thirty-six playable lessons: chapters 0 to 5 (oscillators, filters, envelopes, LFOs, modulation), a match-by-ear lesson (C1.M) and the chapter checkpoints (C1.C, C2.C, C3.C, C4.C, C5.C). Each lesson: optional "Hear it first" demo, idea text, a knowledge card, guided steps with only the needed controls shown and live targets, guide remarks written by code, optional blind ear check, optional match-by-ear rounds, recap, suggested next lesson, read-aloud, and an ask box. Any order; progress saved in the browser. |
 | **Serum tasks** | The older ten lessons: a task done in Serum, checked by dropping the saved preset. |
 | **Ask the guide** | Answers a typed question from the library (the Serum 2 User Guide, the Ableton Live 11 manual, and the knowledge cards) with page citations, quoted source text, the cited page's pictures, and links to matching lessons. Says "not in the library" instead of guessing. |
 | **System check** | One-click end-to-end test of the explanation service. |
@@ -163,7 +163,7 @@ box used with lesson or patch context; the match-by-ear difficulty.
 numbers, effect order, module name labels. `docs/PROBES.md` lists 43 one-change-from-Init presets the owner
 could make to settle them. None have been made. Effect parameters are shown exactly as stored.
 
-**Drafts awaiting the owner's review:** all 32 knowledge cards (`status: draft`), the twenty-seven lesson scripts in
+**Drafts awaiting the owner's review:** all 32 knowledge cards (`status: draft`), the thirty lesson scripts in
 `docs/lessons/`, every lesson in the app.
 
 ---
@@ -177,7 +177,7 @@ could make to settle them. None have been made. Effect parameters are shown exac
 | `SERUM_EXTRAS.md` | Track S: 50 lessons on Serum 2 itself, with manual page references. |
 | `GENRES.md` | The owner's closed list of 92 genres, each to use an eight-lesson template; also what they declined. |
 | `COVERAGE_SYNTORIAL.md` | Mapping of Syntorial's lesson titles onto our lessons, and what was added as a result. |
-| `lessons/` | Twenty-seven fully scripted lessons (C0.1 to C0.4, C1.1 to C1.8, C2.1 to C2.7, C3.1, C3.2, C3.4 to C3.6, and C4.1 to C4.3) in a fixed shape. |
+| `lessons/` | Thirty fully scripted lessons (C0.1 to C0.4, C1.1 to C1.8, C2.1 to C2.7, C3.1, C3.2, C3.4 to C3.6, C4.1 to C4.3, and C5.1, C5.2, C5.6) in a fixed shape. |
 | `PROBES.md` | Probe presets for verifying display values. |
 | `milestones/`, `STRUCTURE.md` | The original eight milestones and file layout. All eight are done. |
 
@@ -215,8 +215,11 @@ Take these in order. After each, test, check in a browser, commit, push, and rep
    (left/right) view, a tuner/pitch readout and a loudness meter.
 3. **Done (13 Nov 2026): envelope lessons (C3)**, five lessons and a checkpoint with a draggable envelope
    drawing; C3.3 (curves and hold) waits for those controls. **Done too: LFO lessons (C4)**, three and a checkpoint; C4.4 to C4.6 wait for tempo
-   sync, trigger modes and drawn shapes. **Next: the modulation system (C5)**, or the synth controls those
-   skipped lessons need.
+   sync, trigger modes and drawn shapes. **Done as far as the synth allows: the modulation system (C5)**: routes and amounts,
+   one way or both ways, modulating a modulator, and a checkpoint. **What is left in chapters 3 to 5 all needs
+   new synth controls first** (envelope curves and hold; LFO tempo sync, trigger modes, drawn shapes; velocity,
+   macros, mod wheel). Chapter 6 (warp, sync, FM, ring mod) needs new oscillator features. Pick whichever
+   group of controls the owner asks for, or the cheapest: macros and velocity.
 4. **Guide improvements** alongside: remember more than finished lessons (for example what the learner found
    hard), and add more texts to the library as the owner supplies them.
 5. Later, in the order in `CURRICULUM.md`: listening lab for acoustics, psychoacoustics and ear training;
@@ -248,7 +251,8 @@ Smaller items to pick up when convenient:
 
 ## 8b. The to-do list
 `docs/TODO.md` is the working list, with tick boxes; keep it current as things are finished or added. In a
-session where the "patchwalk-todo" mod is loaded, a pane beside the chat shows it (`/todo`). The mod lives in
+session where the "patchwalk-todo" mod is loaded, a pane beside the chat shows it (`/todo`), with a progress bar,
+sections in the neon colours, tickable items, and a one-line strip above the prompt when it is closed. The mod lives in
 the session's container, not the repo, and has to be rebuilt in a new one if the owner wants the pane again.
 
 ## 9. Waiting on the owner

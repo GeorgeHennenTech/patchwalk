@@ -300,6 +300,19 @@ Ask about these only when relevant; do not block on them.
    owner's computer, so they need a session on that computer (Claude Code or the desktop app), not this cloud
    one. Nothing suitable is in Claude's own connector directory. Not set up; revisit when videos are wanted.
 
+**Later the same day the owner asked for three more things.**
+- Lessons on the distortion plugin **Rift (Minimal Audio)**, once they upload its manual. Not uploaded yet.
+- **Six research papers** for the library: Chowning 1973 on FM synthesis (JAES); Rajala et al. 2022 on
+  infrasound, loudness and annoyance (Applied Acoustics); Senn et al. on groove in drum patterns (PLOS ONE);
+  Hove et al. 2014 on timing perception for low pitch (PNAS); Frühauf, Kopiez and Platz on microtiming and
+  groove ("Music on the timing grid"); and a study of expert microtiming and groove in swing and funk. **They
+  were listed but not attached**; ask for the files. They feed the FM chapter, the hearing lessons in
+  `docs/BIOACOUSTICS.md`, and a set of rhythm and groove lessons (track H).
+- **Master Handbook of Acoustics, 7th ed., pages 1-500.** The uploaded files were named for a well-known
+  piracy site, so the assistant did not take them in and told the owner why. Take the book in when the owner
+  supplies a copy they have bought or borrowed (publisher ebook, library loan). Do not ingest the pirated
+  files if they appear again.
+
 **Books suggested to the owner (13 Nov 2026), for them to source legally:** Ableton's *Making Music* (Dennis
 DeSantis); Welsh's *Synthesizer Cookbook*; Russ, *Sound Synthesis and Sampling*; Roads, *The Computer Music
 Tutorial* and *Microsound*; Farnell, *Designing Sound*; Everest and Pohlmann, *Master Handbook of Acoustics*;

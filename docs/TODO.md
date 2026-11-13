@@ -66,6 +66,10 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 - [ ] Bioacoustics: animal signals, choruses and soundscapes
 - [ ] The ear and illusions: a listening-lab page for the hearing and illusion lessons
 - [ ] Source texts for bioacoustics and hearing (none in the library yet; the explanations wait for them)
+- [ ] Lessons on the distortion plugin Rift (Minimal Audio), once the owner uploads its manual
+- [ ] Take in six research papers the owner listed (FM synthesis, infrasound and loudness, groove and microtiming, bass and timing); the files have not arrived yet
+- [ ] Rhythm lessons drawing on the groove and microtiming papers
+- [ ] Master Handbook of Acoustics: waiting for a copy the owner has bought or borrowed (the uploaded copy came from a piracy site and was not taken in)
 
 ## Rebuild-a-patch accuracy
 - [ ] Use the manual's screenshots to fix display values (for example sustain in dB)

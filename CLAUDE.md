@@ -4,6 +4,10 @@ A web app that teaches people to recreate a Serum 2 patch. The user drops in a `
 in the browser, works out which parts matter, and walks them through building the sound in signal-flow order.
 Each step says what to do, why it works, and what to listen for. A difficulty toggle changes the explanation.
 
+**New session? Read `docs/HANDOFF.md` first.** It summarises goals, decisions, state and what to do next, and is
+written so a fresh assistant can continue without the owner re-explaining anything. Keep it up to date when
+something significant changes.
+
 ## Scope for now
 Preset reading: Serum 2 `.SerumPreset` only, parsed entirely in the browser. No screenshots, Serum 1 `.fxp`,
 or plugin, and no recording or analysis of audio from Serum.

@@ -80,3 +80,22 @@ describe("card set", () => {
     expect(parseCard(readFileSync(join(DIR, "_template.md"), "utf8"))!.body.startsWith("## What it is")).toBe(true);
   });
 });
+
+import { parseBlocks } from "../src/ui/Markdown";
+
+describe("card text layout", () => {
+  it("keeps a heading separate from the paragraph on the next line", () => {
+    expect(parseBlocks("## What it is\nA wavetable is a row\nof shapes.\n\n## Why it works\nShape fixes harmonics.")).toEqual([
+      { kind: "heading", text: "What it is" }, { kind: "para", text: "A wavetable is a row of shapes." },
+      { kind: "heading", text: "Why it works" }, { kind: "para", text: "Shape fixes harmonics." },
+    ]);
+  });
+  it("every card renders as four short headings, each followed by body text", () => {
+    for (const c of cards) {
+      const blocks = parseBlocks(c.body);
+      const heads = blocks.filter((b) => b.kind === "heading");
+      expect(heads.map((h) => h.text), c.id).toEqual(["What it is", "Why it works", "Listen for", "Goes with"]);
+      blocks.forEach((b, i) => { if (b.kind === "heading") expect(blocks[i + 1]?.kind, `${c.id}: ${b.text}`).toBe("para"); });
+    }
+  });
+});

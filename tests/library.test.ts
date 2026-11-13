@@ -228,3 +228,12 @@ describe("pictures in the guide's answers", () => {
     }
   });
 });
+
+import { plain } from "../src/ui/Answer";
+describe("answer text", () => {
+  it("is shown without Markdown marks", () => {
+    expect(plain("**Effect order matters.** Effects run in order.")).toBe("Effect order matters. Effects run in order.");
+    expect(plain("## What it is\nA filter.")).toBe("What it is\nA filter.");
+    expect(plain("2 * 3 = 6")).toBe("2 * 3 = 6");
+  });
+});

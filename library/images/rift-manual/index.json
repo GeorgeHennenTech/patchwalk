@@ -109,14 +109,6 @@
 ]
 },
 {
-"file": "p010-1.webp",
-"page": 10,
-"chapter": "Presets: Pack Browser",
-"width": 512,
-"height": 185,
-"captions_on_page": []
-},
-{
 "file": "p010-2.webp",
 "page": 10,
 "chapter": "Presets: Pack Browser",
@@ -172,16 +164,6 @@
 ]
 },
 {
-"file": "p012-3.webp",
-"page": 12,
-"chapter": "Presets: Tag Browser",
-"width": 624,
-"height": 214,
-"captions_on_page": [
-"To clear all selected TAGS, choose CLEAR ALL."
-]
-},
-{
 "file": "p012-4.webp",
 "page": 12,
 "chapter": "Presets: Tag Browser",
@@ -212,14 +194,6 @@
 ]
 },
 {
-"file": "p013-1.webp",
-"page": 13,
-"chapter": "Presets: Saving Presets",
-"width": 704,
-"height": 336,
-"captions_on_page": []
-},
-{
 "file": "p013-2.webp",
 "page": 13,
 "chapter": "Presets: Saving Presets",
@@ -241,14 +215,6 @@
 "chapter": "Presets: Saving Presets",
 "width": 1125,
 "height": 436,
-"captions_on_page": []
-},
-{
-"file": "p013-5.webp",
-"page": 13,
-"chapter": "Presets: Saving Presets",
-"width": 160,
-"height": 128,
 "captions_on_page": []
 },
 {
@@ -420,16 +386,6 @@
 ]
 },
 {
-"file": "p024-1.webp",
-"page": 24,
-"chapter": "Play View: Multi-Band",
-"width": 608,
-"height": 316,
-"captions_on_page": [
-"Adjust the gain of the low and high-bands."
-]
-},
-{
 "file": "p024-2.webp",
 "page": 24,
 "chapter": "Play View: Multi-Band",
@@ -440,31 +396,11 @@
 ]
 },
 {
-"file": "p024-3.webp",
-"page": 24,
-"chapter": "Play View: Multi-Band",
-"width": 616,
-"height": 316,
-"captions_on_page": [
-"Adjust the gain of the low and high-bands."
-]
-},
-{
 "file": "p024-4.webp",
 "page": 24,
 "chapter": "Play View: Multi-Band",
 "width": 816,
 "height": 408,
-"captions_on_page": [
-"Adjust the gain of the low and high-bands."
-]
-},
-{
-"file": "p024-5.webp",
-"page": 24,
-"chapter": "Play View: Multi-Band",
-"width": 616,
-"height": 316,
 "captions_on_page": [
 "Adjust the gain of the low and high-bands."
 ]
@@ -553,16 +489,6 @@
 "MID SIDE: Processes both the mid and side signals independently.",
 "MID: Processes the mid signal and bypasses the side.",
 "SIDES: Processes the stereo sides and bypasses the mid."
-]
-},
-{
-"file": "p032-1.webp",
-"page": 32,
-"chapter": "Advanced View: Feedback",
-"width": 356,
-"height": 96,
-"captions_on_page": [
-"STEREO: Standard stereo mode."
 ]
 },
 {
@@ -682,17 +608,6 @@
 ]
 },
 {
-"file": "p036-3.webp",
-"page": 36,
-"chapter": "Advanced View: Feedback",
-"width": 176,
-"height": 148,
-"captions_on_page": [
-"FEEDBACK FREQUENCY will snap to the notes that are toggled ON.",
-"FEEDBACK FREQUENCY will NOT snap to the notes that are toggled OFF."
-]
-},
-{
 "file": "p036-4.webp",
 "page": 36,
 "chapter": "Advanced View: Feedback",
@@ -714,16 +629,6 @@
 ]
 },
 {
-"file": "p037-2.webp",
-"page": 37,
-"chapter": "Advanced View: Feedback",
-"width": 160,
-"height": 145,
-"captions_on_page": [
-"Choose from a variety of useful scales for the PITCH SNAP."
-]
-},
-{
 "file": "p037-3.webp",
 "page": 37,
 "chapter": "Advanced View: Feedback",
@@ -731,30 +636,6 @@
 "height": 128,
 "captions_on_page": [
 "Choose from a variety of useful scales for the PITCH SNAP."
-]
-},
-{
-"file": "p038-1.webp",
-"page": 38,
-"chapter": "Advanced View: Filter",
-"width": 324,
-"height": 98,
-"captions_on_page": [
-"Choose if the filter comes before or after both the distortion and feedback.",
-"PRE is ideal for more distorted effects.",
-"POST is great for filtering rich harmonics from the distortion and feedback."
-]
-},
-{
-"file": "p038-2.webp",
-"page": 38,
-"chapter": "Advanced View: Filter",
-"width": 336,
-"height": 288,
-"captions_on_page": [
-"Choose if the filter comes before or after both the distortion and feedback.",
-"PRE is ideal for more distorted effects.",
-"POST is great for filtering rich harmonics from the distortion and feedback."
 ]
 },
 {
@@ -848,35 +729,11 @@
 ]
 },
 {
-"file": "p040-1.webp",
-"page": 40,
-"chapter": "Advanced View: Filter",
-"width": 176,
-"height": 150,
-"captions_on_page": [
-"Create musical scales by selecting which notes CUTOFF will snap to.",
-"CUTOFF will snap to the notes that are toggled ON.",
-"CUTOFF will NOT snap to the notes that are toggled OFF."
-]
-},
-{
 "file": "p040-2.webp",
 "page": 40,
 "chapter": "Advanced View: Filter",
 "width": 928,
 "height": 336,
-"captions_on_page": [
-"Create musical scales by selecting which notes CUTOFF will snap to.",
-"CUTOFF will snap to the notes that are toggled ON.",
-"CUTOFF will NOT snap to the notes that are toggled OFF."
-]
-},
-{
-"file": "p040-3.webp",
-"page": 40,
-"chapter": "Advanced View: Filter",
-"width": 180,
-"height": 156,
 "captions_on_page": [
 "Create musical scales by selecting which notes CUTOFF will snap to.",
 "CUTOFF will snap to the notes that are toggled ON.",
@@ -894,38 +751,6 @@
 ]
 },
 {
-"file": "p045-1.webp",
-"page": 45,
-"chapter": "Advanced View: Multi-Band",
-"width": 608,
-"height": 316,
-"captions_on_page": [
-"Adjust the gain of the low and high-bands."
-]
-},
-{
-"file": "p045-2.webp",
-"page": 45,
-"chapter": "Advanced View: Multi-Band",
-"width": 616,
-"height": 316,
-"captions_on_page": [
-"Adjust the gain of the low and high-bands."
-]
-},
-{
-"file": "p047-1.webp",
-"page": 47,
-"chapter": "Modulation: Randomization",
-"width": 456,
-"height": 264,
-"captions_on_page": [
-"Click to RANDOMIZE or right-click to show RANDOMIZATION options.",
-"You can lock most parameters to prevent them from being randomized.",
-"Right-click on a parameter to bring up the lock option."
-]
-},
-{
 "file": "p047-2.webp",
 "page": 47,
 "chapter": "Modulation: Randomization",
@@ -938,33 +763,11 @@
 ]
 },
 {
-"file": "p049-1.webp",
-"page": 49,
-"chapter": "Modulation: Modulation System",
-"width": 648,
-"height": 229,
-"captions_on_page": [
-"ADD MOD options.",
-"SOURCE will appear next to the parameter."
-]
-},
-{
 "file": "p049-2.webp",
 "page": 49,
 "chapter": "Modulation: Modulation System",
 "width": 686,
 "height": 219,
-"captions_on_page": [
-"ADD MOD options.",
-"SOURCE will appear next to the parameter."
-]
-},
-{
-"file": "p049-3.webp",
-"page": 49,
-"chapter": "Modulation: Modulation System",
-"width": 524,
-"height": 354,
 "captions_on_page": [
 "ADD MOD options.",
 "SOURCE will appear next to the parameter."
@@ -1158,18 +961,6 @@
 ]
 },
 {
-"file": "p057-2.webp",
-"page": 57,
-"chapter": "Modulation: Curve",
-"width": 476,
-"height": 437,
-"captions_on_page": [
-"Adjust the CURVE RATE.",
-"Enable BPM sync for the CURVE RATE.",
-"Save the current CURVE shape as a user preset."
-]
-},
-{
 "file": "p057-3.webp",
 "page": 57,
 "chapter": "Modulation: Curve",
@@ -1199,20 +990,6 @@
 "chapter": "Modulation: Curve",
 "width": 172,
 "height": 124,
-"captions_on_page": [
-"OFF: Standard looping CURVE with no retriggering.",
-"BLUE: Incoming MIDI notes retrigger the looping CURVE.",
-"ORANGE: Incoming MIDI notes retrigger the CURVE as a one-shot envelope.",
-"Generate different types of modulation shapes.",
-"Try changing the CURVE’s grid sizes to adjust how the shapes are generated."
-]
-},
-{
-"file": "p058-2.webp",
-"page": 58,
-"chapter": "Modulation: Curve",
-"width": 156,
-"height": 152,
 "captions_on_page": [
 "OFF: Standard looping CURVE with no retriggering.",
 "BLUE: Incoming MIDI notes retrigger the looping CURVE.",
@@ -1284,19 +1061,6 @@
 "captions_on_page": []
 },
 {
-"file": "p062-1.webp",
-"page": 62,
-"chapter": "Modulation: Curve View",
-"width": 168,
-"height": 140,
-"captions_on_page": [
-"Save the current CURVE shape as a user preset.",
-"Reset the current CURVE shape.",
-"TOOLS will snap to the horizontal grid, but not the vertical grid.",
-"Undo previous changes to the editor."
-]
-},
-{
 "file": "p062-2.webp",
 "page": 62,
 "chapter": "Modulation: Curve View",
@@ -1349,34 +1113,6 @@
 ]
 },
 {
-"file": "p062-6.webp",
-"page": 62,
-"chapter": "Modulation: Curve View",
-"width": 428,
-"height": 392,
-"captions_on_page": [
-"Save the current CURVE shape as a user preset.",
-"Reset the current CURVE shape.",
-"TOOLS will snap to the horizontal grid, but not the vertical grid.",
-"Undo previous changes to the editor."
-]
-},
-{
-"file": "p063-1.webp",
-"page": 63,
-"chapter": "Modulation: Curve View",
-"width": 172,
-"height": 124,
-"captions_on_page": [
-"OFF: Standard looping CURVE with no retriggering.",
-"BLUE: Incoming MIDI notes retrigger the looping CURVE.",
-"ORANGE: Incoming MIDI notes retrigger the CURVE as a one-shot envelope.",
-"Generate a random CURVE shape.",
-"Use the MOUSE TOOL to manipulate the CURVE in various ways.",
-"Control-shift-click (Windows) on a line and drag it."
-]
-},
-{
 "file": "p064-1.webp",
 "page": 64,
 "chapter": "Modulation: Curve View",
@@ -1407,22 +1143,6 @@
 "width": 1400,
 "height": 385,
 "captions_on_page": []
-},
-{
-"file": "p065-1.webp",
-"page": 65,
-"chapter": "Routing MIDI to Rift",
-"width": 148,
-"height": 160,
-"captions_on_page": [
-"MIDI note in semitones.",
-"OFF: Standard looping LFO with no retriggering.",
-"PURPLE: Incoming MIDI notes retrigger the looping LFO.",
-"ORANGE: Incoming MIDI notes retrigger the LFO as a one-shot envelope.",
-"OFF: Standard looping CURVE with no retriggering.",
-"BLUE: Incoming MIDI notes retrigger the looping CURVE.",
-"ORANGE: Incoming MIDI notes retrigger the CURVE as a one-shot envelope."
-]
 },
 {
 "file": "p066-1.webp",

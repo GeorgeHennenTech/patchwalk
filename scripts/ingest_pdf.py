@@ -11,18 +11,25 @@ Writes library/<book-id>.json            { id, title, pages: [{ page, chapter, t
 Parts are read in the order given and their pages numbered straight through, so a manual split into
 100-page files keeps its own page numbers. Text is taken in reading order (plain pdftotext, not -layout).
 The chapter of a page is read from its running header ("<Chapter title> <page number>"). Masks, tiny
-pictures and exact repeats are dropped. Some manuals instead print "<RUNNING TITLE> | <page>" with the chapter
+pictures, blank shapes (drop shadows, empty boxes) and exact repeats are dropped. Some manuals instead print "<RUNNING TITLE> | <page>" with the chapter
 and section as letter-spaced lines around it ("P L AY V I E W"): give --running and the real headings with
 --headings, and the chapter becomes "Play View: Distortion". Rule lines and tab runs are removed. Needs poppler-utils (pdftotext, pdfimages, pdfinfo) and Pillow.
 Same privacy rules as the rest of library/: private repository only.
 """
 import hashlib, io, json, os, re, subprocess, sys, tempfile
-from PIL import Image
+from PIL import Image, ImageFilter
 
 MIN_W, MIN_H, MIN_AREA, MAX_SIDE = 140, 60, 20000, 1400
 
 def run(*cmd):
     return subprocess.run(cmd, check=True, capture_output=True).stdout
+
+def is_blank(im):
+    """True for pictures with nothing in them: plain rectangles and the soft blobs PDFs use as drop shadows."""
+    small = im.convert("L"); small.thumbnail((400, 400))
+    edges = small.filter(ImageFilter.FIND_EDGES); w, h = edges.size
+    hist = edges.crop((2, 2, w - 2, h - 2)).histogram()
+    return sum(hist[40:]) / max(1, sum(hist)) < 0.004
 
 def main():
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
@@ -98,7 +105,7 @@ def main():
                 except Exception as e:
                     print("unreadable picture skipped:", name, e, file=sys.stderr); continue
                 w, h = im.size
-                if w < MIN_W or h < MIN_H or w * h < MIN_AREA:
+                if w < MIN_W or h < MIN_H or w * h < MIN_AREA or is_blank(im):
                     continue
                 if im.mode not in ("RGB", "RGBA"):
                     im = im.convert("RGB")

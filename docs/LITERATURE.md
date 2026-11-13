@@ -8,8 +8,8 @@ maker or author gives away; copies from piracy sites are not taken in.
 | Text | Notes |
 |---|---|
 | Serum 2 User Guide (Xfer) | 343 pages of text, 413 pictures |
-| Ableton Live 11 Reference Manual | 814 pages of text, 743 pictures |
-| Rift manual (Minimal Audio) | 64 pages of text, 137 pictures. For the Rift lessons and distortion |
+| Ableton Live 11 Reference Manual | 814 pages of text, 738 pictures |
+| Rift manual (Minimal Audio) | 64 pages of text, 112 pictures. For the Rift lessons and distortion |
 | This app's 32 knowledge cards | Drafts written for the app |
 
 ## Listed by the owner; files not received yet

@@ -4,6 +4,9 @@ import { relatedLessons } from "../course/related";
 import { askGuide, type AskOutcome } from "../guide/ask";
 import { Badge } from "./Badge";
 
+/** The answer is shown as plain text, so any Markdown marks the model slips in are removed. */
+export const plain = (text: string) => text.replace(/\*\*|__|^#{1,6} /gm, "");
+
 /** Lets an answer send the learner to a practice lesson. Provided by the app; absent in tests. */
 export const OpenLesson = createContext<(id: string) => void>(() => {});
 
@@ -18,7 +21,7 @@ export function Answer({ outcome, question }: { outcome: AskOutcome; question?: 
       <p className="answer">
         {a.segments.map((s, j) => (
           <span key={j} className={s.sources.length ? "" : "uncited"} title={s.sources.length ? undefined : "This part was not drawn from a library passage."}>
-            {s.text}{s.sources.map((n) => <sup key={n}>[{n}]</sup>)}
+            {plain(s.text)}{s.sources.map((n) => <sup key={n}>[{n}]</sup>)}
           </span>
         ))}
       </p>

@@ -203,9 +203,21 @@ Added after the first eight milestones (owner asked for all four in one go):
   - **Synth skin (13 Nov 2026).** The synth is a velvet-black instrument in both colour schemes (variables are
     re-scoped on `.synth`): fabric name patches on the module headers with the name on a solid tab, neon-pink
     lines and value rings, dashed stitching. CSS only; no new artwork.
+  - **Skin switch and octave keys (13 Nov 2026).** A "Skin: on/off" button in the synth's "Show:" row puts the
+    class `plain` on `.synth`; the whole skin is one nested block under `.synth:not(.plain)` in `skin.css`, so
+    anything that must work without the skin goes outside that block. Z and X move the computer keyboard down
+    and up an octave (three either way); each held letter remembers the note it started, so nothing sticks.
   - Not built yet: effects, MIDI input, a shared tempo clock, lessons for envelopes and LFOs. Chapter 3
     (envelopes) is next and has no scripts yet; the controls it needs now exist.
   - The old ten Serum-task lessons are now the "Serum tasks" tab.
+- **Pictures and lesson links in answers (13 Nov 2026, owner's rule).** When the guide cites a page that has
+  pictures, the pictures are shown with the answer **every time**: code attaches them (`images` on a passage,
+  read from `library/images/<book>/index.json` in `api/ask.ts`; pictures under 300 by 120 are treated as icons
+  and left out; at most three per cited page, largest first), the model does not choose. They are served by
+  `api/image.ts`, behind the same password check, by exact file name only; they are still never bundled into
+  the browser build. Under each answer, `src/course/related.ts` (code, not the model) offers up to two practice
+  lessons whose subject matches the question; clicking one opens it. Not yet verified on the live site: that
+  Vercel packages `library/images/**` with the image function (`vercel.json`).
 - **Guide in context** — `src/ui/Answer.tsx` (`AskBox`): an ask box inside each practice lesson (sends lesson,
   step, current synth settings and finished lessons) and at the top of a rebuilt patch (sends only the
   code-written instructions, per rule 5; never the preset). The first line of the context is the retrieval
@@ -229,8 +241,8 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   questions. Patch facts stay strict (rule 5). Concept answers come from a private library of the owner's texts
   via retrieval, with citations. This is retrieval, not model training.
 - **Voice.** The owner asked about generated voiceovers. Today there is only the browser's built-in read-aloud.
-  Options discussed: ElevenLabs (needs the owner's account and key; generate each narration once and store the
-  audio) or Higgsfield's audio tools (untested for narration). Awaiting the owner's choice.
+  **The owner chose Higgsfield (13 Nov 2026).** Not built: test its narration quality on one lesson first, then
+  generate each narration once and store the audio. It spends the owner's Higgsfield credits.
 - **Owner's video walkthroughs (planned, not built).** The owner wants to record short screen-capture
   walkthroughs (e.g. in Ableton) and have the guide pull up the right one when a question matches, such as
   "how do I automate the BPM of my track?". Design agreed in principle: each video gets a small entry (title,

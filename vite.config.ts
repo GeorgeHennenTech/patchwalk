@@ -10,17 +10,18 @@ function devApi(): Plugin {
     configureServer(server) {
       const env = loadEnv("development", process.cwd(), "");
       for (const k of ["ANTHROPIC_API_KEY", "APP_PASSWORD"]) if (env[k] && !process.env[k]) process.env[k] = env[k];
-      for (const route of ["lesson", "ask"]) server.middlewares.use(`/api/${route}`, async (req: IncomingMessage, res) => {
+      for (const route of ["lesson", "ask", "image"]) server.middlewares.use(`/api/${route}`, async (req: IncomingMessage, res) => {
         try {
           const chunks: Buffer[] = [];
           for await (const c of req) chunks.push(c as Buffer);
           const mod = await server.ssrLoadModule(`/api/${route}.ts`);
           const handler = (mod as Record<string, (r: Request) => Promise<Response>>)[req.method ?? "GET"];
           if (!handler) { res.statusCode = 405; res.end(); return; }
-          const out = await handler(new Request(`http://localhost/api/${route}`, { method: req.method, body: Buffer.concat(chunks), headers: { "content-type": "application/json", ...(req.headers.authorization ? { authorization: req.headers.authorization } : {}) } }));
+          const isGet = req.method === "GET" || req.method === "HEAD";
+          const out = await handler(new Request(`http://localhost${(req as IncomingMessage & { originalUrl?: string }).originalUrl ?? `/api/${route}`}`, { method: req.method, ...(isGet ? {} : { body: Buffer.concat(chunks) }), headers: { "content-type": "application/json", ...(req.headers.authorization ? { authorization: req.headers.authorization } : {}) } }));
           res.statusCode = out.status;
-          res.setHeader("content-type", "application/json");
-          res.end(await out.text());
+          res.setHeader("content-type", out.headers.get("content-type") ?? "application/json");
+          res.end(Buffer.from(await out.arrayBuffer()));
         } catch (e) {
           console.error(e);
           res.statusCode = 500;

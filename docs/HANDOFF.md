@@ -243,23 +243,44 @@ Smaller items to pick up when convenient:
 
 ---
 
+## 8b. The to-do list
+`docs/TODO.md` is the working list, with tick boxes; keep it current as things are finished or added. In a
+session where the "patchwalk-todo" mod is loaded, a pane beside the chat shows it (`/todo`). The mod lives in
+the session's container, not the repo, and has to be rebuilt in a new one if the owner wants the pane again.
+
 ## 9. Waiting on the owner
 
 Ask about these only when relevant; do not block on them.
 
 1. **Listening feedback** on the Lessons tab: are tones clean and at a sensible volume, does the step format
    feel right, are the match-by-ear rounds too easy or too hard?
-2. **Voice for the guide:** ElevenLabs (their account and key; generate each narration once and store it),
-   Higgsfield's audio tools (untested for narration), or stay with the browser's read-aloud for now.
-3. **More books for the library**, as EPUB or text-based PDF. They said they are looking for literature.
-4. **Two genre questions:** are Goa trance, Zenonesque, forest psytrance, Suomisaundi and psybreaks still in
-   (they later said "the rest of psytrance can go")? And progressive, tech and uplifting trance were assumed out.
+2. **Voice for the guide: answered, Higgsfield.** Not built yet. Test quality on one lesson before generating many.
+3. **More books for the library.** The owner is gathering them and is starting with the Ableton Live manual,
+   uploaded in 100-page sections. Extract text and pictures together (procedure in `CLAUDE.md`, "Library
+   images"), and merge the sections into one book with the manual's own page numbers. Suggestions given to the
+   owner are listed at the end of this section.
+4. **Genres: answered.** The heady psychedelic genres stay; see `docs/GENRES.md`. The owner's reason for the
+   whole project is Dave Tipper, which should steer what is taught first.
 5. **Review** of the knowledge cards and scripted lessons.
-6. **Probe presets** from `docs/PROBES.md`.
-7. **The cut-off end of the Syntorial list**, if there were more titles.
-8. **Sharing with a friend:** the owner asked how to share the site. They were told they can give out the
-   address and password, with the costs of doing so, and offered a separate guest password with the paid and
-   manual-backed features switched off. No answer yet; do not build it unasked.
+6. **Probe presets** from `docs/PROBES.md`. The owner did not know what was wanted; it was explained on
+   13 Nov 2026 as: start from Init, change one thing, save, and tell the assistant what Serum shows on screen.
+7. The Syntorial list was complete; nothing was cut off.
+8. Sharing with a friend: closed. Do not build a guest password.
+9. Serum's look: the owner confirmed that copying the arrangement only is right. Lessons on the matrix tab and
+   Serum's other specialist features come later; do not add them now.
+10. **Video walkthroughs: much later.** The owner asked whether the assistant could record Ableton tutorials
+   itself. Researched 13 Nov 2026 (one web search each, not verified against the projects' own pages): several
+   community "Ableton MCP" servers let an assistant drive Live (tracks, clips, devices, transport), and several
+   OBS MCP servers can start and stop screen recording through OBS's built-in WebSocket server. Both run on the
+   owner's computer, so they need a session on that computer (Claude Code or the desktop app), not this cloud
+   one. Nothing suitable is in Claude's own connector directory. Not set up; revisit when videos are wanted.
+
+**Books suggested to the owner (13 Nov 2026), for them to source legally:** Ableton's *Making Music* (Dennis
+DeSantis); Welsh's *Synthesizer Cookbook*; Russ, *Sound Synthesis and Sampling*; Roads, *The Computer Music
+Tutorial* and *Microsound*; Farnell, *Designing Sound*; Everest and Pohlmann, *Master Handbook of Acoustics*;
+Moore, *An Introduction to the Psychology of Hearing*; Senior, *Mixing Secrets for the Small Studio*; Izhaki,
+*Mixing Audio*; Katz, *Mastering Audio*; the Sound On Sound "Synth Secrets" series; and the manuals of the tools
+they own. Not yet supplied.
 
 ---
 

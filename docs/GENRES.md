@@ -46,6 +46,8 @@ trance; all hard and fast styles; dark ambient, musique concrete, acousmatic, pl
 EBM, witch house, kosmische, generative ambient; synthwave, vaporwave, chillwave, lo-fi hip-hop, chiptune,
 synth-pop, Italo disco, electroclash. Also future garage, from the first list.
 
-**To confirm with the owner:** "the rest of psytrance can go" was said about the second list. Goa trance,
-Zenonesque, forest psytrance, Suomisaundi and psybreaks were selected from the first list and are still in
-until the owner says otherwise.
+**Settled with the owner (13 Nov 2026):** Goa trance, Zenonesque, forest psytrance, Suomisaundi and psybreaks
+stay in. The owner's test for a psychedelic genre is whether it is "heady"; when in doubt, keep the heady ones.
+Progressive, tech and uplifting trance stay out. **The owner's reason for the whole project is Dave Tipper:**
+his kind of sound design (glitch-hop, psychedelic bass, intricate texture and movement) is the north star when
+choosing what to teach first and which examples to use. Never claim to know how he made a specific sound.

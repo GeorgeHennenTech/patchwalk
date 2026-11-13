@@ -151,16 +151,19 @@ export function Control({ id, synth, spot, only }: { id: keyof SynthState; synth
 }
 
 const WHITE = [0, 2, 4, 5, 7, 9, 11];
-const LABEL = Object.fromEntries(Object.entries(KEY_MAP).map(([k, n]) => [n, k.toUpperCase()]));
 
 export function Keyboard({ synth, from = 48, octaves = 3 }: { synth: Synth; from?: number; octaves?: number }) {
   const pressed = useRef<number | null>(null);
   const notes = Array.from({ length: octaves * 12 + 1 }, (_, i) => from + i);
+  // The letters printed on the keys follow the octave chosen with Z and X.
+  const LABEL = Object.fromEntries(Object.entries(KEY_MAP).map(([k, n]) => [n + 12 * synth.keyOctave, k.toUpperCase()]));
+  const shown = LABEL[from] !== undefined || Object.keys(LABEL).some((n) => notes.includes(Number(n)));
   const whites = notes.filter((n) => WHITE.includes(n % 12));
   const release = () => { if (pressed.current !== null) { synth.noteOff(pressed.current); pressed.current = null; } };
   useEffect(() => { window.addEventListener("pointerup", release); return () => window.removeEventListener("pointerup", release); });
   const press = (n: number) => { release(); pressed.current = n; synth.noteOn(n, "mouse"); };
   return (
+    <div className="keys-wrap">
     <div className={`keys${synth.running ? "" : " off"}`} role="group" aria-label="Keyboard">
       {whites.map((n, i) => {
         const black = notes.includes(n + 1) && !WHITE.includes((n + 1) % 12) ? n + 1 : null;
@@ -173,6 +176,8 @@ export function Keyboard({ synth, from = 48, octaves = 3 }: { synth: Synth; from
           </div>
         );
       })}
+    </div>
+    <p className="keys-hint" role="status">Computer keys: <kbd>Z</kbd> octave down, <kbd>X</kbd> octave up.{synth.keyOctave !== 0 && ` Now ${synth.keyOctave > 0 ? "+" : ""}${synth.keyOctave} octave${Math.abs(synth.keyOctave) === 1 ? "" : "s"}${shown ? "" : " (beyond the keys drawn here)"}.`}</p>
     </div>
   );
 }

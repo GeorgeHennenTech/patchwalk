@@ -14,6 +14,7 @@ import { JsonView } from "./ui/JsonView";
 import { LearnView } from "./ui/LearnView";
 import { LessonView } from "./ui/LessonView";
 import { ModulesView } from "./ui/ModulesView";
+import { OpenLesson } from "./ui/Answer";
 import { PlayView } from "./ui/PlayView";
 import { SelfTest } from "./ui/SelfTest";
 
@@ -67,6 +68,9 @@ export function App() {
   const [state, setState] = useState<State>({ kind: "empty" });
   const [mode, setMode] = useState<"rebuild" | "play" | "learn" | "ask" | "check">("rebuild");
   const [tab, setTab] = useState<TabId>("lesson");
+  // A lesson the guide has pointed to. The counter makes a second click on the same lesson count.
+  const [wanted, setWanted] = useState<{ id: string; n: number }>();
+  const openLesson = (id: string) => { setWanted((w) => ({ id, n: (w?.n ?? 0) + 1 })); setMode("play"); window.scrollTo({ top: 0 }); };
   const [filter, setFilter] = useState("");
   const [attempt, setAttempt] = useState<{ loaded?: Loaded; name?: string; error?: string }>({});
 
@@ -94,6 +98,7 @@ export function App() {
   }, [state, filter]);
 
   return (
+    <OpenLesson.Provider value={openLesson}>
     <main>
       <header className="top">
         <h1>Patchwalk</h1>
@@ -109,7 +114,7 @@ export function App() {
 
       {mode === "play" && (
         <section className="panel">
-          <PlayView cards={CARDS} />
+          <PlayView cards={CARDS} wanted={wanted} />
         </section>
       )}
 
@@ -176,5 +181,6 @@ export function App() {
         </>
       )}
     </main>
+    </OpenLesson.Provider>
   );
 }

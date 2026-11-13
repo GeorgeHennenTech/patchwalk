@@ -1,8 +1,15 @@
-import { useState } from "react";
+import { createContext, useContext, useState } from "react";
+import { LESSONS, placeOf } from "../course/lessons";
+import { relatedLessons } from "../course/related";
 import { askGuide, type AskOutcome } from "../guide/ask";
 import { Badge } from "./Badge";
 
-export function Answer({ outcome }: { outcome: AskOutcome }) {
+/** Lets an answer send the learner to a practice lesson. Provided by the app; absent in tests. */
+export const OpenLesson = createContext<(id: string) => void>(() => {});
+
+export function Answer({ outcome, question }: { outcome: AskOutcome; question?: string }) {
+  const open = useContext(OpenLesson);
+  const lessons = question ? relatedLessons(question, LESSONS) : [];
   if (outcome.kind === "unavailable") return <p className="banner">{outcome.message}</p>;
   const a = outcome.answer;
   if (!a.covered) return <p><Badge kind="unknown">not in the library</Badge> The library does not cover this yet, so the guide will not guess. Adding a text on the subject would let it answer.</p>;
@@ -20,9 +27,23 @@ export function Answer({ outcome }: { outcome: AskOutcome }) {
         {a.sources.map((s) => (
           <li key={s.n}><strong>{s.source}</strong>{s.page ? `, page ${s.page}` : ""} · {s.section}
             {s.quotes.slice(0, 2).map((q) => <blockquote key={q}>{q.length > 260 ? q.slice(0, 260) + "…" : q}</blockquote>)}
+            {/* Every cited page that has pictures shows them: code decides this, not the model. */}
+            {s.images?.map((im) => (
+              <figure key={im.file} className="source-image">
+                <a href={`/api/image?book=${im.book}&file=${im.file}`} target="_blank" rel="noreferrer">
+                  <img src={`/api/image?book=${im.book}&file=${im.file}`} width={im.width} height={im.height} loading="lazy" alt={`Picture from ${s.source}${s.page ? `, page ${s.page}` : ""}`} />
+                </a>
+                <figcaption>From {s.source}{s.page ? `, page ${s.page}` : ""}. Click to enlarge.</figcaption>
+              </figure>
+            ))}
           </li>
         ))}
       </ol>
+      {lessons.length > 0 && (
+        <p className="related"><strong>Practise this:</strong>{" "}
+          {lessons.map((l, i) => <span key={l.id}>{i > 0 && " or "}<button className="link" onClick={() => open(l.id)}>{l.title}</button> <span className="muted">({placeOf(l).chapter}, lesson {placeOf(l).number})</span></span>)}
+        </p>
+      )}
     </>
   );
 }
@@ -45,7 +66,7 @@ export function AskBox({ context, placeholder }: { context: string; placeholder:
         <input value={q} onChange={(e) => setQ(e.target.value)} maxLength={600} placeholder={placeholder} aria-label="Ask the guide" />
         <button className="primary" disabled={busy || q.trim().length < 3}>{busy ? "Thinking…" : "Ask the guide"}</button>
       </form>
-      {asked && <div className="askbox-turn"><p className="muted"><strong>You asked:</strong> {asked}</p>{outcome ? <Answer outcome={outcome} /> : <p className="muted">Looking through the library…</p>}</div>}
+      {asked && <div className="askbox-turn"><p className="muted"><strong>You asked:</strong> {asked}</p>{outcome ? <Answer outcome={outcome} question={asked} /> : <p className="muted">Looking through the library…</p>}</div>}
     </div>
   );
 }

@@ -301,73 +301,95 @@ label.mod-head { cursor: pointer; }
 .rack:not(.full) .mod:has(.view.curve) { flex: 1 1 100%; }
 
 /* ---- Synth skin: a velvet-black instrument with fabric name patches and neon stitching ----
-   The synth keeps this look in both light and dark schemes, like a piece of hardware sitting on the quilt. */
-.synth {
-  --panel: #1b0d24; --text: #fbeede; --muted: #cbb5d8; --line: #4d3160; --accent: #ff4fa8; --accent-soft: #3b1438; --thread: #fbeede;
-  color: var(--text); color-scheme: dark;
-  padding: 16px 14px 14px; border-radius: 20px;
-  background: radial-gradient(120% 90% at 20% 0%, #3a1a4d 0%, #1a0b22 55%, #0f0615 100%);
-  border: 3px solid #fbeede; outline: 2px dashed #ff4fa8; outline-offset: -9px;
-  box-shadow: 0 0 0 3px #2a1533, 7px 8px 0 rgba(20, 8, 26, 0.55), inset 0 0 40px rgba(255, 79, 168, 0.12);
+   The synth keeps this look in both light and dark schemes, like a piece of hardware sitting on the quilt.
+   The "Skin" button switches all of this off by putting the class "plain" on the synth. */
+.synth:not(.plain) {
+  & {
+    --panel: #1b0d24; --text: #fbeede; --muted: #cbb5d8; --line: #4d3160; --accent: #ff4fa8; --accent-soft: #3b1438; --thread: #fbeede;
+    color: var(--text); color-scheme: dark;
+    padding: 16px 14px 14px; border-radius: 20px;
+    background: radial-gradient(120% 90% at 20% 0%, #3a1a4d 0%, #1a0b22 55%, #0f0615 100%);
+    border: 3px solid #fbeede; outline: 2px dashed #ff4fa8; outline-offset: -9px;
+    box-shadow: 0 0 0 3px #2a1533, 7px 8px 0 rgba(20, 8, 26, 0.55), inset 0 0 40px rgba(255, 79, 168, 0.12);
+  }
+  .view-toggles button { background: #26122f; border-color: var(--line); }
+  .view-toggles button[aria-pressed="true"] { border-color: var(--accent); color: var(--text); box-shadow: 0 0 8px rgba(255, 79, 168, 0.7); }
+  .synth-main { background: #120818; border-color: var(--line); }
+  .ctl { background: #120818; border-color: var(--line); }
+  .ctl.spot { border-color: var(--accent); box-shadow: 0 0 10px rgba(255, 79, 168, 0.75); }
+  .view canvas { background: #0c0510; border-color: var(--line); }
+  .view figcaption { color: var(--muted); }
+
+  .mod { background: linear-gradient(#24112e, #180b20); border: 2px solid #5a3a6e; border-radius: 14px; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 3px 0 rgba(0, 0, 0, 0.45); }
+  /* name patches: fabric behind, the name on a solid tab so it stays readable */
+  .mod-head { background: #2a1533 center / 220px; padding: 6px 8px; border-bottom: 2px dashed rgba(251, 238, 222, 0.55); color: #fbeede; }
+  .mod-head span { background: #1b0d24; padding: 2px 9px; border-radius: 999px; border: 1.5px solid #fbeede; }
+  .mod-head em { background: #1b0d24; padding: 1px 7px; border-radius: 999px; }
+  .mod-sub .mod-head { background-image: url("./assets/skin/leopard.webp"); }
+  .mod-a .mod-head { background-image: url("./assets/skin/tiger.webp"); }
+  .mod-b .mod-head { background-image: url("./assets/skin/shag.webp"); }
+  .mod-noise .mod-head { background-image: url("./assets/skin/mohair.webp"); }
+  .mod-filter .mod-head { background-image: url("./assets/skin/leopard.webp"); background-size: 300px; background-position: 40% 70%; }
+  .mod-head.spot { box-shadow: inset 0 -4px 0 var(--accent), 0 0 12px rgba(255, 79, 168, 0.8); }
+  .mod-wave { background: #0c0510; box-shadow: inset 0 0 0 1px var(--line), inset 0 0 18px rgba(0, 0, 0, 0.8); }
+  .mod-wave path { stroke: var(--accent); filter: drop-shadow(0 0 3px var(--accent)); }
+  .view.curve.compact canvas { background: #0c0510; }
+
+  /* envelopes and LFOs: each panel lit in its own neon */
+  .rack.mods { margin-top: 0; }
+  .rack.mods .mod { flex: 1 1 190px; }
+  .mod.neon { border-color: var(--glow); box-shadow: 0 0 10px -2px var(--glow), inset 0 0 14px -8px var(--glow); }
+  .mod.neon .mod-head { background: #120818; border-bottom-color: var(--glow); }
+  .mod.neon .mod-head span { border-color: var(--glow); color: var(--glow); text-shadow: 0 0 6px var(--glow); }
+  .mod.neon .mod-wave path { stroke: var(--glow); filter: drop-shadow(0 0 3px var(--glow)); }
+  .mod.neon .knob-value { stroke: var(--glow); filter: drop-shadow(0 0 2px var(--glow)); }
+  .mod.neon.idle { box-shadow: none; border-color: color-mix(in srgb, var(--glow) 45%, #2a1533); }
+  .mod.neon.idle .mod-wave path { opacity: 0.55; }
+
+  /* knobs: a dark cap, a neon value ring, and one more glowing ring for each envelope or LFO moving it */
+  .knob-track { stroke: #3d2550; }
+  .knob-value { stroke: var(--accent); filter: drop-shadow(0 0 2px var(--accent)); }
+  .knob-cap { fill: #0c0510; stroke: #fbeede; stroke-width: 1.5; }
+  .knob-mark { stroke: #fbeede; }
+  .knob-ring { fill: none; stroke-width: 3; stroke-linecap: round; }
+  .knob svg { overflow: visible; }
+  .knob.moved .knob-cap { stroke: var(--glow); filter: drop-shadow(0 0 4px var(--glow)); }
+  .knob.moved .knob-name { color: var(--glow); text-shadow: 0 0 6px var(--glow); }
+  .knob:hover .knob-cap, .knob:focus-visible .knob-cap { fill: #3b1438; }
+  .knob:focus-visible, .nbox:focus-visible { background: rgba(255, 79, 168, 0.16); border-color: var(--accent); }
+  .knob.spot, .nbox.spot, .pick.spot { background: #120818; border-color: var(--accent); box-shadow: 0 0 12px rgba(255, 79, 168, 0.8); }
+  .nbox { background: #0c0510; border-color: var(--line); }
+  .nbox output { color: var(--accent); text-shadow: 0 0 5px rgba(255, 79, 168, 0.7); }
+  .seg { border-color: var(--line); background: #0c0510; }
+  .seg button { color: var(--muted); }
+  .seg button + button { border-left-color: var(--line); }
+  .seg button.on { background: var(--accent); color: #1b0d24; box-shadow: 0 0 10px rgba(255, 79, 168, 0.8); }
+  .mod.neon .seg button.on { background: var(--glow); box-shadow: 0 0 10px var(--glow); }
+  .pick.menu { flex-wrap: nowrap; }
+  .pick select { flex: 1; min-width: 0; padding: 4px 6px; border-radius: 8px; border: 2px solid var(--line); background: #0c0510; color: var(--text); font: inherit; font-size: 13px; }
+  .mod.neon .pick select { border-color: var(--glow); }
+  .pick select:focus-visible { outline: 2px solid var(--accent); }
 }
-.synth .view-toggles button { background: #26122f; border-color: var(--line); }
-.synth .view-toggles button[aria-pressed="true"] { border-color: var(--accent); color: var(--text); box-shadow: 0 0 8px rgba(255, 79, 168, 0.7); }
-.synth-main { background: #120818; border-color: var(--line); }
-.synth .ctl { background: #120818; border-color: var(--line); }
-.synth .ctl.spot { border-color: var(--accent); box-shadow: 0 0 10px rgba(255, 79, 168, 0.75); }
-.synth .view canvas { background: #0c0510; border-color: var(--line); }
-.synth .view figcaption { color: var(--muted); }
 
-.mod { background: linear-gradient(#24112e, #180b20); border: 2px solid #5a3a6e; border-radius: 14px; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 3px 0 rgba(0, 0, 0, 0.45); }
-/* name patches: fabric behind, the name on a solid tab so it stays readable */
-.mod-head { background: #2a1533 center / 220px; padding: 6px 8px; border-bottom: 2px dashed rgba(251, 238, 222, 0.55); color: #fbeede; }
-.mod-head span { background: #1b0d24; padding: 2px 9px; border-radius: 999px; border: 1.5px solid #fbeede; }
-.mod-head em { background: #1b0d24; padding: 1px 7px; border-radius: 999px; }
-.mod-sub .mod-head { background-image: url("./assets/skin/leopard.webp"); }
-.mod-a .mod-head { background-image: url("./assets/skin/tiger.webp"); }
-.mod-b .mod-head { background-image: url("./assets/skin/shag.webp"); }
-.mod-noise .mod-head { background-image: url("./assets/skin/mohair.webp"); }
-.mod-filter .mod-head { background-image: url("./assets/skin/leopard.webp"); background-size: 300px; background-position: 40% 70%; }
-.mod-head.spot { box-shadow: inset 0 -4px 0 var(--accent), 0 0 12px rgba(255, 79, 168, 0.8); }
-.mod-wave { background: #0c0510; box-shadow: inset 0 0 0 1px var(--line), inset 0 0 18px rgba(0, 0, 0, 0.8); }
-.mod-wave path { stroke: var(--accent); filter: drop-shadow(0 0 3px var(--accent)); }
-.view.curve.compact canvas { background: #0c0510; }
-
-/* envelopes and LFOs: each panel lit in its own neon */
-.rack.mods { margin-top: 0; }
-.rack.mods .mod { flex: 1 1 190px; }
-.mod.neon { border-color: var(--glow); box-shadow: 0 0 10px -2px var(--glow), inset 0 0 14px -8px var(--glow); }
-.mod.neon .mod-head { background: #120818; border-bottom-color: var(--glow); }
-.mod.neon .mod-head span { border-color: var(--glow); color: var(--glow); text-shadow: 0 0 6px var(--glow); }
-.mod.neon .mod-wave path { stroke: var(--glow); filter: drop-shadow(0 0 3px var(--glow)); }
-.mod.neon .knob-value { stroke: var(--glow); filter: drop-shadow(0 0 2px var(--glow)); }
-.mod.neon.idle { box-shadow: none; border-color: color-mix(in srgb, var(--glow) 45%, #2a1533); }
-.mod.neon.idle .mod-wave path { opacity: 0.55; }
-
-/* knobs: a dark cap, a neon value ring, and one more glowing ring for each envelope or LFO moving it */
-.knob-track { stroke: #3d2550; }
-.knob-value { stroke: var(--accent); filter: drop-shadow(0 0 2px var(--accent)); }
-.knob-cap { fill: #0c0510; stroke: #fbeede; stroke-width: 1.5; }
-.knob-mark { stroke: #fbeede; }
-.knob-ring { fill: none; stroke-width: 3; stroke-linecap: round; }
-.knob svg { overflow: visible; }
-.knob.moved .knob-cap { stroke: var(--glow); filter: drop-shadow(0 0 4px var(--glow)); }
-.knob.moved .knob-name { color: var(--glow); text-shadow: 0 0 6px var(--glow); }
-.knob:hover .knob-cap, .knob:focus-visible .knob-cap { fill: #3b1438; }
-.knob:focus-visible, .nbox:focus-visible { background: rgba(255, 79, 168, 0.16); border-color: var(--accent); }
-.knob.spot, .nbox.spot, .pick.spot { background: #120818; border-color: var(--accent); box-shadow: 0 0 12px rgba(255, 79, 168, 0.8); }
-.nbox { background: #0c0510; border-color: var(--line); }
-.nbox output { color: var(--accent); text-shadow: 0 0 5px rgba(255, 79, 168, 0.7); }
-.synth .seg { border-color: var(--line); background: #0c0510; }
-.synth .seg button { color: var(--muted); }
-.synth .seg button + button { border-left-color: var(--line); }
-.synth .seg button.on { background: var(--accent); color: #1b0d24; box-shadow: 0 0 10px rgba(255, 79, 168, 0.8); }
-.mod.neon .seg button.on { background: var(--glow); box-shadow: 0 0 10px var(--glow); }
-.pick.menu { flex-wrap: nowrap; }
-.pick select { flex: 1; min-width: 0; padding: 4px 6px; border-radius: 8px; border: 2px solid var(--line); background: #0c0510; color: var(--text); font: inherit; font-size: 13px; }
-.mod.neon .pick select { border-color: var(--glow); }
-.pick select:focus-visible { outline: 2px solid var(--accent); }
 .mod-head { gap: 5px; padding: 6px; }
 .mod-head em { font-size: 10px; padding: 1px 5px; }
 .rack.full .mod-sub, .rack.full .mod-noise { flex-basis: 112px; }
 .stage-box > .link { display: inline-block; margin-top: 12px; }
+
+/* Needed with or without the skin */
+.knob-ring { fill: none; stroke-width: 3; stroke-linecap: round; }
+.knob svg { overflow: visible; }
+.pick.menu { flex-wrap: nowrap; }
+.pick select { flex: 1; min-width: 0; padding: 4px 6px; border-radius: 8px; border: 2px solid var(--line); background: var(--panel); color: var(--text); font: inherit; font-size: 13px; }
+.rack.mods .mod { flex: 1 1 190px; }
+.synth.plain .mod.neon .mod-head span { text-decoration: underline; text-decoration-color: var(--glow); text-decoration-thickness: 3px; text-underline-offset: 3px; }
+.view-toggles .skin-toggle { margin-left: 8px; border-style: dashed; }
+.keys-wrap { display: flex; flex-direction: column; gap: 4px; }
+.keys-hint { margin: 0; font-size: 12px; color: var(--muted); }
+.keys-hint kbd { font: inherit; font-weight: 700; padding: 0 5px; border: 1.5px solid var(--line); border-radius: 5px; }
+
+/* The guide's answers: pictures from cited pages, and a link to the lesson that covers the topic */
+.source-image { margin: 8px 0 4px; }
+.source-image img { display: block; max-width: 100%; height: auto; max-height: 360px; width: auto; border: 2px solid var(--thread); border-radius: 10px; background: #fff; }
+.source-image figcaption { font-size: 12px; color: var(--muted); margin-top: 3px; }
+.related { margin: 10px 0 0; padding: 8px 12px; border: 2px dashed var(--accent); border-radius: 10px; background: var(--accent-soft); }

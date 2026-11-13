@@ -522,3 +522,25 @@ describe("envelopes and LFOs", () => {
     expect(new Set(sq).size).toBe(2);
   });
 });
+
+import { relatedLessons } from "../src/course/related";
+import { shiftOctave, KEY_OCTAVES } from "../src/synth/useSynth";
+
+describe("the guide points to lessons, and the keyboard shifts octaves", () => {
+  it("a question about a topic finds the lesson that teaches it", () => {
+    const ids = (q: string) => relatedLessons(q, LESSONS).map((l) => l.id);
+    expect(ids("What does resonance do on the filter?")[0]).toBe("C2.2");
+    expect(ids("how does unison work")[0]).toBe("C1.6");
+    expect(ids("why do detuned oscillators sound like they are moving?")).toContain("C1.5");
+    expect(ids("what is key tracking")[0]).toBe("C2.6");
+    expect(ids("How do I automate the tempo of my track?")).toEqual([]);
+    expect(ids("the of and")).toEqual([]);
+    expect(relatedLessons("filter cutoff resonance slope drive", LESSONS).length).toBeLessThanOrEqual(2);
+  });
+  it("Z and X move the computer keyboard an octave at a time, within limits", () => {
+    expect(shiftOctave(0, 1)).toBe(1);
+    expect(shiftOctave(0, -1)).toBe(-1);
+    expect(shiftOctave(KEY_OCTAVES, 1)).toBe(KEY_OCTAVES);
+    expect(shiftOctave(-KEY_OCTAVES, -1)).toBe(-KEY_OCTAVES);
+  });
+});

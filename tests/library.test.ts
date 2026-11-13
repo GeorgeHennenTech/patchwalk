@@ -133,3 +133,55 @@ describe("library images", () => {
     expect(vercel).not.toMatch(/library\/\*\*|\{library,/);
   });
 });
+
+import { GET as getImage } from "../api/image";
+import { MAX_IMAGES_PER_SOURCE } from "../src/library/answer";
+
+describe("pictures in the guide's answers", () => {
+  const withPictures: Passage[] = [
+    { id: "a#1", source: "Book A", page: 1, section: "Filters", text: "The cutoff knob sets where the low-pass filter starts removing harmonics.",
+      images: [1, 2, 3, 4].map((n) => ({ book: "book-a", file: `p001-${n}.webp`, width: 300 * n, height: 200 })) },
+    { id: "a#2", source: "Book A", page: 2, section: "Envelopes", text: "Attack is the time to reach full level." },
+  ];
+  const citing = (passageIndex: number): GuideModel => async () => [{ text: "An answer.", citations: [{ passageIndex, quote: "words" }] }];
+  const hitsFor = (q: string) => search(buildIndex(withPictures), q, 6).map((h) => ({ ...h, score: 5 }));
+
+  it("a cited page always brings its pictures, largest first and capped; an uncited page brings none", async () => {
+    const a = await answerQuestion({ question: "what does cutoff do" }, hitsFor("cutoff filter attack level"), citing(0));
+    const cited = a.sources.find((s) => s.id === "a#1")!;
+    expect(cited.images!.map((i) => i.file)).toEqual(["p001-4.webp", "p001-3.webp", "p001-2.webp"]);
+    expect(cited.images!.length).toBe(MAX_IMAGES_PER_SOURCE);
+    expect(a.sources.some((s) => s.id === "a#2")).toBe(false);
+  });
+  it("a cited page without pictures has no image list", async () => {
+    const hits = hitsFor("cutoff filter attack level");
+    const i = hits.findIndex((h) => h.passage.id === "a#2");
+    const a = await answerQuestion({ question: "what is attack" }, hits, citing(i));
+    expect(a.sources[0]!.images).toBeUndefined();
+  });
+  it.skipIf(!hasManual)("the real library attaches the manual's screenshots to their pages, and leaves out icons", () => {
+    const lib = loadLibrary(ROOT);
+    const page = lib.passages.find((p) => p.id === "serum-2-user-guide#13")!;
+    expect(page.images!.some((i) => i.file === "p013-1.webp")).toBe(true);
+    for (const p of lib.passages) for (const im of p.images ?? []) { expect(im.book).toBe("serum-2-user-guide"); expect(im.width).toBeGreaterThanOrEqual(300); }
+  });
+  it("pictures are served only with the password, only by exact name, and never from outside the library", async () => {
+    process.env.VERCEL = "1"; process.env.APP_PASSWORD = "pw";
+    const ask = (query: string, auth?: string) => getImage(new Request(`http://x/api/image?${query}`, { headers: auth ? { authorization: auth } : {} }));
+    const ok = `Basic ${Buffer.from("me:pw").toString("base64")}`;
+    expect((await ask("book=serum-2-user-guide&file=p013-1.webp")).status).toBe(401);
+    expect((await ask("book=serum-2-user-guide&file=p013-1.webp", `Basic ${Buffer.from("me:no").toString("base64")}`)).status).toBe(401);
+    for (const bad of ["book=..&file=p013-1.webp", "book=serum-2-user-guide&file=../../package.json", "book=serum-2-user-guide&file=index.json", "book=a/b&file=p001-1.webp", "file=p001-1.webp"]) expect((await ask(bad, ok)).status, bad).toBe(400);
+    expect((await ask("book=no-such-book&file=p001-1.webp", ok)).status).toBe(404);
+    delete process.env.APP_PASSWORD;
+    expect((await ask("book=serum-2-user-guide&file=p013-1.webp", ok)).status).toBe(503);
+    if (hasManual) {
+      process.env.APP_PASSWORD = "pw";
+      const res = await ask("book=serum-2-user-guide&file=p013-1.webp", ok);
+      expect(res.status).toBe(200);
+      expect(res.headers.get("content-type")).toBe("image/webp");
+      expect(res.headers.get("cache-control")).toContain("private");
+      expect((await res.arrayBuffer()).byteLength).toBeGreaterThan(1000);
+    }
+  });
+});

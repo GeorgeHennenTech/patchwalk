@@ -2,7 +2,7 @@
 // tested offline. The model is told to answer only from the passages; every sentence it writes carries the
 // passages it was drawn from, and text with no source is flagged for the reader.
 import { z } from "zod";
-import type { Hit, Passage } from "./search.js";
+import type { Hit, Passage, PassageImage } from "./search.js";
 
 export const AskRequestSchema = z.object({
   question: z.string().trim().min(3).max(600),
@@ -24,7 +24,11 @@ export interface AnswerSource {
   page?: number;
   /** The exact words the answer relied on. */
   quotes: string[];
+  /** Pictures from the cited page. Chosen by code: every cited page that has pictures brings them along. */
+  images?: PassageImage[];
 }
+/** At most this many pictures per cited page, largest first, so one busy page cannot flood an answer. */
+export const MAX_IMAGES_PER_SOURCE = 3;
 export interface AskResponse {
   /** False when the library had nothing relevant, or the guide said it could not answer from it. */
   covered: boolean;
@@ -74,7 +78,7 @@ export async function answerQuestion(req: AskRequest, hits: Hit[], model: GuideM
       if (!p) continue; // a citation that points outside what was supplied is dropped, not trusted
       let src = numbers.get(c.passageIndex);
       if (!src) {
-        src = { n: numbers.size + 1, id: p.id, source: p.source, section: p.section, page: p.page, quotes: [] };
+        src = { n: numbers.size + 1, id: p.id, source: p.source, section: p.section, page: p.page, quotes: [], ...(p.images?.length ? { images: [...p.images].sort((a, b) => b.width * b.height - a.width * a.height).slice(0, MAX_IMAGES_PER_SOURCE) } : {}) };
         numbers.set(c.passageIndex, src);
       }
       const quote = c.quote.replace(/\s+/g, " ").trim();

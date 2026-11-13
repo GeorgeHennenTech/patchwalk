@@ -40,7 +40,7 @@ export function AskView() {
         <article key={turns.length - i} className="step turn">
           <h4>{t.question}</h4>
           {!t.outcome && <p className="muted">Looking through the library…</p>}
-          {t.outcome && <Answer outcome={t.outcome} />}
+          {t.outcome && <Answer outcome={t.outcome} question={t.question} />}
         </article>
       ))}
     </section>

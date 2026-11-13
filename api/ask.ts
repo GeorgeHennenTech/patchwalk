@@ -1,12 +1,12 @@
 // "Ask the guide": answers a question from the private library (the Serum 2 User Guide and the knowledge
 // cards) with citations. The library is read from disk on the server and is never sent to the browser in
 // bulk; only the few passages relevant to a question go to the Claude API.
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import Anthropic from "@anthropic-ai/sdk";
 import { gate } from "../src/lesson/auth.js";
 import { answerQuestion, AskRequestSchema, GUIDE_SYSTEM, type GuideModel } from "../src/library/answer.js";
-import { buildIndex, search, type Index, type Passage } from "../src/library/search.js";
+import { buildIndex, search, type Index, type Passage, type PassageImage } from "../src/library/search.js";
 
 const MODEL = "claude-opus-5-5";
 
@@ -22,7 +22,15 @@ export function loadLibrary(root = process.cwd()): Index {
   const dir = join(root, "library");
   for (const file of readdirSync(dir).filter((f) => f.endsWith(".json"))) {
     const doc = JSON.parse(readFileSync(join(dir, file), "utf8")) as { id: string; title: string; pages: { page: number; chapter: string; text: string }[] };
-    for (const p of doc.pages) passages.push({ id: `${doc.id}#${p.page}`, source: doc.title, page: p.page, section: p.chapter, text: p.text });
+    // Pictures extracted from the same book, grouped by page, so a cited page can bring its screenshots.
+    const byPage = new Map<number, PassageImage[]>();
+    const imageIndex = join(dir, "images", doc.id, "index.json");
+    if (existsSync(imageIndex)) {
+      const listed = (JSON.parse(readFileSync(imageIndex, "utf8")) as { images: { file: string; page: number; width: number; height: number }[] }).images;
+      // Small pictures are icons and buttons, not something that explains a topic.
+      for (const im of listed) if (im.width >= 300 && im.height >= 120) byPage.set(im.page, [...(byPage.get(im.page) ?? []), { book: doc.id, file: im.file, width: im.width, height: im.height }]);
+    }
+    for (const p of doc.pages) passages.push({ id: `${doc.id}#${p.page}`, source: doc.title, page: p.page, section: p.chapter, text: p.text, ...(byPage.has(p.page) ? { images: byPage.get(p.page) } : {}) });
   }
   const cards = join(root, "knowledge-cards");
   for (const file of readdirSync(cards).filter((f) => f.endsWith(".md") && !f.startsWith("_"))) {

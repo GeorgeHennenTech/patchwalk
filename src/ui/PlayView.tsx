@@ -33,16 +33,17 @@ const VIEWS: { id: Panel; label: string }[] = [
   { id: "scope", label: "Scope" }, { id: "spectrum", label: "Spectrum" }, { id: "spectrogram", label: "Spectrogram" }, { id: "meter", label: "Level" }, { id: "curve", label: "Filter curve" },
 ];
 const VIEWS_KEY = "patchwalk.play.views";
+const SKIN_KEY = "patchwalk.play.skin";
 function loadViews(): Panel[] {
   try { const v = JSON.parse(localStorage.getItem(VIEWS_KEY) ?? "[]"); return Array.isArray(v) ? VIEWS.map((x) => x.id).filter((id) => v.includes(id)) : []; } catch { return []; }
 }
 
-function SynthPanel({ synth, show, lesson, all, lastNote, extra = [], onExtra }: { synth: Synth; show: Panel[]; lesson: PlayableLesson; all: boolean; lastNote?: number | null; extra?: Panel[]; onExtra?: (p: Panel) => void }) {
+function SynthPanel({ synth, show, lesson, all, lastNote, extra = [], onExtra, plain, onSkin }: { synth: Synth; show: Panel[]; lesson: PlayableLesson; all: boolean; lastNote?: number | null; extra?: Panel[]; onExtra?: (p: Panel) => void; plain?: boolean; onSkin?: () => void }) {
   const on = (p: Panel) => all || show.includes(p) || extra.includes(p);
   const note = synth.held.at(-1) ?? lastNote ?? null;
   const beat = beatHz(synth.state, note ?? 57);
   return (
-    <div className="synth">
+    <div className={`synth${plain ? " plain" : ""}`}>
       <div className="synth-top">
         {!synth.running && onExtra && <button className="primary big" onClick={() => void synth.start()}>Start audio</button>}
         {onExtra && (
@@ -52,6 +53,7 @@ function SynthPanel({ synth, show, lesson, all, lastNote, extra = [], onExtra }:
               const fixed = all || show.includes(v.id);
               return <button key={v.id} aria-pressed={on(v.id)} disabled={fixed} title={fixed ? "This step is using it" : undefined} onClick={() => onExtra(v.id)}>{v.label}</button>;
             })}
+            {onSkin && <button className="skin-toggle" aria-pressed={!plain} onClick={onSkin} title="Switch the synth's velvet-and-neon look on or off">Skin: {plain ? "off" : "on"}</button>}
           </div>
         )}
         {(on("volumeDb") || on("meter")) && (
@@ -105,7 +107,7 @@ function ReadAloud({ text }: { text: string }) {
 }
 
 /** Match-by-ear: a hidden target, your sound on the same key, and feedback that never shows the numbers. */
-function MatchRounds({ rounds, synth, lesson, onPass }: { rounds: MatchRound[]; synth: Synth; lesson: PlayableLesson; onPass: () => void }) {
+function MatchRounds({ rounds, synth, lesson, onPass, plain }: { rounds: MatchRound[]; synth: Synth; lesson: PlayableLesson; onPass: () => void; plain?: boolean }) {
   const [index, setIndex] = useState(0);
   const [verdicts, setVerdicts] = useState<Record<string, MatchVerdict>>();
   const [checks, setChecks] = useState(0);
@@ -140,7 +142,7 @@ function MatchRounds({ rounds, synth, lesson, onPass }: { rounds: MatchRound[]; 
               <button className="primary" onClick={check}>Check</button>
             </div>
           )}
-          <SynthPanel synth={synth} show={round.controls ?? round.match} lesson={lesson} all={false} />
+          <SynthPanel synth={synth} show={round.controls ?? round.match} lesson={lesson} all={false} plain={plain} />
           {verdicts && (
             <ul className="checks" role="status">
               {round.match.map((k) => <li key={k} className={verdicts[k] === "match" ? "ok" : "no"}><span aria-hidden>{verdicts[k] === "match" ? "✓" : "✗"}</span> {PARAMS[k]!.label}: {verdicts[k] === "match" ? "matches" : verdicts[k] === "different" ? "not the same as the target" : `yours is ${verdicts[k]}`}</li>)}
@@ -199,7 +201,7 @@ function EarCheck({ kind, synth, onPass }: { kind: "shape" | "higher"; synth: Sy
   );
 }
 
-export function PlayView({ cards }: { cards: Card[] }) {
+export function PlayView({ cards, wanted }: { cards: Card[]; wanted?: { id: string; n: number } }) {
   const synth = useSynth();
   const [done, setDone] = useState<string[]>(() => loadDone());
   const [lessonId, setLessonId] = useState(() => (suggestNext(LESSONS, loadDone()) ?? LESSONS[0]!).id);
@@ -221,6 +223,10 @@ export function PlayView({ cards }: { cards: Card[] }) {
   const begun = useRef("");
 
   useEffect(() => saveDone(done), [done]);
+  // The guide pointed here from an answer.
+  useEffect(() => { if (wanted && LESSONS.some((l) => l.id === wanted.id)) setLessonId(wanted.id); }, [wanted]);
+  const [plain, setPlain] = useState(() => { try { return localStorage.getItem(SKIN_KEY) === "off"; } catch { return false; } });
+  const toggleSkin = () => setPlain((p) => { try { localStorage.setItem(SKIN_KEY, p ? "on" : "off"); } catch { /* not remembered */ } return !p; });
   // Re-check the current step a few times a second (hold time passes without any event).
   useEffect(() => { const id = setInterval(() => tick((n) => n + 1), 250); return () => clearInterval(id); }, []);
 
@@ -298,7 +304,7 @@ export function PlayView({ cards }: { cards: Card[] }) {
 
         {!inRounds && (
           <div className="stage-box">
-            <SynthPanel synth={synth} show={finishedSteps || !lesson.steps.length ? [] : step.show} lesson={lesson} all={all || finishedSteps} lastNote={snap.lastNote} extra={views} onExtra={toggleView} />
+            <SynthPanel synth={synth} show={finishedSteps || !lesson.steps.length ? [] : step.show} lesson={lesson} all={all || finishedSteps} lastNote={snap.lastNote} extra={views} onExtra={toggleView} plain={plain} onSkin={toggleSkin} />
             <button className="link" onClick={() => setAll(!all)}>{all ? "Show only this step’s controls" : "Show the whole synth"}</button>
           </div>
         )}
@@ -319,7 +325,7 @@ export function PlayView({ cards }: { cards: Card[] }) {
           ))}
         </ol>}
 
-        {finishedSteps && lesson.rounds && <MatchRounds key={`match-${lesson.id}`} rounds={lesson.rounds} synth={synth} lesson={lesson} onPass={() => setRoundsPassed(true)} />}
+        {finishedSteps && lesson.rounds && <MatchRounds key={`match-${lesson.id}`} rounds={lesson.rounds} synth={synth} lesson={lesson} onPass={() => setRoundsPassed(true)} plain={plain} />}
         {finishedSteps && lesson.earCheck && <EarCheck kind={lesson.earCheck} synth={synth} onPass={() => setEarPassed(true)} />}
         {finishedSteps && !inRounds && (
           <section className="card">

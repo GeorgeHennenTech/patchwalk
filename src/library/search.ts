@@ -11,7 +11,10 @@ export interface Passage {
   /** Chapter or card title. */
   section: string;
   text: string;
+  /** Pictures that belong to this passage (a manual page's screenshots). Shown whenever the passage is cited. */
+  images?: PassageImage[];
 }
+export interface PassageImage { book: string; file: string; width: number; height: number }
 
 const STOP = new Set("a an and are as at be by can do does for from how i in is it of on or the this to what when where which why with you your my me".split(" "));
 

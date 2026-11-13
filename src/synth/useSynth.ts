@@ -9,6 +9,10 @@ import { newTrack, snapshot, trackAllReleased, trackFlag, trackNoteOn, trackStat
 /** Computer-keyboard layout: A S D F G H J K are white keys from C, the row above gives the black keys. */
 export const KEY_MAP: Record<string, number> = { a: 60, w: 61, s: 62, e: 63, d: 64, f: 65, t: 66, g: 67, y: 68, h: 69, u: 70, j: 71, k: 72 };
 
+/** How far Z and X can move the computer keyboard, in octaves either way. */
+export const KEY_OCTAVES = 3;
+export const shiftOctave = (now: number, by: 1 | -1) => Math.min(KEY_OCTAVES, Math.max(-KEY_OCTAVES, now + by));
+
 export function useSynth() {
   const engine = useRef<Engine | null>(null);
   const [state, setStateRaw] = useState<SynthState>(INITIAL);
@@ -18,6 +22,10 @@ export function useSynth() {
   const [holdOn, setHoldOn] = useState(false);
   const holdRef = useRef(false);
   const down = useRef(new Set<number>()); // keys physically pressed
+  // Z and X shift the computer keyboard down and up an octave. Each held letter remembers the note it started.
+  const [keyOctave, setKeyOctave] = useState(0);
+  const keyOctaveRef = useRef(0);
+  const letters = useRef(new Map<string, number>());
   const track = useRef<Track>(newTrack(INITIAL));
   const [, bump] = useState(0);
   const refresh = () => bump((n) => n + 1);
@@ -105,13 +113,24 @@ export function useSynth() {
       return el instanceof HTMLInputElement && !["range", "checkbox", "radio", "button"].includes(el.type);
     };
     const onDown = (e: KeyboardEvent) => {
-      const note = KEY_MAP[e.key.toLowerCase()];
-      if (note === undefined || e.repeat || e.metaKey || e.ctrlKey || e.altKey || typing(e)) return;
+      const key = e.key.toLowerCase();
+      if (e.repeat || e.metaKey || e.ctrlKey || e.altKey || typing(e)) return;
+      if (key === "z" || key === "x") {
+        keyOctaveRef.current = shiftOctave(keyOctaveRef.current, key === "x" ? 1 : -1);
+        setKeyOctave(keyOctaveRef.current);
+        return;
+      }
+      const base = KEY_MAP[key];
+      if (base === undefined) return;
+      const note = base + 12 * keyOctaveRef.current;
+      letters.current.set(key, note);
       noteOn(note, "keys");
     };
     const onUp = (e: KeyboardEvent) => {
-      const note = KEY_MAP[e.key.toLowerCase()];
-      if (note !== undefined) noteOff(note);
+      const key = e.key.toLowerCase(), note = letters.current.get(key);
+      if (note === undefined) return;
+      letters.current.delete(key);
+      noteOff(note);
     };
     window.addEventListener("keydown", onDown);
     window.addEventListener("keyup", onUp);
@@ -123,6 +142,6 @@ export function useSynth() {
 
   const snap = (): Snapshot => snapshot(track.current, stateRef.current, { audioRunning: running, held, holdOn, now: now() });
 
-  return { state, setState, running, start, held, holdOn, setHold, noteOn, noteOff, flag, beginStep, reset, snap, engine };
+  return { keyOctave, state, setState, running, start, held, holdOn, setHold, noteOn, noteOff, flag, beginStep, reset, snap, engine };
 }
 export type Synth = ReturnType<typeof useSynth>;

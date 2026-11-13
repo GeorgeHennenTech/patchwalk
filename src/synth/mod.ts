@@ -44,6 +44,8 @@ export const routesTo = (s: SynthState, id: keyof SynthState) => routes(s).filte
 /** At an amount of 100%, cutoff moves this many octaves and pitch this many semitones (each way, for an LFO). */
 export const CUTOFF_OCTAVES = 5;
 export const PITCH_SEMITONES = 12;
+/** "Osc A pitch, wide" moves four octaves at 100%: the range a kick drum or a sub drop falls through. */
+export const WIDE_SEMITONES = 48;
 /** ...and an LFO's rate this many octaves (so it can run from a quarter to four times its set speed). */
 export const RATE_OCTAVES = 2;
 export const isLevel = (dest: ModDest) => dest.endsWith("LevelDb");
@@ -56,6 +58,7 @@ export function modDepth(dest: ModDest, amount: number): number {
   const a = amount / 100;
   if (dest === "cutoff") return a * CUTOFF_OCTAVES * 1200;
   if (dest === "fine" || dest === "bFine") return a * PITCH_SEMITONES * 100;
+  if (dest === "aPitchWide") return a * WIDE_SEMITONES * 100;
   if (dest === "lfo1Rate") return a * RATE_OCTAVES * 1200;
   // half the FM knob's travel, like every ring: the engine turns it into a swing of oscillator A's frequency
   if (dest === "fmAmount") return a * 0.5;

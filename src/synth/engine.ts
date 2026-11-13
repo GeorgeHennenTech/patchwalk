@@ -188,7 +188,7 @@ export class Engine {
   private targets(v: Voice, dest: Route["dest"]): AudioParam[] {
     switch (dest) {
       case "cutoff": return [v.filter.one.detune, v.filter.two.detune];
-      case "fine": return v.a.map((x) => x.osc.detune);
+      case "fine": case "aPitchWide": return v.a.map((x) => x.osc.detune);
       case "bFine": return v.b ? [v.b.osc.detune, v.modB.osc.detune] : [v.modB.osc.detune];
       case "fmAmount": return [v.modB.fm.gain];
       case "aLevelDb": return v.a.map((x) => x.gain.gain);

@@ -11,7 +11,7 @@ export const NOISES = ["white", "pink"] as const;
 const FILTER_TYPES = ["low", "high", "band", "notch"] as const;
 const SLOPES = ["12", "24"] as const;
 /** Settings an envelope or LFO can move. "none" means it is not connected. */
-export const MOD_DESTS = ["none", "cutoff", "fine", "bFine", "aLevelDb", "bLevelDb", "subLevelDb", "noiseLevelDb", "lfo1Rate", "noteLevel", "fmAmount"] as const;
+export const MOD_DESTS = ["none", "cutoff", "fine", "bFine", "aLevelDb", "bLevelDb", "subLevelDb", "noiseLevelDb", "lfo1Rate", "noteLevel", "fmAmount", "aPitchWide"] as const;
 /** Ways of reshaping oscillator A's wave by reading it at an uneven speed. "none" leaves it alone. */
 export const WARPS = ["none", "bend", "mirror", "sync", "pd"] as const;
 export type Warp = (typeof WARPS)[number];
@@ -27,7 +27,7 @@ const SYNCS = ["hz", "beat"] as const;
 const TRIGS = ["retrig", "free"] as const;
 export const BENDS = ["straight", "eased", "sharp"] as const;
 export type Dest = (typeof MOD_DESTS)[number];
-export const DEST_NAMES: Record<Dest, string> = { none: "Nothing", cutoff: "Filter cutoff", fine: "Osc A pitch", bFine: "Osc B pitch", aLevelDb: "Osc A level", bLevelDb: "Osc B level", subLevelDb: "Sub level", noiseLevelDb: "Noise level", lfo1Rate: "LFO 1 rate", noteLevel: "Note level", fmAmount: "FM from B" };
+export const DEST_NAMES: Record<Dest, string> = { none: "Nothing", cutoff: "Filter cutoff", fine: "Osc A pitch", bFine: "Osc B pitch", aLevelDb: "Osc A level", bLevelDb: "Osc B level", subLevelDb: "Sub level", noiseLevelDb: "Noise level", lfo1Rate: "LFO 1 rate", noteLevel: "Note level", fmAmount: "FM from B", aPitchWide: "Osc A pitch, wide" };
 
 export interface SynthState {
   /** Master level in dB. 0 is the loudest the lesson synth goes. */

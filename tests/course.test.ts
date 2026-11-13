@@ -682,7 +682,7 @@ describe("macros", () => {
     expect(MACRO_DESTS[0]).toBe("none");
   });
   it("the macro chapter is listed after Modulation, and every recipe wires what it teaches", () => {
-    expect(CHAPTER_ORDER.map((c) => CHAPTERS[c])).toEqual(["Sound itself", "Oscillators", "Filters", "Envelopes", "LFOs", "Modulation", "Macros", "Reshaping the wave"]);
+    expect(CHAPTER_ORDER.map((c) => CHAPTERS[c])).toEqual(["Sound itself", "Oscillators", "Filters", "Envelopes", "LFOs", "Modulation", "Macros", "Reshaping the wave", "Impacts"]);
     expect(new Set(LESSONS.map((l) => chapterOf(l))).size).toBe(CHAPTER_ORDER.length);
     expect(MACRO_CHAPTER.map((l) => l.id)).toEqual(["C5M.1", "C5M.2", "C5M.3", "C5M.4", "C5M.5", "C5M.6", "C5M.7", "C5M.8", "C5M.C"]);
     for (const l of MACRO_CHAPTER.slice(0, 7)) {
@@ -858,5 +858,31 @@ describe("warp, FM and ring modulation", () => {
     expect(fm.steps[5]!.check(snap({ env2Dest: "cutoff", env2Amount: 70 }, { played: { mouse: 1, keys: 0, midi: 0 } }))).toBe(false);
     expect(ring.steps[1]!.remark!(snap({ ringAmount: 100, bSemitone: 7 }, { lastNote: 69 }))).toContain("1099 Hz");
     expect(CHAPTER_6[0]!.steps[3]!.remark!(snap({ shape: "saw", warp: "mirror", warpAmount: 100 }))).toContain("39%");
+  });
+});
+
+import { IMPACT_CHAPTER } from "../src/course/lessons/impacts";
+import { WIDE_SEMITONES } from "../src/synth/mod";
+describe("impact lessons", () => {
+  const snap = (state: Partial<SynthState>, extra: Partial<Snapshot> = {}) => ({ ...snapshot(newTrack(INITIAL), { ...INITIAL, ...state }, { audioRunning: true, held: [], holdOn: false, now: 0 }), ...extra }) as Snapshot;
+  const played = { played: { mouse: 3, keys: 0, midi: 0 } };
+  it("the wide pitch destination moves four octaves at 100%", () => {
+    expect(WIDE_SEMITONES).toBe(48);
+    expect(modDepth("aPitchWide", 100)).toBe(4800);
+    expect(modDepth("aPitchWide", 25)).toBe(1200);
+    expect(MOD_DESTS).toContain("aPitchWide");
+  });
+  it("the chapter comes last, is named Impacts, and makes no claim about a named artist", () => {
+    expect(IMPACT_CHAPTER.map((l) => l.id)).toEqual(["CT.1", "CT.2", "CT.3", "CT.4", "CT.5", "CT.6", "CT.C"]);
+    expect(placeOf(IMPACT_CHAPTER[1]!)).toEqual({ chapter: "Impacts", number: 2, of: 7 });
+    for (const l of IMPACT_CHAPTER) expect([l.outcome, ...l.idea, ...l.recap, ...l.steps.flatMap((s) => [s.do, s.hear])].join(" ")).not.toMatch(/Tipper|brain/i);
+  });
+  it("a kick needs the envelope on the wide pitch destination, and the remark gives where the pitch starts and lands", () => {
+    const kick = IMPACT_CHAPTER[1]!;
+    expect(kick.steps[1]!.check(snap({ env2Dest: "aPitchWide", env2Amount: 50 }, played))).toBe(true);
+    expect(kick.steps[1]!.check(snap({ env2Dest: "fine", env2Amount: 50 }, played))).toBe(false);
+    expect(kick.steps[1]!.remark!(snap({ ...kick.initial, env2Dest: "aPitchWide", env2Amount: 50 }, { ...played, lastNote: 57 }))).toContain("about 220 Hz, falling to 55 Hz");
+    expect(kick.steps[2]!.check(snap({ env2Dest: "aPitchWide", env2S: 0, env2D: 60, env2Bend: "sharp" }, played))).toBe(true);
+    expect(kick.steps[2]!.check(snap({ env2Dest: "aPitchWide", env2S: 0, env2D: 400, env2Bend: "sharp" }, played))).toBe(false);
   });
 });

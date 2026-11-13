@@ -1,7 +1,7 @@
 # Track T: Impacts, hits and striking bass
 
 Requested by the owner on 13 Nov 2026: "I also want to study impact sounds/fx so that I could just make more
-striking bass music in general." Status: **planned, nothing built.**
+striking bass music in general." Status: **the first seven lessons are built** (13 Nov 2026, `src/course/lessons/impacts.ts`): T1.3, T2.1, T2.2, T2.7, T3.1 with T3.3, T3.4 and a checkpoint. The rest is planned.
 
 The aim is practical: why some hits and bass notes land hard and others do not, and how to build the ones
 that do. An impact is treated as three parts in time (the first few thousandths of a second, the body, the

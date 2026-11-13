@@ -157,7 +157,12 @@ Added after the first eight milestones (owner asked for all four in one go):
     combinations: add to `RECIPES`.** Chapter order is `CHAPTER_ORDER`, not the key order of `CHAPTERS`.
     `lessons/chapter6.ts` holds "Reshaping the wave" (C6.1 bend and mirror, C6.2 sync, C6.3 squeeze and pulse
     width, C6.4 FM, C6.5 ring modulation, and the checkpoint C6.C).
-    **Fifty-six playable lessons.**
+    `lessons/impacts.ts` holds the first impact lessons from `docs/IMPACTS.md` (ids CT.1 to CT.6 and CT.C,
+    chapter "Impacts": the start of a note, the kick as a falling pitch, how far and how fast it falls, sub
+    drops, a bass note as a hit, pitch at the front, and a by-ear checkpoint). They needed one new
+    destination, "Osc A pitch, wide" (`aPitchWide`, four octaves at 100%; it has no knob, so no ring).
+    Measured: at 25% a 440 Hz note started near 880 Hz and landed on 440; at 50%, near 1760 Hz.
+    **Sixty-three playable lessons.**
   - `src/ui/PlayView.tsx` ("Lessons" tab) and `src/ui/synth/` — spotlighted controls per step, live targets,
     scope, spectrum, meter, on-screen keyboard, Hold, blind ear checks, recap, guide remarks and suggestion.
   - "Hear it first" demos (`demo` on a lesson), match-by-ear rounds (`rounds`, compared by `src/course/match.ts`:
@@ -318,7 +323,8 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   (`docs/BIOACOUSTICS.md`, about 45 lessons; teaches mechanisms, never claims an artist's method or that sound
   alters the brain; explanations wait for texts in the library).
 - **Impact sounds (owner asked 13 Nov 2026):** `docs/IMPACTS.md`, about 50 lessons on hits, striking bass
-  notes, weight, making room, impact effects and contrast. Planned, not built.
+  notes, weight, making room, impact effects and contrast. The first seven are built (see `lessons/impacts.ts`);
+  the rest wait for effects, physical modelling, the mini DAW and library texts on hearing.
 - **`docs/LITERATURE.md`** lists every text in the library, expected, or wanted. Texts are only taken in from
   copies the owner has bought or borrowed, or that the maker or author gives away; never from piracy sites.
 - **Teacher/guide:** one consistent voice, remembers progress, comments on what the learner just did, answers
@@ -401,7 +407,7 @@ use explicit `.js` import suffixes so they load as plain Node ESM.
 - New knowledge cards: copy `knowledge-cards/_template.md`. Avoid numbers in cards. Only add reading links
   that have been opened and checked.
 - **Lesson labels.** Codes such as `C2.5` are for code, scripts and plans only. The learner sees lessons grouped
-  under chapter names ("Sound itself", "Oscillators", "Filters", "Envelopes", "LFOs", "Modulation", "Macros", "Reshaping the wave"; `CHAPTERS` in `src/course/lessons/index.ts`),
+  under chapter names ("Sound itself", "Oscillators", "Filters", "Envelopes", "LFOs", "Modulation", "Macros", "Reshaping the wave", "Impacts"; `CHAPTERS` in `src/course/lessons/index.ts`),
   numbered within the chapter, with "Filters · lesson 5 of 8" above the title. A test stops lesson text from
   citing another lesson by code. Add the chapter's name to `CHAPTERS` when starting a new chapter.
 - Skin: content must stay on solid panels for legibility; fabric textures are for chrome only (header, tabs,

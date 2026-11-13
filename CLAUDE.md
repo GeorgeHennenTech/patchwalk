@@ -31,8 +31,8 @@ serverless function (`api/`), so the API key never reaches the browser.
 7. Any display-value conversion not confirmed in Serum 2 by the owner is marked `unverified` in code and in the UI.
 
 ## Format facts
-Checked against five fixtures: `fixtures/init/Initial_Preset.SerumPreset` (2.0.24, format 9) and four pack presets
-in `fixtures/local/patches/` (2.0.17-2.0.24, formats 7, 8, 9). The TypeScript decoder was cross-checked against an
+Checked against five fixtures: `fixtures/init/Initial_Preset.SerumPreset` (2.0.24, format 9) and four presets made by the owner
+in `fixtures/patches/` (2.0.17-2.0.24, formats 7, 8, 9). The TypeScript decoder was cross-checked against an
 independent Python decode (zstandard + cbor2): identical output on all five.
 
 Confirmed on all five:
@@ -219,4 +219,6 @@ use explicit `.js` import suffixes so they load as plain Node ESM.
 
 ## Fixtures
 - `fixtures/init/` — Init, committed. Owner confirmed this is a personal build.
-- `fixtures/local/` — gitignored: commercial pack presets and Serum 1 `.fxp` files. Never commit or deploy these.
+- `fixtures/patches/` — four Serum 2 presets, committed. The owner stated on 13 Nov 2026 that they made these
+  presets, so they are fine to keep in the repo and use as test fixtures.
+- `fixtures/local/` — gitignored: Serum 1 `.fxp` files from the first upload. Never commit or deploy these.

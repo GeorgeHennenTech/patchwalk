@@ -6,12 +6,12 @@ import { INIT_BASELINE } from "../src/patch/baseline";
 
 export const FIXTURES = join(__dirname, "..", "fixtures");
 export const INIT = join(FIXTURES, "init", "Initial_Preset.SerumPreset");
-/** Commercial pack presets live in gitignored fixtures/local; tests that need them skip when absent. */
+/** Presets the owner made, committed in fixtures/patches. Tests that need them skip if a file is ever missing. */
 export const PACK = {
-  hype: join(FIXTURES, "local", "patches", "TSP_S2PNJ_Lead_70s_hype.SerumPreset"),
-  reese: join(FIXTURES, "local", "patches", "TSP_S2UR_bass_reese_wailer.SerumPreset"),
-  gfunk: join(FIXTURES, "local", "patches", "TSP_S2PNJ_Lead_g_funk.SerumPreset"),
-  rando: join(FIXTURES, "local", "patches", "TSP_S290V2_Bass_rando.SerumPreset"),
+  hype: join(FIXTURES, "patches", "TSP_S2PNJ_Lead_70s_hype.SerumPreset"),
+  reese: join(FIXTURES, "patches", "TSP_S2UR_bass_reese_wailer.SerumPreset"),
+  gfunk: join(FIXTURES, "patches", "TSP_S2PNJ_Lead_g_funk.SerumPreset"),
+  rando: join(FIXTURES, "patches", "TSP_S290V2_Bass_rando.SerumPreset"),
 };
 export const has = (p: string) => existsSync(p);
 export const decodeFile = (p: string) => decodePreset(new Uint8Array(readFileSync(p)));

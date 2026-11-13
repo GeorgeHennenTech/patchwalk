@@ -21,7 +21,7 @@ Last updated: 13 November 2026, after commit "Fix knowledge-card text layout" on
    ```bash
    npm test
    ```
-   Expect 254 passing tests. Some tests skip when the owner's commercial presets are absent (see section 9).
+   Expect 254 passing tests, none skipped.
 3. **Run it.** `npm run dev` serves the app at http://localhost:5173 including the two server functions.
    The Claude calls report "no API key" locally unless `.env.local` has `ANTHROPIC_API_KEY`; that is expected.
 4. **Then continue with section 8** without waiting for instructions, unless the owner's message says otherwise.
@@ -233,12 +233,17 @@ Ask about these only when relevant; do not block on them.
 
 ## 10. Things outside the repo that a new session will not have
 
-- **The owner's commercial presets and Serum 1 files** used as test fixtures live in a gitignored folder
-  (`fixtures/local/`) and exist only in the old session. Tests that need them skip. If you need them, ask the
-  owner to re-upload four `.SerumPreset` files (bass rando, reese wailer, lead g funk, lead 70s hype) and put
-  them in `fixtures/local/patches/`. Never commit them.
-- **The Serum 2 User Guide PDFs** are not in the repo; the extracted text in `library/` is. Re-extraction
-  needs the owner to upload the PDF again (they split it into four parts last time because of size).
+- **Test presets are in the repo.** The four Serum 2 presets used as fixtures (bass rando, reese wailer, lead
+  g funk, lead 70s hype) are committed in `fixtures/patches/`; the owner confirmed they made them. Only the
+  Serum 1 `.fxp` files from the very first upload are left out, and nothing needs them.
+- **The Serum 2 User Guide PDFs** are not in the repo; the extracted text in `library/` is, and that is all the
+  guide needs. The owner does not have to re-upload anything for the guide to work in a new chat. The PDF would
+  only be needed to redo the extraction (they split it into four parts last time because of size).
+- **Images from books (asked for, not yet agreed).** The owner asked whether images and diagrams can be
+  extracted from PDFs alongside the text and stored for review or use in lessons. It is possible (`pdfimages`
+  for embedded pictures, `pdftoppm` plus cropping for drawn diagrams). They were asked whether to do this for
+  the Serum manual and had not answered when this was written. If they say yes, the PDFs must be uploaded
+  again in a new session, and this should become the standard procedure for every book: text and images.
 - **Network access.** The old session ran in a cloud environment named "patchwalk" that allows Higgsfield's
   image host, Wikipedia, Ableton's Learning Synths and Sound On Sound. Other sites were blocked; Vercel's own
   site was unreachable. If you need a new site, propose adding it and explain why.

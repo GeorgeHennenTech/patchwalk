@@ -59,6 +59,31 @@ export const CHAPTER_3: PlayableLesson[] = [
     inSerum: "From Init, make a pluck on ENV 1: SUS all the way down and DEC short. How ENV 1’s values read on screen is not confirmed yet, so nothing is checked here.",
   },
   {
+    id: "C3.3", title: "Hold, and how a note falls", buildsOn: ["C3.2"], minutes: 7, cardIds: ["amp-envelope"], initial: { envA: 5, envD: 500, envS: 0, envR: 300 },
+    outcome: "Keep a note at full level for a moment before it falls, and choose the shape of the fall.",
+    demo: { caption: "The same pluck falling in three shapes: straight, eased, sharp. Then with a short hold at the top.", tones: [
+      { patch: { envA: 5, envD: 500, envS: 0, envR: 300, envBend: "straight" }, note: 57, at: 0, seconds: 0.9 },
+      { patch: { envA: 5, envD: 500, envS: 0, envR: 300, envBend: "eased" }, note: 57, at: 1.2, seconds: 0.9 },
+      { patch: { envA: 5, envD: 500, envS: 0, envR: 300, envBend: "sharp" }, note: 57, at: 2.4, seconds: 0.9 },
+      { patch: { envA: 5, envD: 500, envS: 0, envR: 300, envBend: "sharp", envH: 250 }, note: 57, at: 3.6, seconds: 0.9 },
+    ] },
+    idea: [
+      "Two more controls finish the envelope. Hold keeps the note at full level for a set time after the attack, before the decay begins. It adds weight to the front of a note without making the whole note longer.",
+      "Fall is the shape of the decay and release. Straight loses level at an even rate. Eased drops quickly at first and then slows, which is how most plucked and struck things behave. Sharp does that more strongly: most of the level is gone almost at once, with a long quiet tail. The decay time is the same in all three; what changes is where in that time the sound goes.",
+    ],
+    steps: [
+      { do: "Strike a few keys. This is a pluck with an eased fall.", show: ["keyboard", "envelope", "envBend"], hear: "A note that drops away naturally.", target: "Eased fall, two notes played", check: (s) => s.state.envBend === "eased" && struck(s) >= 2 },
+      { do: "Switch Fall to Straight and strike again.", show: ["keyboard", "envelope", "envBend"], hear: "The note seems longer and flatter, then stops rather suddenly.", target: "Straight fall, two notes played", check: (s) => s.state.envBend === "straight" && struck(s) >= 2 },
+      { do: "Switch Fall to Sharp and strike again.", show: ["keyboard", "envelope", "envBend"], hear: "A hard, snappy front and a thin tail. The same decay time, but it sounds much shorter.", target: "Sharp fall, two notes played", check: (s) => s.state.envBend === "sharp" && struck(s) >= 2,
+        remark: () => "All three had the same half-second decay. Halfway through it, the straight fall is still at half level, the eased one is down to about an eighth, and the sharp one to about a hundredth. That is why they feel so different." },
+      { do: "Stay on Sharp and raise Hold to about 200 ms.", show: ["keyboard", "envelope", "envH", "envBend"], hear: "A solid block of sound at the front, then the snap. Punchier, without ringing on.", target: "Sharp fall, hold between 120 and 300 ms, two notes played", check: (s) => s.state.envBend === "sharp" && between(s.state.envH, 120, 300) && struck(s) >= 2 },
+      { do: "Choose the Fall and Hold you like best for a pluck.", show: ["keyboard", "envelope", "envH", "envD", "envBend"], hear: "Your choice.", target: "Fall or hold changed in this step, a note played", check: (s) => (moved(s, "envBend") || moved(s, "envH")) && struck(s) >= 1,
+        remark: (s) => `You chose a ${s.state.envBend} fall with ${s.state.envH === 0 ? "no hold" : `${time(s.state.envH)} of hold`}.` },
+    ],
+    recap: ["Hold keeps a note at full level before it starts to fall.", "The shape of the fall changes how long a note seems, at the same decay time.", "Eased and sharp falls sound struck or plucked; a straight fall sounds mechanical."],
+    inSerum: "ENV 1 in Serum has a HOLD knob between ATK and DEC, and each stage of the envelope drawing can be dragged into a curve. Listening only.",
+  },
+  {
     id: "C3.4", title: "Envelope on the filter", buildsOn: ["C3.1", "C2.2"], minutes: 9, cardIds: ["filter-envelope"], initial: { filterOn: true, cutoff: 300, resonance: 30 },
     outcome: "Send a second envelope to the filter’s cutoff so each note changes brightness as it sounds.",
     demo: { caption: "A dull filtered note, then the same note with an envelope opening the filter at its start.", tones: patches([{ filterOn: true, cutoff: 300, resonance: 30 }, { ...SWEPT }, { ...SWEPT, env2D: 120, env2Amount: 80 }], 1.1, 0.4) },

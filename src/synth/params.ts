@@ -13,6 +13,8 @@ const SLOPES = ["12", "24"] as const;
 /** Settings an envelope or LFO can move. "none" means it is not connected. */
 export const MOD_DESTS = ["none", "cutoff", "fine", "bFine", "aLevelDb", "bLevelDb", "subLevelDb", "noiseLevelDb", "lfo1Rate", "noteLevel"] as const;
 const WAYS = ["both", "up"] as const;
+/** How an envelope falls during its decay and release: at an even rate, easing off, or dropping fast then lingering. */
+export const BENDS = ["straight", "eased", "sharp"] as const;
 export type Dest = (typeof MOD_DESTS)[number];
 export const DEST_NAMES: Record<Dest, string> = { none: "Nothing", cutoff: "Filter cutoff", fine: "Osc A pitch", bFine: "Osc B pitch", aLevelDb: "Osc A level", bLevelDb: "Osc B level", subLevelDb: "Sub level", noiseLevelDb: "Noise level", lfo1Rate: "LFO 1 rate", noteLevel: "Note level" };
 
@@ -78,6 +80,9 @@ export interface SynthState {
   keyTrack: number;
   // ---- envelope 1: the level of every note (see mod.ts). Times in milliseconds, sustain in percent.
   envA: number; envD: number; envS: number; envR: number;
+  /** Hold: how long the envelope stays at full level after the attack, in ms. */
+  envH: number; env2H: number;
+  envBend: (typeof BENDS)[number]; env2Bend: (typeof BENDS)[number];
   // ---- envelope 2: free to send to one destination
   env2A: number; env2D: number; env2S: number; env2R: number;
   env2Dest: Dest;
@@ -107,7 +112,7 @@ export const INITIAL: SynthState = {
   bOn: false, bShape: "saw", bOctave: 0, bSemitone: 0, bFine: 0, bPhase: 0, bLevelDb: 0,
   subOn: false, subOctave: -1, subLevelDb: -6, noiseOn: false, noiseType: "white", noiseLevelDb: -18,
   filterOn: false, filterType: "low", cutoff: 20000, resonance: 0, slope: "12", drive: 0, keyTrack: 0,
-  envA: 5, envD: 300, envS: 100, envR: 30,
+  envA: 5, envD: 300, envS: 100, envR: 30, envH: 0, env2H: 0, envBend: "eased", env2Bend: "eased",
   env2A: 5, env2D: 400, env2S: 0, env2R: 100, env2Dest: "none", env2Amount: 50,
   lfo1Rate: 2, lfo1Shape: "sine", lfo1Dest: "none", lfo1Amount: 30,
   lfo2Rate: 5, lfo2Shape: "triangle", lfo2Dest: "none", lfo2Amount: 30,
@@ -219,6 +224,8 @@ function envelope(prefix: "env" | "env2", group: Group, name: string): Record<st
     [`${prefix}A`]: time("A", "attack"), [`${prefix}D`]: time("D", "decay"),
     [`${prefix}S`]: { id: `${prefix}S` as keyof SynthState, label: `${name} sustain`, group, kind: "range", min: 0, max: 100, step: 1, unit: "%" },
     [`${prefix}R`]: time("R", "release"),
+    [`${prefix}H`]: { id: `${prefix}H` as keyof SynthState, label: `${name} hold`, group, kind: "range", min: 0, max: 2000, step: 5, unit: "ms" },
+    [`${prefix}Bend`]: { id: `${prefix}Bend` as keyof SynthState, label: `${name} fall`, group, kind: "choice", choices: BENDS, names: { straight: "Straight", eased: "Eased", sharp: "Sharp" } },
   };
 }
 function source(prefix: "env2" | "lfo1" | "lfo2" | "lfo3" | "vel" | "key", group: Group, name: string): Record<string, ParamSpec> {

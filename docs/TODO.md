@@ -5,7 +5,8 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 
 ## Build next
 - [x] Envelope lessons: five lessons and a checkpoint, with an envelope drawing you can drag
-- [ ] Next after macros (owner's order): envelope curves and hold; tempo-synced, trigger-mode and drawable LFOs
+- [x] Envelope hold and fall shape (straight, eased, sharp), with a lesson
+- [ ] Next: tempo-synced, trigger-mode and drawable LFOs, with their three lessons
 - [ ] Then: warp, sync, FM and ring modulation (chapter 6, "reshaping the source")
 - [x] LFO lessons: three lessons and a checkpoint
 - [ ] LFO lessons that need new controls: tempo sync, trigger modes with rise and delay, drawing a shape
@@ -16,7 +17,7 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 - [ ] Scaling a route with a second source (mod wheel) and its lesson
 - [ ] Blind ear checks for the filter, envelope, LFO and modulation lessons
 - [ ] Pulse-width lesson in the oscillator chapter
-- [ ] Remaining synthesis chapters from the course plan (46 lessons built)
+- [ ] Remaining synthesis chapters from the course plan (47 lessons built)
 
 ## Synth
 - [x] Filter with a draggable curve
@@ -75,6 +76,6 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 - [x] Upload the Ableton manual, pages 1 to 500
 - [x] Upload the rest of the Ableton manual
 - [ ] Find more books for the library (EPUB or text-based PDF)
-- [ ] Review the 32 knowledge cards and 39 lesson scripts (all drafts)
+- [ ] Review the 32 knowledge cards and 40 lesson scripts (all drafts)
 - [ ] Probe presets: start with the ten most useful (the assistant has explained what to do)
 - [ ] Keep reporting how things sound and feel

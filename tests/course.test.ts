@@ -553,9 +553,9 @@ describe("chapter 3 lessons", () => {
   const st = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
   const hit = { played: { mouse: 2, keys: 0, midi: 0 } };
   it("the envelope chapter follows the filters and starts from real settings", () => {
-    expect(LESSONS.map((l) => l.id).slice(22, 28)).toEqual(["C3.1", "C3.2", "C3.4", "C3.5", "C3.6", "C3.C"]);
+    expect(LESSONS.map((l) => l.id).slice(22, 29)).toEqual(["C3.1", "C3.2", "C3.3", "C3.4", "C3.5", "C3.6", "C3.C"]);
     for (const l of CHAPTER_3) for (const k of Object.keys(l.initial ?? {})) expect(k in INITIAL, `${l.id}: ${k}`).toBe(true);
-    expect(placeOf(LESSONS.find((l) => l.id === "C3.4")!)).toEqual({ chapter: "Envelopes", number: 3, of: 6 });
+    expect(placeOf(LESSONS.find((l) => l.id === "C3.4")!)).toEqual({ chapter: "Envelopes", number: 4, of: 7 });
   });
   it("C3.1 and C3.2: each stage is checked by its own setting, and shapes by all four", () => {
     expect(st("C3.1", 1).check(base(hit, { envA: 500 }))).toBe(true);
@@ -599,7 +599,7 @@ import { CHAPTER_4 } from "../src/course/lessons/chapter4";
 describe("chapter 4 lessons", () => {
   const st = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
   it("the LFO chapter follows the envelopes and starts from real settings", () => {
-    expect(LESSONS.map((l) => l.id).slice(28, 32)).toEqual(["C4.1", "C4.2", "C4.3", "C4.C"]);
+    expect(LESSONS.map((l) => l.id).slice(29, 33)).toEqual(["C4.1", "C4.2", "C4.3", "C4.C"]);
     for (const l of CHAPTER_4) for (const k of Object.keys(l.initial ?? {})) expect(k in INITIAL, `${l.id}: ${k}`).toBe(true);
     expect(placeOf(LESSONS.find((l) => l.id === "C4.2")!).chapter).toBe("LFOs");
   });
@@ -626,7 +626,7 @@ import { CHAPTER_5 } from "../src/course/lessons/chapter5";
 describe("chapter 5: routes, direction, and modulating a modulator", () => {
   const st = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
   it("the modulation chapter follows the LFOs and starts from real settings", () => {
-    expect(LESSONS.map((l) => l.id).slice(32, 37)).toEqual(["C5.1", "C5.2", "C5.3", "C5.6", "C5.C"]);
+    expect(LESSONS.map((l) => l.id).slice(33, 38)).toEqual(["C5.1", "C5.2", "C5.3", "C5.6", "C5.C"]);
     for (const l of CHAPTER_5) for (const k of Object.keys(l.initial ?? {})) expect(k in INITIAL, `${l.id}: ${k}`).toBe(true);
   });
   it("an LFO set to one way pushes one side only, like an envelope; both ways is the default", () => {
@@ -738,5 +738,32 @@ describe("velocity and key position", () => {
     expect(st(1).check(base({ velocity: { min: 30, max: 120 } }, { velDest: "noteLevel" }))).toBe(true);
     expect(st(2).check(base({ velocity: { min: 30, max: 120 } }, { velDest: "noteLevel" }))).toBe(false);
     expect(st(4).check(base({ distinctNotes: 2 }, { keyDest: "noteLevel", keyAmount: -40 }))).toBe(true);
+  });
+});
+
+import { fallShape } from "../src/synth/mod";
+
+describe("envelope hold and fall", () => {
+  it("hold keeps the level at the top before the decay starts", () => {
+    const e = { attack: 0.1, hold: 0.2, decay: 0.4, sustain: 0, release: 0.2 };
+    expect(envLevel(e, 0.1, 5)).toBeCloseTo(1, 9);
+    expect(envLevel(e, 0.25, 5)).toBe(1);
+    expect(envLevel(e, 0.3, 5)).toBeCloseTo(1, 9);
+    expect(envLevel(e, 0.5, 5)).toBeLessThan(0.2);
+  });
+  it("the three falls take the same time but spend it differently, as the lesson's remark says", () => {
+    expect(fallShape("straight", 0.25, 0.5)).toBeCloseTo(0.5, 9);
+    expect(fallShape("eased", 0.25, 0.5)).toBeCloseTo(0.135, 2); // about an eighth
+    expect(fallShape("sharp", 0.25, 0.5)).toBeCloseTo(0.011, 2); // about a hundredth
+    expect(fallShape("straight", 0.6, 0.5)).toBe(0);
+    for (const bend of ["straight", "eased", "sharp"] as const) expect(fallShape(bend, 0, 0.5)).toBe(1);
+    expect(envLevel({ attack: 0.01, decay: 0.5, sustain: 0, release: 0.3, bend: "straight" }, 0.26, 5)).toBeCloseTo(0.5, 2);
+  });
+  it("the starting patch has no hold and the eased fall it always had", () => {
+    expect(adsr(INITIAL, 1)).toMatchObject({ hold: 0, bend: "eased" });
+    const st = (n: number) => LESSONS.find((l) => l.id === "C3.3")!.steps[n]!;
+    expect(st(1).check(base({ played: { mouse: 2, keys: 0, midi: 0 } }, { envBend: "straight" }))).toBe(true);
+    expect(st(3).check(base({ played: { mouse: 2, keys: 0, midi: 0 } }, { envBend: "sharp", envH: 200 }))).toBe(true);
+    expect(st(4).remark!(base({}, { envBend: "sharp", envH: 200 }))).toBe("You chose a sharp fall with 200 ms of hold.");
   });
 });

@@ -69,21 +69,35 @@ export function noteLevelBase(s: SynthState): number {
   return Math.max(0, 1 - routes(s).filter((r) => r.dest === "noteLevel" && r.oneWay && r.amount > 0).reduce((sum, r) => sum + r.amount / 100, 0));
 }
 
-export interface Adsr { attack: number; decay: number; sustain: number; release: number }
+export type Bend = SynthState["envBend"];
+export interface Adsr { attack: number; decay: number; sustain: number; release: number; hold?: number; bend?: Bend }
 /** Envelope times are stored in milliseconds and sustain in percent; this gives seconds and a 0..1 level. */
 export const adsr = (s: SynthState, which: 1 | 2): Adsr => (which === 1
-  ? { attack: s.envA / 1000, decay: s.envD / 1000, sustain: s.envS / 100, release: s.envR / 1000 }
-  : { attack: s.env2A / 1000, decay: s.env2D / 1000, sustain: s.env2S / 100, release: s.env2R / 1000 });
+  ? { attack: s.envA / 1000, decay: s.envD / 1000, sustain: s.envS / 100, release: s.envR / 1000, hold: s.envH / 1000, bend: s.envBend }
+  : { attack: s.env2A / 1000, decay: s.env2D / 1000, sustain: s.env2S / 100, release: s.env2R / 1000, hold: s.env2H / 1000, bend: s.env2Bend });
+
+/**
+ * For the two curved falls, the "time constant" of the fall as a fraction of the knob's time: eased is all but
+ * finished when the knob's time has passed; sharp drops much faster at first and then lingers.
+ */
+export const fallConstant = (bend: Bend | undefined, time: number) => Math.max(0.001, time / (bend === "sharp" ? 9 : 4));
+/** How far a fall has got, from 1 (not started) to 0 (finished), `x` seconds into a stage lasting `time`. */
+export function fallShape(bend: Bend | undefined, x: number, time: number): number {
+  if (x <= 0) return 1;
+  if (bend === "straight") return Math.max(0, 1 - x / Math.max(1e-4, time));
+  return Math.exp(-x / fallConstant(bend, time));
+}
 
 /**
  * The level of an envelope `t` seconds after a note starts, for a note held `held` seconds. Attack is a
- * straight line; decay and release ease toward their target, as the audio does (a quarter of the knob time
- * is the time constant, so the stage is effectively finished when the knob time has passed).
+ * straight line, then the level holds at the top for the hold time, then decay and release fall in the
+ * envelope's chosen shape, exactly as the audio does.
  */
 export function envLevel(e: Adsr, t: number, held: number): number {
-  const during = (x: number) => (x < e.attack ? x / e.attack : e.sustain + (1 - e.sustain) * Math.exp(-(x - e.attack) / Math.max(1e-4, e.decay / 4)));
+  const hold = e.hold ?? 0;
+  const during = (x: number) => (x < e.attack ? x / e.attack : x < e.attack + hold ? 1 : e.sustain + (1 - e.sustain) * fallShape(e.bend, x - e.attack - hold, e.decay));
   if (t <= held) return during(Math.max(0, t));
-  return during(held) * Math.exp(-(t - held) / Math.max(1e-4, e.release / 4));
+  return during(held) * fallShape(e.bend, t - held, e.release);
 }
 
 /** One cycle of an LFO shape at position `t` (0..1), from -1 to 1. Matches the browser's oscillator shapes. */

@@ -146,8 +146,8 @@ Added after the first eight milestones (owner asked for all four in one go):
   - `src/course/` — `types.ts` (a lesson is data: steps with `show`, `check(snapshot)`, optional code-written
     `remark`), `lessons/index.ts` (C0.1-C0.4, C1.1, C1.2, C1.M) and `lessons/chapter1.ts` (C1.3-C1.8 and the
     checkpoint C1.C), `match.ts`, `progress.ts`. `lessons/chapter2.ts` holds the filter chapter (C2.1-C2.7 and the checkpoint C2.C).
-    `lessons/chapter3.ts` holds the envelope chapter (C3.1, C3.2, C3.4, C3.5, C3.6 and the checkpoint C3.C; the
-    plan's C3.3 on curves and hold is not built because the envelopes have neither).
+    `lessons/chapter3.ts` holds the envelope chapter (C3.1 to C3.6 and the checkpoint C3.C; C3.3, on hold and
+    the shape of the fall, was added once the envelopes had those controls).
     `lessons/chapter4.ts` holds the LFO chapter (C4.1 to C4.3 and the checkpoint C4.C; C4.4 tempo sync, C4.5
     trigger modes and C4.6 drawn shapes wait for those controls).
     `lessons/chapter5.ts` holds the modulation chapter (C5.1, C5.2, C5.6 and the checkpoint C5.C; C5.3 velocity
@@ -156,7 +156,7 @@ Added after the first eight milestones (owner asked for all four in one go):
     `lessons/macros.ts` holds the macro chapter (C5M.1 to C5M.8 and the checkpoint C5M.C): most are "recipes",
     a few lines of data each that `recipe()` turns into a full lesson. **The owner wants many macro
     combinations: add to `RECIPES`.** Chapter order is `CHAPTER_ORDER`, not the key order of `CHAPTERS`.
-    **Forty-six playable lessons.**
+    **Forty-seven playable lessons.**
   - `src/ui/PlayView.tsx` ("Lessons" tab) and `src/ui/synth/` — spotlighted controls per step, live targets,
     scope, spectrum, meter, on-screen keyboard, Hold, blind ear checks, recap, guide remarks and suggestion.
   - "Hear it first" demos (`demo` on a lesson), match-by-ear rounds (`rounds`, compared by `src/course/match.ts`:
@@ -249,9 +249,18 @@ Added after the first eight milestones (owner asked for all four in one go):
     read-only. **The owner wants a full editable Matrix tab later.** Measured: velocity 32/64/127 to Note
     level at 100% gave -12/-6/0 dB; a macro slot of 20% on cutoff moved a resonant whistle 500/1000/2000 Hz
     at 0/50/100%; key position at 40% on cutoff gave two octaves at the top key.
-  - Not built yet: effects, MIDI input, a shared tempo clock, envelope curves and hold, LFO sync, trigger
+  - **Envelope hold and fall (13 Nov 2026).** Both envelopes have Hold (0-2000 ms at full level after the
+    attack) and Fall (`envBend`: straight, eased or sharp; one setting for decay and release). `fallShape` and
+    `fallConstant` in `mod.ts` are the single definition; the engine's `scheduleEnvelope` and
+    `scheduleRelease`, `envLevel` and the envelope drawing all use them. A straight release needs the
+    browser's "cancel and hold"; without it the release eases. Measured: halfway through a 1 s decay the
+    level was 0.55 / 0.17 / 0.016 of full for straight / eased / sharp, and a 600 ms hold stayed at full level.
+    When measuring envelope levels, compare against a separately measured steady note, not a reading taken
+    just after the note starts (the analyser lags).
+  - Not built yet: effects, MIDI input, a shared tempo clock, LFO sync, trigger
     modes and drawn shapes, a mod wheel, an editable matrix. **Owner's order for what comes next (13 Nov
-    2026): envelope curves and hold plus tempo-synced and drawable LFOs, then warp, sync, FM and ring mod.** Next in the plan is chapter 6 (reshaping the
+    2026): tempo-synced, trigger-mode and drawable LFOs (envelope hold and fall are done), then warp, sync, FM
+    and ring mod. After that the two new tracks: physical modelling and bioacoustics.** Next in the plan is chapter 6 (reshaping the
     source: warp, sync, FM, ring modulation), all of which need new oscillator features first.
   - The old ten Serum-task lessons are now the "Serum tasks" tab.
 - **Pictures and lesson links in answers (13 Nov 2026, owner's rule).** When the guide cites a page that has
@@ -276,7 +285,7 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
 - **Private, single-user.** The owner has said this program is strictly for them and will never be distributed.
   Design for one user; do not add accounts, sharing or public pages. Rule 4 still applies to the name and look.
 - **Course:** `docs/CURRICULUM.md` maps 16 tracks and about 400 lessons (one line each); `docs/lessons/` holds
-  fully scripted lessons in a fixed shape (39 so far, all drafts); `docs/COURSE_PLAN.md` describes the practice
+  fully scripted lessons in a fixed shape (40 so far, all drafts); `docs/COURSE_PLAN.md` describes the practice
   synth and lesson engine. A university programme's topic list was used only as a coverage checklist.
   See also `docs/COURSE_PLAN.md`. Guided lessons on a built-in practice synth; lessons can be taken in any
   order; each lesson is its own data file so chapters are easy to add. Tracks are to grow well beyond synthesis

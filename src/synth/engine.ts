@@ -2,7 +2,7 @@
 // Built around a shared AudioContext clock and a per-instrument voice list so more instruments and a
 // tempo clock (for the later mini DAW) can be added without rewriting it.
 import { applyMacros } from "./macros";
-import { adsr, isLevel, keyValue, modDepth, noteLevelBase, routes, velocityValue, type Route } from "./mod";
+import { adsr, fallConstant, isLevel, keyValue, modDepth, noteLevelBase, routes, velocityValue, type Adsr, type Route } from "./mod";
 import { DRIVE_RANGE, driveCurve, filterStages, resonanceTrim, type Stage } from "./filter";
 import { dbToGain, harmonic, harmonicsA, HARMONICS, playedHz, playedHzB, subHz, unisonOffsets, unisonPans, type Shape, type SynthState } from "./params";
 
@@ -202,8 +202,7 @@ export class Engine {
         const e = adsr(s, 2);
         src = this.ctx.createConstantSource();
         src.offset.setValueAtTime(0, t);
-        src.offset.linearRampToValueAtTime(1, t + e.attack);
-        src.offset.setTargetAtTime(e.sustain, t + e.attack, Math.max(0.001, e.decay / 4));
+        this.scheduleEnvelope(src.offset, e, t);
       }
       const depth = this.ctx.createGain(), bias = this.ctx.createConstantSource();
       const [swing, lift] = this.swingAndLift(s, route);
@@ -227,13 +226,30 @@ export class Engine {
     return route.source.kind === "lfo" && route.oneWay ? [depth / 2, depth / 2] : [depth, 0];
   }
 
+  /** Start an envelope on a setting at time `t`: up over the attack, held at the top, then down to sustain. */
+  private scheduleEnvelope(p: AudioParam, e: Adsr, t: number): void {
+    const top = t + e.attack, fall = top + (e.hold ?? 0);
+    p.setValueAtTime(0, t);
+    p.linearRampToValueAtTime(1, top);
+    if (e.sustain >= 1) return;
+    if (fall > top) p.setValueAtTime(1, fall);
+    if (e.bend === "straight") p.linearRampToValueAtTime(e.sustain, fall + Math.max(0.001, e.decay));
+    else p.setTargetAtTime(e.sustain, fall, fallConstant(e.bend, e.decay));
+  }
+  /** Begin an envelope's release at time `t`, from wherever it has got to. Returns when it is over. */
+  private scheduleRelease(p: AudioParam, e: Adsr, t: number): number {
+    holdAt(p, t);
+    // A straight fall needs to know where it starts from, which only "stop and hold" gives; without it, ease.
+    if (e.bend === "straight" && "cancelAndHoldAtTime" in p) { const end = t + Math.max(0.005, e.release); p.linearRampToValueAtTime(0, end); return end + 0.03; }
+    const tc = Math.max(0.003, fallConstant(e.bend === "straight" ? "eased" : e.bend, e.release));
+    p.setTargetAtTime(0, t, tc);
+    return t + Math.max(tc * 7, e.release) + 0.03;
+  }
+
   /** Let a note go at time `t`: envelope 1's release fades it, then everything stops. */
   private releaseAt(v: Voice, s: SynthState, t: number): void {
-    const release = adsr(s, 1).release, tc = Math.max(0.003, release / 4);
-    holdAt(v.amp.gain, t);
-    v.amp.gain.setTargetAtTime(0, t, tc);
-    for (const m of v.mods) if (m.route.source.kind === "env" && m.src instanceof ConstantSourceNode) { holdAt(m.src.offset, t); m.src.offset.setTargetAtTime(0, t, Math.max(0.003, adsr(s, 2).release / 4)); }
-    const stopAt = t + tc * 7 + 0.03;
+    const stopAt = this.scheduleRelease(v.amp.gain, adsr(s, 1), t);
+    for (const m of v.mods) if (m.route.source.kind === "env" && m.src instanceof ConstantSourceNode) this.scheduleRelease(m.src.offset, adsr(s, 2), t);
     for (const x of v.a) x.osc.stop(stopAt);
     v.b?.osc.stop(stopAt);
     v.sub?.osc.stop(stopAt);
@@ -246,9 +262,7 @@ export class Engine {
     const amp = this.ctx.createGain();
     // Envelope 1: a straight rise over the attack, then easing down to the sustain level.
     const env = adsr(s, 1);
-    amp.gain.setValueAtTime(0, t);
-    amp.gain.linearRampToValueAtTime(1, t + env.attack);
-    if (env.sustain < 1) amp.gain.setTargetAtTime(env.sustain, t + env.attack, Math.max(0.001, env.decay / 4));
+    this.scheduleEnvelope(amp.gain, env, t);
     const out = this.ctx.createGain();
     out.gain.value = noteLevelBase(s);
     amp.connect(out).connect(this.master);

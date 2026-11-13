@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { effectiveCutoff, filterResponseDb } from "../../synth/filter";
 import { macroSlots, slotPush } from "../../synth/macros";
-import { adsr, ENV1_COLOR, routes, SOURCES } from "../../synth/mod";
+import { adsr, ENV1_COLOR, fallShape, routes, SOURCES } from "../../synth/mod";
 import { DEST_NAMES } from "../../synth/params";
 import { PARAMS, type SynthState } from "../../synth/params";
 import type { Synth } from "../../synth/useSynth";
@@ -210,8 +210,9 @@ export function envPoints(s: SynthState, which: 1 | 2) {
   const span = (ENV.w - 2 * ENV.pad) * ENV.stage, top = ENV.pad, bottom = ENV.h - ENV.pad;
   const t = (key: "A" | "D" | "R") => toTravel(PARAMS[`${k}${key}`]!, s[`${k}${key}`]);
   const level = bottom - (s[`${k}S`] / 100) * (bottom - top);
-  const a = ENV.pad + t("A") * span, d = a + t("D") * span, held = d + (ENV.w - 2 * ENV.pad) * ENV.hold, r = held + t("R") * span;
-  return { a: { x: a, y: top }, d: { x: d, y: level }, held: { x: held, y: level }, r: { x: r, y: bottom }, span, top, bottom };
+  // the hold stage is a flat stretch at the top; it gets up to a third of a stage's width
+  const a = ENV.pad + t("A") * span, h = a + (s[`${k}H`] / 2000) * span * 0.35, d = h + t("D") * span, held = d + (ENV.w - 2 * ENV.pad) * ENV.hold * 0.7, r = held + t("R") * span;
+  return { a: { x: a, y: top }, h: { x: h, y: top }, d: { x: d, y: level }, held: { x: held, y: level }, r: { x: r, y: bottom }, span, top, bottom };
 }
 
 /** An envelope you can drag: the top point sets attack, the middle one decay and sustain, the last one release. */
@@ -220,9 +221,9 @@ export function EnvCurve({ synth, which, spot }: { synth: Synth; which: 1 | 2; s
   const p = envPoints(s, which), e = adsr(s, which);
   const color = which === 1 ? ENV1_COLOR : SOURCES[0]!.color;
   const drag = useRef<{ point: "a" | "d" | "r"; x: number; y: number; start: SynthState } | null>(null);
-  // decay and release ease toward their target, as the sound does
-  const ease = (from: { x: number; y: number }, to: { x: number; y: number }) => Array.from({ length: 13 }, (_, i) => { const u = i / 12; return `L${(from.x + (to.x - from.x) * u).toFixed(1)} ${(to.y + (from.y - to.y) * Math.exp(-u * 4)).toFixed(1)}`; }).join(" ");
-  const path = `M${ENV.pad} ${p.bottom} L${p.a.x.toFixed(1)} ${p.a.y} ${ease(p.a, p.d)} L${p.held.x.toFixed(1)} ${p.d.y.toFixed(1)} ${ease(p.held, p.r)}`;
+  // decay and release fall in the envelope's own shape (straight, eased or sharp), as the sound does
+  const ease = (from: { x: number; y: number }, to: { x: number; y: number }) => Array.from({ length: 17 }, (_, i) => { const u = i / 16; return `L${(from.x + (to.x - from.x) * u).toFixed(1)} ${(to.y + (from.y - to.y) * fallShape(e.bend, u, 1)).toFixed(1)}`; }).join(" ");
+  const path = `M${ENV.pad} ${p.bottom} L${p.a.x.toFixed(1)} ${p.a.y} L${p.h.x.toFixed(1)} ${p.h.y} ${ease(p.h, p.d)} L${p.held.x.toFixed(1)} ${p.d.y.toFixed(1)} ${ease(p.held, p.r)}`;
   const move = (ev: React.PointerEvent<SVGSVGElement>) => {
     const g = drag.current;
     if (!g) return;

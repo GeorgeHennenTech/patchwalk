@@ -626,7 +626,7 @@ import { CHAPTER_5 } from "../src/course/lessons/chapter5";
 describe("chapter 5: routes, direction, and modulating a modulator", () => {
   const st = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
   it("the modulation chapter follows the LFOs and starts from real settings", () => {
-    expect(LESSONS.map((l) => l.id).slice(36, 45)).toEqual(["C5.1", "C5.2", "C5.3", "C5.4", "C5.5", "C5.6", "C5.7", "C5.8", "C5.C"]);
+    expect(LESSONS.map((l) => l.id).slice(36, 46)).toEqual(["C5.1", "C5.2", "C5.3", "C5.4", "C5.5", "C5.6", "C5.7", "C5.8", "C5.9", "C5.C"]);
     for (const l of CHAPTER_5) for (const k of Object.keys(l.initial ?? {})) expect(k in INITIAL, `${l.id}: ${k}`).toBe(true);
   });
   it("an LFO set to one way pushes one side only, like an envelope; both ways is the default", () => {
@@ -1160,5 +1160,43 @@ describe("the wheels and a MIDI keyboard", () => {
     expect(l.steps[4]!.check(snap({ wheelDest: "cutoff", wheel: 100 }, { range: { wheel: { min: 0, max: 100 } } }))).toBe(false);
     expect(l.steps[4]!.check(snap({ wheelDest: "cutoff", wheel: 0 }, { range: { wheel: { min: 0, max: 100 } } }))).toBe(true);
     expect(l.steps[5]!.check(snap({ wheelDest: "lfo1Amount", wheelAmount: 5, wheel: 90 }))).toBe(true);
+  });
+});
+
+import { auxValue } from "../src/synth/mod";
+describe("a row scaled by a second source", () => {
+  const note = (over: Partial<{ velocity: number; note: number; age: number }> = {}) => ({ note: 60, velocity: 127, age: 1, held: Infinity, startedAt: 0, ...over });
+  const withRow = (aux: MatrixRow["aux"], extra: Partial<SynthState> = {}): SynthState => ({ ...INITIAL, ...extra, matrix: [{ source: "vel", dest: "ringAmount", amount: 100, way: "both", aux }] });
+  it("lets nothing through at the scaler's lowest and everything at its highest", () => {
+    const r = (s: SynthState) => routes(s).find((x) => x.key === "m0")!;
+    expect(auxValue(withRow(undefined), r(withRow(undefined)), note())).toBe(1);
+    for (const [wheel, share] of [[0, 0], [50, 0.5], [100, 1]] as const) { const s = withRow("wheel", { wheel }); expect(auxValue(s, r(s), note())).toBe(share); }
+    const v = withRow("vel");
+    expect(auxValue(v, r(v), note({ velocity: 127 }))).toBe(1);
+    expect(auxValue(v, r(v), note({ velocity: 32 }))).toBeCloseTo(0.25, 2);
+    // key position runs from the bottom of its range to the top, and an LFO from its lowest point to its highest
+    const k = withRow("key");
+    expect([36, 60, 84].map((n) => auxValue(k, r(k), note({ note: n })))).toEqual([0, 0.5, 1]);
+    const l = withRow("lfo1", { lfo1Shape: "square", lfo1Rate: 1 });
+    expect(auxValue(l, r(l), note({ age: 0.25 }))).toBe(1);
+    expect(auxValue(l, r(l), note({ age: 0.75 }))).toBe(0);
+  });
+  it("scales how far a slow destination is pushed, and changing the scaler rebuilds the note", () => {
+    const full = slowModulate(withRow("wheel", { wheel: 100 }), note()).ringAmount, half = slowModulate(withRow("wheel", { wheel: 50 }), note()).ringAmount;
+    expect(full).toBe(50);
+    expect(half).toBe(25);
+    expect(slowModulate(withRow("wheel", { wheel: 0 }), note()).ringAmount).toBe(0);
+    expect(routeLayout(withRow("wheel"))).not.toBe(routeLayout(withRow("env2")));
+    expect(routeLayout(withRow("wheel"))).not.toBe(routeLayout(withRow(undefined)));
+  });
+  it("the lesson checks which source is doing the scaling", () => {
+    const snap = (state: Partial<SynthState>, extra: Partial<Snapshot> = {}) => ({ ...snapshot(newTrack(INITIAL), { ...INITIAL, ...state }, { audioRunning: true, held: [], holdOn: false, now: 0 }), ...extra }) as Snapshot;
+    const l = CHAPTER_5.find((x) => x.id === "C5.9")!, row = (aux?: MatrixRow["aux"]) => ({ matrix: [{ source: "lfo1" as const, dest: "fine", amount: 6, way: "both" as const, aux }] });
+    expect(l.steps[1]!.check(snap(row()))).toBe(false);
+    expect(l.steps[1]!.check(snap(row("wheel")))).toBe(true);
+    expect(l.steps[2]!.remark!(snap({ ...row("wheel"), wheel: 50 }))).toContain("about 3.0% is getting through");
+    expect(l.steps[3]!.check(snap({ ...row("env2"), env2A: 1500 }, { longestHeld: 2.5 }))).toBe(true);
+    expect(l.steps[4]!.check(snap(row("vel"), { velocity: { min: 40, max: 100 } }))).toBe(false);
+    expect(l.steps[4]!.check(snap(row("vel"), { velocity: { min: 40, max: 127 } }))).toBe(true);
   });
 });

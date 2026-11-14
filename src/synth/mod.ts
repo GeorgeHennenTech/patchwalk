@@ -32,6 +32,8 @@ export interface Route {
   source: SourceInfo; dest: string; amount: number;
   /** True when the source only pushes one way from the knob: every envelope, and an LFO set to "one way". */
   oneWay: boolean;
+  /** A second source that scales this connection, from nothing (at its lowest) to the full amount (at its highest). Matrix rows only. */
+  aux?: SourceInfo;
 }
 
 /** The connections that are in use: a source with a destination chosen. */
@@ -45,12 +47,12 @@ export function routes(s: SynthState): Route[] {
   // rows added in the matrix: the same source again, sent somewhere else
   const extra = (s.matrix ?? []).flatMap((row, i) => {
     const source = SOURCES.find((x) => x.id === row.source);
-    return !source || row.dest === "none" ? [] : [{ key: `m${i}`, source, dest: row.dest, amount: row.amount, oneWay: fixedWay(source) || (source.kind === "lfo" && row.way === "up") }];
+    return !source || row.dest === "none" ? [] : [{ key: `m${i}`, source, dest: row.dest, amount: row.amount, oneWay: fixedWay(source) || (source.kind === "lfo" && row.way === "up"), aux: SOURCES.find((x) => x.id === row.aux) }];
   });
   return [...own, ...extra];
 }
 /** Which sources are connected to which destinations, as one string: when it changes, sounding notes are rebuilt. */
-export const routeLayout = (s: SynthState) => routes(s).map((r) => `${r.key}:${r.source.id}>${r.dest}`).join("|");
+export const routeLayout = (s: SynthState) => routes(s).map((r) => `${r.key}:${r.source.id}>${r.dest}${r.aux ? `*${r.aux.id}` : ""}`).join("|");
 /** The sources moving one setting, for drawing its rings. Sources with an amount of zero do nothing. */
 export const routesTo = (s: SynthState, id: keyof SynthState) => routes(s).filter((r) => r.dest === id && r.amount !== 0);
 
@@ -205,6 +207,17 @@ export function sourceValue(s: SynthState, r: Route, n: NoteNow): number {
 }
 
 /**
+ * How much of a connection its scaling source lets through right now, 0 to 1 (1 when it has none). Every
+ * source is read as running from 0 to 1 here: an LFO from its lowest point to its highest, key position from
+ * the bottom of the keyboard's range to the top.
+ */
+export function auxValue(s: SynthState, r: Route, n: NoteNow): number {
+  if (!r.aux) return 1;
+  if (r.aux.id === "key") return (keyValue(n.note) + 1) / 2;
+  return Math.min(1, Math.max(0, sourceValue(s, { key: "", source: r.aux, dest: r.dest, amount: 100, oneWay: true }, n)));
+}
+
+/**
  * The settings with every "slow" connection applied for this moment. A source at full swing moves a knob by
  * amount/200 of its travel, the same stretch its ring shows. With no note sounding, nothing is moved.
  */
@@ -220,7 +233,7 @@ export function modulated(s: SynthState, n: NoteNow | undefined, all: boolean): 
   const out = { ...s } as SynthState & Record<string, unknown>;
   // every source reads the settings as left, so two sources on one knob add and the order does not matter
   const push: Record<string, number> = {};
-  for (const r of list) push[r.dest] = (push[r.dest] ?? 0) + sourceValue(s, r, n) * (r.amount / 200);
+  for (const r of list) push[r.dest] = (push[r.dest] ?? 0) + sourceValue(s, r, n) * auxValue(s, r, n) * (r.amount / 200);
   for (const [dest, by] of Object.entries(push)) { const spec = PARAMS[dest]!; out[dest] = fromTravelSmooth(spec, toTravel(spec, s[dest as keyof SynthState] as number) + by); }
   return out;
 }

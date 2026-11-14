@@ -178,6 +178,24 @@ export const CHAPTER_5: PlayableLesson[] = [
     inSerum: "Serum works the same way: its guide describes clicking and dragging from an LFO’s tab to a knob, with a + sign on the pointer over a valid knob (page 194). Nothing is checked.",
   },
   {
+    id: "C5.9", title: "One source scaling another", buildsOn: ["C5.4", "C5.6"], minutes: 8, cardIds: ["mod-of-mod"], initial: { shape: "saw", filterOn: true, cutoff: 2400, lfo1Rate: 5.5, lfo1Shape: "sine", env2A: 5, env2D: 400, env2S: 100, env2R: 200 },
+    outcome: "Make one source decide how much of another gets through: vibrato you bring in with the mod wheel, with time, or by playing harder.",
+    idea: [
+      "A row in the matrix has an amount, and so far that amount has stayed where you set it. The Scaled by column hands that job to a second source. When the second source is at its lowest, nothing of the row gets through. When it is at its highest, the row has its full amount. In between, a share of it.",
+      "This is how movement is made to come and go instead of running all the time. The row says what the movement is; the scaling source says when, and how much.",
+    ],
+    steps: [
+      { do: "Switch on Hold and play a note. In the matrix, click Add a row: LFO 1 moves Osc A pitch, amount about 6.", show: [...K, "matrix", "fine"], hear: "A steady wobble in pitch, vibrato, there the whole time.", target: "A note held; a row sending LFO 1 to Osc A pitch at 3% to 10%", check: (s) => s.held.length >= 1 && s.state.matrix.some((r) => r.source === "lfo1" && r.dest === "fine" && between(r.amount, 3, 10)) },
+      { do: "In that row, set Scaled by to Mod wheel.", show: [...K, "matrix", "wheels", "fine"], hear: "The vibrato stops. The Mod wheel is at the bottom, so none of the row gets through.", target: "The row is scaled by the Mod wheel", check: (s) => s.state.matrix.some((r) => r.source === "lfo1" && r.dest === "fine" && r.aux === "wheel") },
+      { do: "Raise the Mod wheel slowly to the top, then bring it halfway down.", show: [...K, "matrix", "wheels", "fine"], hear: "The vibrato fades in with your hand. At the top it is as deep as the row's amount; halfway, half as deep.", target: "Mod wheel taken above 90%, now between 30% and 70%", check: (s) => (s.range.wheel?.max ?? 0) >= 90 && between(s.state.wheel, 30, 70) && s.state.matrix.some((r) => r.aux === "wheel"),
+        remark: (s) => { const r = s.state.matrix.find((x) => x.aux === "wheel"); return r ? `The row's amount is ${r.amount}% and the wheel is at ${s.state.wheel}%, so about ${((Math.abs(r.amount) * s.state.wheel) / 100).toFixed(1)}% is getting through.` : undefined; } },
+      { do: "Change Scaled by to Env 2, and set Envelope 2's Attack to about 1.5 seconds. Switch Hold off, then hold a key down for three seconds. Do it twice.", show: [...K, "matrix", "env2A", "fine"], hear: "Each note starts steady and the vibrato grows in as it is held, the way a singer or a violinist adds it to a long note.", target: "The row is scaled by Env 2; attack between 1 and 2.5 seconds; a note held for over two seconds", check: (s) => s.state.matrix.some((r) => r.source === "lfo1" && r.dest === "fine" && r.aux === "env2") && between(s.state.env2A, 1000, 2500) && s.longestHeld >= 2 },
+      { do: "Change Scaled by to Velocity. Play some soft notes and some hard ones (click low on a key, or use C and V).", show: [...K, "matrix", "fine"], hear: "Soft notes are almost steady; hard notes wobble. How you play now decides how much movement there is.", target: "The row is scaled by Velocity; a note softer than 60 and one harder than 110", check: (s) => s.state.matrix.some((r) => r.source === "lfo1" && r.dest === "fine" && r.aux === "vel") && !!s.velocity && s.velocity.min <= 60 && s.velocity.max >= 110 },
+    ],
+    recap: ["Scaled by lets a second source set how much of a row gets through.", "At the second source's lowest the row does nothing; at its highest it has its full amount.", "The mod wheel, an envelope or velocity as the scaler gives movement you bring in by hand, with time, or by playing harder."],
+    inSerum: "Serum's matrix has an AUX SOURCE column that does this (page 211 of its guide): put an LFO to pitch in a row, choose the mod wheel as its aux source, and raise the wheel.",
+  },
+  {
     id: "C5.C", title: "Checkpoint: routes by ear", buildsOn: ["C5.2", "C5.6"], minutes: 9, cardIds: [],
     outcome: "Work out by ear how a moving sound is wired: what is sent where, and which way it pushes.",
     idea: [

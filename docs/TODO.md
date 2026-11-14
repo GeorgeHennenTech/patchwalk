@@ -22,12 +22,12 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 - [x] Drag a source onto a knob to connect it, with a lesson
 - [x] Whole synth made compact: Synth / FX / Matrix pages, tabbed envelopes and LFOs, a small macro block as in Serum
 - [x] List of every Serum 2 feature the practice synth is missing (docs/SERUM_GAPS.md, about 550 rows, with a suggested order)
-- [ ] Close the top Serum gaps (mono, legato and glide, and the mod wheel, pitch bend and MIDI keyboard are done): "aux source" in the matrix; Osc B as a full oscillator and pan; a second filter and routing; more filter types; more warp modes
+- [ ] Close the top Serum gaps (mono, legato and glide, the mod wheel, pitch bend and MIDI keyboard, and the matrix's "aux source" are done): Osc B as a full oscillator and pan; a second filter and routing; more filter types; more warp modes
 - [ ] More macro recipes (the owner wants many; each is a few lines of data in the macro lesson file)
 - [ ] Scaling a route with a second source (mod wheel) and its lesson
 - [ ] Blind ear checks for the filter, envelope, LFO and modulation lessons
 - [ ] Pulse-width lesson in the oscillator chapter
-- [ ] Remaining synthesis chapters from the course plan (85 lessons built)
+- [ ] Remaining synthesis chapters from the course plan (86 lessons built)
 
 ## Synth
 - [x] Filter with a draggable curve

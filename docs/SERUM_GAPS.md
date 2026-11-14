@@ -526,7 +526,7 @@ changes show on the knobs and the other way round.
 | Editable Curve with RISE and FALL | A drawn remap of the source, plus smoothing that limits how fast it can rise or fall | 211 | Missing | Medium |
 | POL (polarity) | One-way or both-ways | 211 | Have it | - |
 | OUT graph | A small picture of the row's output | 211 | Missing | Small |
-| AUX SOURCE | A second source that scales the first (for example, the mod wheel sets how deep an LFO goes) | 211 | Missing | Medium |
+| AUX SOURCE | A second source that scales the first (for example, the mod wheel sets how deep an LFO goes) | 211 | **Built** ("Scaled by" on matrix rows) | Medium |
 | INV | Flips the aux source so more means less | 211 | Missing | Small |
 | Aux CRV | A curve for the aux source | 212 | Missing | Small |
 | OUTPUT | A final fine scale on the row | 212 | Missing | Small |
@@ -796,7 +796,7 @@ Ranked by how much each gap would add to *learning sound design on this synth* c
 2. **Done 14 Nov 2026 (no aftertouch, sustain pedal or MIDI learn).** **Mod wheel, pitch bend and MIDI keyboard input.** Small work with the browser's MIDI support, and it
    makes every existing lesson playable from real keys; the wheel is also Serum's most used performance
    source.
-3. **AUX SOURCE in the matrix (with INV), then "Create Vibrato".** "One source sets how much another
+3. **Done 14 Nov 2026, except INV and "Create Vibrato".** **AUX SOURCE in the matrix (with INV), then "Create Vibrato".** "One source sets how much another
    does" is a central idea (wheel-controlled vibrato) that we can only half-show with "LFO moves LFO amount".
 4. **Osc B as a full oscillator (wavetable, unison, warp) and PAN on every source.** Two equal oscillators
    are needed for most real patches; pan is small and opens stereo lessons.

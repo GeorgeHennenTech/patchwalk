@@ -39,7 +39,7 @@ export type Dest = string;
 export const DEST_NAMES: Record<string, string> = { none: "Nothing", cutoff: "Filter cutoff", fine: "Osc A pitch", bFine: "Osc B pitch", aLevelDb: "Osc A level", bLevelDb: "Osc B level", subLevelDb: "Sub level", noiseLevelDb: "Noise level", lfo1Rate: "LFO 1 rate", noteLevel: "Note level", fmAmount: "FM from B", aPitchWide: "Osc A pitch, wide" };
 
 /** One extra connection made in the matrix: a source, what it moves, how far, and (for an LFO) which way. */
-export interface MatrixRow { source: "env2" | "lfo1" | "lfo2" | "lfo3" | "vel" | "key" | "wheel"; dest: Dest; amount: number; way: "both" | "up" }
+export interface MatrixRow { source: "env2" | "lfo1" | "lfo2" | "lfo3" | "vel" | "key" | "wheel"; dest: Dest; amount: number; way: "both" | "up"; /** A second source that scales this row: at its lowest the row does nothing, at its highest the row has its full amount. */ aux?: "env2" | "lfo1" | "lfo2" | "lfo3" | "vel" | "key" | "wheel" }
 /** The most rows the matrix holds, on top of each source's own first connection. */
 export const MATRIX_MAX = 8;
 

@@ -31,7 +31,7 @@ interface Voice {
   noise?: { src: AudioBufferSourceNode; gain: GainNode };
   /** Every source feeds `mix`, then drive, then the two filter stages, then the resonance level trim. */
   /** One entry per connected envelope or LFO: its signal, and a depth control feeding the destination. */
-  mods: { route: Route; src: OscillatorNode | ConstantSourceNode; depth: GainNode; bias: ConstantSourceNode; fade: GainNode; phase: number }[];
+  mods: { route: Route; src: OscillatorNode | ConstantSourceNode; depth: GainNode; bias: ConstantSourceNode; fade: GainNode; phase: number; /** where it leaves from: `fade`, or the gate of a scaling source */ out: GainNode; aux?: { src: OscillatorNode | ConstantSourceNode; phase: number; gate: GainNode } }[];
   filter: { mix: GainNode; shaper: WaveShaperNode; one: BiquadFilterNode; two: BiquadFilterNode; trim: GainNode; drive: number };
   amp: GainNode;
   /** A pitch offset in cents that every oscillator of the note follows: it starts at the distance from the previous note and runs down to nothing, which is the slide. */
@@ -226,29 +226,33 @@ export class Engine {
       case "lfo1Rate": return v.mods.flatMap((m) => (m.route.source.id === "lfo1" && m.src instanceof OscillatorNode ? [m.src.detune] : []));
     }
   }
+  /** One source for one note: an LFO oscillator, or a constant that carries an envelope, velocity, key position or the mod wheel. `unit` makes key position run 0 to 1 (for scaling) instead of -1 to 1. */
+  private makeSource(v: Voice, s: SynthState, source: Route["source"], t: number, unit: boolean): { src: OscillatorNode | ConstantSourceNode; phase: number; rise: number } {
+    let src: OscillatorNode | ConstantSourceNode, phase = 0, rise = 0;
+    if (source.kind === "lfo") {
+      const id = source.id as "lfo1" | "lfo2" | "lfo3";
+      src = this.ctx.createOscillator();
+      phase = lfoStartPhase(s, id, t);
+      this.setLfoShape(src, s, id, phase);
+      src.frequency.value = lfoHz(s, id);
+      rise = s[`${id}Rise`] / 1000;
+    } else if (source.kind === "note") {
+      // fixed for the whole note (how hard it was struck, where on the keyboard it is), or the mod wheel
+      src = this.ctx.createConstantSource();
+      src.offset.value = source.id === "vel" ? velocityValue(v.velocity) : source.id === "wheel" ? s.wheel / 100 : unit ? (keyValue(v.note) + 1) / 2 : keyValue(v.note);
+    } else {
+      src = this.ctx.createConstantSource();
+      src.offset.setValueAtTime(0, t);
+      this.scheduleEnvelope(src.offset, adsr(s, 2), t);
+    }
+    return { src, phase, rise };
+  }
   /** Start this note's connected envelopes and LFOs at time `t`. LFOs restart with each note. */
   private buildMods(v: Voice, s: SynthState, t: number): void {
     const list = routes(s);
     // First make every source, then connect them: one source may be moving another (LFO 2 on LFO 1's rate).
     for (const route of list) {
-      let src: OscillatorNode | ConstantSourceNode, phase = 0, rise = 0;
-      if (route.source.kind === "lfo") {
-        const id = route.source.id as "lfo1" | "lfo2" | "lfo3";
-        src = this.ctx.createOscillator();
-        phase = lfoStartPhase(s, id, t);
-        this.setLfoShape(src, s, id, phase);
-        src.frequency.value = lfoHz(s, id);
-        rise = s[`${id}Rise`] / 1000;
-      } else if (route.source.kind === "note") {
-        // fixed for the whole note: how hard it was struck, or where on the keyboard it is
-        src = this.ctx.createConstantSource();
-        src.offset.value = route.source.id === "vel" ? velocityValue(v.velocity) : route.source.id === "wheel" ? s.wheel / 100 : keyValue(v.note);
-      } else {
-        const e = adsr(s, 2);
-        src = this.ctx.createConstantSource();
-        src.offset.setValueAtTime(0, t);
-        this.scheduleEnvelope(src.offset, e, t);
-      }
+      const { src, phase, rise } = this.makeSource(v, s, route.source, t, false);
       const depth = this.ctx.createGain(), bias = this.ctx.createConstantSource();
       const [swing, lift] = this.swingAndLift(s, route, v.note);
       depth.gain.value = swing;
@@ -258,12 +262,29 @@ export class Engine {
       if (rise > 0) { fade.gain.setValueAtTime(0, t); fade.gain.linearRampToValueAtTime(1, t + rise); }
       src.connect(depth).connect(fade);
       bias.connect(fade);
-      v.mods.push({ route, src, depth, bias, fade, phase });
+      // A scaling source: what the connection sends then passes through a gate that the second source opens,
+      // from shut at its lowest to fully open at its highest.
+      let out: GainNode = fade, aux: Voice["mods"][number]["aux"];
+      if (route.aux) {
+        const a = this.makeSource(v, s, route.aux, t, true), gate = this.ctx.createGain();
+        if (a.src instanceof OscillatorNode) {
+          // an LFO swings -1 to 1: halve it and lift it so the gate runs from shut to open
+          const half = this.ctx.createGain();
+          half.gain.value = 0.5;
+          gate.gain.value = 0.5 * (1 + this.lfoMean(s, route.aux.id as "lfo1"));
+          a.src.connect(half).connect(gate.gain);
+        } else { gate.gain.value = 0; a.src.connect(gate.gain); }
+        fade.connect(gate);
+        out = gate;
+        aux = { src: a.src, phase: a.phase, gate };
+      }
+      v.mods.push({ route, src, depth, bias, fade, phase, out, aux });
     }
     for (const m of v.mods) {
-      for (const p of this.targets(v, m.route.dest)) m.fade.connect(p);
+      for (const p of this.targets(v, m.route.dest)) m.out.connect(p);
       m.src.start(t);
       m.bias.start(t);
+      m.aux?.src.start(t);
     }
   }
   /**
@@ -303,13 +324,14 @@ export class Engine {
     v.releasedAt = t;
     const stopAt = this.scheduleRelease(v.amp.gain, adsr(s, 1), t);
     for (const m of v.mods) if (m.route.source.kind === "env" && m.src instanceof ConstantSourceNode) this.scheduleRelease(m.src.offset, adsr(s, 2), t);
+    for (const m of v.mods) if (m.route.aux?.kind === "env" && m.aux?.src instanceof ConstantSourceNode) this.scheduleRelease(m.aux.src.offset, adsr(s, 2), t);
     for (const x of v.a) x.osc.stop(stopAt);
     v.b?.osc.stop(stopAt);
     v.modB.osc.stop(stopAt);
     v.glide.stop(stopAt);
     v.sub?.osc.stop(stopAt);
     v.noise?.src.stop(stopAt);
-    for (const m of v.mods) { m.src.stop(stopAt); m.bias.stop(stopAt); }
+    for (const m of v.mods) { m.src.stop(stopAt); m.bias.stop(stopAt); m.aux?.src.stop(stopAt); }
   }
 
   private build(note: number, phaseA: number, t = this.ctx.currentTime, velocity = 100, slideFrom?: number): Voice {
@@ -480,6 +502,15 @@ export class Engine {
         const id = route.source.id as "lfo1" | "lfo2" | "lfo3";
         if (next[`${id}Shape`] !== prev[`${id}Shape`] || next[`${id}Steps`] !== prev[`${id}Steps`]) this.setLfoShape(m.src, next, id, m.phase);
         m.src.frequency.setTargetAtTime(lfoHz(next, id), t, RAMP);
+      }
+      // the scaling source follows its own settings in the same way
+      if (m.aux && route.aux) {
+        if (route.aux.id === "wheel" && m.aux.src instanceof ConstantSourceNode) m.aux.src.offset.setTargetAtTime(next.wheel / 100, t, RAMP);
+        if (m.aux.src instanceof OscillatorNode) {
+          const id = route.aux.id as "lfo1" | "lfo2" | "lfo3";
+          if (next[`${id}Shape`] !== prev[`${id}Shape`] || next[`${id}Steps`] !== prev[`${id}Steps`]) { this.setLfoShape(m.aux.src, next, id, m.aux.phase); m.aux.gate.gain.setTargetAtTime(0.5 * (1 + this.lfoMean(next, id)), t, RAMP); }
+          m.aux.src.frequency.setTargetAtTime(lfoHz(next, id), t, RAMP);
+        }
       }
     }
     if (next.phase !== prev.phase) v.phaseA += (next.phase - prev.phase) / 360;

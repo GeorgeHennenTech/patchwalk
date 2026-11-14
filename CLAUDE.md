@@ -172,7 +172,8 @@ Added after the first eight milestones (owner asked for all four in one go):
     C5.8 ("Drag a source onto a knob") was added with drag-and-drop.
     `lessons/chapter8.ts` holds "Playing a line" (C8.1 one note at a time, C8.2 glide, C8.3 the bend and mod wheels), listed between
     "Effects" and "Impacts".
-    **Eighty-five playable lessons.**
+    C5.9 ("One source scaling another") was added to chapter 5 with the matrix's Scaled by column.
+    **Eighty-six playable lessons.**
   - `src/ui/PlayView.tsx` ("Lessons" tab) and `src/ui/synth/` — spotlighted controls per step, live targets,
     scope, spectrum, meter, on-screen keyboard, Hold, blind ear checks, recap, guide remarks and suggestion.
   - "Hear it first" demos (`demo` on a lesson), match-by-ear rounds (`rounds`, compared by `src/course/match.ts`:
@@ -437,6 +438,17 @@ Added after the first eight milestones (owner asked for all four in one go):
     orbiting the instrument's edge, brighter with level; a connected LFO's panel pulsing once per turn of
     that LFO (`--period` on the panel); knob rims that turn while held or while a source moves them; keys
     that flash and send up a ring when struck; name patches that swell with the sound.
+  - **A row scaled by a second source (14 Nov 2026; Serum's AUX SOURCE, third item of `docs/SERUM_GAPS.md`).**
+    A matrix row can carry `aux` (a source id): the "Scaled by" column. The second source is read as 0 to 1
+    (`auxValue` in `mod.ts`: an LFO from its lowest point to its highest, key position from the bottom of
+    its range to the top) and multiplies what the row sends. For fast destinations the engine puts a gate
+    (a gain) after the row's `fade` and the second source drives the gate's gain (`makeSource` builds either
+    kind of source; an LFO is halved and lifted); for slow destinations `modulated` multiplies. A source's
+    own connection cannot be scaled, only matrix rows; changing the scaler rebuilds sounding notes
+    (`routeLayout` includes it). Measured: a square LFO on pitch at 100% scaled by the wheel gave no
+    movement, half an octave and a full octave each way at 0, 50 and 100%; scaled by velocity 32 it gave a
+    quarter of the depth; scaled by Envelope 2 with a 3 s attack the depth grew over the note; scaled by a
+    slow square LFO it switched on and off. The knob's ring still shows the row's full amount.
   - Not built yet: drag-and-drop on touch screens, reordering effects. **Owner's order (13 Nov 2026), after
     warp/FM/ring which is done: the first impact lessons (they need nothing new); then physical modelling
     and bioacoustics.**

@@ -11,6 +11,7 @@ it, and reports in a few lines. None of these needs the owner or spends credits.
 
 - [x] 1. Focus mode (a switch, remembered per person): steps and minutes left always in view, a "good place to stop" marker after each lesson, and "you were here" when coming back
 - [x] 2. End-of-lesson recall: two or three questions answered from memory in place of the recap being read, with the answer shown at once
+- [ ] 2b. Sound-system diagrams, definition pass (owner asked 14 Nov 2026 after seeing the "Anatomy" Claude Code skill, MIT, github.com/wheresryan22/anatomy, which draws dense isometric SVG machines with a live readout). Keep our real 3D and our sourcing; borrow its craft: crisp edge lines on every part, far more small parts (bolts, handles, frames, cables) so no face is bare, one big live readout number per view in a card layout, moving sound drawn as an effect layer, and close-up screenshot checks. Start with the Res 2, then the horn, then Vero.
 - [ ] 3. Guide answers, new layout: the one-line answer first, quiet citations, "go deeper" follow-up buttons, one check question
 - [ ] 4. Small fixes: pointing at the Res 2's upper horns with the mouse; the eye button on the Account panel's password boxes; the Res 2 standing on a bass cabinet, since it needs one below 60 Hz
 - [ ] 5. "Why this matters" line on every lesson, tying it to music the learner wants to make

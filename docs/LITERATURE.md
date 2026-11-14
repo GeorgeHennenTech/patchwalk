@@ -10,7 +10,8 @@ maker or author gives away; copies from piracy sites are not taken in.
 | Serum 2 User Guide (Xfer) | 343 pages of text, 413 pictures |
 | Ableton Live 11 Reference Manual | 814 pages of text, 738 pictures |
 | Rift manual (Minimal Audio) | 64 pages of text, 112 pictures. For the Rift lessons and distortion |
-| This app's 32 knowledge cards | Drafts written for the app |
+| Kolbrek, "Horn Theory: An Introduction", parts 1 and 2 (audioXpress, 2008) | 17 pages of text, 46 pictures. Downloaded on 14 Nov 2026 from the publisher's own site, where it is given away. Pages are numbered 1 to 17 straight through the two parts, not by the magazine's page numbers. For the sound-systems track |
+| This app's 36 knowledge cards | Drafts written for the app |
 
 ## Listed by the owner; files not received yet
 | Text | For |
@@ -58,7 +59,7 @@ home systems, and high-end in-ear monitors. Start with Toole, McCarthy and the F
 | Text | For |
 |---|---|
 | Funktion-One manuals, spec sheets and technical papers (free from the maker), and published interviews with Tony Andrews | Funktion-One, classic and Vero |
-| Kolbrek and Dunker, *High-Quality Horn Loudspeaker Systems*; Kolbrek's shorter horn-theory articles (believed free) | How horn loudspeakers work |
+| Kolbrek and Dunker, *High-Quality Horn Loudspeaker Systems* (the shorter articles are now in the library, see the top) | How horn loudspeakers work |
 | McCarthy, *Sound Systems: Design and Optimization* | Large systems: arrays, subs, tuning a room |
 | Davis, Patronis and Brown, *Sound System Engineering* | Large systems |
 | Toole, *Sound Reproduction: The Acoustics and Psychoacoustics of Loudspeakers and Rooms* | High-fidelity home systems |

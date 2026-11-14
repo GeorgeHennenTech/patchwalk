@@ -1,0 +1,533 @@
+{
+ "source": "Horn Theory: An Introduction (Bjørn Kolbrek, audioXpress, 2008)",
+ "note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text.",
+ "images": [
+  {
+   "file": "p001-1.webp",
+   "page": 1,
+   "chapter": "Part 1",
+   "width": 1145,
+   "height": 233,
+   "captions_on_page": [
+    "Driver: Loudspeaker unit used for driving the horn.",
+    "ZA: Acoustical impedance."
+   ]
+  },
+  {
+   "file": "p003-1.webp",
+   "page": 3,
+   "chapter": "Part 1",
+   "width": 439,
+   "height": 345,
+   "captions_on_page": [
+    "The throat impedance of an intypes.",
+    "The throat impedances for both the horn must open up slowly."
+   ]
+  },
+  {
+   "file": "p003-2.webp",
+   "page": 3,
+   "chapter": "Part 1",
+   "width": 337,
+   "height": 248,
+   "captions_on_page": [
+    "The throat impedance of an intypes.",
+    "The throat impedances for both the horn must open up slowly."
+   ]
+  },
+  {
+   "file": "p004-1.webp",
+   "page": 4,
+   "chapter": "Part 1",
+   "width": 337,
+   "height": 165,
+   "captions_on_page": [
+    "The hyperbolic horns, also called hyper- rises above this value right above cutoff.",
+    "FIGURE 5: Throat impedance of a family of hypex horns."
+   ]
+  },
+  {
+   "file": "p004-2.webp",
+   "page": 4,
+   "chapter": "Part 1",
+   "width": 515,
+   "height": 631,
+   "captions_on_page": [
+    "The hyperbolic horns, also called hyper- rises above this value right above cutoff.",
+    "FIGURE 5: Throat impedance of a family of hypex horns."
+   ]
+  },
+  {
+   "file": "p005-1.webp",
+   "page": 5,
+   "chapter": "Part 1",
+   "width": 458,
+   "height": 816,
+   "captions_on_page": [
+    "But this applies only above cutoff."
+   ]
+  },
+  {
+   "file": "p005-2.webp",
+   "page": 5,
+   "chapter": "Part 1",
+   "width": 445,
+   "height": 303,
+   "captions_on_page": [
+    "But this applies only above cutoff."
+   ]
+  },
+  {
+   "file": "p006-1.webp",
+   "page": 6,
+   "chapter": "Part 1",
+   "width": 338,
+   "height": 194,
+   "captions_on_page": [
+    "The magnitude of this reflection depends on frequency and mouth size.",
+    "Consider a wave of long wavelength16.",
+    "Thus u = - ∂φ ."
+   ]
+  },
+  {
+   "file": "p006-2.webp",
+   "page": 6,
+   "chapter": "Part 1",
+   "width": 321,
+   "height": 256,
+   "captions_on_page": [
+    "The magnitude of this reflection depends on frequency and mouth size.",
+    "Consider a wave of long wavelength16.",
+    "Thus u = - ∂φ ."
+   ]
+  },
+  {
+   "file": "p006-3.webp",
+   "page": 6,
+   "chapter": "Part 1",
+   "width": 324,
+   "height": 233,
+   "captions_on_page": [
+    "The magnitude of this reflection depends on frequency and mouth size.",
+    "Consider a wave of long wavelength16.",
+    "Thus u = - ∂φ ."
+   ]
+  },
+  {
+   "file": "p007-1.webp",
+   "page": 7,
+   "chapter": "Part 1",
+   "width": 461,
+   "height": 1256,
+   "captions_on_page": []
+  },
+  {
+   "file": "p008-1.webp",
+   "page": 8,
+   "chapter": "Part 1",
+   "width": 479,
+   "height": 333,
+   "captions_on_page": [
+    "It’s a different matter at 800Hz (Fig.",
+    "FIGURE 14: Wave-fronts in an exponential horn at 120Hz4.",
+    "FIGURE 15: Wave-fronts in an exponential horn at 800Hz4."
+   ]
+  },
+  {
+   "file": "p008-2.webp",
+   "page": 8,
+   "chapter": "Part 1",
+   "width": 331,
+   "height": 458,
+   "captions_on_page": [
+    "It’s a different matter at 800Hz (Fig.",
+    "FIGURE 14: Wave-fronts in an exponential horn at 120Hz4.",
+    "FIGURE 15: Wave-fronts in an exponential horn at 800Hz4."
+   ]
+  },
+  {
+   "file": "p008-3.webp",
+   "page": 8,
+   "chapter": "Part 1",
+   "width": 342,
+   "height": 286,
+   "captions_on_page": [
+    "It’s a different matter at 800Hz (Fig.",
+    "FIGURE 14: Wave-fronts in an exponential horn at 120Hz4.",
+    "FIGURE 15: Wave-fronts in an exponential horn at 800Hz4."
+   ]
+  },
+  {
+   "file": "p008-4.webp",
+   "page": 8,
+   "chapter": "Part 1",
+   "width": 342,
+   "height": 238,
+   "captions_on_page": [
+    "It’s a different matter at 800Hz (Fig.",
+    "FIGURE 14: Wave-fronts in an exponential horn at 120Hz4.",
+    "FIGURE 15: Wave-fronts in an exponential horn at 800Hz4."
+   ]
+  },
+  {
+   "file": "p008-5.webp",
+   "page": 8,
+   "chapter": "Part 1",
+   "width": 337,
+   "height": 223,
+   "captions_on_page": [
+    "It’s a different matter at 800Hz (Fig.",
+    "FIGURE 14: Wave-fronts in an exponential horn at 120Hz4.",
+    "FIGURE 15: Wave-fronts in an exponential horn at 800Hz4."
+   ]
+  },
+  {
+   "file": "p008-6.webp",
+   "page": 8,
+   "chapter": "Part 1",
+   "width": 338,
+   "height": 258,
+   "captions_on_page": [
+    "It’s a different matter at 800Hz (Fig.",
+    "FIGURE 14: Wave-fronts in an exponential horn at 120Hz4.",
+    "FIGURE 15: Wave-fronts in an exponential horn at 800Hz4."
+   ]
+  },
+  {
+   "file": "p009-1.webp",
+   "page": 9,
+   "chapter": "Part 1",
+   "width": 335,
+   "height": 172,
+   "captions_on_page": [
+    "Study of Acoustic Horns,” dissertation, 1994.",
+    "AES Preprint no 933, 1973.",
+    "Fields in Regions Restricted by Finite Boundaries,” MS Thesis, MIT 1928."
+   ]
+  },
+  {
+   "file": "p009-2.webp",
+   "page": 9,
+   "chapter": "Part 1",
+   "width": 315,
+   "height": 285,
+   "captions_on_page": [
+    "Study of Acoustic Horns,” dissertation, 1994.",
+    "AES Preprint no 933, 1973.",
+    "Fields in Regions Restricted by Finite Boundaries,” MS Thesis, MIT 1928."
+   ]
+  },
+  {
+   "file": "p009-3.webp",
+   "page": 9,
+   "chapter": "Part 1",
+   "width": 467,
+   "height": 308,
+   "captions_on_page": [
+    "Study of Acoustic Horns,” dissertation, 1994.",
+    "AES Preprint no 933, 1973.",
+    "Fields in Regions Restricted by Finite Boundaries,” MS Thesis, MIT 1928."
+   ]
+  },
+  {
+   "file": "p010-1.webp",
+   "page": 10,
+   "chapter": "Part 2",
+   "width": 1146,
+   "height": 233,
+   "captions_on_page": [
+    "The author continues his look at the various horn types and how they work."
+   ]
+  },
+  {
+   "file": "p010-2.webp",
+   "page": 10,
+   "chapter": "Part 2",
+   "width": 335,
+   "height": 154,
+   "captions_on_page": [
+    "The author continues his look at the various horn types and how they work."
+   ]
+  },
+  {
+   "file": "p010-3.webp",
+   "page": 10,
+   "chapter": "Part 2",
+   "width": 342,
+   "height": 327,
+   "captions_on_page": [
+    "The author continues his look at the various horn types and how they work."
+   ]
+  },
+  {
+   "file": "p010-4.webp",
+   "page": 10,
+   "chapter": "Part 2",
+   "width": 339,
+   "height": 372,
+   "captions_on_page": [
+    "The author continues his look at the various horn types and how they work."
+   ]
+  },
+  {
+   "file": "p011-1.webp",
+   "page": 11,
+   "chapter": "Part 2",
+   "width": 675,
+   "height": 478,
+   "captions_on_page": [
+    "FIGURE 23: Throat impedance of a spherical wave horn.",
+    "Cléac’h expansion.",
+    "FIGURE 25: Contour of a Le Cléac’h horn."
+   ]
+  },
+  {
+   "file": "p011-2.webp",
+   "page": 11,
+   "chapter": "Part 2",
+   "width": 338,
+   "height": 395,
+   "captions_on_page": [
+    "FIGURE 23: Throat impedance of a spherical wave horn.",
+    "Cléac’h expansion.",
+    "FIGURE 25: Contour of a Le Cléac’h horn."
+   ]
+  },
+  {
+   "file": "p011-3.webp",
+   "page": 11,
+   "chapter": "Part 2",
+   "width": 341,
+   "height": 323,
+   "captions_on_page": [
+    "FIGURE 23: Throat impedance of a spherical wave horn.",
+    "Cléac’h expansion.",
+    "FIGURE 25: Contour of a Le Cléac’h horn."
+   ]
+  },
+  {
+   "file": "p011-4.webp",
+   "page": 11,
+   "chapter": "Part 2",
+   "width": 538,
+   "height": 369,
+   "captions_on_page": [
+    "FIGURE 23: Throat impedance of a spherical wave horn.",
+    "Cléac’h expansion.",
+    "FIGURE 25: Contour of a Le Cléac’h horn."
+   ]
+  },
+  {
+   "file": "p011-5.webp",
+   "page": 11,
+   "chapter": "Part 2",
+   "width": 335,
+   "height": 343,
+   "captions_on_page": [
+    "FIGURE 23: Throat impedance of a spherical wave horn.",
+    "Cléac’h expansion.",
+    "FIGURE 25: Contour of a Le Cléac’h horn."
+   ]
+  },
+  {
+   "file": "p012-1.webp",
+   "page": 12,
+   "chapter": "Part 2",
+   "width": 338,
+   "height": 248,
+   "captions_on_page": [
+    "Electric type exponential horn17.",
+    "FIGURE 30: Contour of the Iwata horn32."
+   ]
+  },
+  {
+   "file": "p012-2.webp",
+   "page": 12,
+   "chapter": "Part 2",
+   "width": 338,
+   "height": 200,
+   "captions_on_page": [
+    "Electric type exponential horn17.",
+    "FIGURE 30: Contour of the Iwata horn32."
+   ]
+  },
+  {
+   "file": "p012-3.webp",
+   "page": 12,
+   "chapter": "Part 2",
+   "width": 338,
+   "height": 474,
+   "captions_on_page": [
+    "Electric type exponential horn17.",
+    "FIGURE 30: Contour of the Iwata horn32."
+   ]
+  },
+  {
+   "file": "p013-1.webp",
+   "page": 13,
+   "chapter": "Part 2",
+   "width": 333,
+   "height": 320,
+   "captions_on_page": [
+    "FIGURE 32: Multicellular horn38.",
+    "You thus need a large horn to control directivity down to low frequencies.",
+    "The following different methods are listed in historical order.",
+    "The patent for the traditional multicellular horn belongs to Edward C.",
+    "FIGURE 33: -6dB beam widths of Electro-Voice model M253 2 by 5 cell horn42.",
+    "EV M253 horn at 10kHz42."
+   ]
+  },
+  {
+   "file": "p013-2.webp",
+   "page": 13,
+   "chapter": "Part 2",
+   "width": 333,
+   "height": 456,
+   "captions_on_page": [
+    "FIGURE 32: Multicellular horn38.",
+    "You thus need a large horn to control directivity down to low frequencies.",
+    "The following different methods are listed in historical order.",
+    "The patent for the traditional multicellular horn belongs to Edward C.",
+    "FIGURE 33: -6dB beam widths of Electro-Voice model M253 2 by 5 cell horn42.",
+    "EV M253 horn at 10kHz42."
+   ]
+  },
+  {
+   "file": "p013-3.webp",
+   "page": 13,
+   "chapter": "Part 2",
+   "width": 338,
+   "height": 319,
+   "captions_on_page": [
+    "FIGURE 32: Multicellular horn38.",
+    "You thus need a large horn to control directivity down to low frequencies.",
+    "The following different methods are listed in historical order.",
+    "The patent for the traditional multicellular horn belongs to Edward C.",
+    "FIGURE 33: -6dB beam widths of Electro-Voice model M253 2 by 5 cell horn42.",
+    "EV M253 horn at 10kHz42."
+   ]
+  },
+  {
+   "file": "p013-4.webp",
+   "page": 13,
+   "chapter": "Part 2",
+   "width": 338,
+   "height": 309,
+   "captions_on_page": [
+    "FIGURE 32: Multicellular horn38.",
+    "You thus need a large horn to control directivity down to low frequencies.",
+    "The following different methods are listed in historical order.",
+    "The patent for the traditional multicellular horn belongs to Edward C.",
+    "FIGURE 33: -6dB beam widths of Electro-Voice model M253 2 by 5 cell horn42.",
+    "EV M253 horn at 10kHz42."
+   ]
+  },
+  {
+   "file": "p014-1.webp",
+   "page": 14,
+   "chapter": "Part 2",
+   "width": 289,
+   "height": 386,
+   "captions_on_page": [
+    "FIGURE 36: Profile of a radial horn42.",
+    "Loudspeakers in the early 1950s40, 41."
+   ]
+  },
+  {
+   "file": "p014-2.webp",
+   "page": 14,
+   "chapter": "Part 2",
+   "width": 508,
+   "height": 358,
+   "captions_on_page": [
+    "FIGURE 36: Profile of a radial horn42.",
+    "Loudspeakers in the early 1950s40, 41."
+   ]
+  },
+  {
+   "file": "p014-3.webp",
+   "page": 14,
+   "chapter": "Part 2",
+   "width": 338,
+   "height": 520,
+   "captions_on_page": [
+    "FIGURE 36: Profile of a radial horn42.",
+    "Loudspeakers in the early 1950s40, 41."
+   ]
+  },
+  {
+   "file": "p014-4.webp",
+   "page": 14,
+   "chapter": "Part 2",
+   "width": 338,
+   "height": 426,
+   "captions_on_page": [
+    "FIGURE 36: Profile of a radial horn42.",
+    "Loudspeakers in the early 1950s40, 41."
+   ]
+  },
+  {
+   "file": "p015-1.webp",
+   "page": 15,
+   "chapter": "Part 2",
+   "width": 338,
+   "height": 329,
+   "captions_on_page": [
+    "FIGURE 39: The Manta-Ray geometry43.",
+    "FIGURE 40: Adiabatic curve for air."
+   ]
+  },
+  {
+   "file": "p015-2.webp",
+   "page": 15,
+   "chapter": "Part 2",
+   "width": 329,
+   "height": 226,
+   "captions_on_page": [
+    "FIGURE 39: The Manta-Ray geometry43.",
+    "FIGURE 40: Adiabatic curve for air."
+   ]
+  },
+  {
+   "file": "p015-3.webp",
+   "page": 15,
+   "chapter": "Part 2",
+   "width": 338,
+   "height": 228,
+   "captions_on_page": [
+    "FIGURE 39: The Manta-Ray geometry43.",
+    "FIGURE 40: Adiabatic curve for air."
+   ]
+  },
+  {
+   "file": "p016-1.webp",
+   "page": 16,
+   "chapter": "Part 2",
+   "width": 666,
+   "height": 511,
+   "captions_on_page": []
+  },
+  {
+   "file": "p016-2.webp",
+   "page": 16,
+   "chapter": "Part 2",
+   "width": 632,
+   "height": 496,
+   "captions_on_page": []
+  },
+  {
+   "file": "p017-1.webp",
+   "page": 17,
+   "chapter": "Part 2",
+   "width": 338,
+   "height": 126,
+   "captions_on_page": [
+    "Dunker and David McBean for proofreading, discussion, and suggestions.",
+    "Company Ltd, 1929.",
+    "High-Frequency Sound,” Audio Engineering, Dec.",
+    "Distortion and wide Dispersion,” AES preprint no.",
+    "Acoustics,” 1968."
+   ]
+  }
+ ]
+}

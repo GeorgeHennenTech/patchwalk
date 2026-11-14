@@ -348,7 +348,9 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
 
 ## Long-term direction (owner's stated goals; not yet scheduled or built)
 - **Private, single-user.** The owner has said this program is strictly for them and will never be distributed.
-  Design for one user; do not add accounts, sharing or public pages. Rule 4 still applies to the name and look.
+  Design for one user; do not add accounts, sharing or public pages. On 14 Nov 2026 the owner said they
+  were giving the link and password to one friend: a private share behind the same single password, which
+  changes nothing in the design (progress is per browser; the friend's guide questions bill the owner's key). Rule 4 still applies to the name and look.
 - **Course:** `docs/CURRICULUM.md` maps 16 tracks and about 400 lessons (one line each); `docs/lessons/` holds
   fully scripted lessons in a fixed shape (43 so far, all drafts); `docs/COURSE_PLAN.md` describes the practice
   synth and lesson engine. A university programme's topic list was used only as a coverage checklist.

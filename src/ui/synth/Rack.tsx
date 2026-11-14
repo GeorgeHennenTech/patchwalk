@@ -15,7 +15,7 @@ import { FilterCurve, Matrix, Reduction } from "./Views";
 export interface Module { id: string; name: string; groups: Group[]; toggle?: keyof SynthState; color?: string; source?: ModSource }
 export const MODULES: Module[] = [
   { id: "sub", name: "Sub", groups: ["Sub"], toggle: "subOn" },
-  { id: "a", name: "Osc A", groups: ["Oscillator A", "Unison"] },
+  { id: "a", name: "Osc A", groups: ["Oscillator A", "Unison"], toggle: "aOn" },
   { id: "b", name: "Osc B", groups: ["Oscillator B"], toggle: "bOn" },
   { id: "noise", name: "Noise", groups: ["Noise"], toggle: "noiseOn" },
   { id: "filter", name: "Filter", groups: ["Filter"], toggle: "filterOn" },

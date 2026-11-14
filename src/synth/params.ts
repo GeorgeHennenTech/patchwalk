@@ -47,6 +47,8 @@ export interface SynthState {
   /** Master level in dB. 0 is the loudest the lesson synth goes. */
   volumeDb: number;
   // ---- oscillator A
+  /** Whether oscillator A is heard. Switched off, it is silent but can still be shaken by B (FM) or anything else. */
+  aOn: boolean;
   shape: Shape;
   /** Wavetable for oscillator A. "none" means use `shape`. */
   table: Table;
@@ -163,7 +165,7 @@ export interface SynthState {
 const DEFAULT_STEPS: number[] = Array.from({ length: LFO_STEPS }, (_, i) => Number((1 - (2 * Math.floor(i / 2)) / 7).toFixed(3)));
 
 export const INITIAL: SynthState = {
-  volumeDb: -12, shape: "saw", table: "none", position: 0, octave: 0, semitone: 0, fine: 0, phase: 0, randomPhase: 0, freeHz: null, aLevelDb: 0,
+  volumeDb: -12, aOn: true, shape: "saw", table: "none", position: 0, octave: 0, semitone: 0, fine: 0, phase: 0, randomPhase: 0, freeHz: null, aLevelDb: 0,
   warp: "none", warpAmount: 0, fmAmount: 0, ringAmount: 0,
   voices: 1, detune: 0, spread: 0,
   bOn: false, bShape: "saw", bOctave: 0, bSemitone: 0, bFine: 0, bPhase: 0, bLevelDb: 0,
@@ -218,6 +220,7 @@ const BASE_PARAMS: Record<string, ParamSpec> = {
   volumeDb: { id: "volumeDb", label: "Volume", group: "Master", kind: "range", min: -48, max: 0, step: 1, unit: "dB" },
   bpm: { id: "bpm", label: "Tempo", group: "Master", kind: "range", min: 60, max: 200, step: 1, unit: "bpm" },
   clickOn: { id: "clickOn", label: "Click", group: "Master", kind: "toggle" },
+  aOn: { id: "aOn", label: "Osc A", group: "Oscillator A", kind: "toggle" },
   shape: { id: "shape", label: "Wave shape", group: "Oscillator A", kind: "choice", choices: SHAPES, names: SHAPE_NAMES },
   table: { id: "table", label: "Wavetable", group: "Oscillator A", kind: "choice", choices: TABLES, names: { none: "Off", basic: "Basic morph", bright: "Bright sweep", vowel: "Vowel" } },
   position: { id: "position", label: "Position", group: "Oscillator A", kind: "range", min: 0, max: 100, step: 1, unit: "%" },

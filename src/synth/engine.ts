@@ -193,9 +193,13 @@ export class Engine {
     return s[`${id}Shape`] === "drawn" ? lfoCoefficients("drawn", s[`${id}Steps`], 2).mean : 0;
   }
 
+  /** Each of oscillator A's voices' level: nothing when A is switched off. */
+  private levelA(s: SynthState): number {
+    return s.aOn ? (OSC_GAIN / Math.sqrt(s.voices)) * dbToGain(s.aLevelDb) : 0;
+  }
   /** The level that a route's destination is set to, for scaling level modulation. */
   private baseLevel(s: SynthState, dest: Route["dest"]): number {
-    return dest === "aLevelDb" ? (OSC_GAIN / Math.sqrt(s.voices)) * dbToGain(s.aLevelDb) : dest === "bLevelDb" ? OSC_GAIN * dbToGain(s.bLevelDb)
+    return dest === "aLevelDb" ? this.levelA(s) : dest === "bLevelDb" ? OSC_GAIN * dbToGain(s.bLevelDb)
       : dest === "subLevelDb" ? OSC_GAIN * dbToGain(s.subLevelDb) : dest === "noiseLevelDb" ? dbToGain(s.noiseLevelDb) : 1;
   }
   private depthOf(s: SynthState, r: Route, note: number): number {
@@ -342,7 +346,7 @@ export class Engine {
       modB.fm.connect(osc.frequency);
       osc.frequency.value = base * 2 ** (cents / 1200);
       const gain = this.ctx.createGain();
-      gain.gain.value = (OSC_GAIN / Math.sqrt(s.voices)) * dbToGain(s.aLevelDb);
+      gain.gain.value = this.levelA(s);
       const pan = this.ctx.createStereoPanner();
       pan.pan.value = pans[i]!;
       osc.connect(gain).connect(pan);
@@ -463,7 +467,7 @@ export class Engine {
       if (hA) x.osc.setPeriodicWave(this.wave(hA.sin, v.phaseA + (next.voices > 1 ? i / next.voices : 0), hA.cos));
       x.osc.frequency.setTargetAtTime(base * 2 ** (offsets[i]! / 1200), t, RAMP);
       x.pan.pan.setTargetAtTime(pans[i]!, t, RAMP);
-      if (next.aLevelDb !== prev.aLevelDb) x.gain.gain.setTargetAtTime((OSC_GAIN / Math.sqrt(next.voices)) * dbToGain(next.aLevelDb), t, RAMP);
+      if (next.aLevelDb !== prev.aLevelDb || next.aOn !== prev.aOn) x.gain.gain.setTargetAtTime(this.levelA(next), t, RAMP);
     });
     if (next.bShape !== prev.bShape || next.bPhase !== prev.bPhase) v.modB.osc.setPeriodicWave(this.wave(this.shapeHarmonics(next.bShape), next.bPhase / 360));
     v.modB.osc.frequency.setTargetAtTime(playedHzB(next, v.note), t, RAMP);

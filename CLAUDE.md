@@ -359,6 +359,17 @@ Added after the first eight milestones (owner asked for all four in one go):
     `dropped` flag. The tabs holding grips are `div role="tab"`, not buttons: browsers will not start a drag
     from inside a button. HTML drag-and-drop does not work on touch screens. In automated tests, move the
     mouse in steps with short waits and keep both ends on screen; Playwright's `dragTo` was unreliable here.
+  - **Pitch reports from the owner, and an Osc A switch (14 Nov 2026).** The owner said Z/X, octave and
+    semitone "aren't working". Measured through the real page they do change pitch, so nothing was broken in
+    the engine; what was fixed is everything that made it look broken: Z and X now move a note that is
+    already sounding (latched with Hold, or a letter still held) instead of waiting for the next key; they
+    also move the on-screen keyboard, so clicks follow the octave and the lit key stays in view; letter keys
+    and Z/X work while a menu still has focus (they used to be swallowed); number boxes (octave, semitone,
+    voices) step with a plain click, right half up and left half down, as well as by dragging; and the one
+    fixed-frequency lesson ("Pitch is speed") says under the keyboard that keys, octave and semitone do not
+    change the note there. **If the owner still reports it, ask which lesson and whether Hold was on.**
+    `aOn` switches oscillator A's sound off (its level goes to zero, nothing restarts; it can still be shaken
+    by FM). In development the engine is on `window.__patchwalkEngine` so tests can listen to the real page.
   - Not built yet: MIDI input, a mod wheel, drag-and-drop on touch screens, reordering effects. **Owner's order (13 Nov 2026), after
     warp/FM/ring which is done: the first impact lessons (they need nothing new); then physical modelling
     and bioacoustics.**

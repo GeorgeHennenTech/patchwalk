@@ -51,6 +51,8 @@ export function useSynth() {
   const start = useCallback(async () => {
     engine.current ??= new Engine(stateRef.current);
     await engine.current.start();
+    // In development only: lets an automated test listen to what is really playing.
+    if (import.meta.env.DEV) (window as unknown as { __patchwalkEngine?: Engine }).__patchwalkEngine = engine.current;
     setRunning(engine.current.running);
   }, []);
 
@@ -118,15 +120,29 @@ export function useSynth() {
     // Letters typed into a text box must not play notes; sliders and checkboxes do not count as typing.
     const typing = (e: KeyboardEvent) => {
       const el = e.target;
-      if (el instanceof HTMLTextAreaElement || el instanceof HTMLSelectElement || (el instanceof HTMLElement && el.isContentEditable)) return true;
+      if (el instanceof HTMLTextAreaElement || (el instanceof HTMLElement && el.isContentEditable)) return true;
       return el instanceof HTMLInputElement && !["range", "checkbox", "radio", "button"].includes(el.type);
     };
     const onDown = (e: KeyboardEvent) => {
       const key = e.key.toLowerCase();
       if (e.repeat || e.metaKey || e.ctrlKey || e.altKey || typing(e)) return;
+      // a menu that still has focus would otherwise jump to an entry starting with the letter pressed
+      const inMenu = e.target instanceof HTMLSelectElement;
+      if (inMenu && (key === "z" || key === "x" || key === "c" || key === "v" || KEY_MAP[key] !== undefined)) { e.preventDefault(); e.target.blur(); }
       if (key === "z" || key === "x") {
-        keyOctaveRef.current = shiftOctave(keyOctaveRef.current, key === "x" ? 1 : -1);
+        const before = keyOctaveRef.current;
+        keyOctaveRef.current = shiftOctave(before, key === "x" ? 1 : -1);
         setKeyOctave(keyOctaveRef.current);
+        // A note that is sounding moves with the octave straight away: one latched with Hold, or a letter still
+        // held down. Otherwise pressing Z or X would seem to do nothing until the next key was played.
+        const by = 12 * (keyOctaveRef.current - before), eng = engine.current;
+        if (by !== 0 && eng?.running) {
+          const moved = new Map<number, number>();
+          for (const n of [...eng.held]) { eng.noteOff(n); eng.noteOn(n + by, keyVelocityRef.current); moved.set(n, n + by); }
+          for (const [letter, n] of letters.current) if (moved.has(n)) letters.current.set(letter, moved.get(n)!);
+          down.current = new Set([...down.current].map((n) => moved.get(n) ?? n));
+          if (moved.size) { track.current = { ...track.current, lastNote: [...moved.values()].at(-1)! }; sync(); }
+        }
         return;
       }
       if (key === "c" || key === "v") {

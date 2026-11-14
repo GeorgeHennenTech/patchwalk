@@ -1073,3 +1073,12 @@ describe("dropping a source on a knob", () => {
     expect(DRAGGABLE).toEqual(["env2", "lfo1", "lfo2", "lfo3", "vel", "key", "macro1", "macro2", "macro3", "macro4"]);
   });
 });
+
+describe("oscillator A's switch", () => {
+  it("is on to begin with, is a switch on the Osc A panel, and no lesson starts with it off", () => {
+    expect(INITIAL.aOn).toBe(true);
+    expect(PARAMS.aOn).toMatchObject({ kind: "toggle", group: "Oscillator A" });
+    expect(MODULES.find((m) => m.id === "a")!.toggle).toBe("aOn");
+    for (const l of LESSONS) expect((l.initial as Partial<SynthState> | undefined)?.aOn, l.id).not.toBe(false);
+  });
+});

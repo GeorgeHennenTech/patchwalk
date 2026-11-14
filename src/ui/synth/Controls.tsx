@@ -98,7 +98,7 @@ function Knob({ id, synth, spot }: { id: keyof SynthState; synth: Synth; spot: b
   const spec = PARAMS[id]!;
   const value = (synth.state[id] ?? spec.min!) as number;
   const box = isBox(id);
-  const drag = useRef<{ y: number; travel: number } | null>(null);
+  const drag = useRef<{ y: number; travel: number; moved: boolean } | null>(null);
   const [depthText, setDepthText] = useState<string | null>(null);
   /** While a source is being dragged over this knob: whether it can be dropped here, and what to say. */
   const [over, setOver] = useState<{ ok: boolean; text: string } | null>(null);
@@ -134,15 +134,20 @@ function Knob({ id, synth, spot }: { id: keyof SynthState; synth: Synth; spot: b
       onDragLeave={() => setOver(null)}
       onDrop={(e) => { e.preventDefault(); const c = offer(); setOver(null); endDrag(); if (c?.ok) { synth.flag("dropped"); synth.setState(c.change); } }} style={lit ? ({ "--glow": mods[0]?.source.color ?? slots[0]!.color } as React.CSSProperties) : undefined} role="slider" tabIndex={0} aria-label={spec.label} aria-orientation="vertical"
       aria-valuemin={spec.min} aria-valuemax={spec.max} aria-valuenow={value} aria-valuetext={fmt(id, value)}
-      title={`${spec.label}: drag up or down, or click and use the arrow keys. Double-click to reset.${lit ? ` Moved by ${[...mods.map((m) => m.source.name), ...slots.map((m) => m.name)].join(" and ")}.` : ""}`}
+      title={`${spec.label}: {box ? "click the right half to go up and the left half to go down, drag up or down, or use the arrow keys" : "drag up or down, or click and use the arrow keys"}. Double-click to reset.${lit ? ` Moved by ${[...mods.map((m) => m.source.name), ...slots.map((m) => m.name)].join(" and ")}.` : ""}`}
       onKeyDown={onKey} onDoubleClick={reset}
-      onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); e.currentTarget.focus(); drag.current = { y: e.clientY, travel: t }; }}
+      onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); e.currentTarget.focus(); drag.current = { y: e.clientY, travel: t, moved: false }; }}
       onPointerMove={(e) => {
         if (!drag.current) return;
+        if (Math.abs(drag.current.y - e.clientY) > 3) drag.current.moved = true;
         const moved = (drag.current.y - e.clientY) / pixels;
         set(fromTravel(spec, drag.current.travel + (e.shiftKey ? moved / 8 : moved)));
       }}
-      onPointerUp={() => { drag.current = null; }} onPointerCancel={() => { drag.current = null; }}>
+      onPointerUp={(e) => {
+        // a number box also steps with a plain click: the right half goes up, the left half down
+        if (box && drag.current && !drag.current.moved) { const r = e.currentTarget.getBoundingClientRect(); set(nudge(spec, value, e.clientX > r.left + r.width / 2 ? 1 : -1, false)); }
+        drag.current = null;
+      }} onPointerCancel={() => { drag.current = null; }}>
       {!box && (
         <svg viewBox="-6 -6 60 60" aria-hidden>
           {mods.map((m, i) => {
@@ -217,10 +222,11 @@ const WHITE = [0, 2, 4, 5, 7, 9, 11];
 
 export function Keyboard({ synth, from = 48, octaves = 3 }: { synth: Synth; from?: number; octaves?: number }) {
   const pressed = useRef<number | null>(null);
-  const notes = Array.from({ length: octaves * 12 + 1 }, (_, i) => from + i);
-  // The letters printed on the keys follow the octave chosen with Z and X.
+  // Z and X move the whole keyboard by octaves: the keys on screen, the letters on them, and what a click plays.
+  const first = from + 12 * synth.keyOctave;
+  const notes = Array.from({ length: octaves * 12 + 1 }, (_, i) => first + i);
   const LABEL = Object.fromEntries(Object.entries(KEY_MAP).map(([k, n]) => [n + 12 * synth.keyOctave, k.toUpperCase()]));
-  const shown = LABEL[from] !== undefined || Object.keys(LABEL).some((n) => notes.includes(Number(n)));
+  const shown = LABEL[first] !== undefined || Object.keys(LABEL).some((n) => notes.includes(Number(n)));
   const whites = notes.filter((n) => WHITE.includes(n % 12));
   const release = () => { if (pressed.current !== null) { synth.noteOff(pressed.current); pressed.current = null; } };
   useEffect(() => { window.addEventListener("pointerup", release); return () => window.removeEventListener("pointerup", release); });
@@ -244,6 +250,7 @@ export function Keyboard({ synth, from = 48, octaves = 3 }: { synth: Synth; from
         );
       })}
     </div>
+    {synth.state.freeHz !== null && <p className="keys-hint fixed" role="note">In this lesson every key plays the same pitch: the Frequency knob sets it, so the keys, octave and semitone do not change the note.</p>}
     <p className="keys-hint" role="status">Computer keys: <kbd>Z</kbd> octave down, <kbd>X</kbd> octave up, <kbd>C</kbd> softer, <kbd>V</kbd> harder (now {synth.keyVelocity} of 127). With the mouse, click lower on a key to strike harder.{synth.keyOctave !== 0 && ` Now ${synth.keyOctave > 0 ? "+" : ""}${synth.keyOctave} octave${Math.abs(synth.keyOctave) === 1 ? "" : "s"}${shown ? "" : " (beyond the keys drawn here)"}.`}</p>
     </div>
   );

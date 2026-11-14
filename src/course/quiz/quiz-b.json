@@ -1,0 +1,572 @@
+{
+  "C2.1": [
+    {
+      "q": "What does a low-pass filter do to a sound?",
+      "options": [
+        "Turns down everything below the cutoff",
+        "Turns down everything above the cutoff",
+        "Keeps only a thin slice around the cutoff",
+        "Turns the whole sound down by the same amount"
+      ],
+      "answer": 1,
+      "why": "A low-pass filter lets the lows pass and turns down what is above the cutoff.",
+      "point": 0
+    },
+    {
+      "q": "You slowly lower the cutoff on a bright, buzzy note. What do you hear?",
+      "options": [
+        "The note drops lower in pitch",
+        "The lowest harmonics vanish first",
+        "The buzz fades from the top down",
+        "The note gets louder and harsher"
+      ],
+      "answer": 2,
+      "why": "Lowering the cutoff removes harmonics from the top, one after another, so the note goes from buzzy to rounded to dull.",
+      "point": 1
+    },
+    {
+      "q": "The low-pass curve is flat on the left and falls away on the right. What does that tell you?",
+      "options": [
+        "Highs get through and lows are turned down",
+        "The note gets quieter the longer it sounds",
+        "The note sounds lower when you play higher keys",
+        "Lows get through and highs are turned down"
+      ],
+      "answer": 3,
+      "why": "The curve shows what gets through at each frequency: flat where sound passes, falling where it is turned down.",
+      "point": 2
+    }
+  ],
+  "C2.2": [
+    {
+      "q": "Where does resonance add its boost?",
+      "options": [
+        "In a narrow band right at the cutoff",
+        "At the very lowest frequencies only",
+        "Evenly across the whole sound",
+        "In a wide band far above the cutoff"
+      ],
+      "answer": 0,
+      "why": "Resonance boosts a narrow band right at the cutoff, seen as a bump on the curve.",
+      "point": 0
+    },
+    {
+      "q": "Why does a cutoff sweep with resonance whistle or squelch instead of plainly fading?",
+      "options": [
+        "The note you play changes pitch during the sweep",
+        "The whole sound gets louder as you sweep",
+        "The peak pushes forward one harmonic after another",
+        "The filter switches shape as the cutoff moves"
+      ],
+      "answer": 2,
+      "why": "Whatever harmonic sits under the bump is pushed forward, so the sweep picks out harmonics one by one.",
+      "point": 1
+    },
+    {
+      "q": "You push resonance very high. What happens to the rest of the sound on this synth?",
+      "options": [
+        "It gets louder along with the peak",
+        "It is turned down, so the body thins",
+        "It stays exactly as loud as before",
+        "It gets brighter from the top down"
+      ],
+      "answer": 1,
+      "why": "On this synth the rest of the sound is turned down as the peak grows, so there is less body.",
+      "point": 2
+    }
+  ],
+  "C2.3": [
+    {
+      "q": "You want to drain a note's weight and leave only the fizzy top. Which shape do you pick?",
+      "options": [
+        "Low-pass",
+        "Band-pass",
+        "Notch",
+        "High-pass"
+      ],
+      "answer": 3,
+      "why": "High-pass keeps what is above the cutoff, so raising it takes the weight away from the bottom up.",
+      "point": 0
+    },
+    {
+      "q": "A sound is small and boxy, like a voice on a telephone. Which shape gives that?",
+      "options": [
+        "Notch, which removes a slice",
+        "Low-pass, which keeps the lows",
+        "Band-pass, which keeps a slice",
+        "High-pass, which keeps the highs"
+      ],
+      "answer": 2,
+      "why": "Band-pass keeps only a slice around the cutoff, which gives a small, boxy sound.",
+      "point": 1
+    },
+    {
+      "q": "On a band-pass filter, what does raising resonance do?",
+      "options": [
+        "Makes the slice narrower",
+        "Makes the slice wider",
+        "Moves the slice higher up",
+        "Turns the slice into a notch"
+      ],
+      "answer": 0,
+      "why": "On band-pass and notch, resonance sets how narrow the slice is.",
+      "point": 2
+    }
+  ],
+  "C2.4": [
+    {
+      "q": "What does a filter's slope describe?",
+      "options": [
+        "Where the cutoff sits in the sound",
+        "How big the boost at the cutoff is",
+        "How fast it turns things down past the cutoff",
+        "How loud the sound is before the filter"
+      ],
+      "answer": 2,
+      "why": "Slope is how quickly the filter turns things down the further past the cutoff they are.",
+      "point": 0
+    },
+    {
+      "q": "On the steep slope, how far down is a harmonic one octave above the cutoff?",
+      "options": [
+        "12 dB down",
+        "24 dB down",
+        "Not turned down at all",
+        "Removed completely"
+      ],
+      "answer": 1,
+      "why": "The steep slope is 24 decibels per octave; the gentle one is 12.",
+      "point": 1
+    },
+    {
+      "q": "You switch from gentle to steep without touching the cutoff. What changes?",
+      "options": [
+        "The sound gets brighter",
+        "The note drops in pitch",
+        "Nothing, until the cutoff moves",
+        "The sound gets darker"
+      ],
+      "answer": 3,
+      "why": "At the same cutoff a steeper slope turns the upper harmonics down more, so it sounds darker.",
+      "point": 2
+    }
+  ],
+  "C2.5": [
+    {
+      "q": "Why does drive make a sound thicker and grittier?",
+      "options": [
+        "It lowers the cutoff of the filter",
+        "Squashing the wave's peaks adds harmonics",
+        "It adds a boost right at the cutoff",
+        "It removes the highest harmonics first"
+      ],
+      "answer": 1,
+      "why": "Drive squashes the wave's peaks flat, and changing a wave's shape adds harmonics.",
+      "point": 0
+    },
+    {
+      "q": "Drive is high. What happens to the grit when you close the filter?",
+      "options": [
+        "The filter tames it: warm and thick",
+        "It gets harsher than with the filter open",
+        "It stays the same, as drive comes after the filter",
+        "It disappears, leaving a clean tone"
+      ],
+      "answer": 0,
+      "why": "The squashing happens before the filter, so the filter smooths the new harmonics when it closes.",
+      "point": 1
+    },
+    {
+      "q": "With drive up, one key plays two notes instead of one. What do you hear?",
+      "options": [
+        "A cleaner sound than one note gave",
+        "The same clear tone, only louder",
+        "A growl, rougher than either note alone",
+        "A quieter sound, as the notes cancel"
+      ],
+      "answer": 2,
+      "why": "Single notes stay clear under drive, but two notes together turn rough.",
+      "point": 2
+    }
+  ],
+  "C2.6": [
+    {
+      "q": "With no key tracking, why can a high note sound duller than a low one?",
+      "options": [
+        "High notes are always quieter than low notes",
+        "The filter switches itself off for high notes",
+        "The cutoff climbs too far on high notes",
+        "The fixed cutoff sits below the high note's harmonics"
+      ],
+      "answer": 3,
+      "why": "The cutoff stays at one frequency while the note moves up past it, so the high note loses its harmonics.",
+      "point": 0
+    },
+    {
+      "q": "What does key tracking do?",
+      "options": [
+        "Moves the cutoff with the key you play",
+        "Moves the pitch with the cutoff you set",
+        "Makes high keys louder than low keys",
+        "Adds a boost at the cutoff for each key"
+      ],
+      "answer": 0,
+      "why": "Key tracking moves the cutoff up and down with the key you play.",
+      "point": 1
+    },
+    {
+      "q": "At 100% key tracking, what stays the same from note to note?",
+      "options": [
+        "The frequency of the cutoff",
+        "The brightness of each note",
+        "The pitch that each key plays",
+        "The length of each note"
+      ],
+      "answer": 1,
+      "why": "At 100% the cutoff moves as far as the pitch does, so every note keeps the same brightness.",
+      "point": 2
+    }
+  ],
+  "C2.7": [
+    {
+      "q": "What happens when noise goes through a filter with very high resonance?",
+      "options": [
+        "The noise gets louder but stays pitchless",
+        "The noise is removed, leaving silence",
+        "The filter rings, and you hear a whistle",
+        "The noise turns smooth and dull"
+      ],
+      "answer": 2,
+      "why": "At high resonance the filter rings at its cutoff, and noise keeps that ringing going.",
+      "point": 0
+    },
+    {
+      "q": "How do you change the pitch of the filter's whistle?",
+      "options": [
+        "Move the cutoff",
+        "Change the level of the noise",
+        "Turn the resonance down a little",
+        "Change the level of oscillator A"
+      ],
+      "answer": 0,
+      "why": "The whistle's pitch is the cutoff frequency, so moving the cutoff moves the pitch.",
+      "point": 1
+    },
+    {
+      "q": "What lets you play the filter's whistle as a tune from the keys?",
+      "options": [
+        "Key tracking at zero",
+        "Resonance at zero",
+        "Oscillator A at full level",
+        "Key tracking at 100%"
+      ],
+      "answer": 3,
+      "why": "With full key tracking the cutoff follows the keys, so the whistle moves in step with them.",
+      "point": 2
+    }
+  ],
+  "C2.C": [
+    {
+      "q": "When matching a hidden filtered sound, what should you ask first?",
+      "options": [
+        "Whether it is clean or gritty",
+        "What is missing: top, bottom or both",
+        "Whether it falls away gently or sharply",
+        "Whether there is a whistle in it"
+      ],
+      "answer": 1,
+      "why": "Asking what is missing first gives you the filter type and roughly where the cutoff is.",
+      "point": 0
+    },
+    {
+      "q": "The hidden sound has a whistle or edge at one frequency. Which setting does that point to?",
+      "options": [
+        "Drive",
+        "Slope",
+        "Resonance",
+        "Filter type"
+      ],
+      "answer": 2,
+      "why": "A whistle or edge at one spot is resonance; grit and squashing is drive.",
+      "point": 1
+    },
+    {
+      "q": "What is the best way to compare your sound with the target?",
+      "options": [
+        "Switch quickly between the two",
+        "Listen to the target for a long time",
+        "Read the target's numbers from the app",
+        "Change every setting before listening again"
+      ],
+      "answer": 0,
+      "why": "Quick switching between the target and your sound tells you more than long listening.",
+      "point": 2
+    }
+  ],
+  "C3.1": [
+    {
+      "q": "Which of the four envelope stages is a level, not a time?",
+      "options": [
+        "Attack",
+        "Decay",
+        "Release",
+        "Sustain"
+      ],
+      "answer": 3,
+      "why": "Attack, decay and release are times; sustain is the level the note stays at while held.",
+      "point": 0
+    },
+    {
+      "q": "You raise Release to about one second. When do you hear the difference?",
+      "options": [
+        "While the key is held down",
+        "After you let go of the key",
+        "At the very start of the note",
+        "Only when sustain is at zero"
+      ],
+      "answer": 1,
+      "why": "Release is how long the note takes to fade after you let go, so it only matters then.",
+      "point": 1
+    },
+    {
+      "q": "Sustain is at 0 with a short decay. You hold a key. What do you hear?",
+      "options": [
+        "A pluck that dies away while you hold",
+        "A note that fades in slowly",
+        "A steady note for as long as you hold",
+        "A note that starts only when you let go"
+      ],
+      "answer": 0,
+      "why": "With no sustain the note falls to silence by itself, which is a pluck.",
+      "point": 2
+    }
+  ],
+  "C3.2": [
+    {
+      "q": "Which settings give an organ shape?",
+      "options": [
+        "No attack, no sustain, a short decay",
+        "Long attack, high sustain, long release",
+        "No attack, full sustain, no release",
+        "Long attack, no sustain, no release"
+      ],
+      "answer": 2,
+      "why": "An organ switches on and off at once and stays at full level in between.",
+      "point": 0
+    },
+    {
+      "q": "On a pluck, what sets how long the note lasts?",
+      "options": [
+        "The sustain level",
+        "The decay time",
+        "The attack time",
+        "How long you hold the key"
+      ],
+      "answer": 1,
+      "why": "A pluck has no sustain, so it dies away by itself and the decay sets its length.",
+      "point": 1
+    },
+    {
+      "q": "The oscillators stay the same. What turns an organ sound into a pad?",
+      "options": [
+        "It starts at once and dies away",
+        "It switches on and off like a light",
+        "It stops as soon as the key is let go",
+        "It swells in and fades out slowly"
+      ],
+      "answer": 3,
+      "why": "A pad has a slow attack, high sustain and slow release, so it swells in and fades out.",
+      "point": 2
+    }
+  ],
+  "C3.3": [
+    {
+      "q": "What does Hold do to a note?",
+      "options": [
+        "Keeps it at full level for a time after the attack",
+        "Keeps it ringing for a time after you let go",
+        "Sets the level it rests at while the key is held",
+        "Makes it take longer to reach full level"
+      ],
+      "answer": 0,
+      "why": "Hold keeps the note at full level after the attack, before the decay begins.",
+      "point": 0
+    },
+    {
+      "q": "You switch Fall from Eased to Sharp and leave the decay time alone. How does the note seem?",
+      "options": [
+        "Longer and flatter, then a sudden stop",
+        "Exactly as long as it was before",
+        "Much shorter, with a snappy front",
+        "Slower to reach full level"
+      ],
+      "answer": 2,
+      "why": "The decay time is the same, but a sharp fall loses most of its level almost at once, so it seems shorter.",
+      "point": 1
+    },
+    {
+      "q": "Which fall shape sounds mechanical instead of plucked or struck?",
+      "options": [
+        "Eased",
+        "Straight",
+        "Sharp",
+        "Sharp with Hold added"
+      ],
+      "answer": 1,
+      "why": "A straight fall loses level at an even rate, which sounds mechanical; eased and sharp sound struck or plucked.",
+      "point": 2
+    }
+  ],
+  "C3.4": [
+    {
+      "q": "Envelope 2 is sent to the cutoff with a positive amount. What does each note do?",
+      "options": [
+        "Starts quiet, then gets louder",
+        "Starts high in pitch, then drops",
+        "Stays at one steady brightness",
+        "Starts bright, then closes down"
+      ],
+      "answer": 3,
+      "why": "The envelope pushes the cutoff up at the start of each note and lets it fall back.",
+      "point": 0
+    },
+    {
+      "q": "The bright start of each note is over too quickly. Which Envelope 2 control do you raise?",
+      "options": [
+        "Decay",
+        "Amount",
+        "Sends to",
+        "Cutoff"
+      ],
+      "answer": 0,
+      "why": "Decay sets how long the change takes; amount sets how far the envelope pushes.",
+      "point": 1
+    },
+    {
+      "q": "What does turning Amount below zero do?",
+      "options": [
+        "Each note starts even brighter than before",
+        "The envelope stops moving the cutoff",
+        "Each note starts muffled and opens up",
+        "Each note fades in from silence"
+      ],
+      "answer": 2,
+      "why": "A negative amount turns the shape upside down, so the cutoff starts low and rises.",
+      "point": 2
+    }
+  ],
+  "C3.5": [
+    {
+      "q": "What do you hear when an envelope is sent to an oscillator's pitch?",
+      "options": [
+        "Each note gets brighter, then duller",
+        "Each note slides into place",
+        "Each note fades in slowly",
+        "Each note rings on after you let go"
+      ],
+      "answer": 1,
+      "why": "An envelope on pitch makes each note start away from its real pitch and slide into place.",
+      "point": 0
+    },
+    {
+      "q": "You want a pitch envelope to sound like an impact, not a slide. What do you set?",
+      "options": [
+        "A large amount and a short decay",
+        "A small amount and a long decay",
+        "A large amount and a long decay",
+        "A small amount and no decay at all"
+      ],
+      "answer": 0,
+      "why": "Fast and far reads as an impact; slow and slight reads as a scoop.",
+      "point": 1
+    },
+    {
+      "q": "Why send the pitch envelope to Osc B only and leave Osc A alone?",
+      "options": [
+        "To make both oscillators fall together",
+        "To make the whole note scoop up from below",
+        "To stop Osc A from sounding at the start",
+        "To add a knock on top of a steady tone"
+      ],
+      "answer": 3,
+      "why": "A stays steady while B falls on top of it, which adds a knock at the front of the sound.",
+      "point": 2
+    }
+  ],
+  "C3.6": [
+    {
+      "q": "Does the envelope move the cutoff differently on a high-pass than on a low-pass?",
+      "options": [
+        "Yes: on a high-pass it pushes down first",
+        "Yes: on a high-pass the cutoff stays still",
+        "No: it pushes up then falls on both",
+        "Yes: on a high-pass it only rises"
+      ],
+      "answer": 2,
+      "why": "The envelope moves the cutoff the same way on every shape; what you hear depends on which side the filter keeps.",
+      "point": 0
+    },
+    {
+      "q": "On a high-pass, the cutoff falls during each note. What do you hear?",
+      "options": [
+        "A bright start that closes down",
+        "A thin start, then the low end arrives",
+        "A full start that thins out",
+        "A steady tone with no change"
+      ],
+      "answer": 1,
+      "why": "On a high-pass a falling cutoff lets the low end back in, so the body of the note arrives late.",
+      "point": 1
+    },
+    {
+      "q": "On a band-pass with a falling cutoff, what does each note sound like?",
+      "options": [
+        "A vowel changing as a slice slides down",
+        "The body of the note arriving late",
+        "Brightness draining away from the top",
+        "A note slowly fading in from silence"
+      ],
+      "answer": 0,
+      "why": "On a band-pass the slice that gets through slides downward, which sounds like a vowel changing.",
+      "point": 2
+    }
+  ],
+  "C3.C": [
+    {
+      "q": "How should you listen to a hidden sound's shape in time?",
+      "options": [
+        "The whole note as one impression",
+        "Only the first instant of the note",
+        "Only what happens after you let go",
+        "Start, middle and end, each separately"
+      ],
+      "answer": 3,
+      "why": "Listening to the start, the middle and the end separately tells you how the note begins, settles and ends.",
+      "point": 0
+    },
+    {
+      "q": "A hidden sound changes brightness during each note. What is causing it?",
+      "options": [
+        "A long release on the loudness envelope",
+        "A slow attack on the loudness envelope",
+        "An envelope sent to the filter",
+        "A higher sustain level on the note"
+      ],
+      "answer": 2,
+      "why": "A change in brightness during the note is an envelope on the filter.",
+      "point": 1
+    },
+    {
+      "q": "Why is being told 'too long' or 'too short' enough to match a time?",
+      "options": [
+        "The app shows the number after two tries",
+        "The ear judges times coarsely: double or half",
+        "Times barely change how a note sounds",
+        "Every hidden sound uses the same times"
+      ],
+      "answer": 1,
+      "why": "The ear judges times coarsely, so within about double or half of the target counts as matched.",
+      "point": 2
+    }
+  ]
+}

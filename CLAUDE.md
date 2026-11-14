@@ -370,6 +370,18 @@ Added after the first eight milestones (owner asked for all four in one go):
     change the note there. **If the owner still reports it, ask which lesson and whether Hold was on.**
     `aOn` switches oscillator A's sound off (its level goes to zero, nothing restarts; it can still be shaken
     by FM). In development the engine is on `window.__patchwalkEngine` so tests can listen to the real page.
+  - **Seeing the movement (14 Nov 2026, owner's request).** `modulated(state, note, true)` in `mod.ts` gives
+    the settings with every connection that lands on a knob applied for this instant (fast ones too; the
+    audio never uses it). `synth.live()` returns it for the note sounding now (`engine.liveNote`), worked
+    out at most once a frame. Three things draw from it: `FilterCurve` (so the curve and its dot move with
+    an LFO or envelope), `LivePointer` on any knob a source is moving (a coloured pointer and dot that
+    follow the movement, drawn straight onto the page each frame; the knob's own pointer stays where it was
+    left), and `Playhead` on each LFO's picture (a line showing where in its cycle it is). All stop when no
+    note sounds. Pitch knobs follow the ring's convention (amount/200 of travel), not literal cents.
+    "Draw your own shape" under an LFO's picture turns the current shape into sixteen draggable bars (the
+    Drawn shape, which already existed). In the one fixed-frequency lesson the Osc A panel now says its
+    pitch is pinned and offers "Follow the keys instead": the owner had reported that B's pitch controls
+    worked and A's did not, which is exactly that lesson's whole-synth view.
   - Not built yet: MIDI input, a mod wheel, drag-and-drop on touch screens, reordering effects. **Owner's order (13 Nov 2026), after
     warp/FM/ring which is done: the first impact lessons (they need nothing new); then physical modelling
     and bioacoustics.**

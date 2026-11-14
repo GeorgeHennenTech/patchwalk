@@ -397,7 +397,11 @@ export class Engine {
   }
 
   /** What the control-rate modulation follows: the most recently played note that is still held. */
-  private noteNow(v: Voice | undefined): { note: number; velocity: number; age: number; held: number; startedAt: number } | undefined {
+  /** The note the screen should follow: the most recent one held, or failing that a sound being auditioned. */
+  get liveNote(): ReturnType<Engine["noteNow"]> {
+    return this.noteNow(this.voices[this.voices.length - 1] ?? this.auditions.find((a) => a.voice.startedAt <= this.ctx.currentTime)?.voice);
+  }
+  noteNow(v: Voice | undefined): { note: number; velocity: number; age: number; held: number; startedAt: number } | undefined {
     if (!v) return undefined;
     const now = this.ctx.currentTime;
     return { note: v.note, velocity: v.velocity, age: now - v.startedAt, held: v.releasedAt === undefined ? Infinity : v.releasedAt - v.startedAt, startedAt: v.startedAt };

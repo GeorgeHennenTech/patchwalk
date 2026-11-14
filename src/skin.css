@@ -389,6 +389,14 @@ label.mod-head { cursor: pointer; }
 .pick.menu { flex-wrap: nowrap; }
 .pick select { flex: 1; min-width: 0; padding: 4px 6px; border-radius: 8px; border: 2px solid var(--line); background: var(--panel); color: var(--text); font: inherit; font-size: 13px; }
 .rack.mods .mod { flex: 1 1 190px; }
+/* an LFO's playhead, the draw-your-own link, and the note shown when Osc A's pitch is fixed */
+.mod-wave .playhead { stroke: #fff; stroke-width: 2; vector-effect: non-scaling-stroke; opacity: 0.9; }
+.draw-own { font-size: 12px; align-self: flex-start; }
+.rack.full .mod-body > .draw-own { flex: 0 1 auto; font-size: 11px; }
+.fixed-pitch { margin: 0; padding: 4px 8px; border: 2px dashed var(--accent); border-radius: 8px; font-size: 12px; flex: 1 1 100%; }
+/* the pointer that follows a source's movement, on top of the knob's own */
+.knob-live path { stroke-width: 3; stroke-linecap: round; fill: none; filter: drop-shadow(0 0 2px currentColor); }
+.knob-live circle { stroke: #fff; stroke-width: 1; }
 /* ---- drag a source onto a knob ---- */
 .grip { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid currentColor; font-size: 12px; line-height: 1; cursor: grab; user-select: none; -webkit-user-select: none; flex: 0 0 auto; background: rgba(0, 0, 0, 0.35); }
 .grip:active { cursor: grabbing; }
@@ -452,8 +460,7 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 .rack.full .pick.menu select { width: 100%; min-width: 56px; }
 .synth.whole .synth-ctls { margin: 4px 0; }
 .synth.whole .keys { height: 74px; }
-/* on a wide screen the page tabs sit on the same line as the tempo, meter and volume */
-@media (min-width: 1100px) { .synth.whole .synth-tabs { margin-top: -40px; width: max-content; } }
+
 .synth.whole .synth-ctls .ctl { padding: 3px 10px; flex: 0 1 auto; }
 .mod-tabs { display: flex; gap: 2px; padding: 3px 3px 0; border-bottom: 2px solid var(--glow, var(--line)); }
 .mod-tabs .mod-tab { display: inline-flex; align-items: center; gap: 4px; font: inherit; font-size: 11px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; padding: 3px 7px; border-radius: 8px 8px 0 0; border: 1.5px solid var(--line); border-bottom: 0; background: transparent; color: var(--muted); cursor: pointer; white-space: nowrap; }

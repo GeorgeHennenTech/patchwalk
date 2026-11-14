@@ -2,6 +2,7 @@
 // done since the current lesson step began.
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Snapshot } from "../course/types";
+import { modulated } from "./mod";
 import { Engine } from "./engine";
 import { applyMacros } from "./macros";
 import { INITIAL, type SynthState } from "./params";
@@ -170,8 +171,21 @@ export function useSynth() {
   // Silence on unmount so sound never outlives the lesson screen.
   useEffect(() => () => { engine.current?.dispose(); void engine.current?.ctx.suspend(); }, []);
 
+  /**
+   * The settings as they are at this instant, with every source's movement applied: what the pictures and
+   * the knobs' moving pointers show. Worked out at most once per frame however many things ask for it.
+   */
+  const liveCache = useRef<{ at: number; base: SynthState; value: SynthState } | null>(null);
+  const live = useCallback((): SynthState => {
+    const t = performance.now(), base = stateRef.current, c = liveCache.current;
+    if (c && c.base === base && t - c.at < 12) return c.value;
+    const value = modulated(applyMacros(base), engine.current?.liveNote, true);
+    liveCache.current = { at: t, base, value };
+    return value;
+  }, []);
+
   const snap = (): Snapshot => snapshot(track.current, stateRef.current, { audioRunning: running, held, holdOn, now: now() });
 
-  return { keyOctave, keyVelocity, effective: applyMacros(state), state, setState, running, start, held, holdOn, setHold, noteOn, noteOff, flag, beginStep, reset, snap, engine };
+  return { keyOctave, keyVelocity, effective: applyMacros(state), live, state, setState, running, start, held, holdOn, setHold, noteOn, noteOff, flag, beginStep, reset, snap, engine };
 }
 export type Synth = ReturnType<typeof useSynth>;

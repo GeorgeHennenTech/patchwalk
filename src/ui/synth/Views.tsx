@@ -129,8 +129,9 @@ export function FilterCurve({ synth, note, spot, compact }: { synth: Synth; note
   const buf = useRef(new Float32Array(2048));
   const drag = useRef<{ y: number; resonance: number } | null>(null);
   const s = synth.state;
-  const playing = synth.effective; // what is drawn: the settings after the macros
   useFrame(() => {
+    // what is drawn: the settings after the macros, moved the way the sources are moving them at this instant
+    const playing = synth.live();
     const canvas = ref.current, an = synth.engine.current?.analyser;
     if (!canvas) return;
     const { g, w, h, line, grid } = setup(canvas);
@@ -165,6 +166,7 @@ export function FilterCurve({ synth, note, spot, compact }: { synth: Synth; note
     const box = e.currentTarget.getBoundingClientRect();
     // Undo key tracking so the dot, which is drawn at the tracked cutoff, stays under the pointer.
     const follow = effectiveCutoff({ cutoff: 1000, keyTrack: s.keyTrack }, note) / 1000;
+    // (the dot is drawn at the moving cutoff, but dragging sets the knob itself)
     const cutoff = Math.round(Math.min(20000, Math.max(20, curveHz((e.clientX - box.left) / box.width) / follow)));
     const resonance = Math.round(Math.min(100, Math.max(0, drag.current.resonance + ((drag.current.y - e.clientY) / box.height) * 150)));
     synth.setState({ cutoff, resonance });

@@ -1,12 +1,12 @@
 // The practice synth drawn as a rack of module panels, in the order the sound flows and the order most
 // wavetable synths (Serum included) lay them out: sub, oscillator A, oscillator B, noise, filter. Each panel
 // has its on/off switch and name on top, a picture of what it is doing, and its controls underneath.
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Panel, PlayableLesson } from "../../course/types";
 import { dragColor, dragName, endDrag, startDrag, type Draggable } from "../../synth/connect";
 import { MACRO_COLORS } from "../../synth/macros";
 import { FX_NAMES, FX_ORDER } from "../../synth/fx";
-import { adsr, ENV1_COLOR, envLevel, lfoValue, routes, SOURCES, type Adsr, type ModSource } from "../../synth/mod";
+import { adsr, ENV1_COLOR, envLevel, lfoHz, lfoStartPhase, lfoValue, routes, SOURCES, type Adsr, type ModSource } from "../../synth/mod";
 import { harmonic, spectrumA, HARMONICS, LFO_STEPS, MACRO_SLOTS, MACROS, PARAMS, type Group, type SynthState } from "../../synth/params";
 import type { Synth } from "../../synth/useSynth";
 import { Control, isBox } from "./Controls";
@@ -76,7 +76,34 @@ function Display({ module, synth, note }: { module: Module; synth: Synth; note: 
   if (module.id === "filter") return <FilterCurve synth={synth} note={note} compact />;
   if (!d) return null;
   if (module.source?.startsWith("lfo") && synth.state[`${module.source as "lfo1"}Shape`] === "drawn") return <LfoDraw id={module.source as "lfo1"} synth={synth} />;
-  return <svg className="mod-wave" viewBox="0 0 200 64" preserveAspectRatio="none" role="img" aria-label={`${module.name} wave`}>{module.source?.startsWith("lfo") && <line className="mod-mid" x1="0" x2="200" y1="32" y2="32" />}<path d={d} /></svg>;
+  return <svg className="mod-wave" viewBox="0 0 200 64" preserveAspectRatio="none" role="img" aria-label={`${module.name} wave`}>{module.source?.startsWith("lfo") && <line className="mod-mid" x1="0" x2="200" y1="32" y2="32" />}<path d={d} />{module.source?.startsWith("lfo") && <Playhead id={module.source as "lfo1"} synth={synth} width={100} height={64} />}</svg>;
+}
+
+/**
+ * A line that travels across an LFO's picture showing where in its cycle it is for the note sounding now.
+ * `width` is how wide one cycle is drawn. Hidden when nothing is playing.
+ */
+function Playhead({ id, synth, width, height }: { id: "lfo1" | "lfo2" | "lfo3"; synth: Synth; width: number; height: number }) {
+  const ref = useRef<SVGLineElement>(null);
+  const latest = useRef(synth);
+  latest.current = synth;
+  useEffect(() => {
+    let frame = 0;
+    const loop = () => {
+      const sy = latest.current, n = sy.engine.current?.liveNote, el = ref.current;
+      if (el) {
+        if (!n || n.age < 0) el.setAttribute("visibility", "hidden");
+        else {
+          const cycles = lfoStartPhase(sy.state, id, n.startedAt) + n.age * lfoHz(sy.live(), id), x = (cycles - Math.floor(cycles)) * width;
+          el.setAttribute("visibility", "visible"); el.setAttribute("x1", x.toFixed(1)); el.setAttribute("x2", x.toFixed(1));
+        }
+      }
+      frame = requestAnimationFrame(loop);
+    };
+    frame = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(frame);
+  }, [id, width]);
+  return <line ref={ref} className="playhead" y1="0" y2={height} visibility="hidden" />;
 }
 
 /**
@@ -106,6 +133,20 @@ export function Rack({ synth, show, all, lesson, note }: { synth: Synth; show: P
       <div className="mod-body">
         {/* an LFO's shape is shown whenever its controls are, so a lesson can point at it */}
         {(all || m.source?.startsWith("lfo")) && <Display module={m} synth={synth} note={note} />}
+        {m.source?.startsWith("lfo") && s[`${m.source as "lfo1"}Shape`] !== "drawn" && (all || show.includes(`${m.source}Shape` as Panel)) && (
+          <button className="link draw-own" title="Turns the current shape into sixteen bars you can drag to any height" onClick={() => {
+            const id = m.source as "lfo1", shape = s[`${id}Shape`];
+            // start from the shape that is there, so drawing changes it instead of starting from nothing
+            const steps = Array.from({ length: LFO_STEPS }, (_, k) => Math.round(lfoValue(shape, (k + 0.5) / LFO_STEPS) * 8) / 8);
+            synth.flag("lfoDraw"); synth.setState({ [`${id}Shape`]: "drawn", [`${id}Steps`]: steps } as Partial<SynthState>);
+          }}>Draw your own shape</button>
+        )}
+        {m.id === "a" && s.freeHz !== null && (
+          <p className="fixed-pitch">Osc A’s pitch is fixed by the Frequency knob in this lesson, so the keys, Octave, Semitone and Fine do not change it. <button className="link" onClick={() => synth.setState({ freeHz: null })}>Follow the keys instead</button></p>
+        )}
+        {m.id === "a" && s.freeHz === null && typeof lesson.initial?.freeHz === "number" && (
+          <p className="fixed-pitch">Osc A is following the keys. This lesson’s steps need its pitch fixed. <button className="link" onClick={() => synth.setState({ freeHz: lesson.initial!.freeHz as number })}>Fix the pitch again</button></p>
+        )}
         {curve && <FilterCurve synth={synth} note={note} spot />}
         {m.id === "fx-comp" && <Reduction synth={synth} />}
         {kind("menu").map((id) => <Control key={id} id={id} synth={synth} spot={show.includes(id)} />)}
@@ -271,6 +312,7 @@ function LfoDraw({ id, synth }: { id: "lfo1" | "lfo2" | "lfo3"; synth: Synth }) 
       onPointerMove={(e) => { if (drawing.current) paint(e); }} onPointerUp={() => { drawing.current = false; }} onPointerCancel={() => { drawing.current = false; }}>
       {steps.map((v, k) => <rect key={k} className="lfo-bar" x={k * bar + 0.8} width={bar - 1.6} y={v >= 0 ? H / 2 - (v * H) / 2 : H / 2} height={Math.max(1.5, (Math.abs(v) * H) / 2)} />)}
       <line className="mod-mid" x1="0" x2={W} y1={H / 2} y2={H / 2} />
+      <Playhead id={id} synth={synth} width={W} height={H} />
     </svg>
   );
 }

@@ -1082,3 +1082,21 @@ describe("oscillator A's switch", () => {
     for (const l of LESSONS) expect((l.initial as Partial<SynthState> | undefined)?.aOn, l.id).not.toBe(false);
   });
 });
+
+import { modulated } from "../src/synth/mod";
+describe("what the screen shows of a source's movement", () => {
+  const note = (age: number) => ({ note: 60, velocity: 100, age, held: Infinity, startedAt: 0 });
+  it("a knob moved inside the audio is shown moving too, by the stretch its ring shows", () => {
+    const s = { ...INITIAL, filterOn: true, cutoff: 632, lfo1Dest: "cutoff", lfo1Amount: 100, lfo1Shape: "square" as const, lfo1Rate: 1 };
+    expect(slowModulate(s, note(0.25)).cutoff).toBe(632); // the audio moves it; the slow path leaves it alone
+    const high = modulated(s, note(0.25), true).cutoff, low = modulated(s, note(0.75), true).cutoff;
+    expect(Math.log2(high / 632)).toBeCloseTo(Math.log2(20000 / 20) / 2, 1); // half the knob's travel up: about five octaves
+    expect(Math.log2(632 / low)).toBeCloseTo(Math.log2(20000 / 20) / 2, 1);
+  });
+  it("destinations that are not knobs are ignored, and nothing moves without a note", () => {
+    const s = { ...INITIAL, lfo1Dest: "noteLevel", lfo1Amount: 100, env2Dest: "aPitchWide" };
+    expect(modulated(s, note(0.25), true)).toBe(s);
+    const t = { ...INITIAL, lfo1Dest: "cutoff", lfo1Amount: 100 };
+    expect(modulated(t, undefined, true)).toBe(t);
+  });
+});

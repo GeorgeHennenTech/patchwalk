@@ -90,6 +90,30 @@ function DepthHandle({ route, label, synth, onShow }: { route: Route; label: str
 }
 
 /**
+ * The moving pointer on a knob that a source is moving: a coloured line and dot that follow where the
+ * sources have put the knob at this instant, redrawn every frame. The knob's own pointer stays where the
+ * learner left it. Updated directly on the page, so a moving knob does not redraw the whole synth.
+ */
+function LivePointer({ id, spec, synth, color }: { id: keyof SynthState; spec: ParamSpec; synth: Synth; color: string }) {
+  const line = useRef<SVGPathElement>(null), dot = useRef<SVGCircleElement>(null);
+  const live = useRef(synth.live);
+  live.current = synth.live;
+  useEffect(() => {
+    let frame = 0;
+    const loop = () => {
+      const deg = degrees(toTravel(spec, live.current()[id] as number));
+      line.current?.setAttribute("d", `M ${point(deg, 4)} L ${point(deg, 14)}`);
+      const [x, y] = point(deg, 20).split(" ");
+      dot.current?.setAttribute("cx", x!); dot.current?.setAttribute("cy", y!);
+      frame = requestAnimationFrame(loop);
+    };
+    frame = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(frame);
+  }, [id, spec]);
+  return <g className="knob-live" style={{ stroke: color, fill: color }}><path ref={line} /><circle ref={dot} r="2.8" /></g>;
+}
+
+/**
  * A knob (or, for a few whole-step settings, a number box). Drag up and down to turn it freely; hold Shift
  * while dragging for fine movement. Click it and use the arrow keys for exact steps (Shift or Page Up/Down
  * for bigger ones, Home/End for the ends). Double-click returns it to its starting value.
@@ -168,6 +192,7 @@ function Knob({ id, synth, spot }: { id: keyof SynthState; synth: Synth; spot: b
           {angle !== zero && <path className="knob-value" d={arc(zero, angle, 20)} />}
           <circle className="knob-cap" cx="24" cy="24" r="14" />
           <path className="knob-mark" d={`M ${point(angle, 5)} L ${point(angle, 13)}`} />
+          {mods.length > 0 && <LivePointer id={id} spec={spec} synth={synth} color={mods[0]!.source.color} />}
           {played !== t && <circle className="knob-played" cx={point(degrees(played), 20).split(" ")[0]} cy={point(degrees(played), 20).split(" ")[1]} r="2.6"><title>Where the macros have put it</title></circle>}
         </svg>
       )}

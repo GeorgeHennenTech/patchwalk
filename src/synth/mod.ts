@@ -205,8 +205,14 @@ export function sourceValue(s: SynthState, r: Route, n: NoteNow): number {
  * The settings with every "slow" connection applied for this moment. A source at full swing moves a knob by
  * amount/200 of its travel, the same stretch its ring shows. With no note sounding, nothing is moved.
  */
-export function slowModulate(s: SynthState, n: NoteNow | undefined): SynthState {
-  const list = routes(s).filter((r) => isSlowDest(r.dest) && r.amount !== 0);
+export const slowModulate = (s: SynthState, n: NoteNow | undefined): SynthState => modulated(s, n, false);
+/**
+ * As slowModulate, and with `all` set, for every connection that lands on a knob, fast ones included. The
+ * audio never uses that: it is what the screen shows, so a knob and the filter's curve can be seen moving
+ * the way their sources are moving them right now.
+ */
+export function modulated(s: SynthState, n: NoteNow | undefined, all: boolean): SynthState {
+  const list = routes(s).filter((r) => r.amount !== 0 && (all ? PARAMS[r.dest]?.kind === "range" : isSlowDest(r.dest)));
   if (!list.length || !n) return s;
   const out = { ...s } as SynthState & Record<string, unknown>;
   // every source reads the settings as left, so two sources on one knob add and the order does not matter

@@ -597,6 +597,13 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   built in eventually. Track I of `docs/CURRICULUM.md` ("Theory and keyboard for producers", 18 lessons)
   is the plan; nothing is built. Lessons can check what is played from the keyboard (notes, intervals,
   chords, scales) the way synth lessons check knobs.
+- **`docs/LEARNING_RESEARCH.md` (owner's request, 14 Nov 2026): design rules for lessons and guide answers
+  drawn from PubMed, each with its DOI, in two sets: for every learner, and for a learner with ADHD. The
+  owner has ADHD and called tailoring the courses to it "super super important".** Read it before
+  designing or changing lessons, answers or their layout. It ends with a build order (a per-person Focus
+  mode first, then end-of-lesson recall, spaced return, mixed by-ear checkpoints, "why this matters",
+  fading guidance, optional noise while reading). Most ADHD studies are on children, so the owner's own
+  report of what helps outranks the papers. It is design guidance, not medical advice.
 - **Impact sounds (owner asked 13 Nov 2026):** `docs/IMPACTS.md`, about 50 lessons on hits, striking bass
   notes, weight, making room, impact effects and contrast. The first seven are built (see `lessons/impacts.ts`);
   the rest wait for effects, physical modelling, the mini DAW and library texts on hearing.

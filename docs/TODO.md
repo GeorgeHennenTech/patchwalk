@@ -32,6 +32,7 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 - [ ] A spoken intro clip at the top of every lesson (owner, 14 Nov 2026): test one with Higgsfield first; it spends credits.
 - [ ] Music theory lessons that use the MIDI keyboard (owner, 14 Nov 2026): track I of the curriculum.
 - [ ] Source texts on sound systems for the owner to find: see `docs/LITERATURE.md`.
+- [ ] Build from `docs/LEARNING_RESEARCH.md` (owner, 14 Nov 2026): Focus mode for ADHD, end-of-lesson recall, spaced return, mixed by-ear checkpoints, "why this matters" lines, fading guidance, optional noise, the new answer layout.
 - [ ] Remaining synthesis chapters from the course plan (87 lessons built)
 
 ## Synth

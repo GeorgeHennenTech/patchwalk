@@ -1373,13 +1373,13 @@ describe("end-of-lesson recall", () => {
     expect(recallNote([true, false, true])).toMatch(/^2 of the 3 .* other is marked/);
     for (const h of [[false], [true, false], [false, false, false]]) expect(recallNote(h)).not.toMatch(/wrong|fail|only|score/i);
   });
-  it("has three sound questions for every lesson, each tied to one of its recap points", () => {
+  it("has sound questions for every lesson (three, or five where the lesson has five or more steps), each tied to a recap point", () => {
     expect(Object.keys(QUIZ).sort()).toEqual(LESSONS.map((l) => l.id).sort());
     const answers = [0, 0, 0, 0];
     for (const l of LESSONS) {
       const items = QUIZ[l.id]!;
-      expect(items.length, l.id).toBe(3);
-      expect(new Set(items.map((i) => i.q)).size, l.id).toBe(3);
+      expect(items.length, l.id).toBe(l.steps.length >= 5 ? 5 : 3);
+      expect(new Set(items.map((i) => i.q)).size, l.id).toBe(items.length);
       for (const it of items) {
         expect(it.options.length, it.q).toBe(4); expect(new Set(it.options).size, it.q).toBe(4);
         expect([0, 1, 2, 3], it.q).toContain(it.answer); answers[it.answer]!++;
@@ -1391,9 +1391,10 @@ describe("end-of-lesson recall", () => {
         expect(it.why, it.why).not.toMatch(/\b(wrong|incorrect|mistake|fail)/i);
       }
       // a lesson's questions cover as many of its recap points as they can
-      expect(new Set(items.map((i) => i.point)).size, l.id).toBeGreaterThanOrEqual(Math.min(2, l.recap.length));
+      expect(new Set(items.map((i) => i.point)).size, l.id).toBe(l.recap.length); // every recap point is asked about
     }
-    for (const n of answers) expect(n / (LESSONS.length * 3)).toBeLessThan(0.45); // the right answer is not always in the same place
+    const total = answers.reduce((a, b) => a + b, 0);
+    for (const n of answers) expect(n / total).toBeLessThan(0.4); // the right answer is not always in the same place
   });
   it("mixes the options the same way for one go, and reads the recap points off the answers", () => {
     expect(shuffled(4, 12)).toEqual(shuffled(4, 12)); expect([...shuffled(4, 12)].sort()).toEqual([0, 1, 2, 3]);

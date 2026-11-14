@@ -1351,6 +1351,7 @@ describe("focus mode", () => {
   });
 });
 
+import { pointsHad, QUIZ, shuffled } from "../src/course/quiz";
 import { loadRecall, missed, recallNote, saveRecall } from "../src/course/recall";
 describe("end-of-lesson recall", () => {
   it("every lesson has a recap to recall against, and an outcome to nudge with", () => {
@@ -1365,12 +1366,40 @@ describe("end-of-lesson recall", () => {
     expect(missed(undefined, ["a"])).toEqual([]);
     m.set("patchwalk.recall.v1", "nonsense"); expect(loadRecall(s)).toEqual({});
   });
-  it("speaks kindly about how it went, and never gives a mark before every point is marked", () => {
-    expect(recallNote([undefined, undefined])).toMatch(/if you like/);
-    expect(recallNote([true, undefined, undefined])).toBe("1 of the 1 marked so far came back to you.");
-    expect(recallNote([true, true])).toMatch(/All of it/);
+  it("speaks kindly about how it went", () => {
+    expect(recallNote([undefined, undefined])).toBe("");
+    expect(recallNote([true, true, undefined])).toMatch(/Every point/);
     expect(recallNote([false, false])).toMatch(/normal/);
-    expect(recallNote([true, false, true])).toMatch(/^2 of 3 .* one you missed is/);
+    expect(recallNote([true, false, true])).toMatch(/^2 of the 3 .* other is marked/);
     for (const h of [[false], [true, false], [false, false, false]]) expect(recallNote(h)).not.toMatch(/wrong|fail|only|score/i);
+  });
+  it("has three sound questions for every lesson, each tied to one of its recap points", () => {
+    expect(Object.keys(QUIZ).sort()).toEqual(LESSONS.map((l) => l.id).sort());
+    const answers = [0, 0, 0, 0];
+    for (const l of LESSONS) {
+      const items = QUIZ[l.id]!;
+      expect(items.length, l.id).toBe(3);
+      expect(new Set(items.map((i) => i.q)).size, l.id).toBe(3);
+      for (const it of items) {
+        expect(it.options.length, it.q).toBe(4); expect(new Set(it.options).size, it.q).toBe(4);
+        expect([0, 1, 2, 3], it.q).toContain(it.answer); answers[it.answer]!++;
+        expect(it.point, it.q).toBeGreaterThanOrEqual(0); expect(it.point, it.q).toBeLessThan(l.recap.length);
+        expect(it.q.split(/\s+/).length, it.q).toBeLessThanOrEqual(28); expect(it.why.split(/\s+/).length, it.why).toBeLessThanOrEqual(34);
+        for (const o of it.options) expect(o.split(/\s+/).length, o).toBeLessThanOrEqual(18);
+        const all = [it.q, it.why, ...it.options].join(" ");
+        expect(all, all).not.toMatch(/[—–]|\bC\d+M?\.\w|\bCT\.\w|all of the above|none of the above/i);
+        expect(it.why, it.why).not.toMatch(/\b(wrong|incorrect|mistake|fail)/i);
+      }
+      // a lesson's questions cover as many of its recap points as they can
+      expect(new Set(items.map((i) => i.point)).size, l.id).toBeGreaterThanOrEqual(Math.min(2, l.recap.length));
+    }
+    for (const n of answers) expect(n / (LESSONS.length * 3)).toBeLessThan(0.45); // the right answer is not always in the same place
+  });
+  it("mixes the options the same way for one go, and reads the recap points off the answers", () => {
+    expect(shuffled(4, 12)).toEqual(shuffled(4, 12)); expect([...shuffled(4, 12)].sort()).toEqual([0, 1, 2, 3]);
+    expect(new Set(Array.from({ length: 30 }, (_, i) => shuffled(4, i).join(""))).size).toBeGreaterThan(6);
+    const items = [{ q: "a", options: [], answer: 1, why: "", point: 0 }, { q: "b", options: [], answer: 2, why: "", point: 0 }, { q: "c", options: [], answer: 0, why: "", point: 2 }];
+    expect(pointsHad(items, [1, 2, 3], 3)).toEqual([true, undefined, false]);
+    expect(pointsHad(items, [1, 0, 0], 3)).toEqual([false, undefined, true]);
   });
 });

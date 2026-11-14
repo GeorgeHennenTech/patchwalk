@@ -857,3 +857,20 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 .recall-marks button { padding: 3px 10px; border: 2px solid var(--thread); border-radius: 999px; background: transparent; color: inherit; font: inherit; font-size: 0.8rem; font-weight: 700; cursor: pointer; box-shadow: none; }
 .recall-marks button[aria-pressed="true"] { background: var(--text); color: var(--panel); }
 @media (max-width: 620px) { .recall-points li { flex-direction: column; align-items: flex-start; } }
+
+/* The end-of-lesson quiz. */
+.recall-step { margin: 0 0 2px; font-size: 0.78rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.quiz { list-style: none; padding: 0; margin: 10px 0 14px; display: grid; gap: 16px; counter-reset: q; }
+.quiz > li { counter-increment: q; padding: 12px 14px; border: 2px solid color-mix(in srgb, var(--thread) 30%, transparent); border-radius: 14px; }
+.quiz > li.right { border-color: #2e9b5f; } .quiz > li.missed { border-color: var(--accent); }
+.quiz-q { margin: 0 0 9px; font-weight: 700; } .quiz-q::before { content: counter(q) ". "; color: var(--accent); }
+.quiz-options { display: grid; gap: 7px; }
+.quiz-options button { text-align: left; padding: 8px 12px; border: 2px solid color-mix(in srgb, var(--thread) 45%, transparent); border-radius: 11px; background: transparent; color: inherit; font: inherit; cursor: pointer; box-shadow: none; }
+.quiz-options button.on { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); font-weight: 700; }
+.quiz-options button:disabled { cursor: default; opacity: 0.75; }
+.quiz-options button.correct { opacity: 1; border-color: #2e9b5f; background: color-mix(in srgb, #2e9b5f 15%, transparent); font-weight: 700; }
+.quiz-options button.not { opacity: 1; border-style: dashed; }
+.quiz-yours { font-weight: 400; color: var(--muted); }
+.quiz-why { margin: 10px 0 0; padding-left: 10px; border-left: 4px solid #2e9b5f; }
+.recall-tag { flex: none; font-size: 0.78rem; font-weight: 700; padding: 2px 9px; border-radius: 999px; border: 2px solid currentColor; }
+.recall-points li.had .recall-tag { color: #2e9b5f; } .recall-points li.missed .recall-tag { color: var(--accent); }

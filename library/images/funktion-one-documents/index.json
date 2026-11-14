@@ -1,0 +1,4403 @@
+{
+ "source": "Funktion-One user guides, spec sheets and brochures",
+ "note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text.",
+ "images": [
+  {
+   "file": "p001-1.webp",
+   "page": 1,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1304,
+   "height": 110,
+   "captions_on_page": []
+  },
+  {
+   "file": "p001-2.webp",
+   "page": 1,
+   "chapter": "Resolution 4 series user guide",
+   "width": 503,
+   "height": 377,
+   "captions_on_page": []
+  },
+  {
+   "file": "p004-1.webp",
+   "page": 4,
+   "chapter": "Resolution 4 series user guide",
+   "width": 653,
+   "height": 434,
+   "captions_on_page": [
+    "There are several types of Resolution 4, depending on the application."
+   ]
+  },
+  {
+   "file": "p005-1.webp",
+   "page": 5,
+   "chapter": "Resolution 4 series user guide",
+   "width": 655,
+   "height": 465,
+   "captions_on_page": []
+  },
+  {
+   "file": "p005-2.webp",
+   "page": 5,
+   "chapter": "Resolution 4 series user guide",
+   "width": 629,
+   "height": 456,
+   "captions_on_page": []
+  },
+  {
+   "file": "p006-1.webp",
+   "page": 6,
+   "chapter": "Resolution 4 series user guide",
+   "width": 684,
+   "height": 439,
+   "captions_on_page": [
+    "All Funktion One products are tested and inspected thoroughly before being despatched."
+   ]
+  },
+  {
+   "file": "p007-1.webp",
+   "page": 7,
+   "chapter": "Resolution 4 series user guide",
+   "width": 375,
+   "height": 662,
+   "captions_on_page": [
+    "Please handle your Resolution 4 system safely to avoid injury."
+   ]
+  },
+  {
+   "file": "p008-1.webp",
+   "page": 8,
+   "chapter": "Resolution 4 series user guide",
+   "width": 358,
+   "height": 685,
+   "captions_on_page": []
+  },
+  {
+   "file": "p009-1.webp",
+   "page": 9,
+   "chapter": "Resolution 4 series user guide",
+   "width": 353,
+   "height": 614,
+   "captions_on_page": []
+  },
+  {
+   "file": "p010-1.webp",
+   "page": 10,
+   "chapter": "Resolution 4 series user guide",
+   "width": 373,
+   "height": 456,
+   "captions_on_page": []
+  },
+  {
+   "file": "p014-1.webp",
+   "page": 14,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1400,
+   "height": 877,
+   "captions_on_page": []
+  },
+  {
+   "file": "p015-1.webp",
+   "page": 15,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1400,
+   "height": 818,
+   "captions_on_page": []
+  },
+  {
+   "file": "p016-1.webp",
+   "page": 16,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1218,
+   "height": 829,
+   "captions_on_page": []
+  },
+  {
+   "file": "p017-1.webp",
+   "page": 17,
+   "chapter": "Resolution 4 series user guide",
+   "width": 939,
+   "height": 716,
+   "captions_on_page": []
+  },
+  {
+   "file": "p018-1.webp",
+   "page": 18,
+   "chapter": "Resolution 4 series user guide",
+   "width": 399,
+   "height": 520,
+   "captions_on_page": [
+    "Use only Funktion One manufactured or approved flying and stacking accessories."
+   ]
+  },
+  {
+   "file": "p019-1.webp",
+   "page": 19,
+   "chapter": "Resolution 4 series user guide",
+   "width": 492,
+   "height": 496,
+   "captions_on_page": [
+    "See array plan views later."
+   ]
+  },
+  {
+   "file": "p020-1.webp",
+   "page": 20,
+   "chapter": "Resolution 4 series user guide",
+   "width": 605,
+   "height": 600,
+   "captions_on_page": [
+    "Funktion One approved flying parts."
+   ]
+  },
+  {
+   "file": "p021-1.webp",
+   "page": 21,
+   "chapter": "Resolution 4 series user guide",
+   "width": 794,
+   "height": 547,
+   "captions_on_page": [
+    "Funktion One approved flying parts."
+   ]
+  },
+  {
+   "file": "p022-1.webp",
+   "page": 22,
+   "chapter": "Resolution 4 series user guide",
+   "width": 770,
+   "height": 630,
+   "captions_on_page": []
+  },
+  {
+   "file": "p023-1.webp",
+   "page": 23,
+   "chapter": "Resolution 4 series user guide",
+   "width": 890,
+   "height": 617,
+   "captions_on_page": [
+    "Funktion One approved flying parts."
+   ]
+  },
+  {
+   "file": "p024-1.webp",
+   "page": 24,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1400,
+   "height": 826,
+   "captions_on_page": []
+  },
+  {
+   "file": "p025-1.webp",
+   "page": 25,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1400,
+   "height": 552,
+   "captions_on_page": []
+  },
+  {
+   "file": "p026-1.webp",
+   "page": 26,
+   "chapter": "Resolution 4 series user guide",
+   "width": 951,
+   "height": 429,
+   "captions_on_page": []
+  },
+  {
+   "file": "p027-1.webp",
+   "page": 27,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1298,
+   "height": 302,
+   "captions_on_page": []
+  },
+  {
+   "file": "p027-2.webp",
+   "page": 27,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1298,
+   "height": 361,
+   "captions_on_page": []
+  },
+  {
+   "file": "p028-1.webp",
+   "page": 28,
+   "chapter": "Resolution 4 series user guide",
+   "width": 818,
+   "height": 517,
+   "captions_on_page": []
+  },
+  {
+   "file": "p029-1.webp",
+   "page": 29,
+   "chapter": "Resolution 4 series user guide",
+   "width": 818,
+   "height": 517,
+   "captions_on_page": []
+  },
+  {
+   "file": "p030-1.webp",
+   "page": 30,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1400,
+   "height": 723,
+   "captions_on_page": []
+  },
+  {
+   "file": "p031-1.webp",
+   "page": 31,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1400,
+   "height": 723,
+   "captions_on_page": []
+  },
+  {
+   "file": "p032-1.webp",
+   "page": 32,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1400,
+   "height": 723,
+   "captions_on_page": []
+  },
+  {
+   "file": "p033-1.webp",
+   "page": 33,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1400,
+   "height": 723,
+   "captions_on_page": []
+  },
+  {
+   "file": "p034-1.webp",
+   "page": 34,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1400,
+   "height": 723,
+   "captions_on_page": []
+  },
+  {
+   "file": "p035-1.webp",
+   "page": 35,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1400,
+   "height": 723,
+   "captions_on_page": []
+  },
+  {
+   "file": "p036-1.webp",
+   "page": 36,
+   "chapter": "Resolution 4 series user guide",
+   "width": 902,
+   "height": 862,
+   "captions_on_page": []
+  },
+  {
+   "file": "p036-2.webp",
+   "page": 36,
+   "chapter": "Resolution 4 series user guide",
+   "width": 902,
+   "height": 862,
+   "captions_on_page": []
+  },
+  {
+   "file": "p037-1.webp",
+   "page": 37,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1400,
+   "height": 793,
+   "captions_on_page": []
+  },
+  {
+   "file": "p038-1.webp",
+   "page": 38,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1400,
+   "height": 793,
+   "captions_on_page": []
+  },
+  {
+   "file": "p039-1.webp",
+   "page": 39,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1400,
+   "height": 793,
+   "captions_on_page": []
+  },
+  {
+   "file": "p040-1.webp",
+   "page": 40,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1400,
+   "height": 793,
+   "captions_on_page": []
+  },
+  {
+   "file": "p041-1.webp",
+   "page": 41,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1400,
+   "height": 793,
+   "captions_on_page": []
+  },
+  {
+   "file": "p042-1.webp",
+   "page": 42,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1400,
+   "height": 793,
+   "captions_on_page": []
+  },
+  {
+   "file": "p043-1.webp",
+   "page": 43,
+   "chapter": "Resolution 4 series user guide",
+   "width": 350,
+   "height": 466,
+   "captions_on_page": [
+    "The hand chain hoist’s drive chain should be tucked behind the guide bar provided.",
+    "Re-level as necessary during array assembly."
+   ]
+  },
+  {
+   "file": "p043-2.webp",
+   "page": 43,
+   "chapter": "Resolution 4 series user guide",
+   "width": 350,
+   "height": 262,
+   "captions_on_page": [
+    "The hand chain hoist’s drive chain should be tucked behind the guide bar provided.",
+    "Re-level as necessary during array assembly."
+   ]
+  },
+  {
+   "file": "p044-1.webp",
+   "page": 44,
+   "chapter": "Resolution 4 series user guide",
+   "width": 349,
+   "height": 261,
+   "captions_on_page": [
+    "Hanger attachment points can be seen on the grid spokes."
+   ]
+  },
+  {
+   "file": "p045-1.webp",
+   "page": 45,
+   "chapter": "Resolution 4 series user guide",
+   "width": 350,
+   "height": 262,
+   "captions_on_page": []
+  },
+  {
+   "file": "p045-2.webp",
+   "page": 45,
+   "chapter": "Resolution 4 series user guide",
+   "width": 350,
+   "height": 262,
+   "captions_on_page": []
+  },
+  {
+   "file": "p046-1.webp",
+   "page": 46,
+   "chapter": "Resolution 4 series user guide",
+   "width": 350,
+   "height": 262,
+   "captions_on_page": []
+  },
+  {
+   "file": "p046-2.webp",
+   "page": 46,
+   "chapter": "Resolution 4 series user guide",
+   "width": 350,
+   "height": 262,
+   "captions_on_page": []
+  },
+  {
+   "file": "p047-1.webp",
+   "page": 47,
+   "chapter": "Resolution 4 series user guide",
+   "width": 350,
+   "height": 262,
+   "captions_on_page": [
+    "The integral antiluce toggle pins pass through holes in the CH5 column hangers."
+   ]
+  },
+  {
+   "file": "p047-2.webp",
+   "page": 47,
+   "chapter": "Resolution 4 series user guide",
+   "width": 350,
+   "height": 262,
+   "captions_on_page": [
+    "The integral antiluce toggle pins pass through holes in the CH5 column hangers."
+   ]
+  },
+  {
+   "file": "p048-1.webp",
+   "page": 48,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1400,
+   "height": 895,
+   "captions_on_page": []
+  },
+  {
+   "file": "p049-1.webp",
+   "page": 49,
+   "chapter": "Resolution 4 series user guide",
+   "width": 350,
+   "height": 262,
+   "captions_on_page": [
+    "The toggle pins should then be latched in place to secure the cabinet."
+   ]
+  },
+  {
+   "file": "p049-2.webp",
+   "page": 49,
+   "chapter": "Resolution 4 series user guide",
+   "width": 350,
+   "height": 182,
+   "captions_on_page": [
+    "The toggle pins should then be latched in place to secure the cabinet."
+   ]
+  },
+  {
+   "file": "p050-1.webp",
+   "page": 50,
+   "chapter": "Resolution 4 series user guide",
+   "width": 350,
+   "height": 262,
+   "captions_on_page": []
+  },
+  {
+   "file": "p050-2.webp",
+   "page": 50,
+   "chapter": "Resolution 4 series user guide",
+   "width": 350,
+   "height": 262,
+   "captions_on_page": []
+  },
+  {
+   "file": "p051-1.webp",
+   "page": 51,
+   "chapter": "Resolution 4 series user guide",
+   "width": 350,
+   "height": 262,
+   "captions_on_page": []
+  },
+  {
+   "file": "p051-2.webp",
+   "page": 51,
+   "chapter": "Resolution 4 series user guide",
+   "width": 350,
+   "height": 262,
+   "captions_on_page": []
+  },
+  {
+   "file": "p052-1.webp",
+   "page": 52,
+   "chapter": "Resolution 4 series user guide",
+   "width": 350,
+   "height": 262,
+   "captions_on_page": []
+  },
+  {
+   "file": "p052-2.webp",
+   "page": 52,
+   "chapter": "Resolution 4 series user guide",
+   "width": 350,
+   "height": 160,
+   "captions_on_page": []
+  },
+  {
+   "file": "p053-1.webp",
+   "page": 53,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1400,
+   "height": 842,
+   "captions_on_page": []
+  },
+  {
+   "file": "p054-1.webp",
+   "page": 54,
+   "chapter": "Resolution 4 series user guide",
+   "width": 350,
+   "height": 165,
+   "captions_on_page": []
+  },
+  {
+   "file": "p054-2.webp",
+   "page": 54,
+   "chapter": "Resolution 4 series user guide",
+   "width": 400,
+   "height": 392,
+   "captions_on_page": []
+  },
+  {
+   "file": "p055-1.webp",
+   "page": 55,
+   "chapter": "Resolution 4 series user guide",
+   "width": 350,
+   "height": 262,
+   "captions_on_page": [
+    "Five Resolution 5 per row are shown.",
+    "Three Resolution 4 plus two intermediate Resolution 18 per row will be the same width."
+   ]
+  },
+  {
+   "file": "p055-2.webp",
+   "page": 55,
+   "chapter": "Resolution 4 series user guide",
+   "width": 224,
+   "height": 262,
+   "captions_on_page": [
+    "Five Resolution 5 per row are shown.",
+    "Three Resolution 4 plus two intermediate Resolution 18 per row will be the same width."
+   ]
+  },
+  {
+   "file": "p056-1.webp",
+   "page": 56,
+   "chapter": "Resolution 4 series user guide",
+   "width": 350,
+   "height": 234,
+   "captions_on_page": [
+    "If downfills are required they can easily be added to the completed array."
+   ]
+  },
+  {
+   "file": "p056-2.webp",
+   "page": 56,
+   "chapter": "Resolution 4 series user guide",
+   "width": 350,
+   "height": 212,
+   "captions_on_page": [
+    "If downfills are required they can easily be added to the completed array."
+   ]
+  },
+  {
+   "file": "p057-1.webp",
+   "page": 57,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1125,
+   "height": 858,
+   "captions_on_page": []
+  },
+  {
+   "file": "p059-1.webp",
+   "page": 59,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1400,
+   "height": 747,
+   "captions_on_page": []
+  },
+  {
+   "file": "p060-1.webp",
+   "page": 60,
+   "chapter": "Resolution 4 series user guide",
+   "width": 569,
+   "height": 498,
+   "captions_on_page": []
+  },
+  {
+   "file": "p061-1.webp",
+   "page": 61,
+   "chapter": "Resolution 4 series user guide",
+   "width": 735,
+   "height": 644,
+   "captions_on_page": [
+    "This Y-strap is required for each anchor position."
+   ]
+  },
+  {
+   "file": "p062-1.webp",
+   "page": 62,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1031,
+   "height": 553,
+   "captions_on_page": []
+  },
+  {
+   "file": "p063-1.webp",
+   "page": 63,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1400,
+   "height": 409,
+   "captions_on_page": []
+  },
+  {
+   "file": "p064-1.webp",
+   "page": 64,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1400,
+   "height": 748,
+   "captions_on_page": []
+  },
+  {
+   "file": "p067-1.webp",
+   "page": 67,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1063,
+   "height": 758,
+   "captions_on_page": []
+  },
+  {
+   "file": "p068-1.webp",
+   "page": 68,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1370,
+   "height": 781,
+   "captions_on_page": []
+  },
+  {
+   "file": "p069-1.webp",
+   "page": 69,
+   "chapter": "Resolution 4 series user guide",
+   "width": 989,
+   "height": 821,
+   "captions_on_page": []
+  },
+  {
+   "file": "p070-1.webp",
+   "page": 70,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1002,
+   "height": 905,
+   "captions_on_page": []
+  },
+  {
+   "file": "p071-1.webp",
+   "page": 71,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1010,
+   "height": 1038,
+   "captions_on_page": []
+  },
+  {
+   "file": "p072-1.webp",
+   "page": 72,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1400,
+   "height": 149,
+   "captions_on_page": []
+  },
+  {
+   "file": "p073-1.webp",
+   "page": 73,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1400,
+   "height": 319,
+   "captions_on_page": []
+  },
+  {
+   "file": "p074-1.webp",
+   "page": 74,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1400,
+   "height": 282,
+   "captions_on_page": []
+  },
+  {
+   "file": "p075-1.webp",
+   "page": 75,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1400,
+   "height": 408,
+   "captions_on_page": []
+  },
+  {
+   "file": "p076-1.webp",
+   "page": 76,
+   "chapter": "Resolution 4 series user guide",
+   "width": 619,
+   "height": 653,
+   "captions_on_page": []
+  },
+  {
+   "file": "p077-1.webp",
+   "page": 77,
+   "chapter": "Resolution 4 series user guide",
+   "width": 250,
+   "height": 126,
+   "captions_on_page": []
+  },
+  {
+   "file": "p077-2.webp",
+   "page": 77,
+   "chapter": "Resolution 4 series user guide",
+   "width": 158,
+   "height": 273,
+   "captions_on_page": []
+  },
+  {
+   "file": "p078-1.webp",
+   "page": 78,
+   "chapter": "Resolution 4 series user guide",
+   "width": 407,
+   "height": 260,
+   "captions_on_page": []
+  },
+  {
+   "file": "p078-2.webp",
+   "page": 78,
+   "chapter": "Resolution 4 series user guide",
+   "width": 472,
+   "height": 435,
+   "captions_on_page": []
+  },
+  {
+   "file": "p079-1.webp",
+   "page": 79,
+   "chapter": "Resolution 4 series user guide",
+   "width": 229,
+   "height": 183,
+   "captions_on_page": []
+  },
+  {
+   "file": "p079-2.webp",
+   "page": 79,
+   "chapter": "Resolution 4 series user guide",
+   "width": 223,
+   "height": 135,
+   "captions_on_page": []
+  },
+  {
+   "file": "p080-1.webp",
+   "page": 80,
+   "chapter": "Resolution 4 series user guide",
+   "width": 951,
+   "height": 330,
+   "captions_on_page": []
+  },
+  {
+   "file": "p081-1.webp",
+   "page": 81,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1400,
+   "height": 358,
+   "captions_on_page": []
+  },
+  {
+   "file": "p082-1.webp",
+   "page": 82,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1182,
+   "height": 1031,
+   "captions_on_page": []
+  },
+  {
+   "file": "p083-1.webp",
+   "page": 83,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1233,
+   "height": 1076,
+   "captions_on_page": []
+  },
+  {
+   "file": "p085-1.webp",
+   "page": 85,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1088,
+   "height": 461,
+   "captions_on_page": []
+  },
+  {
+   "file": "p086-1.webp",
+   "page": 86,
+   "chapter": "Resolution 4 series user guide",
+   "width": 944,
+   "height": 552,
+   "captions_on_page": [
+    "This alternative cardioid/end-fired set-up provides better, broad-band audience impact.",
+    "This is the preferred configuration for good audience impact."
+   ]
+  },
+  {
+   "file": "p087-1.webp",
+   "page": 87,
+   "chapter": "Resolution 4 series user guide",
+   "width": 569,
+   "height": 335,
+   "captions_on_page": [
+    "There are two distinct stages to delay-aligning bass and main systems successfully.",
+    "Note that the above time alignment must be done first."
+   ]
+  },
+  {
+   "file": "p088-1.webp",
+   "page": 88,
+   "chapter": "Resolution 4 series user guide",
+   "width": 378,
+   "height": 377,
+   "captions_on_page": [
+    "The Resolution 4T and 4E systems employ Amphenol EP series connectors."
+   ]
+  },
+  {
+   "file": "p088-2.webp",
+   "page": 88,
+   "chapter": "Resolution 4 series user guide",
+   "width": 378,
+   "height": 377,
+   "captions_on_page": [
+    "The Resolution 4T and 4E systems employ Amphenol EP series connectors."
+   ]
+  },
+  {
+   "file": "p090-1.webp",
+   "page": 90,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1096,
+   "height": 423,
+   "captions_on_page": []
+  },
+  {
+   "file": "p091-1.webp",
+   "page": 91,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1096,
+   "height": 423,
+   "captions_on_page": []
+  },
+  {
+   "file": "p092-1.webp",
+   "page": 92,
+   "chapter": "Resolution 4 series user guide",
+   "width": 208,
+   "height": 198,
+   "captions_on_page": []
+  },
+  {
+   "file": "p100-1.webp",
+   "page": 100,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1259,
+   "height": 982,
+   "captions_on_page": []
+  },
+  {
+   "file": "p101-1.webp",
+   "page": 101,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1400,
+   "height": 1010,
+   "captions_on_page": []
+  },
+  {
+   "file": "p102-1.webp",
+   "page": 102,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1144,
+   "height": 1096,
+   "captions_on_page": []
+  },
+  {
+   "file": "p103-1.webp",
+   "page": 103,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1069,
+   "height": 1081,
+   "captions_on_page": []
+  },
+  {
+   "file": "p104-1.webp",
+   "page": 104,
+   "chapter": "Resolution 4 series user guide",
+   "width": 1376,
+   "height": 955,
+   "captions_on_page": []
+  },
+  {
+   "file": "p107-1.webp",
+   "page": 107,
+   "chapter": "Resolution 4 series user guide",
+   "width": 959,
+   "height": 280,
+   "captions_on_page": []
+  },
+  {
+   "file": "p108-1.webp",
+   "page": 108,
+   "chapter": "Resolution 4 series user guide",
+   "width": 957,
+   "height": 279,
+   "captions_on_page": [
+    "However, clipped signals can dump up to twice as much power into your system."
+   ]
+  },
+  {
+   "file": "p111-1.webp",
+   "page": 111,
+   "chapter": "Resolution 4 series user guide",
+   "width": 712,
+   "height": 155,
+   "captions_on_page": [
+    "In extreme cases this could pose a fire hazard."
+   ]
+  },
+  {
+   "file": "p112-1.webp",
+   "page": 112,
+   "chapter": "Resolution 4 series user guide",
+   "width": 712,
+   "height": 274,
+   "captions_on_page": [
+    "When a signal is clipped, its waveform squares off."
+   ]
+  },
+  {
+   "file": "p112-2.webp",
+   "page": 112,
+   "chapter": "Resolution 4 series user guide",
+   "width": 712,
+   "height": 192,
+   "captions_on_page": [
+    "When a signal is clipped, its waveform squares off."
+   ]
+  },
+  {
+   "file": "p113-1.webp",
+   "page": 113,
+   "chapter": "Resolution 4 series user guide",
+   "width": 712,
+   "height": 192,
+   "captions_on_page": [
+    "The power delivered to the loudspeaker is dependent on the rms voltage2."
+   ]
+  },
+  {
+   "file": "p114-1.webp",
+   "page": 114,
+   "chapter": "Resolution 4 series user guide",
+   "width": 956,
+   "height": 633,
+   "captions_on_page": []
+  },
+  {
+   "file": "p115-1.webp",
+   "page": 115,
+   "chapter": "Resolution 4 series user guide",
+   "width": 956,
+   "height": 633,
+   "captions_on_page": []
+  },
+  {
+   "file": "p119-1.webp",
+   "page": 119,
+   "chapter": "Resolution 4 series user guide",
+   "width": 385,
+   "height": 187,
+   "captions_on_page": []
+  },
+  {
+   "file": "p119-2.webp",
+   "page": 119,
+   "chapter": "Resolution 4 series user guide",
+   "width": 381,
+   "height": 185,
+   "captions_on_page": []
+  },
+  {
+   "file": "p119-3.webp",
+   "page": 119,
+   "chapter": "Resolution 4 series user guide",
+   "width": 381,
+   "height": 184,
+   "captions_on_page": []
+  },
+  {
+   "file": "p120-1.webp",
+   "page": 120,
+   "chapter": "Resolution 4 series user guide",
+   "width": 411,
+   "height": 197,
+   "captions_on_page": []
+  },
+  {
+   "file": "p120-2.webp",
+   "page": 120,
+   "chapter": "Resolution 4 series user guide",
+   "width": 411,
+   "height": 197,
+   "captions_on_page": []
+  },
+  {
+   "file": "p121-1.webp",
+   "page": 121,
+   "chapter": "Resolution 4 series user guide",
+   "width": 157,
+   "height": 645,
+   "captions_on_page": []
+  },
+  {
+   "file": "p128-1.webp",
+   "page": 128,
+   "chapter": "Resolution 4 series user guide",
+   "width": 836,
+   "height": 371,
+   "captions_on_page": []
+  },
+  {
+   "file": "p128-2.webp",
+   "page": 128,
+   "chapter": "Resolution 4 series user guide",
+   "width": 841,
+   "height": 285,
+   "captions_on_page": []
+  },
+  {
+   "file": "p131-1.webp",
+   "page": 131,
+   "chapter": "Resolution 5 series user guide",
+   "width": 1000,
+   "height": 666,
+   "captions_on_page": []
+  },
+  {
+   "file": "p134-1.webp",
+   "page": 134,
+   "chapter": "Resolution 5 series user guide",
+   "width": 941,
+   "height": 625,
+   "captions_on_page": [
+    "There are several types of Resolution 5, depending on the application."
+   ]
+  },
+  {
+   "file": "p135-1.webp",
+   "page": 135,
+   "chapter": "Resolution 5 series user guide",
+   "width": 907,
+   "height": 618,
+   "captions_on_page": []
+  },
+  {
+   "file": "p135-2.webp",
+   "page": 135,
+   "chapter": "Resolution 5 series user guide",
+   "width": 866,
+   "height": 613,
+   "captions_on_page": []
+  },
+  {
+   "file": "p136-1.webp",
+   "page": 136,
+   "chapter": "Resolution 5 series user guide",
+   "width": 638,
+   "height": 409,
+   "captions_on_page": [
+    "All Funktion One products are tested and inspected thoroughly before being despatched."
+   ]
+  },
+  {
+   "file": "p137-1.webp",
+   "page": 137,
+   "chapter": "Resolution 5 series user guide",
+   "width": 307,
+   "height": 563,
+   "captions_on_page": [
+    "Please handle your Resolution 5 system safely to avoid injury."
+   ]
+  },
+  {
+   "file": "p139-1.webp",
+   "page": 139,
+   "chapter": "Resolution 5 series user guide",
+   "width": 157,
+   "height": 281,
+   "captions_on_page": []
+  },
+  {
+   "file": "p144-1.webp",
+   "page": 144,
+   "chapter": "Resolution 5 series user guide",
+   "width": 943,
+   "height": 608,
+   "captions_on_page": []
+  },
+  {
+   "file": "p145-1.webp",
+   "page": 145,
+   "chapter": "Resolution 5 series user guide",
+   "width": 1031,
+   "height": 639,
+   "captions_on_page": []
+  },
+  {
+   "file": "p146-1.webp",
+   "page": 146,
+   "chapter": "Resolution 5 series user guide",
+   "width": 927,
+   "height": 666,
+   "captions_on_page": []
+  },
+  {
+   "file": "p147-1.webp",
+   "page": 147,
+   "chapter": "Resolution 5 series user guide",
+   "width": 890,
+   "height": 668,
+   "captions_on_page": []
+  },
+  {
+   "file": "p148-1.webp",
+   "page": 148,
+   "chapter": "Resolution 5 series user guide",
+   "width": 391,
+   "height": 521,
+   "captions_on_page": [
+    "Use only Funktion One manufactured or approved flying and stacking accessories."
+   ]
+  },
+  {
+   "file": "p149-1.webp",
+   "page": 149,
+   "chapter": "Resolution 5 series user guide",
+   "width": 1020,
+   "height": 1036,
+   "captions_on_page": [
+    "The Resolution 4D downfill cabinet compliments the Resolution 5T system."
+   ]
+  },
+  {
+   "file": "p151-1.webp",
+   "page": 151,
+   "chapter": "Resolution 5 series user guide",
+   "width": 794,
+   "height": 547,
+   "captions_on_page": [
+    "Funktion One approved flying parts."
+   ]
+  },
+  {
+   "file": "p152-1.webp",
+   "page": 152,
+   "chapter": "Resolution 5 series user guide",
+   "width": 577,
+   "height": 466,
+   "captions_on_page": []
+  },
+  {
+   "file": "p155-1.webp",
+   "page": 155,
+   "chapter": "Resolution 5 series user guide",
+   "width": 951,
+   "height": 439,
+   "captions_on_page": [
+    "To calculate system weight, just add: 49kg per R5 and 20kg per R4D."
+   ]
+  },
+  {
+   "file": "p156-1.webp",
+   "page": 156,
+   "chapter": "Resolution 5 series user guide",
+   "width": 902,
+   "height": 862,
+   "captions_on_page": []
+  },
+  {
+   "file": "p156-2.webp",
+   "page": 156,
+   "chapter": "Resolution 5 series user guide",
+   "width": 902,
+   "height": 862,
+   "captions_on_page": []
+  },
+  {
+   "file": "p157-1.webp",
+   "page": 157,
+   "chapter": "Resolution 5 series user guide",
+   "width": 757,
+   "height": 237,
+   "captions_on_page": []
+  },
+  {
+   "file": "p157-2.webp",
+   "page": 157,
+   "chapter": "Resolution 5 series user guide",
+   "width": 763,
+   "height": 250,
+   "captions_on_page": []
+  },
+  {
+   "file": "p158-1.webp",
+   "page": 158,
+   "chapter": "Resolution 5 series user guide",
+   "width": 767,
+   "height": 514,
+   "captions_on_page": []
+  },
+  {
+   "file": "p159-1.webp",
+   "page": 159,
+   "chapter": "Resolution 5 series user guide",
+   "width": 715,
+   "height": 521,
+   "captions_on_page": []
+  },
+  {
+   "file": "p160-1.webp",
+   "page": 160,
+   "chapter": "Resolution 5 series user guide",
+   "width": 951,
+   "height": 429,
+   "captions_on_page": [
+    "To calculate system weight, just add: 49kg per R5 and 20kg per R4D."
+   ]
+  },
+  {
+   "file": "p161-1.webp",
+   "page": 161,
+   "chapter": "Resolution 5 series user guide",
+   "width": 1400,
+   "height": 793,
+   "captions_on_page": []
+  },
+  {
+   "file": "p162-1.webp",
+   "page": 162,
+   "chapter": "Resolution 5 series user guide",
+   "width": 1400,
+   "height": 793,
+   "captions_on_page": []
+  },
+  {
+   "file": "p163-1.webp",
+   "page": 163,
+   "chapter": "Resolution 5 series user guide",
+   "width": 1400,
+   "height": 793,
+   "captions_on_page": []
+  },
+  {
+   "file": "p164-1.webp",
+   "page": 164,
+   "chapter": "Resolution 5 series user guide",
+   "width": 1400,
+   "height": 793,
+   "captions_on_page": []
+  },
+  {
+   "file": "p165-1.webp",
+   "page": 165,
+   "chapter": "Resolution 5 series user guide",
+   "width": 1400,
+   "height": 793,
+   "captions_on_page": []
+  },
+  {
+   "file": "p166-1.webp",
+   "page": 166,
+   "chapter": "Resolution 5 series user guide",
+   "width": 1400,
+   "height": 793,
+   "captions_on_page": []
+  },
+  {
+   "file": "p167-1.webp",
+   "page": 167,
+   "chapter": "Resolution 5 series user guide",
+   "width": 1400,
+   "height": 793,
+   "captions_on_page": []
+  },
+  {
+   "file": "p168-1.webp",
+   "page": 168,
+   "chapter": "Resolution 5 series user guide",
+   "width": 1400,
+   "height": 793,
+   "captions_on_page": []
+  },
+  {
+   "file": "p189-1.webp",
+   "page": 189,
+   "chapter": "Resolution 5 series user guide",
+   "width": 1400,
+   "height": 719,
+   "captions_on_page": []
+  },
+  {
+   "file": "p190-1.webp",
+   "page": 190,
+   "chapter": "Resolution 5 series user guide",
+   "width": 1400,
+   "height": 927,
+   "captions_on_page": []
+  },
+  {
+   "file": "p193-1.webp",
+   "page": 193,
+   "chapter": "Resolution 5 series user guide",
+   "width": 986,
+   "height": 741,
+   "captions_on_page": []
+  },
+  {
+   "file": "p194-1.webp",
+   "page": 194,
+   "chapter": "Resolution 5 series user guide",
+   "width": 1400,
+   "height": 906,
+   "captions_on_page": [
+    "Total horizontal coverage is: 25° + (20°+20°+20°) = 85°."
+   ]
+  },
+  {
+   "file": "p195-1.webp",
+   "page": 195,
+   "chapter": "Resolution 5 series user guide",
+   "width": 1400,
+   "height": 755,
+   "captions_on_page": [
+    "Total horizontal coverage is: 25° + (20°+20°+20°+20°) = 105°."
+   ]
+  },
+  {
+   "file": "p196-1.webp",
+   "page": 196,
+   "chapter": "Resolution 5 series user guide",
+   "width": 1400,
+   "height": 684,
+   "captions_on_page": [
+    "Total horizontal coverage is: 25° + (20°+20°+20°+20°+20°) = 125°."
+   ]
+  },
+  {
+   "file": "p197-1.webp",
+   "page": 197,
+   "chapter": "Resolution 5 series user guide",
+   "width": 968,
+   "height": 785,
+   "captions_on_page": []
+  },
+  {
+   "file": "p198-1.webp",
+   "page": 198,
+   "chapter": "Resolution 5 series user guide",
+   "width": 969,
+   "height": 1005,
+   "captions_on_page": []
+  },
+  {
+   "file": "p199-1.webp",
+   "page": 199,
+   "chapter": "Resolution 5 series user guide",
+   "width": 961,
+   "height": 913,
+   "captions_on_page": []
+  },
+  {
+   "file": "p200-1.webp",
+   "page": 200,
+   "chapter": "Resolution 5 series user guide",
+   "width": 961,
+   "height": 1039,
+   "captions_on_page": []
+  },
+  {
+   "file": "p202-1.webp",
+   "page": 202,
+   "chapter": "Resolution 5 series user guide",
+   "width": 1400,
+   "height": 312,
+   "captions_on_page": [
+    "Note again: Straps (not shown) MUST be used."
+   ]
+  },
+  {
+   "file": "p203-1.webp",
+   "page": 203,
+   "chapter": "Resolution 5 series user guide",
+   "width": 228,
+   "height": 258,
+   "captions_on_page": []
+  },
+  {
+   "file": "p203-2.webp",
+   "page": 203,
+   "chapter": "Resolution 5 series user guide",
+   "width": 441,
+   "height": 247,
+   "captions_on_page": []
+  },
+  {
+   "file": "p203-3.webp",
+   "page": 203,
+   "chapter": "Resolution 5 series user guide",
+   "width": 434,
+   "height": 303,
+   "captions_on_page": []
+  },
+  {
+   "file": "p204-1.webp",
+   "page": 204,
+   "chapter": "Resolution 5 series user guide",
+   "width": 1400,
+   "height": 282,
+   "captions_on_page": []
+  },
+  {
+   "file": "p206-1.webp",
+   "page": 206,
+   "chapter": "Resolution 5 series user guide",
+   "width": 1400,
+   "height": 495,
+   "captions_on_page": []
+  },
+  {
+   "file": "p207-1.webp",
+   "page": 207,
+   "chapter": "Resolution 5 series user guide",
+   "width": 250,
+   "height": 478,
+   "captions_on_page": []
+  },
+  {
+   "file": "p208-1.webp",
+   "page": 208,
+   "chapter": "Resolution 5 series user guide",
+   "width": 358,
+   "height": 515,
+   "captions_on_page": []
+  },
+  {
+   "file": "p209-1.webp",
+   "page": 209,
+   "chapter": "Resolution 5 series user guide",
+   "width": 404,
+   "height": 514,
+   "captions_on_page": []
+  },
+  {
+   "file": "p213-1.webp",
+   "page": 213,
+   "chapter": "Resolution 5 series user guide",
+   "width": 951,
+   "height": 330,
+   "captions_on_page": []
+  },
+  {
+   "file": "p214-1.webp",
+   "page": 214,
+   "chapter": "Resolution 5 series user guide",
+   "width": 1400,
+   "height": 358,
+   "captions_on_page": [
+    "These inner bass arrays also create handy locations for front fills."
+   ]
+  },
+  {
+   "file": "p215-1.webp",
+   "page": 215,
+   "chapter": "Resolution 5 series user guide",
+   "width": 1050,
+   "height": 1028,
+   "captions_on_page": []
+  },
+  {
+   "file": "p216-1.webp",
+   "page": 216,
+   "chapter": "Resolution 5 series user guide",
+   "width": 1072,
+   "height": 1047,
+   "captions_on_page": []
+  },
+  {
+   "file": "p220-1.webp",
+   "page": 220,
+   "chapter": "Resolution 5 series user guide",
+   "width": 712,
+   "height": 361,
+   "captions_on_page": [
+    "There are two distinct stages to delay-aligning bass and main systems successfully.",
+    "Note that the above time alignment must be done first.",
+    "Now - and this is most important - switch the bass system back to the correct polarity."
+   ]
+  },
+  {
+   "file": "p224-1.webp",
+   "page": 224,
+   "chapter": "Resolution 5 series user guide",
+   "width": 1096,
+   "height": 422,
+   "captions_on_page": []
+  },
+  {
+   "file": "p264-1.webp",
+   "page": 264,
+   "chapter": "Resolution 1 user manual",
+   "width": 980,
+   "height": 1400,
+   "captions_on_page": []
+  },
+  {
+   "file": "p265-1.webp",
+   "page": 265,
+   "chapter": "Resolution 1 user manual",
+   "width": 224,
+   "height": 196,
+   "captions_on_page": [
+    "Funktion One Research Limited."
+   ]
+  },
+  {
+   "file": "p265-2.webp",
+   "page": 265,
+   "chapter": "Resolution 1 user manual",
+   "width": 224,
+   "height": 195,
+   "captions_on_page": [
+    "Funktion One Research Limited."
+   ]
+  },
+  {
+   "file": "p267-1.webp",
+   "page": 267,
+   "chapter": "Resolution 1 user manual",
+   "width": 532,
+   "height": 939,
+   "captions_on_page": []
+  },
+  {
+   "file": "p270-1.webp",
+   "page": 270,
+   "chapter": "Resolution 1 user manual",
+   "width": 403,
+   "height": 170,
+   "captions_on_page": [
+    "Resolution 1 an E25 can drive up to 2 pairs.",
+    "GAINS ARE GIVEN AS A STARTING POINT AND NOT AN ABSOLUTE."
+   ]
+  },
+  {
+   "file": "p271-1.webp",
+   "page": 271,
+   "chapter": "Resolution 1 user manual",
+   "width": 1257,
+   "height": 987,
+   "captions_on_page": []
+  },
+  {
+   "file": "p272-1.webp",
+   "page": 272,
+   "chapter": "Resolution 1 user manual",
+   "width": 1400,
+   "height": 1128,
+   "captions_on_page": []
+  },
+  {
+   "file": "p273-1.webp",
+   "page": 273,
+   "chapter": "Resolution 1 user manual",
+   "width": 861,
+   "height": 984,
+   "captions_on_page": []
+  },
+  {
+   "file": "p273-2.webp",
+   "page": 273,
+   "chapter": "Resolution 1 user manual",
+   "width": 861,
+   "height": 984,
+   "captions_on_page": []
+  },
+  {
+   "file": "p273-3.webp",
+   "page": 273,
+   "chapter": "Resolution 1 user manual",
+   "width": 861,
+   "height": 984,
+   "captions_on_page": []
+  },
+  {
+   "file": "p273-4.webp",
+   "page": 273,
+   "chapter": "Resolution 1 user manual",
+   "width": 861,
+   "height": 984,
+   "captions_on_page": []
+  },
+  {
+   "file": "p273-5.webp",
+   "page": 273,
+   "chapter": "Resolution 1 user manual",
+   "width": 861,
+   "height": 984,
+   "captions_on_page": []
+  },
+  {
+   "file": "p273-6.webp",
+   "page": 273,
+   "chapter": "Resolution 1 user manual",
+   "width": 861,
+   "height": 984,
+   "captions_on_page": []
+  },
+  {
+   "file": "p274-1.webp",
+   "page": 274,
+   "chapter": "Resolution 1 user manual",
+   "width": 861,
+   "height": 983,
+   "captions_on_page": []
+  },
+  {
+   "file": "p274-2.webp",
+   "page": 274,
+   "chapter": "Resolution 1 user manual",
+   "width": 861,
+   "height": 983,
+   "captions_on_page": []
+  },
+  {
+   "file": "p274-3.webp",
+   "page": 274,
+   "chapter": "Resolution 1 user manual",
+   "width": 861,
+   "height": 983,
+   "captions_on_page": []
+  },
+  {
+   "file": "p274-4.webp",
+   "page": 274,
+   "chapter": "Resolution 1 user manual",
+   "width": 861,
+   "height": 983,
+   "captions_on_page": []
+  },
+  {
+   "file": "p274-5.webp",
+   "page": 274,
+   "chapter": "Resolution 1 user manual",
+   "width": 861,
+   "height": 983,
+   "captions_on_page": []
+  },
+  {
+   "file": "p291-1.webp",
+   "page": 291,
+   "chapter": "Nightclub guide",
+   "width": 1400,
+   "height": 983,
+   "captions_on_page": []
+  },
+  {
+   "file": "p292-1.webp",
+   "page": 292,
+   "chapter": "Nightclub guide",
+   "width": 1400,
+   "height": 881,
+   "captions_on_page": []
+  },
+  {
+   "file": "p295-1.webp",
+   "page": 295,
+   "chapter": "Nightclub guide",
+   "width": 1400,
+   "height": 989,
+   "captions_on_page": []
+  },
+  {
+   "file": "p296-1.webp",
+   "page": 296,
+   "chapter": "Nightclub guide",
+   "width": 1400,
+   "height": 990,
+   "captions_on_page": [
+    "Funktion-One sound system."
+   ]
+  },
+  {
+   "file": "p297-1.webp",
+   "page": 297,
+   "chapter": "Nightclub guide",
+   "width": 1400,
+   "height": 988,
+   "captions_on_page": [
+    "Montañita, Ecuador."
+   ]
+  },
+  {
+   "file": "p298-1.webp",
+   "page": 298,
+   "chapter": "Nightclub guide",
+   "width": 1400,
+   "height": 990,
+   "captions_on_page": [
+    "War II bunker is Open Ground."
+   ]
+  },
+  {
+   "file": "p299-1.webp",
+   "page": 299,
+   "chapter": "Nightclub guide",
+   "width": 1400,
+   "height": 985,
+   "captions_on_page": [
+    "Funktion-One sound."
+   ]
+  },
+  {
+   "file": "p300-1.webp",
+   "page": 300,
+   "chapter": "Nightclub guide",
+   "width": 1400,
+   "height": 991,
+   "captions_on_page": []
+  },
+  {
+   "file": "p301-1.webp",
+   "page": 301,
+   "chapter": "Nightclub guide",
+   "width": 1400,
+   "height": 985,
+   "captions_on_page": []
+  },
+  {
+   "file": "p302-1.webp",
+   "page": 302,
+   "chapter": "Nightclub guide",
+   "width": 490,
+   "height": 390,
+   "captions_on_page": []
+  },
+  {
+   "file": "p302-2.webp",
+   "page": 302,
+   "chapter": "Nightclub guide",
+   "width": 833,
+   "height": 675,
+   "captions_on_page": []
+  },
+  {
+   "file": "p302-3.webp",
+   "page": 302,
+   "chapter": "Nightclub guide",
+   "width": 782,
+   "height": 436,
+   "captions_on_page": []
+  },
+  {
+   "file": "p302-4.webp",
+   "page": 302,
+   "chapter": "Nightclub guide",
+   "width": 775,
+   "height": 720,
+   "captions_on_page": []
+  },
+  {
+   "file": "p302-5.webp",
+   "page": 302,
+   "chapter": "Nightclub guide",
+   "width": 546,
+   "height": 410,
+   "captions_on_page": []
+  },
+  {
+   "file": "p302-6.webp",
+   "page": 302,
+   "chapter": "Nightclub guide",
+   "width": 894,
+   "height": 484,
+   "captions_on_page": []
+  },
+  {
+   "file": "p302-7.webp",
+   "page": 302,
+   "chapter": "Nightclub guide",
+   "width": 800,
+   "height": 450,
+   "captions_on_page": []
+  },
+  {
+   "file": "p302-8.webp",
+   "page": 302,
+   "chapter": "Nightclub guide",
+   "width": 511,
+   "height": 341,
+   "captions_on_page": []
+  },
+  {
+   "file": "p302-9.webp",
+   "page": 302,
+   "chapter": "Nightclub guide",
+   "width": 722,
+   "height": 470,
+   "captions_on_page": []
+  },
+  {
+   "file": "p302-10.webp",
+   "page": 302,
+   "chapter": "Nightclub guide",
+   "width": 752,
+   "height": 599,
+   "captions_on_page": []
+  },
+  {
+   "file": "p302-11.webp",
+   "page": 302,
+   "chapter": "Nightclub guide",
+   "width": 804,
+   "height": 536,
+   "captions_on_page": []
+  },
+  {
+   "file": "p302-12.webp",
+   "page": 302,
+   "chapter": "Nightclub guide",
+   "width": 714,
+   "height": 457,
+   "captions_on_page": []
+  },
+  {
+   "file": "p302-13.webp",
+   "page": 302,
+   "chapter": "Nightclub guide",
+   "width": 587,
+   "height": 475,
+   "captions_on_page": []
+  },
+  {
+   "file": "p302-14.webp",
+   "page": 302,
+   "chapter": "Nightclub guide",
+   "width": 885,
+   "height": 591,
+   "captions_on_page": []
+  },
+  {
+   "file": "p302-15.webp",
+   "page": 302,
+   "chapter": "Nightclub guide",
+   "width": 540,
+   "height": 407,
+   "captions_on_page": []
+  },
+  {
+   "file": "p302-16.webp",
+   "page": 302,
+   "chapter": "Nightclub guide",
+   "width": 663,
+   "height": 537,
+   "captions_on_page": []
+  },
+  {
+   "file": "p302-17.webp",
+   "page": 302,
+   "chapter": "Nightclub guide",
+   "width": 713,
+   "height": 475,
+   "captions_on_page": []
+  },
+  {
+   "file": "p302-18.webp",
+   "page": 302,
+   "chapter": "Nightclub guide",
+   "width": 960,
+   "height": 697,
+   "captions_on_page": []
+  },
+  {
+   "file": "p302-19.webp",
+   "page": 302,
+   "chapter": "Nightclub guide",
+   "width": 1005,
+   "height": 565,
+   "captions_on_page": []
+  },
+  {
+   "file": "p302-20.webp",
+   "page": 302,
+   "chapter": "Nightclub guide",
+   "width": 610,
+   "height": 407,
+   "captions_on_page": []
+  },
+  {
+   "file": "p302-21.webp",
+   "page": 302,
+   "chapter": "Nightclub guide",
+   "width": 725,
+   "height": 483,
+   "captions_on_page": []
+  },
+  {
+   "file": "p302-22.webp",
+   "page": 302,
+   "chapter": "Nightclub guide",
+   "width": 776,
+   "height": 467,
+   "captions_on_page": []
+  },
+  {
+   "file": "p302-23.webp",
+   "page": 302,
+   "chapter": "Nightclub guide",
+   "width": 724,
+   "height": 482,
+   "captions_on_page": []
+  },
+  {
+   "file": "p302-24.webp",
+   "page": 302,
+   "chapter": "Nightclub guide",
+   "width": 715,
+   "height": 451,
+   "captions_on_page": []
+  },
+  {
+   "file": "p302-25.webp",
+   "page": 302,
+   "chapter": "Nightclub guide",
+   "width": 694,
+   "height": 417,
+   "captions_on_page": []
+  },
+  {
+   "file": "p303-1.webp",
+   "page": 303,
+   "chapter": "Nightclub guide",
+   "width": 703,
+   "height": 424,
+   "captions_on_page": []
+  },
+  {
+   "file": "p303-2.webp",
+   "page": 303,
+   "chapter": "Nightclub guide",
+   "width": 670,
+   "height": 390,
+   "captions_on_page": []
+  },
+  {
+   "file": "p303-3.webp",
+   "page": 303,
+   "chapter": "Nightclub guide",
+   "width": 1200,
+   "height": 457,
+   "captions_on_page": []
+  },
+  {
+   "file": "p303-4.webp",
+   "page": 303,
+   "chapter": "Nightclub guide",
+   "width": 782,
+   "height": 462,
+   "captions_on_page": []
+  },
+  {
+   "file": "p303-5.webp",
+   "page": 303,
+   "chapter": "Nightclub guide",
+   "width": 676,
+   "height": 673,
+   "captions_on_page": []
+  },
+  {
+   "file": "p303-6.webp",
+   "page": 303,
+   "chapter": "Nightclub guide",
+   "width": 849,
+   "height": 566,
+   "captions_on_page": []
+  },
+  {
+   "file": "p303-7.webp",
+   "page": 303,
+   "chapter": "Nightclub guide",
+   "width": 913,
+   "height": 658,
+   "captions_on_page": []
+  },
+  {
+   "file": "p303-8.webp",
+   "page": 303,
+   "chapter": "Nightclub guide",
+   "width": 1003,
+   "height": 669,
+   "captions_on_page": []
+  },
+  {
+   "file": "p303-9.webp",
+   "page": 303,
+   "chapter": "Nightclub guide",
+   "width": 714,
+   "height": 477,
+   "captions_on_page": []
+  },
+  {
+   "file": "p303-10.webp",
+   "page": 303,
+   "chapter": "Nightclub guide",
+   "width": 791,
+   "height": 475,
+   "captions_on_page": []
+  },
+  {
+   "file": "p303-11.webp",
+   "page": 303,
+   "chapter": "Nightclub guide",
+   "width": 375,
+   "height": 502,
+   "captions_on_page": []
+  },
+  {
+   "file": "p303-12.webp",
+   "page": 303,
+   "chapter": "Nightclub guide",
+   "width": 471,
+   "height": 467,
+   "captions_on_page": []
+  },
+  {
+   "file": "p303-13.webp",
+   "page": 303,
+   "chapter": "Nightclub guide",
+   "width": 806,
+   "height": 451,
+   "captions_on_page": []
+  },
+  {
+   "file": "p303-14.webp",
+   "page": 303,
+   "chapter": "Nightclub guide",
+   "width": 544,
+   "height": 550,
+   "captions_on_page": []
+  },
+  {
+   "file": "p303-15.webp",
+   "page": 303,
+   "chapter": "Nightclub guide",
+   "width": 792,
+   "height": 448,
+   "captions_on_page": []
+  },
+  {
+   "file": "p303-16.webp",
+   "page": 303,
+   "chapter": "Nightclub guide",
+   "width": 682,
+   "height": 455,
+   "captions_on_page": []
+  },
+  {
+   "file": "p303-17.webp",
+   "page": 303,
+   "chapter": "Nightclub guide",
+   "width": 1200,
+   "height": 675,
+   "captions_on_page": []
+  },
+  {
+   "file": "p303-18.webp",
+   "page": 303,
+   "chapter": "Nightclub guide",
+   "width": 644,
+   "height": 430,
+   "captions_on_page": []
+  },
+  {
+   "file": "p303-19.webp",
+   "page": 303,
+   "chapter": "Nightclub guide",
+   "width": 707,
+   "height": 472,
+   "captions_on_page": []
+  },
+  {
+   "file": "p303-20.webp",
+   "page": 303,
+   "chapter": "Nightclub guide",
+   "width": 696,
+   "height": 464,
+   "captions_on_page": []
+  },
+  {
+   "file": "p305-1.webp",
+   "page": 305,
+   "chapter": "Evolution brochure",
+   "width": 1400,
+   "height": 1004,
+   "captions_on_page": []
+  },
+  {
+   "file": "p306-1.webp",
+   "page": 306,
+   "chapter": "Evolution brochure",
+   "width": 457,
+   "height": 612,
+   "captions_on_page": []
+  },
+  {
+   "file": "p306-2.webp",
+   "page": 306,
+   "chapter": "Evolution brochure",
+   "width": 511,
+   "height": 625,
+   "captions_on_page": []
+  },
+  {
+   "file": "p306-3.webp",
+   "page": 306,
+   "chapter": "Evolution brochure",
+   "width": 941,
+   "height": 616,
+   "captions_on_page": []
+  },
+  {
+   "file": "p306-4.webp",
+   "page": 306,
+   "chapter": "Evolution brochure",
+   "width": 922,
+   "height": 616,
+   "captions_on_page": []
+  },
+  {
+   "file": "p306-5.webp",
+   "page": 306,
+   "chapter": "Evolution brochure",
+   "width": 780,
+   "height": 1249,
+   "captions_on_page": []
+  },
+  {
+   "file": "p306-6.webp",
+   "page": 306,
+   "chapter": "Evolution brochure",
+   "width": 1400,
+   "height": 452,
+   "captions_on_page": []
+  },
+  {
+   "file": "p306-7.webp",
+   "page": 306,
+   "chapter": "Evolution brochure",
+   "width": 1400,
+   "height": 400,
+   "captions_on_page": []
+  },
+  {
+   "file": "p309-1.webp",
+   "page": 309,
+   "chapter": "Evolution brochure",
+   "width": 535,
+   "height": 422,
+   "captions_on_page": [
+    "Evolution Series for a discreet appearance if needed."
+   ]
+  },
+  {
+   "file": "p309-2.webp",
+   "page": 309,
+   "chapter": "Evolution brochure",
+   "width": 396,
+   "height": 527,
+   "captions_on_page": [
+    "Evolution Series for a discreet appearance if needed."
+   ]
+  },
+  {
+   "file": "p309-3.webp",
+   "page": 309,
+   "chapter": "Evolution brochure",
+   "width": 454,
+   "height": 405,
+   "captions_on_page": [
+    "Evolution Series for a discreet appearance if needed."
+   ]
+  },
+  {
+   "file": "p309-4.webp",
+   "page": 309,
+   "chapter": "Evolution brochure",
+   "width": 355,
+   "height": 345,
+   "captions_on_page": [
+    "Evolution Series for a discreet appearance if needed."
+   ]
+  },
+  {
+   "file": "p310-1.webp",
+   "page": 310,
+   "chapter": "Evolution brochure",
+   "width": 1400,
+   "height": 991,
+   "captions_on_page": []
+  },
+  {
+   "file": "p311-1.webp",
+   "page": 311,
+   "chapter": "Evolution brochure",
+   "width": 740,
+   "height": 710,
+   "captions_on_page": []
+  },
+  {
+   "file": "p311-2.webp",
+   "page": 311,
+   "chapter": "Evolution brochure",
+   "width": 684,
+   "height": 856,
+   "captions_on_page": []
+  },
+  {
+   "file": "p311-3.webp",
+   "page": 311,
+   "chapter": "Evolution brochure",
+   "width": 610,
+   "height": 610,
+   "captions_on_page": []
+  },
+  {
+   "file": "p311-4.webp",
+   "page": 311,
+   "chapter": "Evolution brochure",
+   "width": 704,
+   "height": 628,
+   "captions_on_page": []
+  },
+  {
+   "file": "p312-1.webp",
+   "page": 312,
+   "chapter": "Evolution brochure",
+   "width": 484,
+   "height": 604,
+   "captions_on_page": []
+  },
+  {
+   "file": "p312-2.webp",
+   "page": 312,
+   "chapter": "Evolution brochure",
+   "width": 473,
+   "height": 620,
+   "captions_on_page": []
+  },
+  {
+   "file": "p312-3.webp",
+   "page": 312,
+   "chapter": "Evolution brochure",
+   "width": 1400,
+   "height": 396,
+   "captions_on_page": []
+  },
+  {
+   "file": "p312-4.webp",
+   "page": 312,
+   "chapter": "Evolution brochure",
+   "width": 959,
+   "height": 625,
+   "captions_on_page": []
+  },
+  {
+   "file": "p312-5.webp",
+   "page": 312,
+   "chapter": "Evolution brochure",
+   "width": 941,
+   "height": 616,
+   "captions_on_page": []
+  },
+  {
+   "file": "p312-6.webp",
+   "page": 312,
+   "chapter": "Evolution brochure",
+   "width": 1400,
+   "height": 448,
+   "captions_on_page": []
+  },
+  {
+   "file": "p312-7.webp",
+   "page": 312,
+   "chapter": "Evolution brochure",
+   "width": 873,
+   "height": 1400,
+   "captions_on_page": []
+  },
+  {
+   "file": "p313-1.webp",
+   "page": 313,
+   "chapter": "Evolution brochure",
+   "width": 711,
+   "height": 1089,
+   "captions_on_page": []
+  },
+  {
+   "file": "p314-1.webp",
+   "page": 314,
+   "chapter": "Evolution brochure",
+   "width": 829,
+   "height": 879,
+   "captions_on_page": []
+  },
+  {
+   "file": "p314-2.webp",
+   "page": 314,
+   "chapter": "Evolution brochure",
+   "width": 785,
+   "height": 778,
+   "captions_on_page": []
+  },
+  {
+   "file": "p315-1.webp",
+   "page": 315,
+   "chapter": "Evolution brochure",
+   "width": 988,
+   "height": 788,
+   "captions_on_page": []
+  },
+  {
+   "file": "p315-2.webp",
+   "page": 315,
+   "chapter": "Evolution brochure",
+   "width": 607,
+   "height": 961,
+   "captions_on_page": []
+  },
+  {
+   "file": "p315-3.webp",
+   "page": 315,
+   "chapter": "Evolution brochure",
+   "width": 629,
+   "height": 1208,
+   "captions_on_page": []
+  },
+  {
+   "file": "p316-1.webp",
+   "page": 316,
+   "chapter": "Evolution brochure",
+   "width": 521,
+   "height": 658,
+   "captions_on_page": []
+  },
+  {
+   "file": "p316-2.webp",
+   "page": 316,
+   "chapter": "Evolution brochure",
+   "width": 1400,
+   "height": 404,
+   "captions_on_page": []
+  },
+  {
+   "file": "p316-3.webp",
+   "page": 316,
+   "chapter": "Evolution brochure",
+   "width": 943,
+   "height": 620,
+   "captions_on_page": []
+  },
+  {
+   "file": "p316-4.webp",
+   "page": 316,
+   "chapter": "Evolution brochure",
+   "width": 922,
+   "height": 616,
+   "captions_on_page": []
+  },
+  {
+   "file": "p316-5.webp",
+   "page": 316,
+   "chapter": "Evolution brochure",
+   "width": 1400,
+   "height": 443,
+   "captions_on_page": []
+  },
+  {
+   "file": "p316-6.webp",
+   "page": 316,
+   "chapter": "Evolution brochure",
+   "width": 788,
+   "height": 1253,
+   "captions_on_page": []
+  },
+  {
+   "file": "p316-7.webp",
+   "page": 316,
+   "chapter": "Evolution brochure",
+   "width": 471,
+   "height": 605,
+   "captions_on_page": []
+  },
+  {
+   "file": "p317-1.webp",
+   "page": 317,
+   "chapter": "Evolution brochure",
+   "width": 606,
+   "height": 892,
+   "captions_on_page": []
+  },
+  {
+   "file": "p317-2.webp",
+   "page": 317,
+   "chapter": "Evolution brochure",
+   "width": 601,
+   "height": 652,
+   "captions_on_page": []
+  },
+  {
+   "file": "p317-3.webp",
+   "page": 317,
+   "chapter": "Evolution brochure",
+   "width": 509,
+   "height": 585,
+   "captions_on_page": []
+  },
+  {
+   "file": "p318-1.webp",
+   "page": 318,
+   "chapter": "Evolution brochure",
+   "width": 790,
+   "height": 1173,
+   "captions_on_page": []
+  },
+  {
+   "file": "p319-1.webp",
+   "page": 319,
+   "chapter": "Evolution brochure",
+   "width": 779,
+   "height": 828,
+   "captions_on_page": []
+  },
+  {
+   "file": "p319-2.webp",
+   "page": 319,
+   "chapter": "Evolution brochure",
+   "width": 801,
+   "height": 796,
+   "captions_on_page": []
+  },
+  {
+   "file": "p320-1.webp",
+   "page": 320,
+   "chapter": "Evolution brochure",
+   "width": 490,
+   "height": 595,
+   "captions_on_page": []
+  },
+  {
+   "file": "p320-2.webp",
+   "page": 320,
+   "chapter": "Evolution brochure",
+   "width": 952,
+   "height": 625,
+   "captions_on_page": []
+  },
+  {
+   "file": "p320-3.webp",
+   "page": 320,
+   "chapter": "Evolution brochure",
+   "width": 943,
+   "height": 628,
+   "captions_on_page": []
+  },
+  {
+   "file": "p320-4.webp",
+   "page": 320,
+   "chapter": "Evolution brochure",
+   "width": 932,
+   "height": 604,
+   "captions_on_page": []
+  },
+  {
+   "file": "p320-5.webp",
+   "page": 320,
+   "chapter": "Evolution brochure",
+   "width": 940,
+   "height": 605,
+   "captions_on_page": []
+  },
+  {
+   "file": "p320-6.webp",
+   "page": 320,
+   "chapter": "Evolution brochure",
+   "width": 865,
+   "height": 1365,
+   "captions_on_page": []
+  },
+  {
+   "file": "p320-7.webp",
+   "page": 320,
+   "chapter": "Evolution brochure",
+   "width": 1400,
+   "height": 401,
+   "captions_on_page": []
+  },
+  {
+   "file": "p320-8.webp",
+   "page": 320,
+   "chapter": "Evolution brochure",
+   "width": 464,
+   "height": 625,
+   "captions_on_page": []
+  },
+  {
+   "file": "p321-1.webp",
+   "page": 321,
+   "chapter": "Evolution brochure",
+   "width": 709,
+   "height": 782,
+   "captions_on_page": []
+  },
+  {
+   "file": "p321-2.webp",
+   "page": 321,
+   "chapter": "Evolution brochure",
+   "width": 728,
+   "height": 667,
+   "captions_on_page": []
+  },
+  {
+   "file": "p321-3.webp",
+   "page": 321,
+   "chapter": "Evolution brochure",
+   "width": 622,
+   "height": 843,
+   "captions_on_page": []
+  },
+  {
+   "file": "p321-4.webp",
+   "page": 321,
+   "chapter": "Evolution brochure",
+   "width": 524,
+   "height": 626,
+   "captions_on_page": []
+  },
+  {
+   "file": "p321-5.webp",
+   "page": 321,
+   "chapter": "Evolution brochure",
+   "width": 249,
+   "height": 373,
+   "captions_on_page": []
+  },
+  {
+   "file": "p321-6.webp",
+   "page": 321,
+   "chapter": "Evolution brochure",
+   "width": 249,
+   "height": 373,
+   "captions_on_page": []
+  },
+  {
+   "file": "p322-1.webp",
+   "page": 322,
+   "chapter": "Evolution brochure",
+   "width": 804,
+   "height": 1134,
+   "captions_on_page": []
+  },
+  {
+   "file": "p322-2.webp",
+   "page": 322,
+   "chapter": "Evolution brochure",
+   "width": 968,
+   "height": 1149,
+   "captions_on_page": []
+  },
+  {
+   "file": "p323-1.webp",
+   "page": 323,
+   "chapter": "Evolution brochure",
+   "width": 756,
+   "height": 1174,
+   "captions_on_page": []
+  },
+  {
+   "file": "p323-2.webp",
+   "page": 323,
+   "chapter": "Evolution brochure",
+   "width": 834,
+   "height": 779,
+   "captions_on_page": []
+  },
+  {
+   "file": "p324-1.webp",
+   "page": 324,
+   "chapter": "Evolution brochure",
+   "width": 1400,
+   "height": 494,
+   "captions_on_page": []
+  },
+  {
+   "file": "p325-1.webp",
+   "page": 325,
+   "chapter": "Evolution brochure",
+   "width": 1400,
+   "height": 486,
+   "captions_on_page": []
+  },
+  {
+   "file": "p326-1.webp",
+   "page": 326,
+   "chapter": "Evolution brochure",
+   "width": 1400,
+   "height": 954,
+   "captions_on_page": []
+  },
+  {
+   "file": "p327-1.webp",
+   "page": 327,
+   "chapter": "Evolution brochure",
+   "width": 734,
+   "height": 512,
+   "captions_on_page": []
+  },
+  {
+   "file": "p327-2.webp",
+   "page": 327,
+   "chapter": "Evolution brochure",
+   "width": 585,
+   "height": 491,
+   "captions_on_page": []
+  },
+  {
+   "file": "p327-3.webp",
+   "page": 327,
+   "chapter": "Evolution brochure",
+   "width": 680,
+   "height": 518,
+   "captions_on_page": []
+  },
+  {
+   "file": "p327-4.webp",
+   "page": 327,
+   "chapter": "Evolution brochure",
+   "width": 942,
+   "height": 654,
+   "captions_on_page": []
+  },
+  {
+   "file": "p327-5.webp",
+   "page": 327,
+   "chapter": "Evolution brochure",
+   "width": 622,
+   "height": 484,
+   "captions_on_page": []
+  },
+  {
+   "file": "p327-6.webp",
+   "page": 327,
+   "chapter": "Evolution brochure",
+   "width": 776,
+   "height": 839,
+   "captions_on_page": []
+  },
+  {
+   "file": "p328-1.webp",
+   "page": 328,
+   "chapter": "Evolution brochure",
+   "width": 469,
+   "height": 597,
+   "captions_on_page": []
+  },
+  {
+   "file": "p328-2.webp",
+   "page": 328,
+   "chapter": "Evolution brochure",
+   "width": 477,
+   "height": 622,
+   "captions_on_page": []
+  },
+  {
+   "file": "p328-3.webp",
+   "page": 328,
+   "chapter": "Evolution brochure",
+   "width": 1400,
+   "height": 400,
+   "captions_on_page": []
+  },
+  {
+   "file": "p328-4.webp",
+   "page": 328,
+   "chapter": "Evolution brochure",
+   "width": 945,
+   "height": 605,
+   "captions_on_page": []
+  },
+  {
+   "file": "p328-5.webp",
+   "page": 328,
+   "chapter": "Evolution brochure",
+   "width": 946,
+   "height": 614,
+   "captions_on_page": []
+  },
+  {
+   "file": "p328-6.webp",
+   "page": 328,
+   "chapter": "Evolution brochure",
+   "width": 923,
+   "height": 616,
+   "captions_on_page": []
+  },
+  {
+   "file": "p328-7.webp",
+   "page": 328,
+   "chapter": "Evolution brochure",
+   "width": 923,
+   "height": 602,
+   "captions_on_page": []
+  },
+  {
+   "file": "p328-8.webp",
+   "page": 328,
+   "chapter": "Evolution brochure",
+   "width": 674,
+   "height": 1080,
+   "captions_on_page": []
+  },
+  {
+   "file": "p329-1.webp",
+   "page": 329,
+   "chapter": "Evolution brochure",
+   "width": 776,
+   "height": 850,
+   "captions_on_page": []
+  },
+  {
+   "file": "p329-2.webp",
+   "page": 329,
+   "chapter": "Evolution brochure",
+   "width": 767,
+   "height": 832,
+   "captions_on_page": []
+  },
+  {
+   "file": "p330-1.webp",
+   "page": 330,
+   "chapter": "Evolution brochure",
+   "width": 1400,
+   "height": 728,
+   "captions_on_page": []
+  },
+  {
+   "file": "p330-2.webp",
+   "page": 330,
+   "chapter": "Evolution brochure",
+   "width": 980,
+   "height": 520,
+   "captions_on_page": []
+  },
+  {
+   "file": "p330-3.webp",
+   "page": 330,
+   "chapter": "Evolution brochure",
+   "width": 980,
+   "height": 520,
+   "captions_on_page": []
+  },
+  {
+   "file": "p330-4.webp",
+   "page": 330,
+   "chapter": "Evolution brochure",
+   "width": 980,
+   "height": 521,
+   "captions_on_page": []
+  },
+  {
+   "file": "p332-1.webp",
+   "page": 332,
+   "chapter": "Evolution brochure",
+   "width": 1400,
+   "height": 367,
+   "captions_on_page": []
+  },
+  {
+   "file": "p332-2.webp",
+   "page": 332,
+   "chapter": "Evolution brochure",
+   "width": 1400,
+   "height": 306,
+   "captions_on_page": []
+  },
+  {
+   "file": "p333-1.webp",
+   "page": 333,
+   "chapter": "Evolution brochure",
+   "width": 769,
+   "height": 1400,
+   "captions_on_page": [
+    "Neodymium magnets and PWM (Class D) amplification."
+   ]
+  },
+  {
+   "file": "p351-1.webp",
+   "page": 351,
+   "chapter": "Evo 2 user guide",
+   "width": 425,
+   "height": 109,
+   "captions_on_page": [
+    "Low Voltage Directive 2014/35/EU.",
+    "Funktion-One Research Limited."
+   ]
+  },
+  {
+   "file": "p357-1.webp",
+   "page": 357,
+   "chapter": "Evo 2 user guide",
+   "width": 585,
+   "height": 427,
+   "captions_on_page": []
+  },
+  {
+   "file": "p363-1.webp",
+   "page": 363,
+   "chapter": "Evo 2 user guide",
+   "width": 513,
+   "height": 217,
+   "captions_on_page": [
+    "BFP properly engaged.",
+    "Plate to the underside of the cabinets."
+   ]
+  },
+  {
+   "file": "p368-1.webp",
+   "page": 368,
+   "chapter": "Evo 2 user guide",
+   "width": 638,
+   "height": 905,
+   "captions_on_page": [
+    "Make sure the pin is fully inserted.",
+    "Do not continue if the pin does not fit properly."
+   ]
+  },
+  {
+   "file": "p371-1.webp",
+   "page": 371,
+   "chapter": "Evo 2 user guide",
+   "width": 342,
+   "height": 533,
+   "captions_on_page": [
+    "This will also mitigate unwanted room reflections and/or off site noise problems."
+   ]
+  },
+  {
+   "file": "p371-2.webp",
+   "page": 371,
+   "chapter": "Evo 2 user guide",
+   "width": 342,
+   "height": 533,
+   "captions_on_page": [
+    "This will also mitigate unwanted room reflections and/or off site noise problems."
+   ]
+  },
+  {
+   "file": "p371-3.webp",
+   "page": 371,
+   "chapter": "Evo 2 user guide",
+   "width": 403,
+   "height": 404,
+   "captions_on_page": [
+    "This will also mitigate unwanted room reflections and/or off site noise problems."
+   ]
+  },
+  {
+   "file": "p371-4.webp",
+   "page": 371,
+   "chapter": "Evo 2 user guide",
+   "width": 402,
+   "height": 404,
+   "captions_on_page": [
+    "This will also mitigate unwanted room reflections and/or off site noise problems."
+   ]
+  },
+  {
+   "file": "p371-5.webp",
+   "page": 371,
+   "chapter": "Evo 2 user guide",
+   "width": 519,
+   "height": 436,
+   "captions_on_page": [
+    "This will also mitigate unwanted room reflections and/or off site noise problems."
+   ]
+  },
+  {
+   "file": "p371-6.webp",
+   "page": 371,
+   "chapter": "Evo 2 user guide",
+   "width": 519,
+   "height": 436,
+   "captions_on_page": [
+    "This will also mitigate unwanted room reflections and/or off site noise problems."
+   ]
+  },
+  {
+   "file": "p371-7.webp",
+   "page": 371,
+   "chapter": "Evo 2 user guide",
+   "width": 465,
+   "height": 564,
+   "captions_on_page": [
+    "This will also mitigate unwanted room reflections and/or off site noise problems."
+   ]
+  },
+  {
+   "file": "p371-8.webp",
+   "page": 371,
+   "chapter": "Evo 2 user guide",
+   "width": 465,
+   "height": 564,
+   "captions_on_page": [
+    "This will also mitigate unwanted room reflections and/or off site noise problems."
+   ]
+  },
+  {
+   "file": "p372-1.webp",
+   "page": 372,
+   "chapter": "Evo 2 user guide",
+   "width": 1145,
+   "height": 344,
+   "captions_on_page": []
+  },
+  {
+   "file": "p372-2.webp",
+   "page": 372,
+   "chapter": "Evo 2 user guide",
+   "width": 1135,
+   "height": 344,
+   "captions_on_page": []
+  },
+  {
+   "file": "p375-1.webp",
+   "page": 375,
+   "chapter": "Evolution X user guide",
+   "width": 1251,
+   "height": 75,
+   "captions_on_page": []
+  },
+  {
+   "file": "p379-1.webp",
+   "page": 379,
+   "chapter": "Evolution X user guide",
+   "width": 664,
+   "height": 170,
+   "captions_on_page": [
+    "Low Voltage Directive 2014/35/EU.",
+    "Electrical Equipment (Safety) Regulations 2016.",
+    "Regulations 2012.",
+    "Funktion-One Research Limited."
+   ]
+  },
+  {
+   "file": "p382-1.webp",
+   "page": 382,
+   "chapter": "Evolution X user guide",
+   "width": 1131,
+   "height": 283,
+   "captions_on_page": []
+  },
+  {
+   "file": "p382-2.webp",
+   "page": 382,
+   "chapter": "Evolution X user guide",
+   "width": 1126,
+   "height": 563,
+   "captions_on_page": []
+  },
+  {
+   "file": "p385-1.webp",
+   "page": 385,
+   "chapter": "Evolution X user guide",
+   "width": 737,
+   "height": 751,
+   "captions_on_page": [
+    "This will also mitigate unwanted room reflections and/or off site noise problems."
+   ]
+  },
+  {
+   "file": "p385-2.webp",
+   "page": 385,
+   "chapter": "Evolution X user guide",
+   "width": 739,
+   "height": 751,
+   "captions_on_page": [
+    "This will also mitigate unwanted room reflections and/or off site noise problems."
+   ]
+  },
+  {
+   "file": "p385-3.webp",
+   "page": 385,
+   "chapter": "Evolution X user guide",
+   "width": 832,
+   "height": 832,
+   "captions_on_page": [
+    "This will also mitigate unwanted room reflections and/or off site noise problems."
+   ]
+  },
+  {
+   "file": "p385-4.webp",
+   "page": 385,
+   "chapter": "Evolution X user guide",
+   "width": 832,
+   "height": 832,
+   "captions_on_page": [
+    "This will also mitigate unwanted room reflections and/or off site noise problems."
+   ]
+  },
+  {
+   "file": "p386-1.webp",
+   "page": 386,
+   "chapter": "Evolution X user guide",
+   "width": 1400,
+   "height": 192,
+   "captions_on_page": []
+  },
+  {
+   "file": "p386-2.webp",
+   "page": 386,
+   "chapter": "Evolution X user guide",
+   "width": 1400,
+   "height": 230,
+   "captions_on_page": []
+  },
+  {
+   "file": "p386-3.webp",
+   "page": 386,
+   "chapter": "Evolution X user guide",
+   "width": 1400,
+   "height": 190,
+   "captions_on_page": []
+  },
+  {
+   "file": "p386-4.webp",
+   "page": 386,
+   "chapter": "Evolution X user guide",
+   "width": 1400,
+   "height": 287,
+   "captions_on_page": []
+  },
+  {
+   "file": "p386-5.webp",
+   "page": 386,
+   "chapter": "Evolution X user guide",
+   "width": 1400,
+   "height": 267,
+   "captions_on_page": []
+  },
+  {
+   "file": "p386-6.webp",
+   "page": 386,
+   "chapter": "Evolution X user guide",
+   "width": 1400,
+   "height": 351,
+   "captions_on_page": []
+  },
+  {
+   "file": "p392-1.webp",
+   "page": 392,
+   "chapter": "SB8A and SB10A user guide",
+   "width": 1400,
+   "height": 613,
+   "captions_on_page": [
+    "Low Voltage Directive 2014/35/EU.",
+    "Electrical Equipment (Safety) Regulations 2016.",
+    "Electromagnetic Compatibility Directive 2014/30/EU.",
+    "Electromagnetic Compatibility Regulatioins 2016.",
+    "Restriction of Hazardous Substances (RoHS) Directive 2011/65/EU.",
+    "Electrical and Electronic Equipment Regulations 2012.",
+    "The Seller shall have no further liability to the Purchaser.",
+    "Funktion-One Research Limited."
+   ]
+  },
+  {
+   "file": "p395-1.webp",
+   "page": 395,
+   "chapter": "SB8A and SB10A user guide",
+   "width": 379,
+   "height": 88,
+   "captions_on_page": [
+    "The LEDs on the amplifier indicate the amplifiers status."
+   ]
+  },
+  {
+   "file": "p395-2.webp",
+   "page": 395,
+   "chapter": "SB8A and SB10A user guide",
+   "width": 379,
+   "height": 111,
+   "captions_on_page": [
+    "The LEDs on the amplifier indicate the amplifiers status."
+   ]
+  },
+  {
+   "file": "p397-1.webp",
+   "page": 397,
+   "chapter": "SB8A and SB10A user guide",
+   "width": 151,
+   "height": 156,
+   "captions_on_page": [
+    "The outputs can supply up to 150W into 4Ω and are actively high passed at 140-150Hz.",
+    "The SB8A/SB10A’s outputs use the robust and safe Neutrik Speakon connector."
+   ]
+  },
+  {
+   "file": "p400-1.webp",
+   "page": 400,
+   "chapter": "SB8A and SB10A user guide",
+   "width": 1054,
+   "height": 492,
+   "captions_on_page": []
+  },
+  {
+   "file": "p400-2.webp",
+   "page": 400,
+   "chapter": "SB8A and SB10A user guide",
+   "width": 1042,
+   "height": 500,
+   "captions_on_page": []
+  },
+  {
+   "file": "p400-3.webp",
+   "page": 400,
+   "chapter": "SB8A and SB10A user guide",
+   "width": 963,
+   "height": 170,
+   "captions_on_page": []
+  },
+  {
+   "file": "p406-1.webp",
+   "page": 406,
+   "chapter": "SB8A and SB10A user guide",
+   "width": 1046,
+   "height": 776,
+   "captions_on_page": []
+  },
+  {
+   "file": "p407-1.webp",
+   "page": 407,
+   "chapter": "SB8A and SB10A user guide",
+   "width": 452,
+   "height": 272,
+   "captions_on_page": [
+    "Pascals (the threshold of hearing) to 20 Pascals (threshold of pain)."
+   ]
+  },
+  {
+   "file": "p407-2.webp",
+   "page": 407,
+   "chapter": "SB8A and SB10A user guide",
+   "width": 440,
+   "height": 128,
+   "captions_on_page": [
+    "Pascals (the threshold of hearing) to 20 Pascals (threshold of pain)."
+   ]
+  },
+  {
+   "file": "p407-3.webp",
+   "page": 407,
+   "chapter": "SB8A and SB10A user guide",
+   "width": 392,
+   "height": 98,
+   "captions_on_page": [
+    "Pascals (the threshold of hearing) to 20 Pascals (threshold of pain)."
+   ]
+  },
+  {
+   "file": "p407-4.webp",
+   "page": 407,
+   "chapter": "SB8A and SB10A user guide",
+   "width": 392,
+   "height": 96,
+   "captions_on_page": [
+    "Pascals (the threshold of hearing) to 20 Pascals (threshold of pain)."
+   ]
+  },
+  {
+   "file": "p416-1.webp",
+   "page": 416,
+   "chapter": "PSM15 user guide",
+   "width": 869,
+   "height": 959,
+   "captions_on_page": []
+  },
+  {
+   "file": "p433-1.webp",
+   "page": 433,
+   "chapter": "F101 user guide",
+   "width": 1000,
+   "height": 1400,
+   "captions_on_page": []
+  },
+  {
+   "file": "p437-1.webp",
+   "page": 437,
+   "chapter": "F101 user guide",
+   "width": 793,
+   "height": 650,
+   "captions_on_page": []
+  },
+  {
+   "file": "p440-1.webp",
+   "page": 440,
+   "chapter": "F101 user guide",
+   "width": 558,
+   "height": 183,
+   "captions_on_page": []
+  },
+  {
+   "file": "p441-1.webp",
+   "page": 441,
+   "chapter": "F101 user guide",
+   "width": 555,
+   "height": 184,
+   "captions_on_page": []
+  },
+  {
+   "file": "p441-2.webp",
+   "page": 441,
+   "chapter": "F101 user guide",
+   "width": 1097,
+   "height": 393,
+   "captions_on_page": []
+  },
+  {
+   "file": "p442-1.webp",
+   "page": 442,
+   "chapter": "F101 user guide",
+   "width": 1097,
+   "height": 434,
+   "captions_on_page": []
+  },
+  {
+   "file": "p442-2.webp",
+   "page": 442,
+   "chapter": "F101 user guide",
+   "width": 1099,
+   "height": 393,
+   "captions_on_page": []
+  },
+  {
+   "file": "p442-3.webp",
+   "page": 442,
+   "chapter": "F101 user guide",
+   "width": 1092,
+   "height": 390,
+   "captions_on_page": []
+  },
+  {
+   "file": "p443-1.webp",
+   "page": 443,
+   "chapter": "F101 user guide",
+   "width": 1058,
+   "height": 464,
+   "captions_on_page": []
+  },
+  {
+   "file": "p443-2.webp",
+   "page": 443,
+   "chapter": "F101 user guide",
+   "width": 1058,
+   "height": 466,
+   "captions_on_page": []
+  },
+  {
+   "file": "p444-1.webp",
+   "page": 444,
+   "chapter": "F101 user guide",
+   "width": 1162,
+   "height": 1162,
+   "captions_on_page": [
+    "The above aiming rules still apply, of course."
+   ]
+  },
+  {
+   "file": "p445-1.webp",
+   "page": 445,
+   "chapter": "F101 user guide",
+   "width": 825,
+   "height": 827,
+   "captions_on_page": [
+    "The example (overleaf) uses 12 F101s to cover a 40m wide, 180°, fan-shaped audience."
+   ]
+  },
+  {
+   "file": "p446-1.webp",
+   "page": 446,
+   "chapter": "F101 user guide",
+   "width": 804,
+   "height": 483,
+   "captions_on_page": []
+  },
+  {
+   "file": "p446-2.webp",
+   "page": 446,
+   "chapter": "F101 user guide",
+   "width": 1400,
+   "height": 302,
+   "captions_on_page": []
+  },
+  {
+   "file": "p447-1.webp",
+   "page": 447,
+   "chapter": "F101 user guide",
+   "width": 1307,
+   "height": 775,
+   "captions_on_page": [
+    "The wall mounting plate may be removed and sent to site for pre-installation if required."
+   ]
+  },
+  {
+   "file": "p447-2.webp",
+   "page": 447,
+   "chapter": "F101 user guide",
+   "width": 961,
+   "height": 481,
+   "captions_on_page": [
+    "The wall mounting plate may be removed and sent to site for pre-installation if required."
+   ]
+  },
+  {
+   "file": "p448-1.webp",
+   "page": 448,
+   "chapter": "F101 user guide",
+   "width": 479,
+   "height": 338,
+   "captions_on_page": [
+    "M8 hex-head bolts, flat washers and spring washers provided.",
+    "If you remove the wall bracket, always refit the original countersunk blanking bolts.",
+    "Retighten the horizontal locking nut once you’re happy with the position."
+   ]
+  },
+  {
+   "file": "p448-2.webp",
+   "page": 448,
+   "chapter": "F101 user guide",
+   "width": 427,
+   "height": 537,
+   "captions_on_page": [
+    "M8 hex-head bolts, flat washers and spring washers provided.",
+    "If you remove the wall bracket, always refit the original countersunk blanking bolts.",
+    "Retighten the horizontal locking nut once you’re happy with the position."
+   ]
+  },
+  {
+   "file": "p448-3.webp",
+   "page": 448,
+   "chapter": "F101 user guide",
+   "width": 532,
+   "height": 608,
+   "captions_on_page": [
+    "M8 hex-head bolts, flat washers and spring washers provided.",
+    "If you remove the wall bracket, always refit the original countersunk blanking bolts.",
+    "Retighten the horizontal locking nut once you’re happy with the position."
+   ]
+  },
+  {
+   "file": "p449-1.webp",
+   "page": 449,
+   "chapter": "F101 user guide",
+   "width": 941,
+   "height": 576,
+   "captions_on_page": []
+  },
+  {
+   "file": "p449-2.webp",
+   "page": 449,
+   "chapter": "F101 user guide",
+   "width": 861,
+   "height": 370,
+   "captions_on_page": []
+  },
+  {
+   "file": "p450-1.webp",
+   "page": 450,
+   "chapter": "F101 user guide",
+   "width": 593,
+   "height": 730,
+   "captions_on_page": [
+    "The yoke also has a 7mm safety wire attachment hole.",
+    "M8 hex-head bolts and flat washers for fixed installations.",
+    "If you remove the yoke, always refit the original countersunk blanking bolts."
+   ]
+  },
+  {
+   "file": "p450-2.webp",
+   "page": 450,
+   "chapter": "F101 user guide",
+   "width": 322,
+   "height": 549,
+   "captions_on_page": [
+    "The yoke also has a 7mm safety wire attachment hole.",
+    "M8 hex-head bolts and flat washers for fixed installations.",
+    "If you remove the yoke, always refit the original countersunk blanking bolts."
+   ]
+  },
+  {
+   "file": "p450-3.webp",
+   "page": 450,
+   "chapter": "F101 user guide",
+   "width": 297,
+   "height": 310,
+   "captions_on_page": [
+    "The yoke also has a 7mm safety wire attachment hole.",
+    "M8 hex-head bolts and flat washers for fixed installations.",
+    "If you remove the yoke, always refit the original countersunk blanking bolts."
+   ]
+  },
+  {
+   "file": "p451-1.webp",
+   "page": 451,
+   "chapter": "F101 user guide",
+   "width": 384,
+   "height": 539,
+   "captions_on_page": []
+  },
+  {
+   "file": "p451-2.webp",
+   "page": 451,
+   "chapter": "F101 user guide",
+   "width": 507,
+   "height": 583,
+   "captions_on_page": []
+  },
+  {
+   "file": "p452-1.webp",
+   "page": 452,
+   "chapter": "F101 user guide",
+   "width": 925,
+   "height": 415,
+   "captions_on_page": [
+    "Use 1+ for F101 +ve, 1- for F101 –ve."
+   ]
+  },
+  {
+   "file": "p452-2.webp",
+   "page": 452,
+   "chapter": "F101 user guide",
+   "width": 299,
+   "height": 263,
+   "captions_on_page": [
+    "Use 1+ for F101 +ve, 1- for F101 –ve."
+   ]
+  },
+  {
+   "file": "p452-3.webp",
+   "page": 452,
+   "chapter": "F101 user guide",
+   "width": 393,
+   "height": 257,
+   "captions_on_page": [
+    "Use 1+ for F101 +ve, 1- for F101 –ve."
+   ]
+  },
+  {
+   "file": "p453-1.webp",
+   "page": 453,
+   "chapter": "F101 user guide",
+   "width": 1306,
+   "height": 504,
+   "captions_on_page": []
+  },
+  {
+   "file": "p453-2.webp",
+   "page": 453,
+   "chapter": "F101 user guide",
+   "width": 1306,
+   "height": 504,
+   "captions_on_page": []
+  },
+  {
+   "file": "p455-1.webp",
+   "page": 455,
+   "chapter": "F101 user guide",
+   "width": 614,
+   "height": 259,
+   "captions_on_page": []
+  },
+  {
+   "file": "p457-1.webp",
+   "page": 457,
+   "chapter": "F101 user guide",
+   "width": 1297,
+   "height": 294,
+   "captions_on_page": [
+    "For limiter recommendations, see section 11.",
+    "In extreme cases this could pose a fire hazard.",
+    "For more information about clipping, see appendix A."
+   ]
+  },
+  {
+   "file": "p457-2.webp",
+   "page": 457,
+   "chapter": "F101 user guide",
+   "width": 1297,
+   "height": 294,
+   "captions_on_page": [
+    "For limiter recommendations, see section 11.",
+    "In extreme cases this could pose a fire hazard.",
+    "For more information about clipping, see appendix A."
+   ]
+  },
+  {
+   "file": "p458-1.webp",
+   "page": 458,
+   "chapter": "F101 user guide",
+   "width": 1297,
+   "height": 294,
+   "captions_on_page": []
+  },
+  {
+   "file": "p458-2.webp",
+   "page": 458,
+   "chapter": "F101 user guide",
+   "width": 1306,
+   "height": 301,
+   "captions_on_page": []
+  },
+  {
+   "file": "p458-3.webp",
+   "page": 458,
+   "chapter": "F101 user guide",
+   "width": 1297,
+   "height": 589,
+   "captions_on_page": []
+  },
+  {
+   "file": "p459-1.webp",
+   "page": 459,
+   "chapter": "F101 user guide",
+   "width": 1297,
+   "height": 589,
+   "captions_on_page": []
+  },
+  {
+   "file": "p459-2.webp",
+   "page": 459,
+   "chapter": "F101 user guide",
+   "width": 1297,
+   "height": 589,
+   "captions_on_page": []
+  },
+  {
+   "file": "p460-1.webp",
+   "page": 460,
+   "chapter": "F101 user guide",
+   "width": 1306,
+   "height": 599,
+   "captions_on_page": []
+  },
+  {
+   "file": "p460-2.webp",
+   "page": 460,
+   "chapter": "F101 user guide",
+   "width": 1297,
+   "height": 294,
+   "captions_on_page": []
+  },
+  {
+   "file": "p461-1.webp",
+   "page": 461,
+   "chapter": "F101 user guide",
+   "width": 1297,
+   "height": 294,
+   "captions_on_page": [
+    "See Appendix A at the end of this User Guide for a discussion about clipping.",
+    "See Appendix B at the end of this User Guide for a discussion about system gain structure."
+   ]
+  },
+  {
+   "file": "p461-2.webp",
+   "page": 461,
+   "chapter": "F101 user guide",
+   "width": 1297,
+   "height": 294,
+   "captions_on_page": [
+    "See Appendix A at the end of this User Guide for a discussion about clipping.",
+    "See Appendix B at the end of this User Guide for a discussion about system gain structure."
+   ]
+  },
+  {
+   "file": "p461-3.webp",
+   "page": 461,
+   "chapter": "F101 user guide",
+   "width": 1306,
+   "height": 301,
+   "captions_on_page": [
+    "See Appendix A at the end of this User Guide for a discussion about clipping.",
+    "See Appendix B at the end of this User Guide for a discussion about system gain structure."
+   ]
+  },
+  {
+   "file": "p462-1.webp",
+   "page": 462,
+   "chapter": "F101 user guide",
+   "width": 1297,
+   "height": 589,
+   "captions_on_page": []
+  },
+  {
+   "file": "p462-2.webp",
+   "page": 462,
+   "chapter": "F101 user guide",
+   "width": 1297,
+   "height": 589,
+   "captions_on_page": []
+  },
+  {
+   "file": "p463-1.webp",
+   "page": 463,
+   "chapter": "F101 user guide",
+   "width": 1297,
+   "height": 589,
+   "captions_on_page": [
+    "Again, note the connector blocks."
+   ]
+  },
+  {
+   "file": "p463-2.webp",
+   "page": 463,
+   "chapter": "F101 user guide",
+   "width": 1306,
+   "height": 598,
+   "captions_on_page": [
+    "Again, note the connector blocks."
+   ]
+  },
+  {
+   "file": "p464-1.webp",
+   "page": 464,
+   "chapter": "F101 user guide",
+   "width": 1101,
+   "height": 446,
+   "captions_on_page": []
+  },
+  {
+   "file": "p464-2.webp",
+   "page": 464,
+   "chapter": "F101 user guide",
+   "width": 948,
+   "height": 529,
+   "captions_on_page": []
+  },
+  {
+   "file": "p465-1.webp",
+   "page": 465,
+   "chapter": "F101 user guide",
+   "width": 954,
+   "height": 491,
+   "captions_on_page": [
+    "Again, the efficient 8ohm enclosure allows multiple units to be driven by one amplifier."
+   ]
+  },
+  {
+   "file": "p465-2.webp",
+   "page": 465,
+   "chapter": "F101 user guide",
+   "width": 940,
+   "height": 595,
+   "captions_on_page": [
+    "Again, the efficient 8ohm enclosure allows multiple units to be driven by one amplifier."
+   ]
+  },
+  {
+   "file": "p466-1.webp",
+   "page": 466,
+   "chapter": "F101 user guide",
+   "width": 352,
+   "height": 546,
+   "captions_on_page": []
+  },
+  {
+   "file": "p466-2.webp",
+   "page": 466,
+   "chapter": "F101 user guide",
+   "width": 810,
+   "height": 503,
+   "captions_on_page": []
+  },
+  {
+   "file": "p467-1.webp",
+   "page": 467,
+   "chapter": "F101 user guide",
+   "width": 337,
+   "height": 178,
+   "captions_on_page": [
+    "Funktion One's highly regarded F218.",
+    "The F215 has a sensitivity figure of 105dBspl (1W/1m)."
+   ]
+  },
+  {
+   "file": "p467-2.webp",
+   "page": 467,
+   "chapter": "F101 user guide",
+   "width": 718,
+   "height": 630,
+   "captions_on_page": [
+    "Funktion One's highly regarded F218.",
+    "The F215 has a sensitivity figure of 105dBspl (1W/1m)."
+   ]
+  },
+  {
+   "file": "p468-1.webp",
+   "page": 468,
+   "chapter": "F101 user guide",
+   "width": 1098,
+   "height": 425,
+   "captions_on_page": [
+    "Higher power use.",
+    "For suggested limiter settings see Section 11.",
+    "Aim the F101s towards ear height about 2/3 of the distance down the audience area."
+   ]
+  },
+  {
+   "file": "p469-1.webp",
+   "page": 469,
+   "chapter": "F101 user guide",
+   "width": 1134,
+   "height": 601,
+   "captions_on_page": []
+  },
+  {
+   "file": "p471-1.webp",
+   "page": 471,
+   "chapter": "F101 user guide",
+   "width": 989,
+   "height": 345,
+   "captions_on_page": [
+    "Reinforcement and cancellation are dependent on the specific frequency and dimensions.",
+    "For a more in depth understanding of this, please see the Funktion One handbook."
+   ]
+  },
+  {
+   "file": "p472-1.webp",
+   "page": 472,
+   "chapter": "F101 user guide",
+   "width": 449,
+   "height": 186,
+   "captions_on_page": [
+    "XO4A, for example."
+   ]
+  },
+  {
+   "file": "p472-2.webp",
+   "page": 472,
+   "chapter": "F101 user guide",
+   "width": 395,
+   "height": 265,
+   "captions_on_page": [
+    "XO4A, for example."
+   ]
+  },
+  {
+   "file": "p472-3.webp",
+   "page": 472,
+   "chapter": "F101 user guide",
+   "width": 449,
+   "height": 137,
+   "captions_on_page": [
+    "XO4A, for example."
+   ]
+  },
+  {
+   "file": "p473-1.webp",
+   "page": 473,
+   "chapter": "F101 user guide",
+   "width": 1102,
+   "height": 219,
+   "captions_on_page": []
+  },
+  {
+   "file": "p474-1.webp",
+   "page": 474,
+   "chapter": "F101 user guide",
+   "width": 1375,
+   "height": 273,
+   "captions_on_page": []
+  },
+  {
+   "file": "p475-1.webp",
+   "page": 475,
+   "chapter": "F101 user guide",
+   "width": 1269,
+   "height": 846,
+   "captions_on_page": []
+  },
+  {
+   "file": "p486-1.webp",
+   "page": 486,
+   "chapter": "F101 user guide",
+   "width": 250,
+   "height": 270,
+   "captions_on_page": [
+    "Never run your input levels into the red as this would indicate input clipping.",
+    "Further processing will simply make matters worse."
+   ]
+  },
+  {
+   "file": "p487-1.webp",
+   "page": 487,
+   "chapter": "F101 user guide",
+   "width": 360,
+   "height": 604,
+   "captions_on_page": [
+    "Slowly increase the MASTER LEVEL and listen to the inserted effect."
+   ]
+  },
+  {
+   "file": "p495-1.webp",
+   "page": 495,
+   "chapter": "Evo2 spec sheet",
+   "width": 890,
+   "height": 1300,
+   "captions_on_page": [
+    "Evo or Vero VX touring systems."
+   ]
+  },
+  {
+   "file": "p496-1.webp",
+   "page": 496,
+   "chapter": "Evo2L spec sheet",
+   "width": 891,
+   "height": 1180,
+   "captions_on_page": []
+  },
+  {
+   "file": "p497-1.webp",
+   "page": 497,
+   "chapter": "Evo2SH spec sheet",
+   "width": 570,
+   "height": 782,
+   "captions_on_page": []
+  },
+  {
+   "file": "p498-1.webp",
+   "page": 498,
+   "chapter": "EvolutionX spec sheet",
+   "width": 873,
+   "height": 1400,
+   "captions_on_page": [
+    "Advanced driver technology delivers even more resolution and detail."
+   ]
+  },
+  {
+   "file": "p499-1.webp",
+   "page": 499,
+   "chapter": "EvolutionXSH spec sheet",
+   "width": 1400,
+   "height": 553,
+   "captions_on_page": []
+  },
+  {
+   "file": "p499-2.webp",
+   "page": 499,
+   "chapter": "EvolutionXSH spec sheet",
+   "width": 890,
+   "height": 1177,
+   "captions_on_page": []
+  },
+  {
+   "file": "p500-1.webp",
+   "page": 500,
+   "chapter": "F118-MkII spec sheet",
+   "width": 1400,
+   "height": 593,
+   "captions_on_page": []
+  },
+  {
+   "file": "p500-2.webp",
+   "page": 500,
+   "chapter": "F118-MkII spec sheet",
+   "width": 414,
+   "height": 317,
+   "captions_on_page": []
+  },
+  {
+   "file": "p501-1.webp",
+   "page": 501,
+   "chapter": "F1201 spec sheet",
+   "width": 319,
+   "height": 481,
+   "captions_on_page": []
+  },
+  {
+   "file": "p502-1.webp",
+   "page": 502,
+   "chapter": "F218-MkII spec sheet",
+   "width": 500,
+   "height": 839,
+   "captions_on_page": []
+  },
+  {
+   "file": "p503-1.webp",
+   "page": 503,
+   "chapter": "F5 spec sheet",
+   "width": 1172,
+   "height": 1201,
+   "captions_on_page": []
+  },
+  {
+   "file": "p504-1.webp",
+   "page": 504,
+   "chapter": "F61 spec sheet",
+   "width": 711,
+   "height": 831,
+   "captions_on_page": []
+  },
+  {
+   "file": "p505-1.webp",
+   "page": 505,
+   "chapter": "F61IP spec sheet",
+   "width": 797,
+   "height": 864,
+   "captions_on_page": []
+  },
+  {
+   "file": "p505-2.webp",
+   "page": 505,
+   "chapter": "F61IP spec sheet",
+   "width": 848,
+   "height": 886,
+   "captions_on_page": []
+  },
+  {
+   "file": "p506-1.webp",
+   "page": 506,
+   "chapter": "AX88 spec sheet",
+   "width": 319,
+   "height": 512,
+   "captions_on_page": []
+  },
+  {
+   "file": "p507-1.webp",
+   "page": 507,
+   "chapter": "BR115 spec sheet",
+   "width": 509,
+   "height": 512,
+   "captions_on_page": [
+    "Funktion-One’s signature bass sound is required at close range.",
+    "BR115 provides surprising output from a small and manageable cabinet."
+   ]
+  },
+  {
+   "file": "p508-1.webp",
+   "page": 508,
+   "chapter": "BR118 spec sheet",
+   "width": 452,
+   "height": 512,
+   "captions_on_page": [
+    "Funktion-One’s signature bass sound is required at close range."
+   ]
+  },
+  {
+   "file": "p509-1.webp",
+   "page": 509,
+   "chapter": "BR121 spec sheet",
+   "width": 406,
+   "height": 512,
+   "captions_on_page": [
+    "Funktion-One’s signature bass sound is required at close range."
+   ]
+  },
+  {
+   "file": "p510-1.webp",
+   "page": 510,
+   "chapter": "BR218 spec sheet",
+   "width": 324,
+   "height": 511,
+   "captions_on_page": [
+    "Funktion-One’s signature bass sound is required at close range."
+   ]
+  },
+  {
+   "file": "p511-1.webp",
+   "page": 511,
+   "chapter": "BR221 spec sheet",
+   "width": 358,
+   "height": 512,
+   "captions_on_page": [
+    "Funktion-One’s signature bass sound is required at close range.",
+    "BR221 provides deep bass extension and high output.",
+    "Excellent results when paired with the Evo 6E for a medium club system."
+   ]
+  },
+  {
+   "file": "p512-1.webp",
+   "page": 512,
+   "chapter": "DS15 spec sheet",
+   "width": 890,
+   "height": 1047,
+   "captions_on_page": [
+    "Typically used in combination with DS210 or Evo SH mid-high loudspeakers."
+   ]
+  },
+  {
+   "file": "p513-1.webp",
+   "page": 513,
+   "chapter": "DS210 spec sheet",
+   "width": 471,
+   "height": 308,
+   "captions_on_page": []
+  },
+  {
+   "file": "p514-1.webp",
+   "page": 514,
+   "chapter": "Evo6EH spec sheet",
+   "width": 383,
+   "height": 512,
+   "captions_on_page": [
+    "Evo 6EH is a mid-high loudspeaker oﬀering high output and controlled directivity."
+   ]
+  },
+  {
+   "file": "p515-1.webp",
+   "page": 515,
+   "chapter": "Evo6EL spec sheet",
+   "width": 448,
+   "height": 512,
+   "captions_on_page": [
+    "Pairs well with F121 or F124 to form a complete system."
+   ]
+  },
+  {
+   "file": "p516-1.webp",
+   "page": 516,
+   "chapter": "Evo6E spec sheet",
+   "width": 337,
+   "height": 512,
+   "captions_on_page": []
+  },
+  {
+   "file": "p517-1.webp",
+   "page": 517,
+   "chapter": "Evo6SH spec sheet",
+   "width": 412,
+   "height": 467,
+   "captions_on_page": []
+  },
+  {
+   "file": "p518-1.webp",
+   "page": 518,
+   "chapter": "Evo7EH spec sheet",
+   "width": 392,
+   "height": 512,
+   "captions_on_page": [
+    "Evo 7EH is a mid-high loudspeaker oﬀering high output and controlled directivity."
+   ]
+  },
+  {
+   "file": "p519-1.webp",
+   "page": 519,
+   "chapter": "Evo7EL spec sheet",
+   "width": 451,
+   "height": 512,
+   "captions_on_page": [
+    "F121 or F124 to form a complete system."
+   ]
+  },
+  {
+   "file": "p520-1.webp",
+   "page": 520,
+   "chapter": "Evo7E spec sheet",
+   "width": 319,
+   "height": 512,
+   "captions_on_page": []
+  },
+  {
+   "file": "p521-1.webp",
+   "page": 521,
+   "chapter": "Evo7SH spec sheet",
+   "width": 890,
+   "height": 1065,
+   "captions_on_page": []
+  },
+  {
+   "file": "p522-1.webp",
+   "page": 522,
+   "chapter": "Evo7TH spec sheet",
+   "width": 375,
+   "height": 512,
+   "captions_on_page": []
+  },
+  {
+   "file": "p523-1.webp",
+   "page": 523,
+   "chapter": "Evo7TL spec sheet",
+   "width": 328,
+   "height": 512,
+   "captions_on_page": []
+  },
+  {
+   "file": "p524-1.webp",
+   "page": 524,
+   "chapter": "Evo7T spec sheet",
+   "width": 325,
+   "height": 511,
+   "captions_on_page": []
+  },
+  {
+   "file": "p525-1.webp",
+   "page": 525,
+   "chapter": "F115MkII spec sheet",
+   "width": 891,
+   "height": 1343,
+   "captions_on_page": []
+  },
+  {
+   "file": "p526-1.webp",
+   "page": 526,
+   "chapter": "F121 spec sheet",
+   "width": 596,
+   "height": 457,
+   "captions_on_page": []
+  },
+  {
+   "file": "p527-1.webp",
+   "page": 527,
+   "chapter": "F124 spec sheet",
+   "width": 393,
+   "height": 512,
+   "captions_on_page": [
+    "F124 takes Funktion-One’s bass loading and driver technology to the next level."
+   ]
+  },
+  {
+   "file": "p528-1.webp",
+   "page": 528,
+   "chapter": "F215MkII spec sheet",
+   "width": 381,
+   "height": 512,
+   "captions_on_page": []
+  },
+  {
+   "file": "p529-1.webp",
+   "page": 529,
+   "chapter": "F221 spec sheet",
+   "width": 512,
+   "height": 288,
+   "captions_on_page": [
+    "F221 cardioid arrays have up to 30dB rear rejection in optimal conﬁgurations.",
+    "The ideal bass solution for Vero, VX and Evolution systems."
+   ]
+  },
+  {
+   "file": "p530-1.webp",
+   "page": 530,
+   "chapter": "F315 spec sheet",
+   "width": 521,
+   "height": 327,
+   "captions_on_page": [
+    "BR221 and mid-high enclosures such at the DS210 or Evo series."
+   ]
+  },
+  {
+   "file": "p531-1.webp",
+   "page": 531,
+   "chapter": "F55 spec sheet",
+   "width": 512,
+   "height": 460,
+   "captions_on_page": []
+  },
+  {
+   "file": "p532-1.webp",
+   "page": 532,
+   "chapter": "F88 spec sheet",
+   "width": 512,
+   "height": 409,
+   "captions_on_page": [
+    "Funktion-One designed, wide bandwidth 8” drivers with a passive slot tweeter."
+   ]
+  },
+  {
+   "file": "p532-2.webp",
+   "page": 532,
+   "chapter": "F88 spec sheet",
+   "width": 512,
+   "height": 412,
+   "captions_on_page": [
+    "Funktion-One designed, wide bandwidth 8” drivers with a passive slot tweeter."
+   ]
+  },
+  {
+   "file": "p533-1.webp",
+   "page": 533,
+   "chapter": "MB112 spec sheet",
+   "width": 462,
+   "height": 413,
+   "captions_on_page": []
+  },
+  {
+   "file": "p534-1.webp",
+   "page": 534,
+   "chapter": "MB212 spec sheet",
+   "width": 1264,
+   "height": 1400,
+   "captions_on_page": [
+    "The 8 Ohm nominal impedance allows multiple units to be powered by one ampliﬁer."
+   ]
+  },
+  {
+   "file": "p535-1.webp",
+   "page": 535,
+   "chapter": "PSM12 spec sheet",
+   "width": 512,
+   "height": 406,
+   "captions_on_page": []
+  },
+  {
+   "file": "p536-1.webp",
+   "page": 536,
+   "chapter": "Res2SH spec sheet",
+   "width": 499,
+   "height": 512,
+   "captions_on_page": []
+  },
+  {
+   "file": "p537-1.webp",
+   "page": 537,
+   "chapter": "Res2 spec sheet",
+   "width": 319,
+   "height": 512,
+   "captions_on_page": []
+  },
+  {
+   "file": "p538-1.webp",
+   "page": 538,
+   "chapter": "Res4E spec sheet",
+   "width": 320,
+   "height": 512,
+   "captions_on_page": [
+    "Note: EP6 connector and Neodymium driver options are no longer available.",
+    "Now ﬁtted with Neutrik NL8 connectors."
+   ]
+  },
+  {
+   "file": "p539-1.webp",
+   "page": 539,
+   "chapter": "Res5E spec sheet",
+   "width": 321,
+   "height": 512,
+   "captions_on_page": [
+    "Axhead loading device.",
+    "Note: EP6 connector and Neodymium driver options are no longer available.",
+    "Now ﬁtted with Neutrik NL8 connectors."
+   ]
+  },
+  {
+   "file": "p540-1.webp",
+   "page": 540,
+   "chapter": "VX90 spec sheet",
+   "width": 457,
+   "height": 512,
+   "captions_on_page": [
+    "Neodymium drivers in a horizontally symmetric conﬁguration."
+   ]
+  },
+  {
+   "file": "p541-1.webp",
+   "page": 541,
+   "chapter": "IB218 spec sheet",
+   "width": 1400,
+   "height": 1055,
+   "captions_on_page": []
+  },
+  {
+   "file": "p542-1.webp",
+   "page": 542,
+   "chapter": "Infrahorn spec sheet",
+   "width": 1400,
+   "height": 1270,
+   "captions_on_page": []
+  },
+  {
+   "file": "p543-1.webp",
+   "page": 543,
+   "chapter": "PSM15 spec sheet",
+   "width": 1400,
+   "height": 1149,
+   "captions_on_page": []
+  },
+  {
+   "file": "p544-1.webp",
+   "page": 544,
+   "chapter": "Res1 spec sheet",
+   "width": 980,
+   "height": 1400,
+   "captions_on_page": []
+  },
+  {
+   "file": "p545-1.webp",
+   "page": 545,
+   "chapter": "SB10 spec sheet",
+   "width": 890,
+   "height": 1168,
+   "captions_on_page": []
+  },
+  {
+   "file": "p546-1.webp",
+   "page": 546,
+   "chapter": "SB10A spec sheet",
+   "width": 787,
+   "height": 843,
+   "captions_on_page": []
+  },
+  {
+   "file": "p546-2.webp",
+   "page": 546,
+   "chapter": "SB10A spec sheet",
+   "width": 849,
+   "height": 912,
+   "captions_on_page": []
+  },
+  {
+   "file": "p548-1.webp",
+   "page": 548,
+   "chapter": "SB12 spec sheet",
+   "width": 933,
+   "height": 1400,
+   "captions_on_page": []
+  },
+  {
+   "file": "p549-1.webp",
+   "page": 549,
+   "chapter": "SB212LP spec sheet",
+   "width": 1038,
+   "height": 563,
+   "captions_on_page": []
+  },
+  {
+   "file": "p550-1.webp",
+   "page": 550,
+   "chapter": "SB8 spec sheet",
+   "width": 1029,
+   "height": 1400,
+   "captions_on_page": [
+    "The SB8 is an extremely compact, yet powerful and convincing bass loudspeaker."
+   ]
+  },
+  {
+   "file": "p551-1.webp",
+   "page": 551,
+   "chapter": "SB8A spec sheet",
+   "width": 678,
+   "height": 845,
+   "captions_on_page": [
+    "SB8A is an extremely compact, yet powerful and convincing self powered bass loudspeaker.",
+    "Integrated 3 channel Class D amplifier with analogue active crossover."
+   ]
+  },
+  {
+   "file": "p551-2.webp",
+   "page": 551,
+   "chapter": "SB8A spec sheet",
+   "width": 804,
+   "height": 702,
+   "captions_on_page": [
+    "SB8A is an extremely compact, yet powerful and convincing self powered bass loudspeaker.",
+    "Integrated 3 channel Class D amplifier with analogue active crossover."
+   ]
+  },
+  {
+   "file": "p552-1.webp",
+   "page": 552,
+   "chapter": "acUOSZGXnQHGY Gv PSM18 spec sheet",
+   "width": 599,
+   "height": 621,
+   "captions_on_page": []
+  },
+  {
+   "file": "p554-1.webp",
+   "page": 554,
+   "chapter": "acUOZZGXnQHGY Gz PSM318 spec sheet",
+   "width": 571,
+   "height": 914,
+   "captions_on_page": []
+  }
+ ]
+}

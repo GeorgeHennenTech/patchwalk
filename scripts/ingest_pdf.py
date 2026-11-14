@@ -94,7 +94,9 @@ def main():
         with tempfile.TemporaryDirectory() as tmp:
             run("pdfimages", "-all", "-p", pdf, f"{tmp}/im")
             files = sorted(os.listdir(tmp))
-            assert len(files) == len(kinds), (len(files), len(kinds))
+            # A few PDFs list a picture that cannot be written out (or the reverse). The list then cannot say which
+            # files are masks, so every file is tried as a picture; blank and tiny ones are still dropped below.
+            if len(files) != len(kinds): kinds = ["image"] * len(files)
             per_page = {}
             for name, kind in zip(files, kinds):
                 page = offset + int(name.split("-")[1])

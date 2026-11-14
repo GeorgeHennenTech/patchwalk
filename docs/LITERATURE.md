@@ -11,6 +11,7 @@ maker or author gives away; copies from piracy sites are not taken in.
 | Ableton Live 11 Reference Manual | 814 pages of text, 738 pictures |
 | Rift manual (Minimal Audio) | 64 pages of text, 112 pictures. For the Rift lessons and distortion |
 | Kolbrek, "Horn Theory: An Introduction", parts 1 and 2 (audioXpress, 2008) | 17 pages of text, 46 pictures. Downloaded on 14 Nov 2026 from the publisher's own site, where it is given away. Pages are numbered 1 to 17 straight through the two parts, not by the magazine's page numbers. For the sound-systems track |
+| Funktion-One user guides, spec sheets and brochures | 537 pages of text, 509 pictures, from 71 documents downloaded on 14 Nov 2026 from the maker's own site: the Resolution 4 and 5 series user guides, the Resolution 1 manual, ground-stack and nightclub guides, the Evolution brochure and guides, and about 55 one-page spec sheets (Resolution, Dance Stack, bass units, Evolution, monitors). Each document is a chapter; pages are numbered 1 to 555 straight through, not by each document's own numbers. Left out: engineering drawings and rigging hardware sheets, three near-duplicate powered-speaker guides, and the Vero VX brochure and rigging manual, whose text is stored as pictures and cannot be searched |
 | This app's 36 knowledge cards | Drafts written for the app |
 
 ## Listed by the owner; files not received yet
@@ -58,7 +59,7 @@ home systems, and high-end in-ear monitors. Start with Toole, McCarthy and the F
 
 | Text | For |
 |---|---|
-| Funktion-One manuals, spec sheets and technical papers (free from the maker), and published interviews with Tony Andrews | Funktion-One, classic and Vero |
+| Published interviews with Tony Andrews; a searchable source on Vero (the maker's manuals and spec sheets are now in the library, but its Vero documents are pictures of text) | Funktion-One, classic and Vero |
 | Kolbrek and Dunker, *High-Quality Horn Loudspeaker Systems* (the shorter articles are now in the library, see the top) | How horn loudspeakers work |
 | McCarthy, *Sound Systems: Design and Optimization* | Large systems: arrays, subs, tuning a room |
 | Davis, Patronis and Brown, *Sound System Engineering* | Large systems |

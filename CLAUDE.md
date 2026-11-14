@@ -640,9 +640,15 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
 - **Kolbrek, "Horn Theory: An Introduction", parts 1 and 2 (audioXpress, 2008; owner asked 14 Nov 2026).**
   `library/kolbrek-horn-theory.json` (17 pages, numbered straight through the two parts; chapters "Part 1"
   and "Part 2") and `library/images/kolbrek-horn-theory/` (46 pictures). Downloaded from the publisher's
-  own site, where the articles are given away. The first text for the sound-systems track. The
-  Funktion-One site could not be reached from the build session (its network refused the connection even
-  after the host was allowed), so no Funktion-One documents are in yet.
+  own site, where the articles are given away. The first text for the sound-systems track. 
+- **Funktion-One documents (owner asked 14 Nov 2026).** `library/funktion-one-documents.json` (537 pages
+  of text from 71 documents, numbered 1 to 555 straight through; each document is a chapter, such as
+  "Resolution 4 series user guide" or "Res4E spec sheet") and `library/images/funktion-one-documents/`
+  (509 pictures, 19 MB). Downloaded from the maker's site (funktion-one.com; files on
+  funktion-one.cdn.prismic.io). Left out on purpose: engineering drawings, rigging hardware sheets, three
+  near-duplicate powered-speaker guides, and the Vero VX brochure and rigging manual (their text is
+  pictures, so nothing to search; Vero is still without a searchable source). `scripts/ingest_pdf.py` now
+  copes with a PDF whose picture list and written files disagree.
 - **`scripts/ingest_pdf.py`** is the standard way to take in any PDF book, text and pictures together, from one
   or more parts numbered straight through (`--skip-pages` for contents pages, `--append <last page>` to add
   later parts). A test checks every book's text and picture index agree.

@@ -35,6 +35,30 @@
    "answer": 3,
    "why": "Read forwards then backwards, the saw's outline becomes a triangle, and a new outline means different harmonics.",
    "point": 0
+  },
+  {
+   "q": "You hold a sine, set Warp to Bend and turn the amount up. What do you hear?",
+   "options": [
+    "The tone dropping to a lower note",
+    "The tone growing brighter and more nasal",
+    "The tone getting duller and softer",
+    "The tone fading slowly to silence"
+   ],
+   "answer": 1,
+   "why": "Bend changes the outline of the wave, so new harmonics appear and the tone gets brighter and more nasal.",
+   "point": 0
+  },
+  {
+   "q": "A saw is on Mirror at 100%. You bring the amount down to about half. What do you get?",
+   "options": [
+    "A pure sine with one harmonic",
+    "The same sound, an octave higher",
+    "A saw with a filter closing on it",
+    "Something between a saw and a triangle"
+   ],
+   "answer": 3,
+   "why": "At about half, the turn-around point has moved, so the wave sits between a saw and a triangle.",
+   "point": 0
   }
  ],
  "C6.2": [
@@ -72,6 +96,30 @@
    ],
    "answer": 0,
    "why": "The sweep of the amount is the sound, so a macro sent to Warp amount lets you play it.",
+   "point": 2
+  },
+  {
+   "q": "You want a clean saw exactly an octave higher, using Sync. Where do you set Warp amount?",
+   "options": [
+    "All the way up",
+    "About halfway up",
+    "About a third of the way up",
+    "Just above zero"
+   ],
+   "answer": 2,
+   "why": "About a third of the way up, exactly two whole teeth fit in each cycle, so nothing is cut short.",
+   "point": 1
+  },
+  {
+   "q": "You hold a low note on Sync and turn Warp amount slowly all the way up. What does the scope show?",
+   "options": [
+    "Extra teeth squeezing into each cycle",
+    "The teeth spreading further apart",
+    "The wave smoothing into a sine",
+    "The wave growing taller each cycle"
+   ],
+   "answer": 0,
+   "why": "Sync reads the wave faster, so more than one copy of the wave fits inside each cycle.",
    "point": 2
   }
  ],
@@ -111,6 +159,30 @@
    "answer": 3,
    "why": "Slowly moving the pulse width gives a rich, animated tone.",
    "point": 2
+  },
+  {
+   "q": "You change the shape to Sine and sweep Squeeze from 0 to 100%. What do you hear?",
+   "options": [
+    "A pure tone rising steadily to a higher note",
+    "A pure tone turning hollow, like a square",
+    "A pure tone that does not change at all",
+    "A pure tone leaning toward a saw, like a filter opening"
+   ],
+   "answer": 3,
+   "why": "Squeezing a sine tilts it toward a saw, so it brightens as if a filter were opening.",
+   "point": 0
+  },
+  {
+   "q": "You hold a square and take Squeeze all the way to 100%. What is left?",
+   "options": [
+    "A louder, fuller, heavier square",
+    "A thin, reedy buzz with much less body",
+    "A pure tone with a single harmonic",
+    "A hollow tone an octave lower"
+   ],
+   "answer": 1,
+   "why": "At full amount the wave is a narrow spike, which sounds thin and reedy with much less body.",
+   "point": 0
   }
  ],
  "C6.4": [
@@ -149,6 +221,30 @@
    "answer": 1,
    "why": "An envelope on the FM amount gives a bright strike that mellows to a pure tone.",
    "point": 2
+  },
+  {
+   "q": "Your FM tone has become too hard and buzzy. What do you change?",
+   "options": [
+    "Turn FM from B down",
+    "Switch oscillator B off",
+    "Turn FM from B up",
+    "Switch Hold off"
+   ],
+   "answer": 0,
+   "why": "The FM amount sets how many new partials appear, so less amount gives a less bright tone.",
+   "point": 1
+  },
+  {
+   "q": "With FM on, you set B's Octave to 1. What happens to the new bars on the spectrum?",
+   "options": [
+    "They are now twice as close together",
+    "They all disappear, leaving one bar",
+    "They are now twice as far apart",
+    "They stay in place but grow taller"
+   ],
+   "answer": 2,
+   "why": "B's pitch against A's sets where the partials fall, and B is now twice as high.",
+   "point": 1
   }
  ],
  "C6.5": [
@@ -187,6 +283,30 @@
    "answer": 2,
    "why": "FM makes many pairs of partials as it rises, while ring modulation makes one pair per pair of harmonics.",
    "point": 2
+  },
+  {
+   "q": "A and B are sines at the same pitch. You turn Ring from B all the way up. What do you hear?",
+   "options": [
+    "The note drops down an octave",
+    "The note gets twice as loud",
+    "Two notes slightly out of tune",
+    "The note jumps up an octave"
+   ],
+   "answer": 3,
+   "why": "The sum of two equal frequencies is double, and the difference is zero, which is no sound.",
+   "point": 1
+  },
+  {
+   "q": "Ring is at 100% and your own note has gone, leaving a gap. How do you get it back?",
+   "options": [
+    "Bring Ring from B down to about half",
+    "Change both shapes to Saw",
+    "Set B's Semitone higher",
+    "Switch Hold off and on again"
+   ],
+   "answer": 0,
+   "why": "At about half, your own note returns in the middle with the two new tones either side.",
+   "point": 1
   }
  ],
  "C6.C": [
@@ -263,6 +383,30 @@
    "answer": 3,
    "why": "Mix blends the clean sound back in with the distorted one.",
    "point": 2
+  },
+  {
+   "q": "On Soft clip, you turn Drive up past 80% on a sine. What is the wave pushed toward?",
+   "options": [
+    "A staircase made of coarse steps",
+    "A square: flat on top, steep at the sides",
+    "A triangle with gently sloping sides",
+    "A smaller sine with the same outline"
+   ],
+   "answer": 1,
+   "why": "High drive on soft clip pushes the sine toward a square, flat on top and steep at the sides.",
+   "point": 0
+  },
+  {
+   "q": "At the same drive, you change from Soft clip to Hard clip. What changes?",
+   "options": [
+    "It sounds warmer, and the tops are rounded",
+    "It sounds quieter, and the wave is smaller",
+    "It sounds harsher, and the tops are cut flat",
+    "It sounds purer, and the new bars go"
+   ],
+   "answer": 2,
+   "why": "Hard clip cuts the part that sticks out dead flat with sharp corners, which sounds harsher.",
+   "point": 1
   }
  ],
  "C7.2": [
@@ -301,6 +445,30 @@
    "answer": 1,
    "why": "A big boost swept across the range makes the problem jump out, and then you set the amount you want.",
    "point": 2
+  },
+  {
+   "q": "You switch the EQ on with every band at 0 dB. What do you hear?",
+   "options": [
+    "No change at all",
+    "A slightly brighter sound",
+    "A slightly thinner sound",
+    "A slightly quieter sound"
+   ],
+   "answer": 0,
+   "why": "An EQ only turns a region up or down by the amount you choose, and here every amount is zero.",
+   "point": 0
+  },
+  {
+   "q": "You want to turn up one group of harmonics partway up the sound. Which band can you aim there?",
+   "options": [
+    "The low band, by moving its frequency",
+    "The high band, by moving its frequency",
+    "Any band, as all three can move",
+    "The middle band, by moving its frequency"
+   ],
+   "answer": 3,
+   "why": "The EQ has three bands, and the middle one is the band that can be moved.",
+   "point": 1
   }
  ],
  "C7.3": [
@@ -339,6 +507,30 @@
    "answer": 2,
    "why": "With a slow attack the start gets through before the compressor catches up.",
    "point": 2
+  },
+  {
+   "q": "The compressor is on, but hard notes still stick out. What makes it turn them down more firmly?",
+   "options": [
+    "Turning Threshold up to 0 dB",
+    "Turning Make-up up",
+    "Turning Ratio up",
+    "Turning Release up"
+   ],
+   "answer": 2,
+   "why": "The ratio says how firmly the compressor turns down whatever goes over the threshold.",
+   "point": 0
+  },
+  {
+   "q": "With the compressor on, you play a hard note and then a soft one. What does “Turning down by” show?",
+   "options": [
+    "More for the soft note than for the hard one",
+    "More for the hard note than for the soft one",
+    "The same amount for both notes",
+    "Zero for both notes"
+   ],
+   "answer": 1,
+   "why": "Hard notes go further over the threshold, so they are pulled down a long way and soft ones much less.",
+   "point": 0
   }
  ],
  "C7.4": [
@@ -377,6 +569,30 @@
    "answer": 0,
    "why": "Unison is extra oscillators inside each note, and chorus is applied afterwards to everything at once.",
    "point": 2
+  },
+  {
+   "q": "The chorus wobbles so fast it starts to sound out of tune. What do you change?",
+   "options": [
+    "Turn Rate up",
+    "Turn Rate down",
+    "Turn Mix up",
+    "Turn Depth up"
+   ],
+   "answer": 1,
+   "why": "Rate is how fast the copies drift, and a slow rate gives a gentle swirl.",
+   "point": 1
+  },
+  {
+   "q": "You want the strongest swirl from the chorus. Where do you set Mix?",
+   "options": [
+    "Around the middle",
+    "All the way up",
+    "All the way down",
+    "Just above zero"
+   ],
+   "answer": 0,
+   "why": "The swirl is strongest when Mix is around the middle.",
+   "point": 0
   }
  ],
  "C7.5": [
@@ -415,6 +631,30 @@
    "answer": 3,
    "why": "Set in beats, the delay time follows the tempo, so the echoes stay on the rhythm.",
    "point": 2
+  },
+  {
+   "q": "Delay time is set to Half a beat and you play notes on the click. Where do the echoes land?",
+   "options": [
+    "Exactly on top of each click",
+    "Just before each click",
+    "Exactly between the clicks",
+    "At a different place each time"
+   ],
+   "answer": 2,
+   "why": "Set in beats, the delay time follows the tempo, so half a beat lands between the clicks.",
+   "point": 2
+  },
+  {
+   "q": "You want a longer gap between one echo and the next. What do you change?",
+   "options": [
+    "Turn Time down",
+    "Turn Feedback up",
+    "Turn Feedback down",
+    "Turn Time up"
+   ],
+   "answer": 3,
+   "why": "Time is how much later the delay plays the sound back, so it sets the gap between echoes.",
+   "point": 0
   }
  ],
  "C7.6": [
@@ -453,6 +693,30 @@
    "answer": 3,
    "why": "Long tails blur fast notes together, while a single note has room to ring.",
    "point": 2
+  },
+  {
+   "q": "You want a small, close room with only a short bloom after each note. What do you do?",
+   "options": [
+    "Turn Size down",
+    "Turn Size up",
+    "Turn Mix up to 100%",
+    "Play a fast run of notes"
+   ],
+   "answer": 0,
+   "why": "Size is how long the tail lasts, so a small Size gives a short bloom like a close room.",
+   "point": 1
+  },
+  {
+   "q": "You play a few short notes, then switch on Reverb. What changes?",
+   "options": [
+    "Each note is followed by one clear echo",
+    "Each note becomes brighter and buzzier",
+    "Each note rings on in a space after it stops",
+    "Each note takes longer to start"
+   ],
+   "answer": 2,
+   "why": "Reverb is a dense wash of echoes that dies away, so each note rings on after it stops.",
+   "point": 0
   }
  ],
  "C7.C": [

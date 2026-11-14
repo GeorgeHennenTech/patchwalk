@@ -35,6 +35,30 @@
    "answer": 3,
    "why": "A macro is named for what it does to the sound, which helps when a patch has several.",
    "point": 2
+  },
+  {
+   "q": "Your bass needs more bite while you are playing. With the Bite macro built, what do you reach for?",
+   "options": [
+    "Cutoff first, then Resonance, one after the other",
+    "The one macro knob, which moves the two together",
+    "The name box, to type in a stronger name",
+    "Slot 1's amount, to raise it as you play"
+   ],
+   "answer": 1,
+   "why": "A macro is for performance: you reach for one knob in place of two.",
+   "point": 0
+  },
+  {
+   "q": "You set slot 1 to Cutoff. A faint ring appears on the Cutoff knob. What does it show?",
+   "options": [
+    "How far the macro has been turned so far",
+    "How loud the filter is at this moment",
+    "That the knob can no longer be turned by hand",
+    "How far the macro can take that knob"
+   ],
+   "answer": 3,
+   "why": "The faint ring on a destination knob shows how far the macro can take it.",
+   "point": 1
   }
  ],
  "C5M.2": [
@@ -73,6 +97,30 @@
    "answer": 0,
    "why": "The middle of a crossfade macro is a mix of both layers.",
    "point": 2
+  },
+  {
+   "q": "A dirty layer starts silent. You want one macro to fade from the clean layer to it. Which slot amounts?",
+   "options": [
+    "Clean level negative, dirty level positive",
+    "Clean level positive, dirty level negative",
+    "Each level positive, by the same amount",
+    "Each level negative, by the same amount"
+   ],
+   "answer": 0,
+   "why": "The macro must take the clean layer down while it brings the silent dirty layer up.",
+   "point": 1
+  },
+  {
+   "q": "You turn the Morph macro right up while watching the spectrum. What happens as B takes over?",
+   "options": [
+    "Every peak grows taller",
+    "Every peak slides to the right",
+    "Every other peak drops out",
+    "Only the lowest peak is left"
+   ],
+   "answer": 2,
+   "why": "As the saw fades into the hollow square, every other peak drops out of the spectrum.",
+   "point": 0
   }
  ],
  "C5M.3": [
@@ -110,6 +158,30 @@
    ],
    "answer": 0,
    "why": "The three slots should be heard as one change, not three separate ones.",
+   "point": 2
+  },
+  {
+   "q": "You want the Bright macro to add new harmonics as it rises. Which slot does that?",
+   "options": [
+    "The Cutoff slot",
+    "The Position slot",
+    "The Drive slot",
+    "The name of the macro"
+   ],
+   "answer": 2,
+   "why": "Drive adds new harmonics, while the filter and the wavetable position work on the ones already there.",
+   "point": 0
+  },
+  {
+   "q": "You turn the finished Bright macro slowly from zero right up. What do you hear?",
+   "options": [
+    "A dull tone turning bright, full and slightly gritty",
+    "A bright tone turning dull, thin and smooth",
+    "A dull tone getting louder and nothing else",
+    "A still tone starting to wobble faster and faster"
+   ],
+   "answer": 0,
+   "why": "The three slots together take a dull tone to bright, full and slightly gritty in one motion.",
    "point": 2
   }
  ],
@@ -149,6 +221,30 @@
    "answer": 0,
    "why": "One slot can compensate for what the others do, which makes the macro nicer to play.",
    "point": 0
+  },
+  {
+   "q": "You want a macro that makes one voice sound bigger. Which two destinations do the widening?",
+   "options": [
+    "Detune and Osc A level",
+    "Spread and Osc A level",
+    "Osc A level and Hold",
+    "Detune and Spread"
+   ],
+   "answer": 3,
+   "why": "Detune and spread do the two jobs for width, and the level slot works against them.",
+   "point": 0
+  },
+  {
+   "q": "You bring the Wide macro back down to zero while a note is held. What is left?",
+   "options": [
+    "A wide stack, a little quieter",
+    "One plain voice",
+    "A thick stack with no spread",
+    "Silence, as the level slot is negative"
+   ],
+   "answer": 1,
+   "why": "At zero the macro pushes nothing, so the sound is the one plain voice it started as.",
+   "point": 1
   }
  ],
  "C5M.5": [
@@ -187,6 +283,30 @@
    "answer": 3,
    "why": "Depth and speed rising together is heard as growing intensity.",
    "point": 2
+  },
+  {
+   "q": "Your Wobble macro makes the wobble deeper as it rises, but never faster. Which slot is missing?",
+   "options": [
+    "LFO 1 amount",
+    "Cutoff",
+    "Hold",
+    "LFO 1 rate"
+   ],
+   "answer": 3,
+   "why": "The amount slot brings the wobble in and the rate slot is the one that speeds it up.",
+   "point": 0
+  },
+  {
+   "q": "You want one knob to bring in an LFO's movement. Where can a macro's slot be sent?",
+   "options": [
+    "Only to a knob that is part of the sound",
+    "To a setting of the LFO itself, such as its amount",
+    "Only to the cutoff that the LFO is moving",
+    "To the macro's own name, so it starts when named"
+   ],
+   "answer": 1,
+   "why": "A macro's destination can be a setting of an LFO or an envelope, not only part of the sound.",
+   "point": 0
   }
  ],
  "C5M.6": [
@@ -224,6 +344,30 @@
    ],
    "answer": 0,
    "why": "One knob turns one kind of instrument into another: plucks at the bottom, pads at the top.",
+   "point": 2
+  },
+  {
+   "q": "You park the Length macro in the middle and strike a key. What do you hear?",
+   "options": [
+    "The same short pluck as at the very bottom",
+    "The same full swelling pad as at the very top",
+    "Something in between a short pluck and a swelling pad",
+    "Nothing, until the macro is moved to one end"
+   ],
+   "answer": 2,
+   "why": "The macro travels between the pluck and the pad, so the middle gives a sound in between.",
+   "point": 0
+  },
+  {
+   "q": "You want a pluck and a pad from one patch while playing. What does the Length macro give you?",
+   "options": [
+    "One knob that travels between the two envelope shapes",
+    "Two patches that you swap between by hand",
+    "One knob that plays the two sounds at once",
+    "One knob that swaps Env 1 for another envelope"
+   ],
+   "answer": 0,
+   "why": "A macro can travel between two settings of the same envelope, turning one kind of instrument into another.",
    "point": 2
   }
  ],
@@ -263,6 +407,30 @@
    "answer": 1,
    "why": "By degrees is the point: you can stop where the sound is dirty enough.",
    "point": 2
+  },
+  {
+   "q": "You want the Dirt macro to add more hard edge at the cutoff. Which slot's amount do you raise?",
+   "options": [
+    "The Resonance slot",
+    "The Drive slot",
+    "The Noise level slot",
+    "The slot with the largest amount"
+   ],
+   "answer": 0,
+   "why": "Resonance is the ingredient that adds a hard edge at the cutoff.",
+   "point": 0
+  },
+  {
+   "q": "You turn the Dirt macro slowly up on a clean bass note. What do you hear, step by step?",
+   "options": [
+    "The note getting brighter, wider and smoother",
+    "The note getting darker, thinner and quieter",
+    "The note getting squashed, edgy and hissy",
+    "The note starting to wobble, faster and deeper"
+   ],
+   "answer": 2,
+   "why": "Drive, resonance and noise together make the clean note squashed, edgy and hissy by degrees.",
+   "point": 2
   }
  ],
  "C5M.8": [
@@ -301,6 +469,30 @@
    "answer": 2,
    "why": "A finished patch usually has several macros, each for one musical idea.",
    "point": 0
+  },
+  {
+   "q": "You give Wobble a third slot: Cutoff, with a small negative amount. What do you hear as the wobble comes in?",
+   "options": [
+    "The filter opens a little, so the wobble gets a brighter tone",
+    "The filter closes a little, so the wobble digs into a darker tone",
+    "The wobble stops, because the two macros cancel out",
+    "The wobble speeds up while the tone stays the same"
+   ],
+   "answer": 1,
+   "why": "A negative amount on Cutoff closes the filter a little as Wobble rises, giving a darker tone.",
+   "point": 2
+  },
+  {
+   "q": "You try Bright and Wobble at lots of different settings. What do you find?",
+   "options": [
+    "Only four sounds: each macro on or off",
+    "Turning one macro up turns the other one down",
+    "Only the macro you turned last is heard",
+    "Every combination of the two is a different sound"
+   ],
+   "answer": 3,
+   "why": "The two macros are independent, so every combination of them is a different sound.",
+   "point": 1
   }
  ],
  "C5M.9": [
@@ -339,6 +531,30 @@
    "answer": 3,
    "why": "The reverb starts at zero mix, so the sound is dry until the macro brings it in.",
    "point": 2
+  },
+  {
+   "q": "You want one knob that walks a sound to the back of a hall. How do you set its two slots?",
+   "options": [
+    "Reverb mix positive and Reverb size negative",
+    "Reverb mix and Reverb size, each with a positive amount",
+    "Reverb mix negative and Reverb size positive",
+    "Reverb size twice, with a positive amount each time"
+   ],
+   "answer": 1,
+   "why": "Size and level usually want to move together, so the macro raises the two at once.",
+   "point": 0
+  },
+  {
+   "q": "You turn the Space macro up in stages, striking a key each time. What do you hear?",
+   "options": [
+    "A long tail shrinking to a short bloom, then dry",
+    "A pluck getting louder but staying completely dry",
+    "A dry pluck gaining a short bloom, then a long tail",
+    "A pluck followed by a train of separate repeats"
+   ],
+   "answer": 2,
+   "why": "As the room gets bigger and louder, the dry pluck gains a short bloom and then a long tail.",
+   "point": 1
   }
  ],
  "C5M.10": [
@@ -377,6 +593,30 @@
    "answer": 0,
    "why": "Bringing the macro down lets the echo tail fade out by itself.",
    "point": 2
+  },
+  {
+   "q": "You want only the last note of a phrase to echo away. What do you do with the Throw macro?",
+   "options": [
+    "Leave it turned up for the whole phrase",
+    "Turn it up once the phrase has ended",
+    "Turn it down on that note, then back up",
+    "Flick it up on that note, then bring it back down"
+   ],
+   "answer": 3,
+   "why": "The delay stays silent until you flick the macro up on the one note you want to throw.",
+   "point": 0
+  },
+  {
+   "q": "Your thrown echoes carry on for long enough, but they are too quiet. Which slot's amount do you raise?",
+   "options": [
+    "The Delay mix slot",
+    "The Delay feedback slot",
+    "The slot you set up last",
+    "The slot with the smaller amount"
+   ],
+   "answer": 0,
+   "why": "A throw needs the echoes turned up as well as enough feedback, and Delay mix is the echo level.",
+   "point": 1
   }
  ],
  "C5M.11": [
@@ -415,6 +655,30 @@
    "answer": 0,
    "why": "Order matters: the EQ can only turn down highs that the distortion has already added.",
    "point": 2
+  },
+  {
+   "q": "You turn the Heat macro up on a clean bass. What do you hear?",
+   "options": [
+    "It thins into a bright buzz with a fizzy top",
+    "It gets quieter and duller, with no growl at all",
+    "It thickens into a warm, heavy growl without a harsh top",
+    "It stays clean while only the top end gets louder"
+   ],
+   "answer": 2,
+   "why": "Drive goes up and the high band comes down together, so the growl stays warm and not harsh.",
+   "point": 1
+  },
+  {
+   "q": "Your Heat macro still fizzes when it is turned right up. What do you change?",
+   "options": [
+    "Make the EQ high slot's amount positive",
+    "Raise the Distortion drive slot's amount",
+    "Give the macro a name that sounds cooler",
+    "Make the EQ high slot's amount more negative"
+   ],
+   "answer": 3,
+   "why": "Pulling the high band down further after the distortion rounds off more of the fizz.",
+   "point": 0
   }
  ],
  "C5M.12": [
@@ -453,6 +717,30 @@
    "answer": 2,
    "why": "Warp amount belongs on a macro, which is the way to move a control that sources cannot reach.",
    "point": 2
+  },
+  {
+   "q": "You build the Tear macro with only the Warp amount slot. What is the sweep like?",
+   "options": [
+    "Thin at the bottom and piercing at the top",
+    "Dark at the bottom and dark at the top",
+    "Piercing at the bottom and thin at the top",
+    "Silent until a Cutoff slot is added"
+   ],
+   "answer": 0,
+   "why": "On its own the sync sweep can be thin at the bottom and piercing at the top.",
+   "point": 1
+  },
+  {
+   "q": "You turn the finished Tear macro slowly up and back down. What do you hear?",
+   "options": [
+    "A bright scream sinking into a dark saw, then silence",
+    "A dark saw tearing open into a bright scream, then closing",
+    "A dark saw getting louder with no change in tone",
+    "A dark saw wobbling faster and faster, then stopping"
+   ],
+   "answer": 1,
+   "why": "The warp and the filter rise together, so a dark saw tears open into a bright, vowel-like scream.",
+   "point": 0
   }
  ],
  "C5M.13": [
@@ -491,6 +779,30 @@
    "answer": 1,
    "why": "Starting the LFO's amount at zero leaves a plain sine and lets the macro bring the motion in.",
    "point": 2
+  },
+  {
+   "q": "You turn the Growl macro slowly up from zero. In what order does the sound change?",
+   "options": [
+    "A snarl, then an edge, then a pure sine",
+    "A pure sine, then a louder sine, then silence",
+    "An edge, then a pure sine, then a slow fade",
+    "A pure sine, then an edge, then a snarl"
+   ],
+   "answer": 3,
+   "why": "The pure low sine grows an edge and then starts to snarl, faster and deeper as the macro rises.",
+   "point": 1
+  },
+  {
+   "q": "Your growl has plenty of FM, but the tone barely snarls and relaxes. Which slot's amount do you raise?",
+   "options": [
+    "The LFO 1 amount slot",
+    "The FM from B slot",
+    "The LFO 1 rate slot",
+    "The slot that was set up first"
+   ],
+   "answer": 0,
+   "why": "LFO 1's amount sets how far the LFO swings the FM, which is what makes the tone snarl and relax.",
+   "point": 0
   }
  ],
  "C5M.14": [
@@ -529,6 +841,30 @@
    "answer": 2,
    "why": "At zero the compressor is in the path but doing nothing, so soft and hard notes stay apart.",
    "point": 2
+  },
+  {
+   "q": "Your Squash macro catches plenty of the signal but does not hold it firmly. Which slot's amount do you raise?",
+   "options": [
+    "The Compressor threshold slot",
+    "The Compressor ratio slot",
+    "The Compressor make-up slot",
+    "The slot with the negative amount"
+   ],
+   "answer": 1,
+   "why": "Raising the ratio is the move that holds the caught signal more firmly.",
+   "point": 0
+  },
+  {
+   "q": "You turn the Squash macro up in stages, striking keys. What does the “Turning down by” reading do?",
+   "options": [
+    "It shrinks as the macro rises",
+    "It stays at nothing the whole way",
+    "It grows as the macro rises",
+    "It jumps about with no pattern"
+   ],
+   "answer": 2,
+   "why": "The harder the macro makes the compressor work, the more the reading grows.",
+   "point": 0
   }
  ],
  "C5M.15": [
@@ -567,6 +903,30 @@
    "answer": 0,
    "why": "Several gentle effect moves add up and are heard as a single change.",
    "point": 0
+  },
+  {
+   "q": "You turn the Shimmer macro up on one thin saw. What do you hear?",
+   "options": [
+    "It spreads into a wide, glistening pad-like tone",
+    "It narrows into a thinner, duller tone",
+    "It breaks up into a squashed, gritty tone",
+    "It stays thin but repeats several times"
+   ],
+   "answer": 0,
+   "why": "Width, movement and brightness together turn one thin saw into a wide, glistening pad-like tone.",
+   "point": 2
+  },
+  {
+   "q": "Shimmer is wide and moving, but you want a little more top end. Which slot's amount do you raise?",
+   "options": [
+    "The Chorus mix slot",
+    "The EQ high slot",
+    "The Chorus depth slot",
+    "The slot you set up first"
+   ],
+   "answer": 1,
+   "why": "The EQ high slot is the one that adds a little more top end to the chorus changes.",
+   "point": 2
   }
  ],
  "C5M.16": [
@@ -605,6 +965,30 @@
    "answer": 3,
    "why": "A macro's destination can be how strongly an envelope acts, here the size of the pitch fall.",
    "point": 2
+  },
+  {
+   "q": "Your kick carries on small speakers, but its front is too soft. Which slot's amount do you raise?",
+   "options": [
+    "The Distortion drive slot, for a larger pitch fall",
+    "The Distortion drive slot, for fewer harmonics",
+    "The Env 2 amount slot, for a larger pitch fall",
+    "The Env 2 amount slot, for a smaller pitch fall"
+   ],
+   "answer": 2,
+   "why": "A larger fall in pitch gives a sharper knock, and the Env 2 amount slot sets that fall.",
+   "point": 0
+  },
+  {
+   "q": "You turn Knock up in stages, striking a key each time. How does the drum change?",
+   "options": [
+    "From a hard, bright kick to a soft, round thud",
+    "From a soft, round thud to a long ringing tone",
+    "From a soft drum to a different, higher drum",
+    "From a soft, round thud to a hard, bright kick"
+   ],
+   "answer": 3,
+   "why": "It is the same drum taken from a soft, round thud to a hard, bright kick.",
+   "point": 0
   }
  ],
  "C5M.C": [

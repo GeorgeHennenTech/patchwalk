@@ -31,7 +31,7 @@ describe("practice synth maths", () => {
     expect(dbToGain(-48)).toBe(0);
   });
   it("every lesson only reveals controls that exist, within their ranges", () => {
-    const panels = new Set(["start", "keyboard", "hold", "scope", "spectrum", "spectrogram", "meter", "beat", "curve", "envelope", "envelope2", "matrix", "ack", "macro1Name", "macro2Name", "macro3Name", "macro4Name", ...Object.keys(PARAMS)]);
+    const panels = new Set(["start", "keyboard", "hold", "scope", "spectrum", "spectrogram", "meter", "beat", "curve", "envelope", "envelope2", "matrix", "wheels", "ack", "macro1Name", "macro2Name", "macro3Name", "macro4Name", ...Object.keys(PARAMS)]);
     for (const l of LESSONS) for (const s of l.steps) for (const p of s.show) expect(panels.has(p), `${l.id}: ${p}`).toBe(true);
   });
 });
@@ -1070,7 +1070,7 @@ describe("dropping a source on a knob", () => {
     expect((connect(s1, "macro2", "reverbMix") as { change: Record<string, unknown> }).change).toMatchObject({ macro2Dest2: "reverbMix" });
     const used = { ...INITIAL, macro1Dest1: "cutoff", macro1Dest2: "drive", macro1Dest3: "resonance" } as SynthState;
     expect(connect(used, "macro1", "detune").ok).toBe(false);
-    expect(DRAGGABLE).toEqual(["env2", "lfo1", "lfo2", "lfo3", "vel", "key", "macro1", "macro2", "macro3", "macro4"]);
+    expect(DRAGGABLE).toEqual(["env2", "lfo1", "lfo2", "lfo3", "vel", "key", "wheel", "macro1", "macro2", "macro3", "macro4"]);
   });
 });
 
@@ -1109,7 +1109,7 @@ describe("mono, legato and glide", () => {
     expect(MOD_DESTS).not.toContain("glide");
   });
   it("the chapter sits between Effects and Impacts", () => {
-    expect(placeOf(CHAPTER_8[1]!)).toEqual({ chapter: "Playing a line", number: 2, of: 2 });
+    expect(placeOf(CHAPTER_8[1]!)).toEqual({ chapter: "Playing a line", number: 2, of: 3 });
   });
   it("mono is checked by what sounds, legato and glide by their switches and the notes played", () => {
     const [mono, glide] = CHAPTER_8 as [typeof CHAPTER_8[0], typeof CHAPTER_8[0]];
@@ -1123,5 +1123,42 @@ describe("mono, legato and glide", () => {
     expect(glide.steps[2]!.remark!(snap({ glide: 1000 }))).toContain("1.0 s");
     expect(glide.steps[4]!.check(snap({ voiceMode: "mono", legato: "on", glideMode: "always", glide: 200 }, { played }))).toBe(false);
     expect(glide.steps[4]!.check(snap({ voiceMode: "mono", legato: "on", glideMode: "legato", glide: 200 }, { played }))).toBe(true);
+  });
+});
+
+import { midiMessage } from "../src/synth/useSynth";
+describe("the wheels and a MIDI keyboard", () => {
+  const snap = (state: Partial<SynthState>, extra: Partial<Snapshot> = {}) => ({ ...snapshot(newTrack(INITIAL), { ...INITIAL, ...state }, { audioRunning: true, held: [], holdOn: false, now: 0 }), ...extra }) as Snapshot;
+  it("reads notes, the mod wheel and pitch bend from MIDI messages, and ignores the rest", () => {
+    expect(midiMessage([0x90, 60, 100])).toEqual({ type: "on", note: 60, velocity: 100 });
+    expect(midiMessage([0x93, 60, 0])).toEqual({ type: "off", note: 60 }); // a note-on at velocity 0 is a note-off, on any channel
+    expect(midiMessage([0x80, 60, 64])).toEqual({ type: "off", note: 60 });
+    expect(midiMessage([0xb0, 1, 127])).toEqual({ type: "wheel", value: 100 });
+    expect(midiMessage([0xb0, 7, 127])).toBeNull();
+    expect(midiMessage([0xe0, 0, 64])).toEqual({ type: "bend", value: 0 });
+    expect(midiMessage([0xe0, 127, 127])).toEqual({ type: "bend", value: 1 });
+    expect(midiMessage([0xe0, 0, 0])).toEqual({ type: "bend", value: -1 });
+    expect(midiMessage([0xf8])).toBeNull();
+  });
+  it("the mod wheel is a one-way source that follows the wheel, and is not itself a destination", () => {
+    const s = { ...INITIAL, wheelDest: "warpAmount", wheelAmount: 100, wheel: 100 };
+    const r = routes(s).find((x) => x.source.id === "wheel")!;
+    expect(r.oneWay).toBe(true);
+    const n = { note: 60, velocity: 100, age: 1, held: Infinity, startedAt: 0 };
+    expect(sourceValue(s, r, n)).toBe(1);
+    expect(sourceValue({ ...s, wheel: 25 }, r, n)).toBe(0.25);
+    expect(MOD_DESTS).not.toContain("wheel");
+    expect(MOD_DESTS).not.toContain("bendRange");
+    expect(INITIAL).toMatchObject({ wheel: 0, wheelDest: "none", bendRange: 2 });
+  });
+  it("the wheels lesson needs the bend pushed each way and the wheel swept and parked", () => {
+    const l = CHAPTER_8[2]!;
+    expect(l.steps[0]!.check(snap({}, { held: [60], flags: {} }))).toBe(false);
+    expect(l.steps[0]!.check(snap({}, { held: [60], flags: { bentUp: true } }))).toBe(true);
+    expect(l.steps[2]!.check(snap({ bendRange: 2 }, { flags: { bentUp: true } }))).toBe(false);
+    expect(l.steps[2]!.check(snap({ bendRange: 12 }, { flags: { bentUp: true } }))).toBe(true);
+    expect(l.steps[4]!.check(snap({ wheelDest: "cutoff", wheel: 100 }, { range: { wheel: { min: 0, max: 100 } } }))).toBe(false);
+    expect(l.steps[4]!.check(snap({ wheelDest: "cutoff", wheel: 0 }, { range: { wheel: { min: 0, max: 100 } } }))).toBe(true);
+    expect(l.steps[5]!.check(snap({ wheelDest: "lfo1Amount", wheelAmount: 5, wheel: 90 }))).toBe(true);
   });
 });

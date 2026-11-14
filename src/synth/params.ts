@@ -39,7 +39,7 @@ export type Dest = string;
 export const DEST_NAMES: Record<string, string> = { none: "Nothing", cutoff: "Filter cutoff", fine: "Osc A pitch", bFine: "Osc B pitch", aLevelDb: "Osc A level", bLevelDb: "Osc B level", subLevelDb: "Sub level", noiseLevelDb: "Noise level", lfo1Rate: "LFO 1 rate", noteLevel: "Note level", fmAmount: "FM from B", aPitchWide: "Osc A pitch, wide" };
 
 /** One extra connection made in the matrix: a source, what it moves, how far, and (for an LFO) which way. */
-export interface MatrixRow { source: "env2" | "lfo1" | "lfo2" | "lfo3" | "vel" | "key"; dest: Dest; amount: number; way: "both" | "up" }
+export interface MatrixRow { source: "env2" | "lfo1" | "lfo2" | "lfo3" | "vel" | "key" | "wheel"; dest: Dest; amount: number; way: "both" | "up" }
 /** The most rows the matrix holds, on top of each source's own first connection. */
 export const MATRIX_MAX = 8;
 
@@ -137,6 +137,10 @@ export interface SynthState {
   // ---- two sources that are fixed for the length of a note: how hard it was struck, and which key it was
   velDest: Dest; velAmount: number;
   keyDest: Dest; keyAmount: number;
+  // ---- the mod wheel: a source you move by hand while playing (0 to 100), and how far the bend wheel reaches
+  wheel: number; wheelDest: Dest; wheelAmount: number;
+  /** How many semitones the pitch-bend wheel moves the pitch at either end. */
+  bendRange: number;
   // ---- voicing: how many notes at once, and whether the pitch slides between notes
   /** "poly" plays every key held; "mono" plays one note at a time (the last key pressed). */
   voiceMode: "poly" | "mono";
@@ -190,7 +194,7 @@ export const INITIAL: SynthState = {
   lfo1Sync: "hz", lfo1Div: "1", lfo1Trig: "retrig", lfo1Rise: 0, lfo1Steps: DEFAULT_STEPS,
   lfo2Sync: "hz", lfo2Div: "1", lfo2Trig: "retrig", lfo2Rise: 0, lfo2Steps: DEFAULT_STEPS,
   lfo3Sync: "hz", lfo3Div: "1", lfo3Trig: "retrig", lfo3Rise: 0, lfo3Steps: DEFAULT_STEPS,
-  velDest: "none", velAmount: 60, keyDest: "none", keyAmount: 50,
+  velDest: "none", velAmount: 60, keyDest: "none", keyAmount: 50, wheel: 0, wheelDest: "none", wheelAmount: 50, bendRange: 2,
   matrix: [],
   voiceMode: "poly", legato: "off", glide: 0, glideMode: "always",
   distOn: false, distType: "soft", distDrive: 30, distMix: 100,
@@ -205,7 +209,7 @@ export const INITIAL: SynthState = {
   macro4: 0, macro4Name: "Macro 4", macro4Dest1: "none", macro4Amt1: 50, macro4Dest2: "none", macro4Amt2: 50, macro4Dest3: "none", macro4Amt3: 50,
 };
 
-export type Group = "Master" | "Oscillator A" | "Unison" | "Oscillator B" | "Sub" | "Noise" | "Filter" | "Envelope 1" | "Envelope 2" | "LFO 1" | "LFO 2" | "LFO 3" | "Velocity" | "Key position" | "Voicing" | "Distortion" | "EQ" | "Compressor" | "Chorus" | "Delay" | "Reverb" | "Macro 1" | "Macro 2" | "Macro 3" | "Macro 4";
+export type Group = "Master" | "Oscillator A" | "Unison" | "Oscillator B" | "Sub" | "Noise" | "Filter" | "Envelope 1" | "Envelope 2" | "LFO 1" | "LFO 2" | "LFO 3" | "Velocity" | "Mod wheel" | "Key position" | "Voicing" | "Distortion" | "EQ" | "Compressor" | "Chorus" | "Delay" | "Reverb" | "Macro 1" | "Macro 2" | "Macro 3" | "Macro 4";
 
 export interface ParamSpec {
   id: keyof SynthState;
@@ -274,6 +278,9 @@ const BASE_PARAMS: Record<string, ParamSpec> = {
   ...lfo(1), ...lfo(2), ...lfo(3),
   ...source("vel", "Velocity", "Velocity"),
   ...source("key", "Key position", "Key position"),
+  wheel: { id: "wheel", label: "Mod wheel", group: "Mod wheel", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
+  ...source("wheel", "Mod wheel", "Mod wheel"),
+  bendRange: { id: "bendRange", label: "Bend range", group: "Voicing", kind: "range", min: 1, max: 24, step: 1, unit: "st" },
   voiceMode: { id: "voiceMode", label: "Voices play", group: "Voicing", kind: "choice", choices: ["poly", "mono"], names: { poly: "Poly", mono: "Mono" } },
   legato: { id: "legato", label: "Legato", group: "Voicing", kind: "choice", choices: ["off", "on"], names: { off: "Off", on: "On" } },
   glideMode: { id: "glideMode", label: "Glide on", group: "Voicing", kind: "choice", choices: ["always", "legato"], names: { always: "Every note", legato: "Overlapped notes" } },
@@ -312,9 +319,9 @@ const BASE_PARAMS: Record<string, ParamSpec> = {
  * Knobs that cannot be destinations: the main volume and tempo; random phase and reverb size, because
  * changing them rebuilds something too heavy to do fifty times a second.
  */
-const NOT_DESTS = ["volumeDb", "bpm", "freeHz", "randomPhase", "reverbSize", "glide"];
+const NOT_DESTS = ["volumeDb", "bpm", "freeHz", "randomPhase", "reverbSize", "glide", "wheel", "bendRange"];
 /** Whole-step settings shown as number boxes. A macro cannot move these. */
-export const BOX_IDS = ["octave", "semitone", "bOctave", "bSemitone", "voices", "subOctave"] as const;
+export const BOX_IDS = ["octave", "semitone", "bOctave", "bSemitone", "voices", "subOctave", "bendRange"] as const;
 /** Every knob a macro can be sent to: all the continuous settings. "none" means the slot is empty. */
 export const MACRO_DESTS: string[] = ["none", ...Object.values(BASE_PARAMS).filter((p) => p.kind === "range" && !(BOX_IDS as readonly string[]).includes(p.id) && p.id !== "freeHz").map((p) => p.id as string)];
 /** Destinations moved at control rate: every continuous knob that is not already a fast destination. */
@@ -363,7 +370,7 @@ function envelope(prefix: "env" | "env2", group: Group, name: string): Record<st
     [`${prefix}Bend`]: { id: `${prefix}Bend` as keyof SynthState, label: `${name} fall`, group, kind: "choice", choices: BENDS, names: { straight: "Straight", eased: "Eased", sharp: "Sharp" } },
   };
 }
-function source(prefix: "env2" | "lfo1" | "lfo2" | "lfo3" | "vel" | "key", group: Group, name: string): Record<string, ParamSpec> {
+function source(prefix: "env2" | "lfo1" | "lfo2" | "lfo3" | "vel" | "key" | "wheel", group: Group, name: string): Record<string, ParamSpec> {
   return {
     [`${prefix}Dest`]: { id: `${prefix}Dest`, label: `${name} sends to`, group, kind: "menu", choices: MOD_DESTS, names: DEST_NAMES },
     [`${prefix}Amount`]: { id: `${prefix}Amount`, label: `${name} amount`, group, kind: "range", min: -100, max: 100, step: 1, unit: "%" },

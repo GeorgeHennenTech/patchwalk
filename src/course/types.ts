@@ -31,7 +31,7 @@ export interface Snapshot {
   flags: Record<string, boolean>;
 }
 
-export type Panel = "start" | "keyboard" | "hold" | "scope" | "spectrum" | "spectrogram" | "meter" | "beat" | "curve" | "envelope" | "envelope2" | "matrix" | "ack" | keyof SynthState;
+export type Panel = "start" | "keyboard" | "hold" | "scope" | "spectrum" | "spectrogram" | "meter" | "beat" | "curve" | "envelope" | "envelope2" | "matrix" | "wheels" | "ack" | keyof SynthState;
 // (a macro's name is a setting too, so `macro1Name` can be shown and spotlighted like any control)
 
 export interface LessonStep {

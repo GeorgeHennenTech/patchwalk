@@ -70,7 +70,7 @@ function Display({ module, synth, note }: { module: Module; synth: Synth; note: 
     if (module.id === "sub") return wavePath(SINE, 0);
     if (module.id === "env1") return envPath(adsr(s, 1));
     if (module.id === "env2") return envPath(adsr(s, 2));
-    if (module.source === "vel" || module.source === "key" || module.id.startsWith("fx-") || module.id === "voice") return "";
+    if (module.source === "vel" || module.source === "key" || module.source === "wheel" || module.id.startsWith("fx-") || module.id === "voice") return "";
     if (module.source) return lfoPath(s[`${module.source as "lfo1"}Shape`], s[`${module.source as "lfo1"}Way`] === "up", s[`${module.source as "lfo1"}Steps`]);
     return NOISE_PATH;
   }, [module, s.shape, s.table, s.position, s.phase, s.warp, s.warpAmount, s.bShape, s.bPhase, s.envA, s.envD, s.envS, s.envR, s.env2A, s.env2D, s.env2S, s.env2R, s.lfo1Shape, s.lfo2Shape, s.lfo3Shape, s.lfo1Way, s.lfo2Way, s.lfo3Way, s.lfo1Steps, s.lfo2Steps, s.lfo3Steps]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -201,7 +201,7 @@ export function Rack({ synth, show, all, lesson, note }: { synth: Synth; show: P
             // not a <button>: browsers will not start a drag from inside one, and the handle lives in here
             <div key={x.id} role="tab" tabIndex={0} aria-selected={x.id === m.id} className={`mod-tab${x.id === m.id ? " on" : ""}`} style={{ "--glow": x.color } as React.CSSProperties}
               onClick={() => setTabs((t) => ({ ...t, [key]: x.id }))} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setTabs((t) => ({ ...t, [key]: x.id })); } }}>
-              {x.source && <Grip id={x.source} />}{({ env1: "Env 1", vel: "Vel", key: "Key", voice: "Voice" } as Record<string, string>)[x.id] ?? x.name}{count(x) > 0 && <b title={`${count(x)} connection${count(x) === 1 ? "" : "s"}`}>{count(x)}</b>}
+              {x.source && <Grip id={x.source} />}{({ env1: "Env 1", vel: "Vel", key: "Key", wheel: "Wheel", voice: "Voice" } as Record<string, string>)[x.id] ?? x.name}{count(x) > 0 && <b title={`${count(x)} connection${count(x) === 1 ? "" : "s"}`}>{count(x)}</b>}
             </div>
           ))}
         </div>
@@ -222,7 +222,7 @@ export function Rack({ synth, show, all, lesson, note }: { synth: Synth; show: P
             <MacroGrid synth={synth} />
             {group("env", "Envelopes", [mod("env1"), mod("env2")])}
             {group("lfo", "LFOs", [mod("lfo1"), mod("lfo2"), mod("lfo3")])}
-            {group("note", "From the keys", [mod("vel"), mod("key"), MODULES.find((m) => m.id === "voice")!])}
+            {group("note", "From the keys", [mod("vel"), mod("key"), mod("wheel"), MODULES.find((m) => m.id === "voice")!])}
           </div>
         </>
       )}

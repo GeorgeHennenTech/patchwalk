@@ -2,7 +2,7 @@
 // how far a given amount moves a destination. Pure data and maths; the engine and the knob rings share it.
 import { fromTravelSmooth, isSlowDest, PARAMS, toTravel, type Dest, type SynthState } from "./params";
 
-export type ModSource = "env2" | "lfo1" | "lfo2" | "lfo3" | "vel" | "key";
+export type ModSource = "env2" | "lfo1" | "lfo2" | "lfo3" | "vel" | "key" | "wheel";
 /** "note" sources are fixed while a note sounds: how hard it was struck, and which key it was. */
 export interface SourceInfo { id: ModSource; name: string; kind: "env" | "lfo" | "note"; color: string }
 /** Each source has its own neon colour; a knob it moves wears a ring of that colour. */
@@ -13,6 +13,8 @@ export const SOURCES: SourceInfo[] = [
   { id: "lfo3", name: "LFO 3", kind: "lfo", color: "#ff9a3d" },
   { id: "vel", name: "Velocity", kind: "note", color: "#ff5a5a" },
   { id: "key", name: "Key position", kind: "note", color: "#b9a1ff" },
+  // the mod wheel is moved by hand while a note sounds; like velocity it runs 0 to 1 and pushes one way
+  { id: "wheel", name: "Mod wheel", kind: "note", color: "#5c9dff" },
 ];
 
 /** Velocity runs from 1 (softest) to 127 (hardest), as on any keyboard. As a source it is 0 to 1. */
@@ -34,7 +36,7 @@ export interface Route {
 
 /** The connections that are in use: a source with a destination chosen. */
 export function routes(s: SynthState): Route[] {
-  const fixedWay = (source: SourceInfo) => source.kind === "env" || source.id === "vel";
+  const fixedWay = (source: SourceInfo) => source.kind === "env" || source.id === "vel" || source.id === "wheel";
   const own = SOURCES.flatMap((source) => {
     const dest = s[`${source.id}Dest`], amount = s[`${source.id}Amount`];
     const oneWay = fixedWay(source) || (source.kind === "lfo" && s[`${source.id as "lfo1"}Way`] === "up");
@@ -196,6 +198,7 @@ export function sourceValue(s: SynthState, r: Route, n: NoteNow): number {
   if (r.source.kind === "env") return envLevel(adsr(s, 2), n.age, n.held);
   if (r.source.id === "vel") return velocityValue(n.velocity);
   if (r.source.id === "key") return keyValue(n.note);
+  if (r.source.id === "wheel") return s.wheel / 100;
   const id = r.source.id as LfoId, rise = s[`${id}Rise`] / 1000;
   const v = lfoValue(s[`${id}Shape`], lfoStartPhase(s, id, n.startedAt) + n.age * lfoHz(s, id), s[`${id}Steps`]);
   return (r.oneWay ? (v + 1) / 2 : v) * (rise > 0 ? Math.min(1, n.age / rise) : 1);

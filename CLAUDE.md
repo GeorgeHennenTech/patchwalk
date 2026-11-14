@@ -117,7 +117,7 @@ Added after the first eight milestones (owner asked for all four in one go):
   computed from stored values. Diagrams are always drawn by code, never by the narrator.
 - `src/learn/course.ts` + `src/ui/LearnView.tsx` — ten-lesson beginner course. Each exercise is checked from the
   saved preset using stored values only. Progress lives in localStorage.
-- `knowledge-cards/` — 32 cards (two, on filter shapes/slope and drive/key tracking, are used only by the practice lessons: empty `stages` and `applies_to` keep them out of rebuilt-patch steps), all `status: draft` (written by Claude, not yet reviewed by the owner). Change
+- `knowledge-cards/` — 36 cards (two, on filter shapes/slope and drive/key tracking, are used only by the practice lessons: empty `stages` and `applies_to` keep them out of rebuilt-patch steps), all `status: draft` (written by Claude, not yet reviewed by the owner). Change
   to `reviewed` after the owner has read one. Reading links were each loaded and title-checked in Nov 2026.
 - `src/lesson/selftest.ts` + "System check" tab — one-click end-to-end test of the explanation service with a
   built-in step; reports in plain words where a failure is (network, password, API key, validator).
@@ -170,9 +170,9 @@ Added after the first eight milestones (owner asked for all four in one go):
     C5.5 ("Setting depth on the knob itself") and C5.7 ("Any knob can be a destination") were added to chapter 5
     with the depth handles and the wider destination list.
     C5.8 ("Drag a source onto a knob") was added with drag-and-drop.
-    `lessons/chapter8.ts` holds "Playing a line" (C8.1 one note at a time, C8.2 glide), listed between
+    `lessons/chapter8.ts` holds "Playing a line" (C8.1 one note at a time, C8.2 glide, C8.3 the bend and mod wheels), listed between
     "Effects" and "Impacts".
-    **Eighty-four playable lessons.**
+    **Eighty-five playable lessons.**
   - `src/ui/PlayView.tsx` ("Lessons" tab) and `src/ui/synth/` — spotlighted controls per step, live targets,
     scope, spectrum, meter, on-screen keyboard, Hold, blind ear checks, recap, guide remarks and suggestion.
   - "Hear it first" demos (`demo` on a lesson), match-by-ear rounds (`rounds`, compared by `src/course/match.ts`:
@@ -409,7 +409,23 @@ Added after the first eight milestones (owner asked for all four in one go):
     did not slide and an overlapped one did; with a slow attack a new key dipped the level without legato
     and did not with it. Not built: glide curve, glide scaled by distance, a note limit, legato for LFOs
     on slow destinations.
-  - Not built yet: MIDI input, a mod wheel, drag-and-drop on touch screens, reordering effects. **Owner's order (13 Nov 2026), after
+  - **Wheels and MIDI keyboard (14 Nov 2026; second item of `docs/SERUM_GAPS.md`).** Two wheels sit at the
+    left of the on-screen keyboard (`Wheel` in `Controls.tsx`; shown in the whole synth, or in a step that
+    lists the `wheels` panel). **Bend** springs back and is not a setting: `synth.setBend(-1..1)` drives one
+    engine-wide constant source in cents wired to every oscillator's detune (`engine.setBend`); `bendRange`
+    (1-24 semitones, a number box in Voicing) sets its reach; pushing it to either end sets the `bentUp` /
+    `bentDown` flags for lessons. **Mod** is the setting `wheel` (0-100) and a source (`wheel` in `SOURCES`,
+    kind "note", one way, blue): its own destination and amount, matrix rows, drag-and-drop, like velocity,
+    except that it moves while a note sounds (`applyVoice` updates its constant source). Neither `wheel` nor
+    `bendRange` can be a destination for sources. "Connect a MIDI keyboard" under the keys asks the browser
+    for MIDI (Chrome and Edge): notes with velocity, controller 1 to the mod wheel, pitch bend to the bend
+    wheel (`midiMessage` in `useSynth.ts` is the pure reader; a keyboard plugged in later is picked up).
+    Measured: bend at range 2 gave 495 and 393 Hz on a 441 Hz note, at range 12 gave 877 and 221; the wheel
+    on Osc A pitch at 100% gave 441, 624, 877 Hz at 0, 50, 100%; the wheel on LFO 1's amount took a trill
+    from nothing to its full depth; stand-in MIDI messages played a note, bent it and moved the wheel.
+    **Not tried with a real MIDI keyboard** (the build session has none). Not built: aftertouch, sustain
+    pedal, MIDI learn, separate bend ranges up and down, pitch bend as a source.
+  - Not built yet: drag-and-drop on touch screens, reordering effects. **Owner's order (13 Nov 2026), after
     warp/FM/ring which is done: the first impact lessons (they need nothing new); then physical modelling
     and bioacoustics.**
   - The old ten Serum-task lessons are now the "Serum tasks" tab.

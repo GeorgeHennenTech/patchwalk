@@ -491,8 +491,8 @@ a knob.
 | Apply and Delete Macros | "Bakes" the macros' current effect into the knobs and removes the macros | 214 | Missing | Small |
 | Oscillator output as a modulation source | An oscillator (including NOISE and SUB) moves any knob at audio speed | 208, 210 | Missing | Large |
 | Filter output as a modulation source | A filter's output moves any knob | 208, 210 | Missing | Large |
-| Mod Wheel | The wheel on a keyboard as a source | 211 | Missing | Small |
-| Pitch Bend | The pitch wheel, as pitch bend and as a source | 211 | Missing | Small |
+| Mod Wheel | The wheel on a keyboard as a source | 211 | **Built** (on screen and from a MIDI keyboard) | Small |
+| Pitch Bend | The pitch wheel, as pitch bend and as a source | 211 | Partly: bends pitch, with a Bend range of 1 to 24 semitones (one range for up and down); not a source | Small |
 | Aftertouch (channel pressure) | Pressing harder after the key is down | 211 | Missing | Small |
 | Poly Aftertouch | The same, per key | 211 | Missing | Small |
 | Release Velocity | How fast the key is let go | 210 | Missing | Small |
@@ -646,7 +646,7 @@ key is clicked.
 
 | Feature | What it does | Page(s) | Status | Size |
 |---|---|---|---|---|
-| MIDI keyboard input | Play from a real keyboard | 18, 25 | Missing | Small (Web MIDI) |
+| MIDI keyboard input | Play from a real keyboard | 18, 25 | **Built** (notes with velocity, mod wheel, pitch bend; Chrome and Edge; not yet tried with a real keyboard) | Small (Web MIDI) |
 | Keyboard shows notes from clips and arp | Keys light up for generated notes | 25 | Missing | Small |
 | TRANSPOSE (-24 to +24) | Shift everything by semitones | 267 | Partly: octave keys only | Small |
 | KEY and SCALE | Notes outside the chosen scale are moved onto it | 268 | Missing | Small |
@@ -793,7 +793,7 @@ Ranked by how much each gap would add to *learning sound design on this synth* c
 1. **Done 14 Nov 2026, except CURVE and SCALED.** **Mono, legato and portamento (PORTA, CURVE, ALWAYS, SCALED).** Glide and "one note at a time" are basic
    to basses and leads and already appear in the rebuilt-patch lessons ("glide" is a detected combination);
    medium work, no new audio parts.
-2. **Mod wheel, pitch bend and MIDI keyboard input.** Small work with the browser's MIDI support, and it
+2. **Done 14 Nov 2026 (no aftertouch, sustain pedal or MIDI learn).** **Mod wheel, pitch bend and MIDI keyboard input.** Small work with the browser's MIDI support, and it
    makes every existing lesson playable from real keys; the wheel is also Serum's most used performance
    source.
 3. **AUX SOURCE in the matrix (with INV), then "Create Vibrato".** "One source sets how much another

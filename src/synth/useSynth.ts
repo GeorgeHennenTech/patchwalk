@@ -20,6 +20,20 @@ export const shiftVelocity = (now: number, by: 1 | -1) => Math.min(127, Math.max
 export const clickVelocity = (y: number) => Math.round(Math.min(127, Math.max(20, 20 + Math.min(1, Math.max(0, y)) * 107)));
 export const shiftOctave = (now: number, by: 1 | -1) => Math.min(KEY_OCTAVES, Math.max(-KEY_OCTAVES, now + by));
 
+/** What a message from a MIDI keyboard means to the synth, or null when it is one we do not use. */
+export type MidiEvent = { type: "on"; note: number; velocity: number } | { type: "off"; note: number } | { type: "wheel"; value: number } | { type: "bend"; value: number };
+export function midiMessage(data: ArrayLike<number>): MidiEvent | null {
+  const kind = (data[0] ?? 0) & 0xf0, a = data[1] ?? 0, b = data[2] ?? 0;
+  if (kind === 0x90 && b > 0) return { type: "on", note: a, velocity: b };
+  if (kind === 0x80 || kind === 0x90) return { type: "off", note: a };
+  // controller 1 is the mod wheel on every keyboard
+  if (kind === 0xb0 && a === 1) return { type: "wheel", value: Math.round((b / 127) * 100) };
+  // pitch bend is fourteen bits with the centre at 8192; the top is 16383, so the two halves are scaled apart
+  if (kind === 0xe0) { const v = (b << 7) | a; return { type: "bend", value: v >= 8192 ? (v - 8192) / 8191 : (v - 8192) / 8192 }; }
+  return null;
+}
+export type MidiStatus = "off" | "unsupported" | "refused" | "none" | "on";
+
 export function useSynth() {
   const engine = useRef<Engine | null>(null);
   const [state, setStateRaw] = useState<SynthState>(INITIAL);
@@ -91,6 +105,43 @@ export function useSynth() {
     }
   }, []);
 
+  // The bend wheel is not a setting: it springs back, so it lives here and in the engine, not in the state.
+  const [bend, setBendRaw] = useState(0);
+  const setBend = useCallback((position: number) => {
+    const p = Math.min(1, Math.max(-1, position));
+    engine.current?.setBend(p);
+    setBendRaw(p);
+    if (Math.abs(p) >= 0.9) track.current = trackFlag(track.current, p > 0 ? "bentUp" : "bentDown");
+  }, []);
+
+  // A MIDI keyboard, if one is plugged in: notes, the mod wheel and the bend wheel.
+  const [midi, setMidi] = useState<{ status: MidiStatus; name?: string }>({ status: "off" });
+  const midiHandler = useRef<(e: { data: ArrayLike<number> | null }) => void>(() => {});
+  midiHandler.current = (e) => {
+    const m = e.data ? midiMessage(e.data) : null;
+    if (!m) return;
+    if (m.type === "on") noteOn(m.note, "midi", m.velocity);
+    else if (m.type === "off") noteOff(m.note);
+    else if (m.type === "wheel") setState({ wheel: m.value });
+    else setBend(m.value);
+  };
+  const connectMidi = useCallback(async () => {
+    type Input = { name?: string | null; onmidimessage: ((e: { data: ArrayLike<number> | null }) => void) | null };
+    type Access = { inputs: { values(): Iterable<Input> }; onstatechange: (() => void) | null };
+    const request = (navigator as unknown as { requestMIDIAccess?: () => Promise<Access> }).requestMIDIAccess;
+    if (!request) { setMidi({ status: "unsupported" }); return; }
+    try {
+      const access = await request.call(navigator);
+      const attach = () => {
+        const inputs = [...access.inputs.values()];
+        for (const input of inputs) input.onmidimessage = (e) => midiHandler.current(e);
+        setMidi(inputs.length ? { status: "on", name: inputs.map((i) => i.name ?? "MIDI keyboard").join(", ") } : { status: "none" });
+      };
+      access.onstatechange = attach; // a keyboard plugged in later is picked up
+      attach();
+    } catch { setMidi({ status: "refused" }); }
+  }, []);
+
   const flag = useCallback((name: string) => { track.current = trackFlag(track.current, name); refresh(); }, []);
 
   /** Begin a new lesson step: forget what was done before and optionally load settings. */
@@ -109,6 +160,7 @@ export function useSynth() {
 
   const reset = useCallback((to: SynthState) => {
     engine.current?.allNotesOff();
+    engine.current?.setBend(0); setBendRaw(0);
     holdRef.current = false;
     setHoldOn(false);
     setHeld([]);
@@ -188,6 +240,6 @@ export function useSynth() {
 
   const snap = (): Snapshot => snapshot(track.current, stateRef.current, { audioRunning: running, held, holdOn, now: now() });
 
-  return { keyOctave, keyVelocity, effective: applyMacros(state), live, state, setState, running, start, held, holdOn, setHold, noteOn, noteOff, flag, beginStep, reset, snap, engine };
+  return { bend, setBend, midi, connectMidi, keyOctave, keyVelocity, effective: applyMacros(state), live, state, setState, running, start, held, holdOn, setHold, noteOn, noteOff, flag, beginStep, reset, snap, engine };
 }
 export type Synth = ReturnType<typeof useSynth>;

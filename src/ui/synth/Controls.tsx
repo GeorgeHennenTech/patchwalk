@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { BOX_IDS, DEST_NAMES, FAST_DESTS, fromTravel, INITIAL, MOD_DESTS, PARAMS, SLOW_DESTS, toTravel, type ParamSpec, type SynthState } from "../../synth/params";
 import { slotPush, slotsTo } from "../../synth/macros";
 import { connect, currentDrag, dragName, endDrag } from "../../synth/connect";
-import { routes, routesTo, withRouteAmount, type Route } from "../../synth/mod";
+import { routes, routesTo, SOURCES, withRouteAmount, type Route } from "../../synth/mod";
 import { clickVelocity, KEY_MAP, type Synth } from "../../synth/useSynth";
 
 const fmt = (id: string, v: number) => {
@@ -17,7 +17,7 @@ const fmt = (id: string, v: number) => {
 };
 
 /** The name printed under a control. Its module panel already says which oscillator or section it belongs to. */
-export const shortLabel = (label: string) => label.replace(/^(A|B|Sub|Noise|Filter|Wave|Env \d|LFO \d|Velocity|Key position|Distortion|EQ|Compressor|Chorus|Delay|Reverb|Macro \d slot \d) /, "");
+export const shortLabel = (label: string) => label.replace(/^(A|B|Sub|Noise|Filter|Wave|Env \d|LFO \d|Velocity|Key position|Mod wheel|Distortion|EQ|Compressor|Chorus|Delay|Reverb|Macro \d slot \d) /, "");
 
 /** Settings shown as a small number box (a few whole steps) and not as a knob. */
 const BOXES = new Set<string>(BOX_IDS);
@@ -247,7 +247,31 @@ export function Control({ id, synth, spot, only }: { id: keyof SynthState; synth
 
 const WHITE = [0, 2, 4, 5, 7, 9, 11];
 
-export function Keyboard({ synth, from = 48, octaves = 3 }: { synth: Synth; from?: number; octaves?: number }) {
+/**
+ * A wheel beside the keyboard, as on a real one. `spring` is the bend wheel: it runs -1 to 1 and returns to
+ * the middle when let go. Without it, it is the mod wheel: 0 to 1, and it stays where it is left.
+ */
+export function Wheel({ label, value, spring, color, onChange, text }: { label: string; value: number; spring?: boolean; color?: string; onChange: (v: number) => void; text: string }) {
+  const ref = useRef<HTMLDivElement>(null), dragging = useRef(false);
+  const lo = spring ? -1 : 0;
+  const at = (e: React.PointerEvent) => { const b = ref.current!.getBoundingClientRect(); return lo + (1 - Math.min(1, Math.max(0, (e.clientY - b.top) / b.height))) * (1 - lo); };
+  const end = () => { if (dragging.current) { dragging.current = false; if (spring) onChange(0); } };
+  const step = spring ? 0.25 : 0.05;
+  return (
+    <div className={`wheel${spring ? " spring" : ""}`} style={color ? ({ "--glow": color } as React.CSSProperties) : undefined}>
+      <div ref={ref} className="wheel-track" role="slider" tabIndex={0} aria-label={label} aria-orientation="vertical" aria-valuemin={lo * 100} aria-valuemax={100} aria-valuenow={Math.round(value * 100)} aria-valuetext={text} title={`${label}: drag up or down${spring ? "; it springs back when you let go" : ""}`}
+        onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); dragging.current = true; onChange(at(e)); }}
+        onPointerMove={(e) => { if (dragging.current) onChange(at(e)); }} onPointerUp={end} onPointerCancel={end}
+        onKeyDown={(e) => { if (e.key === "ArrowUp" || e.key === "ArrowDown") { e.preventDefault(); onChange(Math.min(1, Math.max(lo, value + (e.key === "ArrowUp" ? step : -step)))); } else if (e.key === "Home") { e.preventDefault(); onChange(spring ? 0 : lo); } }}
+        onKeyUp={(e) => { if (spring && (e.key === "ArrowUp" || e.key === "ArrowDown")) onChange(0); }}>
+        <i style={{ bottom: `${((value - lo) / (1 - lo)) * 100}%` }} />
+      </div>
+      <span className="wheel-name">{label}</span><span className="wheel-value">{text}</span>
+    </div>
+  );
+}
+
+export function Keyboard({ synth, from = 48, octaves = 3, wheels = false }: { synth: Synth; from?: number; octaves?: number; wheels?: boolean }) {
   const pressed = useRef<number | null>(null);
   // Z and X move the whole keyboard by octaves: the keys on screen, the letters on them, and what a click plays.
   const first = from + 12 * synth.keyOctave;
@@ -264,6 +288,13 @@ export function Keyboard({ synth, from = 48, octaves = 3 }: { synth: Synth; from
   };
   return (
     <div className="keys-wrap">
+    <div className="keys-row">
+    {wheels && (
+      <div className="wheels" role="group" aria-label="Wheels">
+        <Wheel label="Bend" spring value={synth.bend} onChange={synth.setBend} text={`${synth.bend >= 0 ? "+" : "-"}${Math.abs(synth.bend * synth.state.bendRange).toFixed(1)} st`} />
+        <Wheel label="Mod" value={synth.state.wheel / 100} color={SOURCES.find((x) => x.id === "wheel")!.color} onChange={(v) => synth.setState({ wheel: Math.round(v * 100) })} text={`${synth.state.wheel}%`} />
+      </div>
+    )}
     <div className={`keys${synth.running ? "" : " off"}`} role="group" aria-label="Keyboard">
       {whites.map((n, i) => {
         const black = notes.includes(n + 1) && !WHITE.includes((n + 1) % 12) ? n + 1 : null;
@@ -277,8 +308,15 @@ export function Keyboard({ synth, from = 48, octaves = 3 }: { synth: Synth; from
         );
       })}
     </div>
+    </div>
     {synth.state.freeHz !== null && <p className="keys-hint fixed" role="note">In this lesson every key plays the same pitch: the Frequency knob sets it, so the keys, octave and semitone do not change the note.</p>}
     <p className="keys-hint" role="status">Computer keys: <kbd>Z</kbd> octave down, <kbd>X</kbd> octave up, <kbd>C</kbd> softer, <kbd>V</kbd> harder (now {synth.keyVelocity} of 127). With the mouse, click lower on a key to strike harder.{synth.keyOctave !== 0 && ` Now ${synth.keyOctave > 0 ? "+" : ""}${synth.keyOctave} octave${Math.abs(synth.keyOctave) === 1 ? "" : "s"}${shown ? "" : " (beyond the keys drawn here)"}.`}</p>
+    {wheels && (
+      <p className="keys-hint midi" role="status">
+        {synth.midi.status === "on" ? <>MIDI keyboard connected: {synth.midi.name}. Its keys, mod wheel and bend wheel play the synth.</>
+          : <><button className="link" onClick={() => void synth.connectMidi()}>Connect a MIDI keyboard</button>{synth.midi.status === "none" && " No keyboard found yet: plug one in and it will be picked up."}{synth.midi.status === "unsupported" && " This browser cannot use MIDI keyboards; Chrome and Edge can."}{synth.midi.status === "refused" && " The browser did not allow it. Allow MIDI for this site and try again."}</>}
+      </p>
+    )}
     </div>
   );
 }

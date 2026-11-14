@@ -120,7 +120,7 @@ function SynthPanel({ synth, show, lesson, all, lastNote, extra = [], onExtra, p
         )}
         {show.includes("ack") && <button className="primary" onClick={() => synth.flag("ack")}>My listening level is comfortable</button>}
       </div>
-      {(on("keyboard") || all) && <Keyboard synth={synth} />}
+      {(on("keyboard") || all) && <Keyboard synth={synth} wheels={all || show.includes("wheels")} />}
     </div>
   );
 }

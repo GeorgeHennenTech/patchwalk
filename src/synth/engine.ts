@@ -39,7 +39,7 @@ interface Voice {
 }
 
 /** Settings whose change means rebuilding the sounding notes (the set of sound sources changes). */
-const STRUCTURAL: (keyof SynthState)[] = ["voiceMode", "voices", "bOn", "subOn", "noiseOn", "noiseType", "randomPhase", "env2Dest", "lfo1Dest", "lfo2Dest", "lfo3Dest", "velDest", "keyDest", "lfo1Trig", "lfo2Trig", "lfo3Trig"];
+const STRUCTURAL: (keyof SynthState)[] = ["voiceMode", "voices", "bOn", "subOn", "noiseOn", "noiseType", "randomPhase", "env2Dest", "lfo1Dest", "lfo2Dest", "lfo3Dest", "velDest", "keyDest", "wheelDest", "lfo1Trig", "lfo2Trig", "lfo3Trig"];
 /** Stop changing a value from `t` on, keeping whatever it has reached (older browsers: drop what was planned). */
 /** Cancel a slide: the pitch goes straight to the note. */
 const holdAtZero = (p: AudioParam, t: number) => { p.cancelScheduledValues(t); p.setValueAtTime(0, t); };
@@ -242,7 +242,7 @@ export class Engine {
       } else if (route.source.kind === "note") {
         // fixed for the whole note: how hard it was struck, or where on the keyboard it is
         src = this.ctx.createConstantSource();
-        src.offset.value = route.source.id === "vel" ? velocityValue(v.velocity) : keyValue(v.note);
+        src.offset.value = route.source.id === "vel" ? velocityValue(v.velocity) : route.source.id === "wheel" ? s.wheel / 100 : keyValue(v.note);
       } else {
         const e = adsr(s, 2);
         src = this.ctx.createConstantSource();
@@ -339,7 +339,7 @@ export class Engine {
     const modB = { osc: modOsc, fm: this.ctx.createGain(), dry: this.ctx.createGain(), wet: this.ctx.createGain() };
     modB.fm.gain.value = fmIndex(s.fmAmount) * playedHzB(s, note);
     modOsc.connect(modB.fm);
-    glide.connect(modOsc.detune);
+    glide.connect(modOsc.detune); this.bendSource().connect(modOsc.detune);
     // ring modulation: `times` is a volume control that B itself turns, so what passes is A times B
     const times = this.ctx.createGain();
     times.gain.value = 0;
@@ -354,7 +354,7 @@ export class Engine {
       // The centre voice keeps the set phase; the others start elsewhere so a stack does not begin as one spike.
       osc.setPeriodicWave(this.wave(hA.sin, phaseA + (s.voices > 1 ? i / s.voices : 0), hA.cos));
       modB.fm.connect(osc.frequency);
-      glide.connect(osc.detune);
+      glide.connect(osc.detune); this.bendSource().connect(osc.detune);
       osc.frequency.value = base * 2 ** (cents / 1200);
       const gain = this.ctx.createGain();
       gain.gain.value = this.levelA(s);
@@ -376,7 +376,7 @@ export class Engine {
       const gain = this.ctx.createGain();
       gain.gain.value = OSC_GAIN * dbToGain(s.bLevelDb);
       osc.connect(gain).connect(into);
-      glide.connect(osc.detune);
+      glide.connect(osc.detune); this.bendSource().connect(osc.detune);
       osc.start(t);
       voice.b = { osc, gain };
     }
@@ -387,7 +387,7 @@ export class Engine {
       const gain = this.ctx.createGain();
       gain.gain.value = OSC_GAIN * dbToGain(s.subLevelDb);
       osc.connect(gain).connect(into);
-      glide.connect(osc.detune);
+      glide.connect(osc.detune); this.bendSource().connect(osc.detune);
       osc.start(t);
       voice.sub = { osc, gain };
     }
@@ -444,6 +444,7 @@ export class Engine {
     const t = this.ctx.currentTime, prev = this.state;
     this.state = next;
     if (next.clickOn !== prev.clickOn || next.bpm !== prev.bpm) this.syncClick(next);
+    if (next.bendRange !== prev.bendRange && this.bendPos !== 0) this.bendSource().offset.setTargetAtTime(this.bendPos * next.bendRange * 100, t, RAMP);
     if (next.volumeDb !== prev.volumeDb) this.master.gain.setTargetAtTime(dbToGain(next.volumeDb), t, RAMP);
     if (!this.fxRestore) this.fx.apply(next);
     if (STRUCTURAL.some((k) => next[k] !== prev[k]) || (next.matrix !== prev.matrix && routeLayout(next) !== routeLayout(prev))) {
@@ -473,6 +474,8 @@ export class Engine {
       const [swing, lift] = this.swingAndLift(next, route, v.note);
       m.depth.gain.setTargetAtTime(swing, t, RAMP);
       m.bias.offset.setTargetAtTime(lift, t, RAMP);
+      // the mod wheel is the one fixed-value source that moves while a note sounds
+      if (route.source.id === "wheel" && m.src instanceof ConstantSourceNode) m.src.offset.setTargetAtTime(next.wheel / 100, t, RAMP);
       if (m.src instanceof OscillatorNode) {
         const id = route.source.id as "lfo1" | "lfo2" | "lfo3";
         if (next[`${id}Shape`] !== prev[`${id}Shape`] || next[`${id}Steps`] !== prev[`${id}Steps`]) this.setLfoShape(m.src, next, id, m.phase);
@@ -509,6 +512,20 @@ export class Engine {
   }
 
   /** `velocity` is how hard the key was struck, 1 to 127. */
+  /** The pitch-bend wheel: one offset in cents that every oscillator of every note follows. */
+  private bendNode?: ConstantSourceNode;
+  private bendPos = 0;
+  private bendSource(): ConstantSourceNode {
+    if (!this.bendNode) { this.bendNode = this.ctx.createConstantSource(); this.bendNode.offset.value = 0; this.bendNode.start(); }
+    return this.bendNode;
+  }
+  /** Where the bend wheel is, -1 (fully down) to 1 (fully up). The range in semitones is the Bend range setting. */
+  setBend(position: number): void {
+    this.bendPos = Math.min(1, Math.max(-1, position));
+    this.bendSource().offset.setTargetAtTime(this.bendPos * this.state.bendRange * 100, this.ctx.currentTime, 0.004);
+  }
+  get bend(): number { return this.bendPos; }
+
   /** Mono: the keys held, oldest first, so letting go of one falls back to the one before. */
   private stack: number[] = [];
   /** The last note started, for sliding to the next one. */

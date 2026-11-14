@@ -6,6 +6,8 @@ import type { DemoTone, PlayableLesson, Snapshot } from "../types";
 const between = (v: number, lo: number, hi: number) => v >= lo && v <= hi;
 const struck = (s: Snapshot) => s.played.mouse + s.played.keys + s.played.midi;
 const time = (ms: number) => (ms >= 1000 ? `${(ms / 1000).toFixed(1)} s` : `${Math.round(ms)} ms`);
+const K = ["keyboard", "hold"] as const;
+const swept = (s: Snapshot, id: keyof Snapshot["range"], lo: number, hi: number) => !!s.range[id] && s.range[id]!.min <= lo && s.range[id]!.max >= hi;
 const LEAD = { shape: "saw", filterOn: true, cutoff: 2200, resonance: 10, envA: 5, envD: 300, envS: 70, envR: 150 } as const;
 
 export const CHAPTER_8: PlayableLesson[] = [
@@ -46,5 +48,25 @@ export const CHAPTER_8: PlayableLesson[] = [
     ],
     recap: ["Glide slides the pitch from the previous note over a set time.", "The time is fixed, so wide jumps move faster.", "Glide can act on every note, or only on notes pressed while another is held."],
     inSerum: "Serum's glide time is the PORTA knob, with ALWAYS, SCALED and CURVE options beside it (page 218 of its guide). Which of its options matches the switch here is not confirmed, so nothing is checked.",
+  },
+  {
+    id: "C8.3", title: "The bend and mod wheels", buildsOn: ["C5.1", "C4.2"], minutes: 9, cardIds: ["wheels"], initial: { ...LEAD, cutoff: 500, resonance: 25 },
+    outcome: "Bend a note's pitch by hand, set how far the bend reaches, and use the mod wheel to open a filter and to bring in vibrato.",
+    idea: [
+      "Envelopes and LFOs move a sound by themselves. The two wheels beside the keys let you move it by hand while a note is sounding. On the screen you drag them; on a MIDI keyboard they are the two wheels at the left.",
+      "The bend wheel moves pitch and nothing else. It springs back to the middle when you let go, and the Bend range setting says how many semitones it reaches at either end. The mod wheel stays where you leave it. It is a source, like velocity: it does nothing until it is sent somewhere, and then its position decides how much of its amount is applied.",
+    ],
+    steps: [
+      { do: "Switch on Hold and play a note. Drag the Bend wheel to the top, then let go.", show: [...K, "wheels"], hear: "The pitch slides up a little and snaps back to the note when you let go.", target: "A note held; Bend pushed to the top", check: (s) => s.held.length >= 1 && !!s.flags.bentUp },
+      { do: "Now drag Bend to the bottom and let go.", show: [...K, "wheels"], hear: "The same distance downward, and back.", target: "Bend pulled to the bottom", check: (s) => !!s.flags.bentDown,
+        remark: (s) => `Bend range is ${s.state.bendRange} semitones, so the top and bottom of the wheel are that far above and below the note.` },
+      { do: "Set Bend range to 12 and push Bend to the top again.", show: [...K, "wheels", "bendRange"], hear: "A whole octave of slide: the same hand movement now travels six times as far.", target: "Bend range 12; Bend pushed to the top", check: (s) => s.state.bendRange === 12 && !!s.flags.bentUp },
+      { do: "Set Mod wheel sends to: Filter cutoff, with an amount of about +60%.", show: [...K, "wheels", "wheelDest", "wheelAmount", "cutoff"], hear: "Nothing yet. The wheel is at the bottom, so none of its amount is applied.", target: "Mod wheel sent to Filter cutoff, amount between 45% and 75%", check: (s) => s.state.wheelDest === "cutoff" && between(s.state.wheelAmount, 45, 75) },
+      { do: "With the note still sounding, drag the Mod wheel slowly from the bottom to the top and back.", show: [...K, "wheels", "wheelAmount", "cutoff", "curve"], hear: "The filter opens with your hand and closes again. Watch the curve follow the wheel.", target: "Mod wheel taken above 90% and back below 10%", check: (s) => s.state.wheelDest === "cutoff" && swept(s, "wheel", 10, 90) && s.state.wheel <= 10 },
+      { do: "Now the classic use. Set Mod wheel sends to: LFO 1 amount, with an amount of about +5%. Raise the Mod wheel slowly.", show: [...K, "wheels", "wheelDest", "wheelAmount", "lfo1Amount", "lfo1Rate"], hear: "A steady note at the bottom of the wheel; a wobble in pitch that deepens as the wheel rises. The wheel is not moving the pitch itself: it is turning up how far the LFO moves it.",
+        preset: { lfo1Dest: "fine", lfo1Amount: 0, lfo1Rate: 5.5, lfo1Shape: "sine", wheel: 0 }, target: "Mod wheel sent to LFO 1 amount, amount between 2% and 12%, wheel above 80%", check: (s) => s.state.wheelDest === "lfo1Amount" && between(s.state.wheelAmount, 2, 12) && s.state.wheel >= 80 },
+    ],
+    recap: ["The bend wheel moves pitch by hand and springs back; Bend range sets how far.", "The mod wheel is a source: a destination, an amount, and your hand deciding how much.", "Sent to another connection's amount, the mod wheel fades movement such as vibrato in and out."],
+    inSerum: "Serum lists Mod Wheel and Pitch Bend among its modulation sources (page 211 of its guide). Send the mod wheel to an LFO's amount in the matrix and raise it while holding a note.",
   },
 ];

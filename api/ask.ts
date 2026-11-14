@@ -51,7 +51,7 @@ export async function POST(request: Request): Promise<Response> {
     return json(503, { error: "not-configured", message: "The guide is switched off: no ANTHROPIC_API_KEY is set on the server." });
   }
   const raw = await request.text();
-  if (raw.length > 10_000) return json(413, { error: "too-large", message: "Question is too long." });
+  if (raw.length > 24_000) return json(413, { error: "too-large", message: "Question is too long." });
   let body: unknown;
   try {
     body = JSON.parse(raw);
@@ -69,10 +69,12 @@ export async function POST(request: Request): Promise<Response> {
     return json(500, { error: "no-library", message: "The library could not be loaded on the server." });
   }
   // The first line of the context is the topic (a lesson or step title); the rest is detail for the model only.
-  const hits = search(index, `${parsed.data.question} ${(parsed.data.context ?? "").split("\n")[0]}`, 6);
+  // A follow-up ("and what about its rate?") is searched together with the question before it.
+  const before = parsed.data.history?.at(-1)?.question ?? "";
+  const hits = search(index, `${parsed.data.question} ${(parsed.data.context ?? "").split("\n")[0]} ${before}`, 6);
 
   const client = new Anthropic();
-  const model: GuideModel = async ({ question, context, passages }) => {
+  const model: GuideModel = async ({ question, context, passages, history }) => {
     const response = await client.messages.create({
       model: MODEL,
       max_tokens: 8000,
@@ -87,7 +89,7 @@ export async function POST(request: Request): Promise<Response> {
             title: p.page ? `${p.source}, page ${p.page} (${p.section})` : `${p.source}: ${p.section}`,
             citations: { enabled: true },
           })),
-          { type: "text" as const, text: `${context ? `The learner is currently looking at: ${context}\n\n` : ""}Question: ${question}` },
+          { type: "text" as const, text: `${history?.length ? `Earlier in this conversation (context only, not a source):\n${history.map((h) => `Learner: ${h.question}\nGuide: ${h.answer}`).join("\n\n")}\n\n` : ""}${context ? `The learner is currently looking at: ${context}\n\n` : ""}Question: ${question}` },
         ],
       }],
     });

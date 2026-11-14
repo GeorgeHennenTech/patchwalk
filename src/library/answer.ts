@@ -4,10 +4,15 @@
 import { z } from "zod";
 import type { Hit, Passage, PassageImage } from "./search.js";
 
+/** How much of a conversation is sent back with a follow-up question. */
+export const MAX_HISTORY_TURNS = 4, MAX_HISTORY_ANSWER = 1500;
+
 export const AskRequestSchema = z.object({
   question: z.string().trim().min(3).max(600),
   /** Optional: what the learner is looking at (a lesson title or step text). Never a preset file. */
   context: z.string().max(2000).optional(),
+  /** Earlier turns of this conversation, oldest first, so a follow-up can be understood. Never a source. */
+  history: z.array(z.object({ question: z.string().max(600), answer: z.string().max(MAX_HISTORY_ANSWER) })).max(MAX_HISTORY_TURNS).optional(),
 });
 export type AskRequest = z.infer<typeof AskRequestSchema>;
 
@@ -42,7 +47,7 @@ export interface ModelBlock {
   /** Indexes into the passages that were supplied, with the quoted words. */
   citations: { passageIndex: number; quote: string }[];
 }
-export type GuideModel = (args: { question: string; context?: string; passages: Passage[] }) => Promise<ModelBlock[]>;
+export type GuideModel = (args: { question: string; context?: string; passages: Passage[]; history?: AskRequest["history"] }) => Promise<ModelBlock[]>;
 
 export const NOT_COVERED = "NOT_IN_LIBRARY";
 export const MIN_SCORE = 2;
@@ -57,13 +62,16 @@ Answer the learner's question using only the documents supplied with it. They ar
 - If the documents do not answer the question at all, reply with exactly ${NOT_COVERED} and nothing else. Do not answer from memory.
 - Plain sentences. No headings, no bullet lists unless you are giving steps in order. No Markdown at all: no asterisks for bold, no pound signs.
 - The question may come with a note on what the learner is looking at: a lesson step, the current settings of the practice synth, or instructions for a patch. Those are facts supplied by the app. You may refer to them to make the answer fit, but do not add to them or guess at settings they do not mention.
+- If something is worth knowing but is not part of doing what was asked (a related limit, a note, a tip), put it last, in a paragraph of its own that begins with the words "Side note:". Keep it out of the steps. Most answers need none.
+- The question may be a follow-up in a conversation; earlier questions and answers are then included. Use them only to understand what the learner means. They are not a source: everything you say must still come from the documents supplied with this question.
+- When the documents come from different books, bring them together into one answer, and say which book each part comes from when that matters.
 - Knowledge cards are drafts written for this app; a product's own manual is the authority on how that product behaves. Do not carry a statement from one product's manual over to another product: say which one you are describing when it could be unclear.`;
 
 export async function answerQuestion(req: AskRequest, hits: Hit[], model: GuideModel): Promise<AskResponse> {
   const relevant = hits.filter((h) => h.score >= MIN_SCORE);
   if (relevant.length === 0) return { covered: false, segments: [], sources: [] };
   const passages = relevant.map((h) => h.passage);
-  const blocks = await model({ question: req.question, context: req.context, passages });
+  const blocks = await model({ question: req.question, context: req.context, passages, history: req.history });
 
   const whole = blocks.map((b) => b.text).join("").trim();
   if (!whole || whole.includes(NOT_COVERED)) return { covered: false, segments: [], sources: [] };
@@ -89,3 +97,33 @@ export async function answerQuestion(req: AskRequest, hits: Hit[], model: GuideM
   }
   return { covered: true, segments, sources: [...numbers.values()].sort((a, b) => a.n - b.n) };
 }
+
+/** One paragraph of an answer, ready to show: its pieces in order, and whether it is a side note. */
+export interface AnswerParagraph { aside: boolean; parts: AnswerSegment[] }
+const ASIDE = /^\s*side note:\s*/i;
+/**
+ * The answer as paragraphs. The model's text arrives in pieces (each with its own sources) and a blank line
+ * can fall anywhere inside a piece, so pieces are cut at blank lines and regrouped. A paragraph that begins
+ * "Side note:" is marked as an aside, and those words are taken off: the page labels it instead.
+ */
+export function toParagraphs(segments: AnswerSegment[]): AnswerParagraph[] {
+  const out: AnswerParagraph[] = [{ aside: false, parts: [] }];
+  for (const seg of segments) {
+    const chunks = seg.text.split(/\n\s*\n/);
+    chunks.forEach((chunk, i) => {
+      if (i > 0) out.push({ aside: false, parts: [] });
+      // the sources belong to the last chunk of a piece: that is where the citation mark would sit
+      if (chunk.trim()) out[out.length - 1]!.parts.push({ text: chunk, sources: i === chunks.length - 1 ? seg.sources : [] });
+    });
+  }
+  return out.filter((p) => p.parts.length).map((p) => {
+    const first = p.parts[0]!;
+    if (!ASIDE.test(first.text)) return { ...p, parts: p.parts.map((x, i) => (i === 0 ? { ...x, text: x.text.replace(/^\s+/, "") } : x)) };
+    const rest = first.text.replace(ASIDE, "");
+    // if the words "Side note:" were a piece of their own, the capital goes on the piece that follows
+    const parts = [{ ...first, text: rest }, ...p.parts.slice(1)].filter((x) => x.text.trim());
+    return { aside: true, parts: parts.map((x, i) => (i === 0 ? { ...x, text: x.text.charAt(0).toUpperCase() + x.text.slice(1) } : x)) };
+  });
+}
+/** An answer as plain text, for sending back as conversation history. */
+export const answerText = (a: AskResponse) => (a.covered ? a.segments.map((s) => s.text).join("").trim() : "The library did not cover this.");

@@ -360,6 +360,21 @@ Added after the first eight milestones (owner asked for all four in one go):
   with a note that they are the guide's pointing, not the manual's. One paid call per click; nothing is
   cached. **Not yet run against the real API** (no key in the build session): the drawing was checked in a
   browser with a stand-in reply, so how well the model aims is unknown until the owner tries it.
+- **Conversations, side notes and saved chats (14 Nov 2026, owner's request).** The Ask tab is a thread: a
+  follow-up is sent with the last four finished turns as plain text (`history` on the request, `historyOf` in
+  `src/guide/ask.ts`), and the search includes the previous question. The earlier turns are context only: the
+  model is told they are not a source and must still answer from the documents. The model is asked to put
+  anything that is not part of the steps last, in a paragraph beginning "Side note:"; `toParagraphs` in
+  `src/library/answer.ts` splits the answer at blank lines and marks that paragraph, and `Answer.tsx` boxes
+  and labels it. "Save this chat" keeps a conversation in the browser's localStorage (`src/guide/chats.ts`,
+  key `patchwalk.chats.v1`, newest first, at most 60, per browser, never sent anywhere); saved chats can be
+  reopened, continued, saved again and deleted. The model is also told to bring passages from different
+  books into one answer and say which book each part comes from. Checked in a browser with a stand-in reply;
+  **not yet run against the real API**, so whether the model reliably writes "Side note:" is unconfirmed.
+  The owner's direction for the guide: answers synthesised across many texts, walkthroughs with marked-up
+  screenshots, follow-up questions, saved chats. Still to do for that: marks drawn automatically on a
+  walkthrough's pictures (today "Show me where" is a click per picture), and search that copes with many
+  books (BM25 over pages may need chunking or reranking once the library grows).
 - **Guide in context** — `src/ui/Answer.tsx` (`AskBox`): an ask box inside each practice lesson (sends lesson,
   step, current synth settings and finished lessons) and at the top of a rebuilt patch (sends only the
   code-written instructions, per rule 5; never the preset). The first line of the context is the retrieval

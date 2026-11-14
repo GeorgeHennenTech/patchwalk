@@ -282,3 +282,55 @@ describe("show me where", () => {
     expect((await pointAt("b", "p001-1.webp", "q", async () => { throw new Error("offline"); })).kind).toBe("unavailable");
   });
 });
+
+import { answerText, MAX_HISTORY_TURNS, toParagraphs } from "../src/library/answer";
+import { historyOf, type Turn } from "../src/guide/ask";
+import { deleteChat, loadChats, MAX_CHATS, saveChat } from "../src/guide/chats";
+describe("conversations with the guide", () => {
+  const memory = () => { const m = new Map<string, string>(); return { getItem: (k: string) => m.get(k) ?? null, setItem: (k: string, v: string) => { m.set(k, v); } }; };
+  const ok = (text: string): Turn["outcome"] => ({ kind: "ok", answer: { covered: true, segments: [{ text, sources: [1] }], sources: [] } });
+  it("an answer is split into paragraphs wherever a blank line falls, keeping each piece's sources", () => {
+    const ps = toParagraphs([{ text: "Drag the LFO onto a knob.", sources: [1] }, { text: "\n\nThen check the tab.\n\nSide note: ", sources: [] }, { text: "only six LFOs show at first.", sources: [2] }]);
+    expect(ps.map((p) => p.aside)).toEqual([false, false, true]);
+    expect(ps[0]!.parts).toEqual([{ text: "Drag the LFO onto a knob.", sources: [1] }]);
+    expect(ps[1]!.parts.map((x) => x.text)).toEqual(["Then check the tab."]);
+    expect(ps[2]!.parts).toEqual([{ text: "Only six LFOs show at first.", sources: [2] }]); // the label's words are removed
+  });
+  it("a side note inside one piece is recognised too, and ordinary text is never marked as one", () => {
+    expect(toParagraphs([{ text: "Do this.\n\nside note: it also works in Live.", sources: [1] }])[1]).toEqual({ aside: true, parts: [{ text: "It also works in Live.", sources: [1] }] });
+    expect(toParagraphs([{ text: "On the side, note the level.", sources: [] }])[0]!.aside).toBe(false);
+    expect(toParagraphs([{ text: "  \n\n", sources: [] }])).toEqual([]);
+  });
+  it("a follow-up carries the last few finished turns as plain text, and the request shape allows it", () => {
+    const turns: Turn[] = [...Array.from({ length: 6 }, (_, i) => ({ question: `q${i}`, outcome: ok(`a${i}`) })), { question: "failed", outcome: { kind: "unavailable" as const, message: "x" } }, { question: "pending" }];
+    const h = historyOf(turns);
+    expect(h).toHaveLength(MAX_HISTORY_TURNS);
+    expect(h.at(-1)).toEqual({ question: "q5", answer: "a5" });
+    expect(AskRequestSchema.safeParse({ question: "and its rate?", history: h }).success).toBe(true);
+    expect(AskRequestSchema.safeParse({ question: "and its rate?", history: [...h, ...h] }).success).toBe(false);
+    expect(answerText({ covered: false, segments: [], sources: [] })).toContain("did not cover");
+  });
+  it("the earlier turns reach the model as context, and the search includes the previous question", async () => {
+    let seen: Parameters<GuideModel>[0] | undefined;
+    const model: GuideModel = async (args) => { seen = args; return [{ text: "ok", citations: [] }]; };
+    const passage: Passage = { id: "x#1", source: "Book", page: 1, section: "LFO", text: "lfo rate knob" };
+    await answerQuestion({ question: "and its rate?", history: [{ question: "how do I assign an LFO", answer: "drag it" }] }, [{ passage, score: 5 }], model);
+    expect(seen!.history).toEqual([{ question: "how do I assign an LFO", answer: "drag it" }]);
+  });
+  it("chats are saved newest first, saved again in place, opened and deleted, and only in this browser", () => {
+    const store = memory();
+    expect(loadChats(store)).toEqual([]);
+    expect(saveChat({ turns: [{ question: "pending" }] }, new Date(0), store)).toBeNull(); // nothing finished yet
+    const one = saveChat({ turns: [{ question: "how do I assign an LFO", outcome: ok("drag it") }] }, new Date("2026-11-14T10:00:00Z"), store)!;
+    const two = saveChat({ turns: [{ question: "x".repeat(100), outcome: ok("y") }] }, new Date("2026-11-14T11:00:00Z"), store)!;
+    expect(two.chats.map((c) => c.title)).toEqual([`${"x".repeat(67)}…`, "how do I assign an LFO"]);
+    const again = saveChat({ id: one.id, turns: [{ question: "how do I assign an LFO", outcome: ok("drag it") }, { question: "and its rate?", outcome: ok("the RATE knob") }] }, new Date("2026-11-14T12:00:00Z"), store)!;
+    expect(again.chats).toHaveLength(2);
+    expect(again.chats[0]!.id).toBe(one.id); expect(again.chats[0]!.turns).toHaveLength(2);
+    expect(deleteChat(two.id, store).map((c) => c.id)).toEqual([one.id]);
+    expect(loadChats({ getItem: () => "not json" })).toEqual([]);
+    expect(loadChats({ getItem: () => JSON.stringify([{ nonsense: true }, again.chats[0]]) })).toHaveLength(1);
+    expect(saveChat({ turns: [{ question: "q", outcome: ok("a") }] }, new Date(), undefined)).toBeNull(); // no storage at all
+    expect(MAX_CHATS).toBeGreaterThanOrEqual(20);
+  });
+});

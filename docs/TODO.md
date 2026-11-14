@@ -53,6 +53,9 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 - [x] Ableton manual, pages 501 to 867: the whole manual is now in (814 pages of text, 743 pictures)
 - [x] Rift manual (Minimal Audio): 64 pages of text and 137 pictures taken in
 - [x] "Show me where": the guide boxes and labels the relevant places in a cited picture (owner to test how well it aims)
+- [x] Guide: follow-up questions in one conversation, side notes set apart from the steps, chats saved in the browser
+- [ ] Guide: mark up a walkthrough's pictures automatically, step by step (today it is one click per picture)
+- [ ] Guide: better search across many books once more texts are in
 - [ ] Place library pictures inside lessons where they help
 - [ ] Voice for the guide using Higgsfield (owner's choice): test quality, then generate each narration once and store it
 - [ ] Remember what the learner found hard, not only what they finished

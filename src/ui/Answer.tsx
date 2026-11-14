@@ -3,6 +3,7 @@ import { LESSONS, placeOf } from "../course/lessons";
 import { relatedLessons } from "../course/related";
 import { askGuide, type AskOutcome } from "../guide/ask";
 import { pointAt, type PointOutcome } from "../guide/point";
+import { toParagraphs } from "../library/answer";
 import { Badge } from "./Badge";
 
 /** The answer is shown as plain text, so any Markdown marks the model slips in are removed. */
@@ -19,13 +20,17 @@ export function Answer({ outcome, question }: { outcome: AskOutcome; question?: 
   if (!a.covered) return <p><Badge kind="unknown">not in the library</Badge> The library does not cover this yet, so the guide will not guess. Adding a text on the subject would let it answer.</p>;
   return (
     <>
-      <p className="answer">
-        {a.segments.map((s, j) => (
-          <span key={j} className={s.sources.length ? "" : "uncited"} title={s.sources.length ? undefined : "This part was not drawn from a library passage."}>
-            {plain(s.text)}{s.sources.map((n) => <sup key={n}>[{n}]</sup>)}
-          </span>
-        ))}
-      </p>
+      {/* one block per paragraph; a side note is boxed and labelled so it is not read as one of the steps */}
+      {toParagraphs(a.segments).map((p, k) => (
+        <p key={k} className={`answer${p.aside ? " aside" : ""}`}>
+          {p.aside && <strong className="aside-label">Side note</strong>}
+          {p.parts.map((s, j) => (
+            <span key={j} className={s.sources.length ? "" : "uncited"} title={s.sources.length ? undefined : "This part was not drawn from a library passage."}>
+              {plain(s.text)}{s.sources.map((n) => <sup key={n}>[{n}]</sup>)}
+            </span>
+          ))}
+        </p>
+      ))}
       {a.segments.some((s) => !s.sources.length && s.text.trim().length > 40) && <p className="note">Greyed text is the guide’s own wording without a source passage. Treat it with more care than the cited parts.</p>}
       <ol className="sources">
         {a.sources.map((s) => (

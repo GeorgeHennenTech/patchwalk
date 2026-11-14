@@ -709,6 +709,18 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   Funktion-One specifically, so models may be named as theirs; no logo artwork is needed. Other leads not
   yet followed: the UK patent GB2270606B (Andrews, "Loudspeaker enclosure"), the Justia list of patents
   assigned to Funktion One, and Tony Andrews's earlier Turbosound patents.
+- **The system Tipper's shows use is Funktion-One's Vero (found 14 Nov 2026; the owner asked for "whatever
+  one Tipper plays on").** Trade press and Funktion-One's own news report Vero mains with F124 and F221
+  bass and Evo 7 fills at Tipper & Friends shows (The Gorge: 24 Vero, 34 subs; Orion Amphitheater: 20 Vero,
+  12 F124, 12 F221; rental company One-Source Productions). This is what was hired for those shows, a fact
+  about the rig; it says nothing about how Tipper makes sounds. Vero has three flown cabinets: V60 (two
+  10-inch mids, three 1.4-inch high drivers, 60 by 6 degrees), V90 (two 10-inch, two 1.4-inch, 90 by 12
+  degrees) and V315 (three horn-loaded 15-inch, 50 to 200 Hz). `library/funktion-one-vero.json` (185 pages:
+  the 153-page Vero user guide, the brochure, V60/V90/V315 spec sheets, and the F124 and F221 technical
+  and detail drawings; each a chapter) and `library/images/funktion-one-vero/` (235 pictures, 7 MB); the
+  four bass drawings are also kept as PDFs in `library/cad/funktion-one/`. The user guide is about
+  setting up and flying the system; it does not describe the horns' insides. **The sound-systems models
+  should be of Vero first** (V90 or V60, V315, and the F221 and F124 bass), not the Resolution range.
 - **`scripts/ingest_pdf.py`** is the standard way to take in any PDF book, text and pictures together, from one
   or more parts numbered straight through (`--skip-pages` for contents pages, `--append <last page>` to add
   later parts). A test checks every book's text and picture index agree.

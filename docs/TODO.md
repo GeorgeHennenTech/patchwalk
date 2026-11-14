@@ -3,6 +3,28 @@
 The working list for the owner and the assistant. Tick a box when a thing is done. The owner's live copy is the "Patchwalk To-Do" page
 (https://claude.ai/artifact/7sHF6r2vvBuxa8DSkcfcPz); keep the two in step. `docs/HANDOFF.md` has the background.
 
+## The queue ("proceed with the next task")
+Agreed with the owner on 14 Nov 2026: they prompt from their phone with "proceed with the next task" and the
+assistant does the first unticked item here, start to finish (build, test, check in a browser, push), ticks
+it, and reports in a few lines. None of these needs the owner or spends credits. Rules for design are in
+`docs/LEARNING_RESEARCH.md`.
+
+- [ ] 1. Focus mode (a switch, remembered per person): steps and minutes left always in view, a "good place to stop" marker after each lesson, and "you were here" when coming back
+- [ ] 2. End-of-lesson recall: two or three questions answered from memory in place of the recap being read, with the answer shown at once
+- [ ] 3. Guide answers, new layout: the one-line answer first, quiet citations, "go deeper" follow-up buttons, one check question
+- [ ] 4. Small fixes: pointing at the Res 2's upper horns with the mouse; the eye button on the Account panel's password boxes; the Res 2 standing on a bass cabinet, since it needs one below 60 Hz
+- [ ] 5. "Why this matters" line on every lesson, tying it to music the learner wants to make
+- [ ] 6. Coming back: recall questions from finished lessons return after days, then weeks
+- [ ] 7. A mixed by-ear checkpoint that draws on several chapters at once (filter, envelope, LFO)
+- [ ] 8. Reorderable effects rack with a bypass per effect (needed before the processing-chains track)
+- [ ] 9. Second filter, with routing between the two, and two more filter types
+- [ ] 10. Osc B as a full oscillator: unison and warp
+- [ ] 11. Vero: build your own column (choose cabinets and angles, see the coverage change)
+- [ ] 12. Save and load your own patches on the practice synth
+
+Waiting on the owner, not in the queue: set `OWNER_EMAIL` in Vercel and make their account; a mail service
+for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on their screen.
+
 ## Build next
 - [x] Envelope lessons: five lessons and a checkpoint, with an envelope drawing you can drag
 - [x] Envelope hold and fall shape (straight, eased, sharp), with a lesson

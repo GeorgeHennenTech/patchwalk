@@ -199,6 +199,8 @@ than one instrument instead of being rewritten.
 
 ## 8. What to do next
 
+**First: `docs/TODO.md` has a numbered queue at the top.** When the owner says "proceed with the next task", do the first unticked item there, tick it, and report briefly. They are working from their phone.
+
 Take these in order. After each, test, check in a browser, commit, push, and report briefly.
 
 1. **Done (13 Nov 2026): chapter 1.** The synth now has a second oscillator, unison, sub, noise, phase and

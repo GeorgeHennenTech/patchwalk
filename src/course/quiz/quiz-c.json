@@ -1,0 +1,648 @@
+{
+  "C4.1": [
+    {
+      "q": "What is an LFO used for?",
+      "options": [
+        "Playing a very low bass note you can hear",
+        "Moving a control up and down, over and over",
+        "Shaping a control once per note, then stopping",
+        "Making a held note play in tune"
+      ],
+      "answer": 1,
+      "why": "An LFO is an oscillator too slow to hear, so you send it to a control and it keeps moving that control.",
+      "point": 0
+    },
+    {
+      "q": "You want the level to jump between two positions instead of gliding. What do you change?",
+      "options": [
+        "The rate, to a faster setting",
+        "The shape, to Sine",
+        "The rate, to a slower setting",
+        "The shape, to Square"
+      ],
+      "answer": 3,
+      "why": "Shape is the path the LFO takes, and a square jumps between two positions.",
+      "point": 1
+    },
+    {
+      "q": "What happens when the rate is turned all the way up?",
+      "options": [
+        "The movement blurs into a buzz that is part of the tone",
+        "The note swells slowly enough to count each rise",
+        "The LFO stops moving the control at all",
+        "The note chops cleanly on and off, twice a second"
+      ],
+      "answer": 0,
+      "why": "Very fast movement stops sounding like movement and becomes part of the tone.",
+      "point": 2
+    }
+  ],
+  "C4.2": [
+    {
+      "q": "What does sending an LFO to the cutoff do?",
+      "options": [
+        "It makes the note waver sharp and flat",
+        "It switches the filter off between notes",
+        "It opens and closes the filter by itself",
+        "It holds the filter open at one steady brightness"
+      ],
+      "answer": 2,
+      "why": "An LFO on the cutoff turns it up and down for you, so the filter opens and closes by itself.",
+      "point": 0
+    },
+    {
+      "q": "The wobble is too shallow: the cutoff barely swings. Which setting do you raise?",
+      "options": [
+        "Rate",
+        "Shape",
+        "Resonance",
+        "Amount"
+      ],
+      "answer": 3,
+      "why": "Amount is how far the cutoff swings, so raising it gives a deeper wobble.",
+      "point": 1
+    },
+    {
+      "q": "While the filter wobbles, you turn the Cutoff knob up. What changes?",
+      "options": [
+        "The wobble gets faster",
+        "The whole wobble moves brighter",
+        "The wobble swings further",
+        "The wobble stops moving"
+      ],
+      "answer": 1,
+      "why": "The cutoff knob sets the middle of the swing, so turning it shifts the whole wobble brighter or darker.",
+      "point": 2
+    }
+  ],
+  "C4.3": [
+    {
+      "q": "An LFO makes a note waver sharp and flat. Where is it sent, and what is that called?",
+      "options": [
+        "To pitch: vibrato",
+        "To level: tremolo",
+        "To level: vibrato",
+        "To pitch: tremolo"
+      ],
+      "answer": 0,
+      "why": "An LFO on pitch is vibrato, and an LFO on level is tremolo.",
+      "point": 0
+    },
+    {
+      "q": "Why does vibrato need a much smaller amount than tremolo?",
+      "options": [
+        "Level is far more sensitive than pitch",
+        "An LFO on pitch always runs faster",
+        "Pitch is far more sensitive than level",
+        "A small amount makes the LFO slower"
+      ],
+      "answer": 2,
+      "why": "Pitch is far more sensitive than level, so a tiny amount is enough and more becomes a siren.",
+      "point": 1
+    },
+    {
+      "q": "Can one note have vibrato and tremolo together?",
+      "options": [
+        "No, only one LFO can run at a time",
+        "Yes, but only at exactly the same speed",
+        "No, pitch movement cancels level movement",
+        "Yes, with two LFOs, each on its own control"
+      ],
+      "answer": 3,
+      "why": "Several LFOs can run at once, each on its own control and at its own speed.",
+      "point": 2
+    }
+  ],
+  "C4.4": [
+    {
+      "q": "Why set an LFO's speed in beats instead of cycles per second?",
+      "options": [
+        "So its movement swings further",
+        "So its movement lands on the beat",
+        "So it restarts with every key press",
+        "So it runs too fast to hear"
+      ],
+      "answer": 1,
+      "why": "A speed set in beats ties the LFO to the tempo, so it stops drifting against the beat.",
+      "point": 0
+    },
+    {
+      "q": "An LFO repeats every 1 beat. You turn the tempo down. What happens to the wobble?",
+      "options": [
+        "It keeps its speed and drifts off the click",
+        "It stops until you play a new note",
+        "It slows down together with the click",
+        "It changes to two wobbles per click"
+      ],
+      "answer": 2,
+      "why": "A synced LFO follows the tempo and stays in the same place in the bar.",
+      "point": 1
+    },
+    {
+      "q": "Which setting gives three wobbles per click, the rolling triplet feel?",
+      "options": [
+        "Half a beat",
+        "4 beats",
+        "1 beat",
+        "A third of a beat"
+      ],
+      "answer": 3,
+      "why": "A third of a beat fits three wobbles into each beat, which is a triplet.",
+      "point": 2
+    }
+  ],
+  "C4.5": [
+    {
+      "q": "An LFO is set to Free. You strike the same key several times. What do you hear?",
+      "options": [
+        "Each note begins somewhere different in the movement",
+        "Every note begins in exactly the same way",
+        "Each note starts steady and the movement grows",
+        "Only the first note has any movement"
+      ],
+      "answer": 0,
+      "why": "A Free LFO runs on regardless of your playing, so each note catches it wherever it happens to be.",
+      "point": 0
+    },
+    {
+      "q": "Which setting suits a rhythmic bass, where every note should move the same way?",
+      "options": [
+        "Free",
+        "Rise",
+        "Restart",
+        "A faster rate"
+      ],
+      "answer": 2,
+      "why": "Restart begins the shape again with every note, so it is consistent and predictable.",
+      "point": 1
+    },
+    {
+      "q": "With a Rise of about one second, how do short and long notes differ?",
+      "options": [
+        "Long notes stay plain; short notes get the movement",
+        "Short notes stay plain; long notes get the movement",
+        "Both get full movement from the first instant",
+        "Short notes move faster than long notes"
+      ],
+      "answer": 1,
+      "why": "Rise fades the movement in, so long notes get more of it than short ones.",
+      "point": 2
+    }
+  ],
+  "C4.6": [
+    {
+      "q": "What is a drawn LFO shape?",
+      "options": [
+        "One smooth curve that plays once per note",
+        "The four basic shapes played one after another",
+        "A sine with its rate turned right down",
+        "Sixteen steps, each at a height you choose"
+      ],
+      "answer": 3,
+      "why": "A drawn shape is a row of sixteen steps that the LFO plays in order and then starts again.",
+      "point": 0
+    },
+    {
+      "q": "A drawn LFO on the filter is synced to the beat. What do its tall and short bars become?",
+      "options": [
+        "Louder and quieter keys of a chord",
+        "Open and closed moments of the filter: a rhythm",
+        "Faster and slower parts of the wobble",
+        "Higher and lower notes of a melody"
+      ],
+      "answer": 1,
+      "why": "Synced to the beat, the steps become a rhythm of bright bursts and dark gaps.",
+      "point": 1
+    },
+    {
+      "q": "Why can one held note sound like a moving bassline here?",
+      "options": [
+        "The LFO plays different keys for you",
+        "Hold strikes the note again on every click",
+        "The drawn LFO moves the filter in a repeating pattern",
+        "The tempo changes the note on every beat"
+      ],
+      "answer": 2,
+      "why": "One held note with a drawn LFO on the filter is already a pattern, made of changes in brightness.",
+      "point": 2
+    }
+  ],
+  "C4.C": [
+    {
+      "q": "When matching a hidden moving sound, what should you decide first?",
+      "options": [
+        "How fast the movement is",
+        "How far the movement goes",
+        "Whether it glides, jumps or ramps",
+        "What is moving: loudness, pitch or brightness"
+      ],
+      "answer": 3,
+      "why": "First decide what is moving, because everything else depends on it.",
+      "point": 0
+    },
+    {
+      "q": "A hidden sound jumps between two positions instead of gliding. Which question does that answer?",
+      "options": [
+        "What path the movement takes",
+        "What is being moved",
+        "How fast the movement is",
+        "How far the movement goes"
+      ],
+      "answer": 0,
+      "why": "Gliding, jumping or ramping is the path the movement takes.",
+      "point": 1
+    },
+    {
+      "q": "What helps you judge how fast a hidden sound is moving?",
+      "options": [
+        "Listening for how bright it gets",
+        "Counting it against a slow steady beat",
+        "Listening for how far it swings",
+        "Listening for whether it jumps or glides"
+      ],
+      "answer": 1,
+      "why": "Counting the movement against a slow steady beat helps you find the rate.",
+      "point": 2
+    }
+  ],
+  "C5.1": [
+    {
+      "q": "What are the three parts of a route?",
+      "options": [
+        "A rate, a shape and an amount",
+        "An LFO, an envelope and a filter",
+        "A source, a destination and an amount",
+        "A knob, a ring and a centre"
+      ],
+      "answer": 2,
+      "why": "A route is a source that moves, a destination knob it moves, and an amount for how far.",
+      "point": 0
+    },
+    {
+      "q": "An LFO is wobbling the cutoff. You turn the Cutoff knob down. What happens?",
+      "options": [
+        "The same movement, shifted darker",
+        "The wobble gets shallower",
+        "The wobble gets slower",
+        "The route is switched off"
+      ],
+      "answer": 0,
+      "why": "The knob sets the centre and the route adds its movement to it.",
+      "point": 1
+    },
+    {
+      "q": "Two LFOs and an envelope are all sent to the cutoff. What do you get?",
+      "options": [
+        "Only the last one connected",
+        "Only the fastest of the three",
+        "No movement: they cancel out",
+        "Their movements added together"
+      ],
+      "answer": 3,
+      "why": "Several routes on one knob add together, which builds complicated motion from simple parts.",
+      "point": 2
+    }
+  ],
+  "C5.2": [
+    {
+      "q": "What does 'both ways' (bipolar) mean for an LFO?",
+      "options": [
+        "It moves two different knobs at the same time",
+        "It swings above and below the knob's setting equally",
+        "It swings above the knob's setting and stays there",
+        "It runs forwards, then backwards, through its shape"
+      ],
+      "answer": 1,
+      "why": "Both ways means the LFO swings above the knob's setting and below it by the same distance.",
+      "point": 0
+    },
+    {
+      "q": "Why does a one-way LFO on pitch make the whole note sound raised?",
+      "options": [
+        "It swings twice as far as a both-ways LFO",
+        "It runs faster than a both-ways LFO does",
+        "It only ever goes sharp, never below the true pitch",
+        "It wavers evenly around the true pitch"
+      ],
+      "answer": 2,
+      "why": "One way moves from the knob's setting to one side only, so the pitch only goes sharp.",
+      "point": 1
+    },
+    {
+      "q": "A square LFO on pitch is set to one way, with the amount below zero. Which trill do you hear?",
+      "options": [
+        "Your note and a note below it",
+        "Your note and a note above it",
+        "A note below and a note above, never yours",
+        "No trill, because the amount is below zero"
+      ],
+      "answer": 0,
+      "why": "With one way, the knob's own setting is always one end of the movement, so your note is always heard.",
+      "point": 2
+    }
+  ],
+  "C5.3": [
+    {
+      "q": "What is velocity?",
+      "options": [
+        "How high or low the key is",
+        "How long the key is held",
+        "How hard a key is struck",
+        "How fast the note repeats"
+      ],
+      "answer": 2,
+      "why": "Velocity is how hard a key is struck, and key position is which key it is.",
+      "point": 0
+    },
+    {
+      "q": "How does velocity behave during one note?",
+      "options": [
+        "It keeps rising while the key is held",
+        "It is fixed from the moment the note starts",
+        "It swings up and down like an LFO",
+        "It falls away like an envelope"
+      ],
+      "answer": 1,
+      "why": "Velocity and key position are each one number, decided the moment the note starts.",
+      "point": 1
+    },
+    {
+      "q": "You want harder notes to be brighter but no louder. Where do you send Velocity?",
+      "options": [
+        "Note level",
+        "Key position",
+        "Nothing",
+        "Filter cutoff"
+      ],
+      "answer": 3,
+      "why": "Velocity on the cutoff makes soft notes dull and hard notes bright, at the same loudness.",
+      "point": 2
+    }
+  ],
+  "C5.4": [
+    {
+      "q": "What does one row of the matrix show?",
+      "options": [
+        "One note you played and how hard you struck it",
+        "One connection: source, what it moves, how far, which way",
+        "One knob and every other setting on its panel",
+        "One LFO with its rate, its shape and its start"
+      ],
+      "answer": 1,
+      "why": "The matrix lists every connection, one row each, with source, destination, amount and direction.",
+      "point": 0
+    },
+    {
+      "q": "You change LFO 1's amount in its matrix row. What does the Amount knob on its panel do?",
+      "options": [
+        "It stays put: the matrix overrides it",
+        "It drops to zero: only one can be used",
+        "It adds its own amount on top",
+        "It moves too: they are the same setting"
+      ],
+      "answer": 3,
+      "why": "A row in the matrix and the control on the panel are the same setting.",
+      "point": 1
+    },
+    {
+      "q": "How do you make one LFO move the filter, the pitch and the level together?",
+      "options": [
+        "Add matrix rows sending that LFO to the other knobs",
+        "Use three LFOs, all set to the same rate",
+        "Turn that LFO's amount up as far as it goes",
+        "Change the amount in its row to below zero"
+      ],
+      "answer": 0,
+      "why": "Extra rows send one source to several knobs, so they move as one gesture.",
+      "point": 2
+    }
+  ],
+  "C5.5": [
+    {
+      "q": "The Cutoff knob wears two coloured dots. What does that tell you?",
+      "options": [
+        "One source is moving it in both directions",
+        "One source is moving it twice as far",
+        "Two sources are moving it, one dot each",
+        "Two knobs are linked to the same source"
+      ],
+      "answer": 2,
+      "why": "A knob wears a dot for each source that moves it, in that source's colour.",
+      "point": 0
+    },
+    {
+      "q": "What does double-clicking a dot do?",
+      "options": [
+        "Removes that source's connection to the knob",
+        "Sets that source's amount to zero; the connection stays",
+        "Puts the knob itself back where it started",
+        "Sets that source's amount as high as it goes"
+      ],
+      "answer": 1,
+      "why": "A double-click sets that source's amount to zero, and the connection is still there, doing nothing.",
+      "point": 1
+    },
+    {
+      "q": "You set LFO 1's amount with its dot on Cutoff. What does the Amount knob on the LFO 1 panel show?",
+      "options": [
+        "Its old amount: the dot is separate",
+        "Zero: the dot has taken over",
+        "Both amounts added together",
+        "The same amount: it is one setting"
+      ],
+      "answer": 3,
+      "why": "The dot, the source's Amount knob and the matrix row are the same setting.",
+      "point": 2
+    }
+  ],
+  "C5.6": [
+    {
+      "q": "Besides the knobs that shape the sound, what else can a source be sent to?",
+      "options": [
+        "Another source's settings, such as an LFO's rate",
+        "Nothing else: only the filter and oscillators",
+        "Only knobs that no other source is moving",
+        "Only a knob on its own panel"
+      ],
+      "answer": 0,
+      "why": "A destination does not have to be part of the sound: a source's own settings can be destinations.",
+      "point": 0
+    },
+    {
+      "q": "A slow LFO is sent to a fast LFO's rate. What do you hear?",
+      "options": [
+        "The wobble getting brighter and darker in tone",
+        "The wobble starting again with every new note",
+        "The wobble speeding up and slowing down by itself",
+        "Two steady wobbles at once on the filter"
+      ],
+      "answer": 2,
+      "why": "A slow LFO on a fast LFO's rate makes the movement itself move.",
+      "point": 1
+    },
+    {
+      "q": "Each note's wobble should start fast and settle to its normal speed. What do you send to the LFO's rate?",
+      "options": [
+        "A slow sine LFO",
+        "An envelope",
+        "A slow square LFO",
+        "Another fast LFO"
+      ],
+      "answer": 1,
+      "why": "An envelope moves once per note, so on the rate it gives every note its own change of speed.",
+      "point": 2
+    }
+  ],
+  "C5.7": [
+    {
+      "q": "Which knobs can a source be sent to?",
+      "options": [
+        "Only the oscillator and filter knobs",
+        "Only the knobs marked Smoothest",
+        "Any knob except those on the effects",
+        "Any knob, including other sources and the effects"
+      ],
+      "answer": 3,
+      "why": "If it is a knob, something can move it: oscillator, filter, envelopes, other sources and effects.",
+      "point": 0
+    },
+    {
+      "q": "A very fast LFO sounds grainy on one destination. Why?",
+      "options": [
+        "That destination is moved only about fifty times a second",
+        "That destination is one of those marked Smoothest",
+        "That destination is moved separately for every note",
+        "That destination already has a source on it"
+      ],
+      "answer": 0,
+      "why": "Destinations not marked Smoothest are moved about fifty times a second, which a very fast LFO outruns.",
+      "point": 1
+    },
+    {
+      "q": "An envelope is sent to Distortion drive and you play several notes. Which note does the effect follow?",
+      "options": [
+        "The first note played",
+        "The lowest note played",
+        "The last note played",
+        "Each note separately"
+      ],
+      "answer": 2,
+      "why": "Effects are shared by all notes, so a source on an effect follows the last note played.",
+      "point": 2
+    }
+  ],
+  "C5.8": [
+    {
+      "q": "While you drag a source's handle, a knob lights up green. What does that mean?",
+      "options": [
+        "The knob already has that source",
+        "The knob can take the source",
+        "The knob is at its highest setting",
+        "The knob is being moved by a macro"
+      ],
+      "answer": 1,
+      "why": "A knob that can take the source lights up green as you pass over it.",
+      "point": 0
+    },
+    {
+      "q": "LFO 1 is already connected to Cutoff. You drop it on Resonance as well. What happens?",
+      "options": [
+        "A matrix row is added and Cutoff stays connected",
+        "It leaves Cutoff and moves to Resonance instead",
+        "Nothing, as a source has only one connection",
+        "It takes the next free slot of a macro"
+      ],
+      "answer": 0,
+      "why": "The first drop is the source's own connection, and later drops add matrix rows.",
+      "point": 1
+    },
+    {
+      "q": "You drop a macro on a knob. Where does the connection go?",
+      "options": [
+        "Into a new row of the matrix",
+        "Over the macro's first slot",
+        "Onto the panel of LFO 1",
+        "Into the macro's next free slot"
+      ],
+      "answer": 3,
+      "why": "A macro dropped on a knob takes its next free slot.",
+      "point": 2
+    }
+  ],
+  "C5.9": [
+    {
+      "q": "What does the Scaled by column do to a matrix row?",
+      "options": [
+        "Sets how fast the row's own source runs",
+        "Sends the row's source to a second knob",
+        "Lets a second source set how much gets through",
+        "Adds a second source's movement on top"
+      ],
+      "answer": 2,
+      "why": "Scaled by hands the row's amount to a second source, which decides how much of it gets through.",
+      "point": 0
+    },
+    {
+      "q": "A vibrato row is scaled by the Mod wheel, and the wheel is at the bottom. What do you hear?",
+      "options": [
+        "Vibrato at the row's full amount",
+        "No vibrato at all",
+        "Vibrato at half the row's amount",
+        "Vibrato that only goes downward"
+      ],
+      "answer": 1,
+      "why": "At the second source's lowest, nothing of the row gets through.",
+      "point": 1
+    },
+    {
+      "q": "Vibrato should grow in by itself as a note is held. What do you choose for Scaled by?",
+      "options": [
+        "Velocity, playing hard notes",
+        "The Mod wheel, left at the bottom",
+        "Nothing, with a larger amount",
+        "Envelope 2, with a slow attack"
+      ],
+      "answer": 3,
+      "why": "An envelope as the scaler brings the movement in with time, as a singer adds vibrato to a long note.",
+      "point": 2
+    }
+  ],
+  "C5.C": [
+    {
+      "q": "A hidden sound is moving. What should you find first?",
+      "options": [
+        "What is moving",
+        "Which way it pushes",
+        "How far it is pushed",
+        "Whether its speed changes"
+      ],
+      "answer": 0,
+      "why": "Find what is moving before asking how it moves.",
+      "point": 0
+    },
+    {
+      "q": "The movement sits to one side of your sound, not centred on it. What does that tell you?",
+      "options": [
+        "The route is both ways",
+        "The amount is at zero",
+        "The route is one way",
+        "Two sources share the knob"
+      ],
+      "answer": 2,
+      "why": "Movement that sits to one side of your sound is a one-way route.",
+      "point": 1
+    },
+    {
+      "q": "A hidden wobble keeps changing speed by itself. What does that suggest?",
+      "options": [
+        "Its amount is below zero",
+        "A second source is on its rate",
+        "Its knob has been turned up",
+        "It is sent to two knobs"
+      ],
+      "answer": 1,
+      "why": "Movement whose speed changes has a second source on its rate.",
+      "point": 2
+    }
+  ]
+}

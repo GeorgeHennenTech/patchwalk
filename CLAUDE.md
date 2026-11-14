@@ -640,15 +640,23 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   counted down, a saved place in the filter lesson came back on step 3 with the cutoff where it was and
   the step already passing, and with Focus off none of it showed. In development React runs a lesson's
   start-up twice, so that code must give the same result both times (it once wiped the saved place).
-- **End-of-lesson recall (14 Nov 2026; second item of the queue).** The recap is no longer simply shown.
-  `RecallCard` (`src/ui/Recall.tsx`) first asks the learner to bring the lesson's main points back from
-  memory (out loud, or typed into a box that is never saved), with the lesson's outcome as a nudge; "Show
-  me the recap" then shows the recap as the answer, with the learner's own words above it and "Had it" /
-  "Missed it" on each point. What was missed is kept per lesson in the browser (`patchwalk.recall.v1`,
+- **End of a lesson: write, quiz, recap (14 Nov 2026; second item of the queue, reshaped the same day by
+  the owner, who loved being asked to type what they remember and asked for a quiz that is checked before
+  the recap is shown).** `RecallCard` (`src/ui/Recall.tsx`) has three parts. (1) "What do you remember?":
+  a box to type the lesson back in your own words (never saved), with the lesson's outcome as a nudge.
+  (2) A quiz of three questions on that lesson, options in a mixed order, checked only when all are
+  answered: each then shows the right answer, the learner's own, and one line of why. (3) The recap,
+  with each point the quiz asked about tagged "you had this" or "read this one again". A quiet "Skip to
+  the recap" link stays, so nobody is trapped. **261 questions, three for each of the 87 lessons, in
+  `src/course/quiz/quiz-a.json` to `quiz-f.json`** (`{ q, options[4], answer, why, point }`, `point`
+  being the recap line it tests). They were written by helper agents from each lesson's own text under
+  strict rules (nothing the lesson does not say, one clearly right answer, short, no codes), checked by a
+  test for shape and by the assistant reading a sample of 36; **the owner has not reviewed them, so treat
+  them as drafts and fix any that read wrong.** A new lesson needs three questions added or that test
+  fails. Which recap points were shaky is kept per lesson in the browser (`patchwalk.recall.v1`,
   `src/course/recall.ts`; not yet stored with the account) for the spaced return that is item 6 of the
-  queue: the card's wording promises missed points "will come round again", which is true only once
-  that is built. No per-lesson questions were written: the recap lines are the answers, so every lesson
-  has it. `recallNote` words the result kindly and gives no figure until every point is marked.
+  queue: the wording says they "will come round again", true only once that is built. The typed recall is
+  not checked by anything; checking it would need a paid call to Claude.
 - **Blender for 3D teaching pictures (owner asked 14 Nov 2026; first test made).** Blender runs in the build
   session without a screen as a Python module (`pip install bpy` in a virtual environment, Python 3.13;
   Cycles on the processor, about a minute for a 2700 by 1400 picture at 96 samples). `scripts/blender/driver.py`

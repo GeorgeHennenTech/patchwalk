@@ -494,6 +494,13 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   See also `docs/COURSE_PLAN.md`. Guided lessons on a built-in practice synth; lessons can be taken in any
   order; each lesson is its own data file so chapters are easy to add. Tracks are to grow well beyond synthesis
   (acoustics, psychoacoustics, sound design, effects, ear training, mixing).
+- **`docs/SERUM_GAPS.md` (14 Nov 2026, owner's request):** every Serum 2 feature in the User Guide that the
+  practice synth lacks or has in part, by area in the manual's order, with page numbers, a status and a rough
+  size, ending in a suggested order of fifteen. About 550 rows. Written from the manual's text only (pictures
+  were not read) by a helper that read all 343 pages; it lists what it could not pin down at the end. Top of
+  its order: mono/legato/portamento; mod wheel, pitch bend and MIDI input; the matrix's AUX SOURCE; Osc B as
+  a full oscillator and pan; a second filter with routing; more filter types; more warp modes. Update it
+  when a gap is closed.
 - **Two tracks added by the owner on 13 Nov 2026, planned and not built:** physical modelling
   (`docs/PHYSICAL_MODELING.md`, about 60 lessons; needs AudioWorklet engines because the browser's ready-made
   delay cannot loop faster than one 128-sample block) and bioacoustics with hearing and illusions

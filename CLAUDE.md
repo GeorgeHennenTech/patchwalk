@@ -532,8 +532,13 @@ Added after the first eight milestones (owner asked for all four in one go):
     database, or with the database unreachable, every paid call is refused. Never weaken this. Off Vercel
     with no database (local development) there are no accounts and the local key is used.
     Emails are not verified (the site sends no mail), so the owner must make their own account before or
-    right after setting `OWNER_EMAIL` and check that the Account panel says "owner". No mail also means no
-    "forgot my password": the owner sets a new password for someone from the Account panel (which lists
+    right after setting `OWNER_EMAIL` and check that the Account panel says "owner". **Forgot password (same day, owner's request):** `forgot` emails
+    a link (`/?reset=<token>`, one use, 30 minutes, only a hash stored, at most one mail per address every
+    two minutes, the same answer whether or not the address has an account) and `recover` sets the new
+    password and signs in. It needs a mail service the owner signs up for: `src/store/mail.ts` understands
+    Resend (`RESEND_API_KEY`) or Brevo (`BREVO_API_KEY`), plus `MAIL_FROM` (a sender address that service
+    has approved). Without those the button says to ask the owner. **Not yet sent through a real mail
+    service** (checked in a browser with a stand-in for it). Either way the owner can set a new password for someone from the Account panel (which lists
     everyone, for the owner only) or removes them; anyone can change their own password or delete their
     account. Work already in a browser from before accounts is kept under the account made or signed into
     there; a browser holding one account's things never hands them to another (`enter` in `sync.ts`).
@@ -737,6 +742,16 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   four bass drawings are also kept as PDFs in `library/cad/funktion-one/`. The user guide is about
   setting up and flying the system; it does not describe the horns' insides. **The sound-systems models
   should be of Vero first** (V90 or V60, V315, and the F221 and F124 bass), not the Resolution range.
+- **Realism pass on the 3D views (14 Nov 2026, owner's request).** `src/ui/three/look.ts`: surfaces drawn
+  by code onto small canvases (textured speaker paint, a perforated grille, grass, plywood, paper pulp,
+  steel), an open sky with haze, a studio table that shows only shadows, and `truss` (laced lighting
+  truss as one instanced mesh). `makeStage` now casts soft shadows from its main light (`sun`, `shadow`).
+  Vero: cabinets follow the guide's photographs by eye (V60/V90 a curved perforated grille; V315 and the
+  bass an open front divided into horn mouths; steel end plates, pins, handles, and the coloured dial that
+  really tells the kinds apart, in place of the old coloured stripe), hung from a flying frame on chain
+  hoists under a truss tower, one column each side of a stage with a roof, bass cabinets in a row in
+  front, on grass under a sky; beams fade with distance. Horn: plywood housing, paper cone, steel motor.
+  Driver: shadows on a table. No artwork was added and no logos are drawn. Checked with software 3D only.
 - **Vero array in 3D (14 Nov 2026, owner's go-ahead).** `src/ui/VeroScene.tsx`, the first view of the
   "Sound systems" tab, drawn with `three` from `src/soundsystems/vero.ts`: the Vero user guide's "typical
   12-cabinet arena array" (page 67: four V60, three V315, two V90, one V315, two V90, from the top) hung

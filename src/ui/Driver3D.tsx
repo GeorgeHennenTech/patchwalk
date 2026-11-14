@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
+import { shadowed, studio } from "./three/look";
 import { DRIVER_PARTS } from "../soundsystems/driver";
 import modelUrl from "../assets/diagrams/driver/driver.glb?url";
 
@@ -33,13 +34,16 @@ export default function Driver3D() {
     let renderer: THREE.WebGLRenderer;
     try { renderer = new THREE.WebGLRenderer({ antialias: true }); } catch { setFailed("This browser could not start 3D drawing. The rendered picture still works."); return; }
     renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
-    renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 0.82;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 0.9;
+    renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     host.appendChild(renderer.domElement);
     const scene = new THREE.Scene(); scene.background = new THREE.Color("#efeeea");
     const pmrem = new THREE.PMREMGenerator(renderer);
     scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;   // something for the steel to reflect
     scene.environmentIntensity = 0.55;
-    const sun = new THREE.DirectionalLight(0xffffff, 1.6); sun.position.set(-8, 30, 26); scene.add(sun);
+    const sun = new THREE.DirectionalLight(0xfff4e2, 2.1); sun.position.set(-10, 30, 22); scene.add(sun);
+    sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.03; sun.shadow.radius = 3;
+    Object.assign(sun.shadow.camera, { left: -22, right: 22, top: 22, bottom: -22, near: 1, far: 90 }); sun.shadow.camera.updateProjectionMatrix();
     scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8494, 0.35));
     const camera = new THREE.PerspectiveCamera(32, 2, 0.5, 400); camera.position.set(2.2, 14.5, 28);
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -56,6 +60,9 @@ export default function Driver3D() {
         (mesh.material as THREE.MeshStandardMaterial).side = THREE.DoubleSide;   // the cut shows the insides of thin parts
         mesh.userData.part = i; parts[i] = mesh; homeY.set(mesh, mesh.position.y);
       });
+      shadowed(gltf.scene);
+      // stand it on a table: the floor sits just under the lowest point of the model
+      studio(scene, new THREE.Box3().setFromObject(gltf.scene).min.y - 0.05, 26);
       scene.add(gltf.scene);
     }, undefined, () => setFailed("The 3D model could not be loaded. The rendered picture still works."));
 

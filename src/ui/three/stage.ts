@@ -5,23 +5,28 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 
 export interface Stage {
-  scene: THREE.Scene; camera: THREE.PerspectiveCamera; controls: OrbitControls;
+  scene: THREE.Scene; camera: THREE.PerspectiveCamera; controls: OrbitControls; sun: THREE.DirectionalLight;
   /** Objects that can be pointed at; each carries `userData.id`. */ pickable: THREE.Object3D[];
   /** Move the camera and where it looks, smoothly enough to follow. */ lookFrom(position: [number, number, number], target: [number, number, number]): void;
   dispose(): void;
 }
 
 export function makeStage(host: HTMLElement, o: { camera: [number, number, number]; target: [number, number, number]; near?: number; far?: number; min?: number; max?: number; background?: string; ratio?: number;
+  /** Where the main light stands, and how far from `target` its shadows must reach. */ sun?: [number, number, number]; shadow?: number; exposure?: number;
   onHover(id: string | undefined): void; onPick(id: string | undefined): void; onFrame?(seconds: number): void }): Stage | undefined {
   let renderer: THREE.WebGLRenderer;
   try { renderer = new THREE.WebGLRenderer({ antialias: true }); } catch { return undefined; }
   renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
-  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 0.85;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = o.exposure ?? 0.85;
+  renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   host.appendChild(renderer.domElement);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(o.background ?? "#efeeea");
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture; scene.environmentIntensity = 0.55;
-  const sun = new THREE.DirectionalLight(0xffffff, 1.6); sun.position.set(-20, 40, 30); scene.add(sun);
+  const sun = new THREE.DirectionalLight(0xfff4e2, 2.1); sun.position.set(...(o.sun ?? [-20, 40, 30])).add(new THREE.Vector3(...o.target)); sun.target.position.set(...o.target); scene.add(sun, sun.target);
+  const reach = o.shadow ?? 30, cam = sun.shadow.camera;
+  sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.0004; sun.shadow.normalBias = reach * 0.0012; sun.shadow.radius = 3;
+  cam.left = cam.bottom = -reach; cam.right = cam.top = reach; cam.near = 0.5; cam.far = sun.position.distanceTo(sun.target.position) + reach * 2; cam.updateProjectionMatrix();
   scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8494, 0.4));
   const camera = new THREE.PerspectiveCamera(34, 2, o.near ?? 0.1, o.far ?? 2000); camera.position.set(...o.camera);
   const controls = new OrbitControls(camera, renderer.domElement);
@@ -54,7 +59,7 @@ export function makeStage(host: HTMLElement, o: { camera: [number, number, numbe
     frame = requestAnimationFrame(loop);
   };
   frame = requestAnimationFrame(loop);
-  return { scene, camera, controls, pickable,
+  return { scene, camera, controls, pickable, sun,
     lookFrom: (p, t) => { goal = { p: new THREE.Vector3(...p), t: new THREE.Vector3(...t) }; },
     dispose: () => { cancelAnimationFrame(frame); watcher.disconnect();
       el.removeEventListener("pointermove", onMove); el.removeEventListener("pointerleave", onLeave); el.removeEventListener("pointerdown", onDown); el.removeEventListener("pointerup", onUp);

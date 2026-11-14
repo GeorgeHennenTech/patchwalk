@@ -4,38 +4,53 @@ import { useState } from "react";
 import { onProgressChanged } from "../course/progress";
 import { onChatsChanged } from "../guide/chats";
 import { keyPromptSeen, looksLikeKey, markKeyPromptSeen, ownKey, setOwnKey } from "../guide/me";
-import { changePassword, removeAccount, resetPassword, schedulePush, signIn, signOut, signUp, type AccountInfo, type Session } from "../guide/sync";
+import { changePassword, forgotPassword, recover, removeAccount, resetPassword, schedulePush, signIn, signOut, signUp, type AccountInfo, type Session } from "../guide/sync";
 
 // Anything saved in this browser is copied up for the person signed in.
 onProgressChanged(() => schedulePush());
 onChatsChanged(schedulePush);
 
 /** The first thing anyone sees: sign in, or make an account. */
-export function SignInGate({ ownerSet }: { ownerSet: boolean }) {
-  const [making, setMaking] = useState(false);
+export function SignInGate({ ownerSet, mail }: { ownerSet: boolean; mail: boolean }) {
+  // a link from a reset email carries ?reset=<token>
+  const [token] = useState(() => { const t = new URLSearchParams(window.location.search).get("reset") ?? ""; return /^[a-f0-9]{64}$/.test(t) ? t : undefined; });
+  const [mode, setMode] = useState<"in" | "new" | "forgot" | "reset">(token ? "reset" : "in");
   const [name, setName] = useState(""), [email, setEmail] = useState(""), [password, setPassword] = useState("");
   const [note, setNote] = useState<string>(), [busy, setBusy] = useState(false);
+  const making = mode === "new";
+  const home = () => { window.location.replace(window.location.pathname); }; // reload without the link's token
   async function go() {
     setBusy(true); setNote(undefined);
-    const done = making ? await signUp(name.trim(), email.trim(), password) : await signIn(email.trim(), password);
+    if (mode === "forgot") {
+      const done = await forgotPassword(email.trim());
+      setBusy(false); setNote(done.ok ? "If there is an account with that email, a link is on its way. It works once, for 30 minutes. Look in spam too." : done.message);
+      return;
+    }
+    const done = mode === "reset" ? await recover(token!, password) : making ? await signUp(name.trim(), email.trim(), password) : await signIn(email.trim(), password);
     if (!done.ok) { setBusy(false); setNote(done.message); return; }
-    window.location.reload(); // every view re-reads this person's things
+    home(); // every view re-reads this person's things
   }
+  const to = (m: typeof mode) => { setMode(m); setNote(undefined); setPassword(""); };
   return (
     <section className="panel account-gate">
-      <h2>{making ? "Make your account" : "Sign in"}</h2>
-      <p className="muted">{making ? "Your finished lessons and saved chats are kept under your account and follow you to any device." : "Everyone here has their own account."}</p>
-      <form onSubmit={(e) => { e.preventDefault(); void go(); }}>
-        {making && <label>Your name<input value={name} onChange={(e) => setName(e.target.value)} maxLength={24} autoComplete="nickname" required /></label>}
-        <label>Email<input type="email" value={email} onChange={(e) => setEmail(e.target.value)} maxLength={120} autoComplete="email" required /></label>
-        <label>Password{making && <span className="muted"> (8 characters or more)</span>}<input type="password" value={password} onChange={(e) => setPassword(e.target.value)} minLength={making ? 8 : 1} maxLength={200} autoComplete={making ? "new-password" : "current-password"} required /></label>
-        <button className="primary" disabled={busy}>{busy ? "One moment…" : making ? "Make my account" : "Sign in"}</button>
-      </form>
+      <h2>{{ in: "Sign in", new: "Make your account", forgot: "Forgot your password?", reset: "Choose a new password" }[mode]}</h2>
+      <p className="muted">{{ in: "Everyone here has their own account.", new: "Your finished lessons and saved chats are kept under your account and follow you to any device.", forgot: mail ? "Type the email of your account and a link for choosing a new password is sent to it." : "This site cannot send email yet, so ask the site’s owner: they can set a new password for you.", reset: "Then you are signed in." }[mode]}</p>
+      {(mode !== "forgot" || mail) && (
+        <form onSubmit={(e) => { e.preventDefault(); void go(); }}>
+          {making && <label>Your name<input value={name} onChange={(e) => setName(e.target.value)} maxLength={24} autoComplete="nickname" required /></label>}
+          {mode !== "reset" && <label>Email<input type="email" value={email} onChange={(e) => setEmail(e.target.value)} maxLength={120} autoComplete="email" required /></label>}
+          {mode !== "forgot" && <label>{mode === "reset" ? "New password" : "Password"}{mode !== "in" && <span className="muted"> (8 characters or more)</span>}<input type="password" value={password} onChange={(e) => setPassword(e.target.value)} minLength={mode === "in" ? 1 : 8} maxLength={200} autoComplete={mode === "in" ? "current-password" : "new-password"} required /></label>}
+          <button className="primary" disabled={busy}>{busy ? "One moment…" : { in: "Sign in", new: "Make my account", forgot: "Email me a link", reset: "Save and sign in" }[mode]}</button>
+        </form>
+      )}
       {note && <p className="note" role="alert">{note}</p>}
-      <p><button className="link" onClick={() => { setMaking(!making); setNote(undefined); }}>{making ? "I already have an account" : "New here? Make an account"}</button></p>
-      {making
-        ? <p className="muted">The site sends no email, so a forgotten password cannot be mailed to you: the site’s owner can set a new one for you. The lessons and the synth are free. Asking the guide needs a Claude key of your own; you will be shown how to get one.</p>
-        : <p className="muted">Forgot your password? Ask the site’s owner to set a new one for you.</p>}
+      <p>
+        {mode === "in" && <><button className="link" onClick={() => to("new")}>New here? Make an account</button> · <button className="link" onClick={() => to("forgot")}>Forgot password?</button></>}
+        {mode === "new" && <button className="link" onClick={() => to("in")}>I already have an account</button>}
+        {mode === "forgot" && <button className="link" onClick={() => to("in")}>Back to sign in</button>}
+        {mode === "reset" && <button className="link" onClick={home}>Back to sign in</button>}
+      </p>
+      {making && <p className="muted">The lessons and the synth are free. Asking the guide needs a Claude key of your own; you will be shown how to get one.</p>}
       {!ownerSet && <p className="muted">Note for the owner: no owner is set on the server yet (OWNER_EMAIL), so the site’s own Claude key is switched off for everyone.</p>}
     </section>
   );

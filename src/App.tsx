@@ -121,7 +121,7 @@ export function App() {
       </header>
       {sess?.state === "signedIn" && <AccountBar session={sess} />}
       {!sess && <section className="panel"><p className="muted">One moment…</p></section>}
-      {sess?.state === "signedOut" && <SignInGate ownerSet={sess.ownerSet} />}
+      {sess?.state === "signedOut" && <SignInGate ownerSet={sess.ownerSet} mail={sess.mail} />}
       {sess?.state === "down" && <section className="panel error" role="alert"><h2>Accounts are not available</h2><p>{sess.message}</p><p><button className="primary" onClick={() => window.location.reload()}>Try again</button></p></section>}
       {inside && <>
 

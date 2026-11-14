@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { BACK, channelArea, CONE, coneAt, HALF_HEIGHT, HORN_FACTS, HORN_PARTS, MEMBER, MOUTH, STAGES, stageAt, WALL, wallAt } from "../soundsystems/horn";
+import { paper, plywood, shadowed, steel, studio } from "./three/look";
 import { makeStage } from "./three/stage";
 
 const H = HALF_HEIGHT, T = 0.3;
@@ -31,25 +32,29 @@ export default function HornCutaway() {
   useEffect(() => {
     const parts: Record<string, THREE.Mesh[]> = {};
     const marker = new THREE.Group();
-    const st = makeStage(mount.current!, { camera: [-24, 22, -4], target: [0, -1.5, 9], min: 8, max: 90, background: "#efeeea", onHover: setHover, onPick: setPicked,
+    const st = makeStage(mount.current!, { camera: [-24, 22, -4], target: [0, -1.5, 9], min: 8, max: 90, sun: [-24, 20, -14], shadow: 34, exposure: 0.92, onHover: setHover, onPick: setPicked,
       onFrame: () => {
-        for (const [id, meshes] of Object.entries(parts)) for (const m of meshes) (m.material as THREE.MeshStandardMaterial).emissiveIntensity = id === live.current.lit ? 0.3 : 0;
+        for (const [id, meshes] of Object.entries(parts)) for (const m of meshes) { const mm = m.material as THREE.MeshStandardMaterial; mm.emissive.set("#ff2e93"); mm.emissiveIntensity = id === live.current.lit ? 0.3 : 0; }
         // the marker: a frame the size of the channel where the sound has got to
         const at = live.current.z, w = at < 0 ? coneAt(at) : wallAt(at), h = at < 0 ? coneAt(at) : H;
         marker.position.z = at; marker.scale.set(w, h, 1); marker.children.forEach((c, i) => { c.visible = (at < 0) === (i === 0); });
       } });
     if (!st) { setFailed(true); return; }
     const add = (id: string, geo: THREE.BufferGeometry, material: THREE.Material, place?: (m: THREE.Mesh) => void) => { const m = new THREE.Mesh(geo, material); m.userData.id = id; place?.(m); st.scene.add(m); st.pickable.push(m); (parts[id] ??= []).push(m); };
-    add("member", spun(MEMBER, false), mat("#e0a53a", { roughness: 0.45 }));
-    add("cone", spun(CONE.map(([zz, r]) => [zz, r] as const), true), mat("#26232c", { roughness: 0.85 }));
-    add("motor", spun([[BACK - 1.5, 0], [BACK - 1.5, 2.7], [BACK - 0.25, 2.7], [BACK - 0.25, 1.0], [BACK, 1.0], [BACK, 0]], true), mat("#9da3ad", { metalness: 0.9, roughness: 0.45 }));
-    add("baffle", spun([[-0.18, 4.6], [-0.18, 6.6], [0.18, 6.6], [0.18, 4.6], [-0.18, 4.6]], true), mat("#6f5a45"));
+    studio(st.scene, -H - T - 0.02, 40);
+    const wood = () => { const w = plywood([3, 1]); w.side = THREE.DoubleSide; return w; }, pulp = paper("#26232c"); pulp.side = THREE.DoubleSide;
+    const magnet = steel("#8d9199", 0.42); magnet.side = THREE.DoubleSide; magnet.emissive = new THREE.Color("#000");
+    add("member", spun(MEMBER, false), mat("#d9a441", { roughness: 0.32, metalness: 0.15 }));
+    add("cone", spun(CONE.map(([zz, r]) => [zz, r] as const), true), pulp);
+    add("motor", spun([[BACK - 1.5, 0], [BACK - 1.5, 2.7], [BACK - 0.25, 2.7], [BACK - 0.25, 1.0], [BACK, 1.0], [BACK, 0]], true), magnet);
+    add("baffle", spun([[-0.18, 4.6], [-0.18, 6.6], [0.18, 6.6], [0.18, 4.6], [-0.18, 4.6]], true), wood());
     // the housing: two side walls that follow the channel's width, and a floor; the top is left off
     for (const side of [1, -1]) {
       const inner = WALL.map(([zz, w]) => [side * w, zz] as [number, number]), outer = [...WALL].reverse().map(([zz, w]) => [side * (w + T), zz] as [number, number]);
-      add("housing", slab([...inner, ...outer], 2 * H), mat("#4b5876"), (m) => { m.position.y = H; });
+      add("housing", slab([...inner, ...outer], 2 * H), wood(), (m) => { m.position.y = H; });
     }
-    add("housing", slab([...WALL.map(([zz, w]) => [w + T, zz] as [number, number]), ...[...WALL].reverse().map(([zz, w]) => [-(w + T), zz] as [number, number])], T), mat("#4b5876"), (m) => { m.position.y = -H; });
+    add("housing", slab([...WALL.map(([zz, w]) => [w + T, zz] as [number, number]), ...[...WALL].reverse().map(([zz, w]) => [-(w + T), zz] as [number, number])], T), wood(), (m) => { m.position.y = -H; });
+    for (const meshes of Object.values(parts)) for (const m of meshes) shadowed(m);
     // the marker's two forms: a ring inside the cone, a rectangle after it (each drawn at size 1 and scaled)
     const glow = new THREE.LineBasicMaterial({ color: "#ff2e93" });
     const ring = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(Array.from({ length: 64 }, (_, i) => new THREE.Vector3(Math.cos((i / 64) * 2 * Math.PI), Math.sin((i / 64) * 2 * Math.PI), 0))), glow);

@@ -10,6 +10,7 @@ import { currentPlayer, guideHeaders, looksLikeKey, ownKey as browserKey, setCur
 import { merge, pushNow, session, signIn, signOut, signUp } from "../src/guide/sync";
 import { kvFromEnv, kvSettings, memoryKv } from "../src/store/kv";
 import { AccountRequestSchema, accountOf, handle, listAccounts, loadData, MAX_ACCOUNTS, MAX_FAILS, payer, status } from "../src/store/accounts";
+import { mailerFromEnv } from "../src/store/mail";
 import { answerKey, fingerprint, marksKey, ownKey, recallShared, rememberShared } from "../src/store/shared";
 
 const chat = (id: string, savedAt: string, n = 1): SavedChat => ({ id, title: id, savedAt, turns: Array.from({ length: n }, (_, i) => ({ question: `q${i}` })) });
@@ -39,6 +40,9 @@ describe("the site's database", () => {
     await expect(failing.get("k")).rejects.toThrow(/refused/);
   });
 });
+
+/** The same store with the "asked a moment ago" marks cleared, so a second request is not skipped. */
+const memoryKvWith = (kv: ReturnType<typeof memoryKv>) => { for (const k of [...kv.data.keys()]) if (k.startsWith("pw:asked:")) kv.data.delete(k); return kv; };
 
 describe("accounts", () => {
   let n = 0;
@@ -101,6 +105,41 @@ describe("accounts", () => {
     expect(await accountOf(kv, sam)).toBeUndefined(); // a removed person's session is worth nothing
     for (let i = 0; i < MAX_ACCOUNTS - 1; i++) await join(kv, `friend ${i}`, `f${i}@example.com`);
     expect((await handle(kv, { op: "signup", name: "one too many", email: "x@example.com", password: "correct horse" }, ctx())).status).toBe(409);
+  });
+  it("a forgotten password is replaced through a link sent to the account's email: once, for a while, and only there", async () => {
+    const kv = memoryKv(), sent: { to: string; text: string }[] = [];
+    await join(kv, "Sam", "sam@example.com");
+    const mail = async (to: string, _s: string, text: string) => { sent.push({ to, text }); return true; };
+    const c = () => ({ ...ctx(), mail, origin: "https://site.example" });
+    expect((await handle(kv, { op: "forgot", email: "sam@example.com" }, ctx())).body.error).toBe("no-mail"); // no mail service: said plainly
+    expect((await handle(kv, { op: "forgot", email: "nobody@example.com" }, c())).body).toEqual({ sent: true }); // no telling who has an account
+    expect(sent).toEqual([]);
+    expect((await handle(kv, { op: "forgot", email: "sam@example.com" }, c())).body).toEqual({ sent: true });
+    expect(sent).toHaveLength(1);
+    expect(sent[0]!.to).toBe("sam@example.com");
+    const token = /https:\/\/site\.example\/\?reset=([a-f0-9]{64})/.exec(sent[0]!.text)![1]!;
+    expect([...kv.data.entries()].map(([k, v]) => k + v).join(" ")).not.toContain(token); // only its hash is kept
+    await handle(kv, { op: "forgot", email: "sam@example.com" }, c());
+    expect(sent).toHaveLength(1); // asking again straight away sends nothing more
+    expect((await handle(kv, { op: "recover", token: "0".repeat(64), next: "brand new pw" }, c())).status).toBe(410);
+    const done = await handle(kv, { op: "recover", token, next: "brand new pw" }, c());
+    expect(done.status).toBe(200);
+    expect((await accountOf(kv, done.session as string))!.name).toBe("Sam"); // and signed in
+    expect((await handle(kv, { op: "recover", token, next: "another go!!" }, c())).status).toBe(410); // the link works once
+    expect((await handle(kv, { op: "signin", email: "sam@example.com", password: "correct horse" }, ctx())).status).toBe(401);
+    expect((await handle(kv, { op: "signin", email: "sam@example.com", password: "brand new pw" }, ctx())).status).toBe(200);
+    const failing = await handle(memoryKvWith(kv), { op: "forgot", email: "sam@example.com" }, { ...ctx(), mail: async () => false, origin: "https://site.example" });
+    expect(failing.status).toBe(502);
+  });
+  it("the mail service is whichever the owner has set a key for, and none without a sender address", async () => {
+    const calls: { url: string; init: RequestInit }[] = [];
+    const f = (async (url: string, init: RequestInit) => { calls.push({ url, init }); return new Response("{}"); }) as unknown as typeof fetch;
+    expect(mailerFromEnv({}, f)).toBeUndefined();
+    expect(mailerFromEnv({ RESEND_API_KEY: "k" }, f)).toBeUndefined();
+    expect(await mailerFromEnv({ RESEND_API_KEY: "k", MAIL_FROM: "a@b.co" }, f)!("to@x.co", "s", "t")).toBe(true);
+    expect(await mailerFromEnv({ BREVO_API_KEY: "k", MAIL_FROM: "a@b.co" }, f)!("to@x.co", "s", "t")).toBe(true);
+    expect(calls.map((c) => new URL(c.url).host)).toEqual(["api.resend.com", "api.brevo.com"]);
+    expect(await mailerFromEnv({ BREVO_API_KEY: "k", MAIL_FROM: "a@b.co" }, (async () => { throw new Error("down"); }) as unknown as typeof fetch)!("to@x.co", "s", "t")).toBe(false);
   });
   it("the site's Claude key is spent for the owner's account and for nobody else", async () => {
     const kv = memoryKv();
@@ -167,7 +206,7 @@ describe("keeping a browser and the database in step", () => {
     try {
       setCurrentPlayer({ id: "oldplayer1", name: "Seth Bot" }); // a name from the old picker
       saveDone(["C0.1", "C0.2"]); replaceChats([chat("old", "2026-11-13T00:00:00Z")]);
-      expect(await session(w.api)).toEqual({ state: "signedOut", ownerSet: true });
+      expect(await session(w.api)).toEqual({ state: "signedOut", ownerSet: true, mail: false });
       expect(await pushNow(w.api)).toBe(false); // nothing leaves a browser that is not signed in
       expect((await signUp("Seth", "seth@example.com", "correct horse", w.api)).ok).toBe(true);
       expect(currentPlayer()).toMatchObject({ name: "Seth", account: true });

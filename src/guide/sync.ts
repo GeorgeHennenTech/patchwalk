@@ -14,7 +14,7 @@ export interface Remote { lessons: string[]; chats: SavedChat[] }
  */
 export type Session =
   | { state: "open" }
-  | { state: "signedOut"; ownerSet: boolean }
+  | { state: "signedOut"; ownerSet: boolean; /** whether the site can email a reset link */ mail: boolean }
   | { state: "signedIn"; account: AccountInfo; ownerSet: boolean; people?: AccountInfo[] }
   | { state: "down"; message: string };
 
@@ -33,7 +33,7 @@ export async function session(fetchImpl: typeof fetch = fetch): Promise<Session>
     if (!ok || !body) return { state: "down", message: said(body, "The site could not say who is signed in.") };
     if (body.configured !== true) return body.deployed ? { state: "down", message: "This site has no database connected, so nobody can sign in." } : { state: "open" };
     const ownerSet = body.ownerSet === true;
-    return body.account ? { state: "signedIn", account: body.account as AccountInfo, ownerSet, ...(Array.isArray(body.people) ? { people: body.people as AccountInfo[] } : {}) } : { state: "signedOut", ownerSet };
+    return body.account ? { state: "signedIn", account: body.account as AccountInfo, ownerSet, ...(Array.isArray(body.people) ? { people: body.people as AccountInfo[] } : {}) } : { state: "signedOut", ownerSet, mail: body.mail === true };
   } catch { return { state: "down", message: "Could not reach the site." }; }
 }
 
@@ -104,6 +104,11 @@ const begin = async (request: unknown, fallback: string, fetchImpl: typeof fetch
 };
 export const signUp = (name: string, email: string, password: string, fetchImpl: typeof fetch = fetch) => begin({ op: "signup", name, email, password }, "The account could not be made.", fetchImpl);
 export const signIn = (email: string, password: string, fetchImpl: typeof fetch = fetch) => begin({ op: "signin", email, password }, "Could not sign in.", fetchImpl);
+
+/** Ask for a reset link by email. The answer is the same whether or not the email has an account. */
+export function forgotPassword(email: string, f: typeof fetch = fetch): Promise<Outcome> { return simple({ op: "forgot", email }, "The email could not be sent.", f); }
+/** Use a reset link: set the new password and sign in. */
+export const recover = (token: string, next: string, fetchImpl: typeof fetch = fetch) => begin({ op: "recover", token, next }, "The password was not changed.", fetchImpl);
 
 /** Line a browser up with the server's session on page load: nothing is copied up for a session that has ended. */
 export function settle(s: Session): void {

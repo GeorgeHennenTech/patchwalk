@@ -20,6 +20,8 @@ export const MAX_ACCOUNTS = 12, MAX_DATA_BYTES = 600_000, SESSION_SECONDS = 30 *
 const LIST = "pw:accounts";
 const sha = (s: string) => createHash("sha256").update(s).digest("hex");
 const secretKey = (id: string) => `pw:acct:${id}`, dataKey = (id: string) => `pw:a:${id}`;
+const resetKey = (token: string) => `pw:reset:${sha(token)}`, askedKey = (email: string) => `pw:asked:${sha(email)}`;
+export const RESET_SECONDS = 30 * 60, ASK_AGAIN_SECONDS = 120;
 const sessionKey = (token: string) => `pw:sess:${sha(token)}`, failKey = (email: string) => `pw:fail:${sha(email)}`;
 
 const Email = z.string().trim().toLowerCase().max(120).regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
@@ -29,6 +31,8 @@ export const AccountRequestSchema = z.discriminatedUnion("op", [
   z.object({ op: z.literal("signup"), name: z.string().trim().min(1).max(24), email: Email, password: Password }),
   z.object({ op: z.literal("signin"), email: Email, password: z.string().max(200) }),
   z.object({ op: z.literal("signout") }),
+  z.object({ op: z.literal("forgot"), email: Email }),
+  z.object({ op: z.literal("recover"), token: z.string().regex(/^[a-f0-9]{64}$/), next: Password }),
   z.object({ op: z.literal("save"), lessons: z.array(z.string().max(20)).max(2000), chats: z.array(z.unknown()).max(60) }),
   z.object({ op: z.literal("password"), old: z.string().max(200), next: Password }),
   z.object({ op: z.literal("reset"), account: Id, next: Password }),
@@ -80,7 +84,9 @@ export async function status(kv: Kv, token: string | undefined, ownerEmail: stri
 
 export type AccountResult = { status: number; body: Record<string, unknown>; /** a new session to set, or null to clear it */ session?: string | null };
 const no = (status: number, error: string, message: string): AccountResult => ({ status, body: { error, message } });
-interface Ctx { token?: string; ownerEmail?: string; newId: () => string; newToken: () => string; now?: Date }
+interface Ctx { token?: string; ownerEmail?: string; newId: () => string; newToken: () => string; now?: Date;
+  /** Sends one email; absent when the site has no mail service. */ mail?: (to: string, subject: string, text: string) => Promise<boolean>;
+  /** The site's own address, for the link in a reset email. */ origin?: string }
 
 /** Carry out one request. Ids, tokens and the time are passed in so tests are repeatable. */
 export async function handle(kv: Kv, req: AccountRequest, ctx: Ctx): Promise<AccountResult> {
@@ -113,6 +119,25 @@ export async function handle(kv: Kv, req: AccountRequest, ctx: Ctx): Promise<Acc
   if (req.op === "signout") {
     if (ctx.token) await kv.del(sessionKey(ctx.token));
     return { status: 200, body: { signedOut: true }, session: null };
+  }
+  if (req.op === "forgot") {
+    if (!ctx.mail || !ctx.origin) return no(503, "no-mail", "This site cannot send email yet. Ask the site’s owner to set a new password for you.");
+    // the same answer whether or not the email has an account, so the form cannot be used to find out who is here
+    const said: AccountResult = { status: 200, body: { sent: true } };
+    const account = accounts.find((a) => a.email === req.email);
+    if (!account || (await kv.get<number>(askedKey(req.email)))) return said;
+    const token = ctx.newToken();
+    await kv.set(resetKey(token), account.id, RESET_SECONDS);
+    await kv.set(askedKey(req.email), 1, ASK_AGAIN_SECONDS);
+    const sent = await ctx.mail(account.email, "Choose a new Patchwalk password", `Hello ${account.name},\n\nOpen this link to choose a new password. It works once, for 30 minutes:\n\n${ctx.origin}/?reset=${token}\n\nIf you did not ask for this, ignore this email: your password stays as it is.\n`);
+    return sent ? said : no(502, "mail-failed", "The email could not be sent. Try again in a few minutes, or ask the site’s owner to set a new password for you.");
+  }
+  if (req.op === "recover") {
+    const id = await kv.get<string>(resetKey(req.token)), account = accounts.find((a) => a.id === id);
+    if (!account) return no(410, "link-used", "That link has been used or has run out. Ask for a new one.");
+    await kv.set(secretKey(account.id), sealed(req.next));
+    await kv.del(resetKey(req.token)); await kv.del(failKey(account.email));
+    return open(account);
   }
   const me = await accountOf(kv, ctx.token);
   if (!me) return no(401, "signed-out", "Sign in first.");

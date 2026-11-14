@@ -312,10 +312,21 @@ export function Keyboard({ synth, from = 48, octaves = 3, wheels = false }: { sy
     {synth.state.freeHz !== null && <p className="keys-hint fixed" role="note">In this lesson every key plays the same pitch: the Frequency knob sets it, so the keys, octave and semitone do not change the note.</p>}
     <p className="keys-hint" role="status">Computer keys: <kbd>Z</kbd> octave down, <kbd>X</kbd> octave up, <kbd>C</kbd> softer, <kbd>V</kbd> harder (now {synth.keyVelocity} of 127). With the mouse, click lower on a key to strike harder.{synth.keyOctave !== 0 && ` Now ${synth.keyOctave > 0 ? "+" : ""}${synth.keyOctave} octave${Math.abs(synth.keyOctave) === 1 ? "" : "s"}${shown ? "" : " (beyond the keys drawn here)"}.`}</p>
     {wheels && (
-      <p className="keys-hint midi" role="status">
+      <div className="keys-hint midi" role="status">
         {synth.midi.status === "on" ? <>MIDI keyboard connected: {synth.midi.name}. Its keys, mod wheel and bend wheel play the synth.</>
           : <><button className="link" onClick={() => void synth.connectMidi()}>Connect a MIDI keyboard</button>{synth.midi.status === "none" && " No keyboard found yet: plug one in and it will be picked up."}{synth.midi.status === "unsupported" && " This browser cannot use MIDI keyboards; Chrome and Edge can."}{synth.midi.status === "refused" && " The browser did not allow it. Allow MIDI for this site and try again."}</>}
-      </p>
+        <details className="midi-how">
+          <summary>How to connect one</summary>
+          <ol>
+            <li>Plug the keyboard into this computer with its USB cable and switch it on. (An older keyboard with round five-pin MIDI sockets needs a USB MIDI interface in between.)</li>
+            <li>Use Chrome or Edge on a computer. Safari, and browsers on an iPhone or iPad, cannot use MIDI keyboards.</li>
+            <li>Press <b>Start audio</b>, then <b>Connect a MIDI keyboard</b> above.</li>
+            <li>The browser asks whether this site may use your MIDI devices. Choose <b>Allow</b>.</li>
+            <li>The line above now names your keyboard. Play a key: its keys, its mod wheel and its pitch-bend wheel all play the synth, and how hard you strike is the velocity.</li>
+          </ol>
+          <p>If nothing happens: unplug the keyboard and plug it in again (it is picked up without reloading), close other music programs that may be using it, and check the site's permissions (the icon at the left of the address bar) to see that MIDI is allowed. You only have to allow it once; after that, one click on the link reconnects it.</p>
+        </details>
+      </div>
     )}
     </div>
   );

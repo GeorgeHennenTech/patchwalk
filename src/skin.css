@@ -493,6 +493,12 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 .synth.plain .mod.neon .mod-head span { text-decoration: underline; text-decoration-color: var(--glow); text-decoration-thickness: 3px; text-underline-offset: 3px; }
 .view-toggles .skin-toggle { margin-left: 8px; border-style: dashed; }
 .keys-wrap { display: flex; flex-direction: column; gap: 4px; }
+.midi-how { margin-top: 4px; }
+.midi-how summary { cursor: pointer; width: fit-content; text-decoration: underline dotted; }
+.midi-how ol { margin: 6px 0 6px 20px; padding: 0; display: grid; gap: 3px; }
+.midi-how p { margin: 0; }
+.stitch-thread { display: block; width: 100%; height: 46px; margin: 2px 0 6px; pointer-events: none; }
+.synth.whole .stitch-thread { height: 38px; }
 .keys-row { display: flex; gap: 10px; align-items: stretch; }
 .keys-row .keys { flex: 1; }
 .wheels { display: flex; gap: 8px; }
@@ -661,6 +667,12 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 @keyframes pw-stitch { 0%, 100% { outline-color: #ff4fa8; } 50% { outline-color: #ffc2e0; } }
 @keyframes pw-rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 @keyframes pw-sheen { 0% { transform: translateX(-120%) skewX(-18deg); } 60%, 100% { transform: translateX(320%) skewX(-18deg); } }
+@property --pw-angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+@keyframes pw-orbit { to { --pw-angle: 360deg; } }
+@keyframes pw-pulse { 0%, 100% { box-shadow: 0 0 8px -3px var(--glow), inset 0 0 12px -9px var(--glow); } 50% { box-shadow: 0 0 22px 0 var(--glow), inset 0 0 26px -6px var(--glow); } }
+@keyframes pw-spin { to { transform: rotate(360deg); } }
+@keyframes pw-ripple { from { opacity: 0.9; transform: scale(0.2); } to { opacity: 0; transform: scale(2.6); } }
+@keyframes pw-press { from { filter: brightness(1.9); } to { filter: none; } }
 @keyframes pw-breathe { 0%, 100% { opacity: 0.75; } 50% { opacity: 1; } }
 @media (prefers-reduced-motion: no-preference) {
   .synth:not(.plain):not(.still) {
@@ -675,6 +687,27 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
     /* a sheen crossing whichever effect is switched on, now and then */
     .mod[class*="mod-fx-"]:not(.off) .mod-head { position: relative; overflow: hidden; }
     .mod[class*="mod-fx-"]:not(.off) .mod-head::after { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 35%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent); animation: pw-sheen 6s ease-in-out infinite; pointer-events: none; }
+    /* a band of coloured light that travels round the edge of the instrument, brighter as the sound gets louder */
+    &::after { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 3px; pointer-events: none; z-index: 1;
+      background: conic-gradient(from var(--pw-angle), transparent 0 58%, #3df5ff 72%, #ff4fa8 84%, #ffe14a 93%, transparent 100%);
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
+      opacity: calc(0.3 + 0.7 * var(--level, 0)); filter: blur(0.4px) drop-shadow(0 0 6px #ff4fa8); animation: pw-orbit 9s linear infinite; }
+    /* a connected LFO's panel pulses once per turn of that LFO, at its real speed */
+    .mod.neon[class*="mod-lfo"]:not(.idle), .mod.neon.group-lfo:not(.idle) { animation: pw-pulse var(--period, 2s) ease-in-out infinite; }
+    /* the metal rim of a knob turns while it is held, and slowly on any knob a source is moving */
+    .knob-rim { transform-box: fill-box; transform-origin: center; }
+    .knob:active .knob-rim { animation: pw-spin 0.9s linear infinite; }
+    .knob.moved .knob-rim { animation: pw-spin 5s linear infinite; }
+    /* a key flashes as it goes down and sends a ring of light up from where it was struck */
+    .key.white { position: relative; }
+    .key { overflow: hidden; transition: background 0.25s ease-out, box-shadow 0.25s ease-out; }
+    .key.down { animation: pw-press 0.35s ease-out; transition: none; }
+    .key.down::after { content: ""; position: absolute; left: 50%; bottom: 8px; width: 26px; height: 26px; margin-left: -13px; border-radius: 50%; border: 2px solid #fff; animation: pw-ripple 0.5s ease-out forwards; pointer-events: none; }
+    /* name patches swell a touch with the sound; wave lines thicken with it */
+    .mod-head > span, .synth-tabs button.on { display: inline-block; transform: scale(calc(1 + 0.05 * var(--level, 0))); transform-origin: left center; transition: transform 0.08s linear; }
+    .mod-wave path { stroke-width: calc(2px + 1.6px * var(--level, 0)); }
+    /* switches and choices ease between states */
+    .seg button, .mod-tab, .view-toggles button { transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease; }
     /* a page arrives with a small lift */
     .rack.full, .view.matrix { animation: pw-rise 0.22s ease-out; }
     /* the handle of a source that is connected breathes */

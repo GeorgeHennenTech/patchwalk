@@ -13,7 +13,7 @@ import { Badge } from "./Badge";
 import { Markdown } from "./Markdown";
 import { Control, Keyboard } from "./synth/Controls";
 import { Rack } from "./synth/Rack";
-import { EnvCurve, FilterCurve, Matrix, Meter, Scope, Spectrogram, Spectrum } from "./synth/Views";
+import { EnvCurve, FilterCurve, Matrix, Meter, Scope, Spectrogram, Spectrum, StitchThread } from "./synth/Views";
 
 const describe = (s: SynthState) => [
   `volume ${s.volumeDb} dB`,
@@ -76,6 +76,8 @@ function SynthPanel({ synth, show, lesson, all, lastNote, extra = [], onExtra, p
           <linearGradient id="knob-rim-fill" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#fff3e2" /><stop offset="45%" stopColor="#8d6fa3" /><stop offset="100%" stopColor="#2a1533" /></linearGradient>
         </defs>
       </svg>
+      {/* the sound sewn as a line of stitches: part of the moving skin, and never shown while matching by ear */}
+      {onExtra && !plain && !still && <StitchThread synth={synth} />}
       <div className="synth-top">
         {!synth.running && onExtra && <button className="primary big" onClick={() => void synth.start()}>Start audio</button>}
         {onExtra && (

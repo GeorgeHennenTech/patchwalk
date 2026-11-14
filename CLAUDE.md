@@ -425,6 +425,18 @@ Added after the first eight milestones (owner asked for all four in one go):
     from nothing to its full depth; stand-in MIDI messages played a note, bent it and moved the wheel.
     **Not tried with a real MIDI keyboard** (the build session has none). Not built: aftertouch, sustain
     pedal, MIDI learn, separate bend ranges up and down, pitch bend as a source.
+  - **Wave pictures follow the movement; more motion (14 Nov 2026, owner's request).** `Display` in
+    `Rack.tsx` redraws the Osc A and Osc B pictures each frame from `synth.live()` while a note sounds, so
+    an LFO, envelope, wheel or macro on wavetable position, warp amount, phase or shape is seen as well as
+    heard; they return to the settings when the note stops. Checked in a browser: the picture changed
+    continuously with an LFO on position, on warp amount and on phase, and stayed still with it on cutoff.
+    Under "Connect a MIDI keyboard" a "How to connect one" section gives the steps and what to try if
+    nothing happens. Motion added to the skin (all under the Motion switch): `StitchThread` in `Views.tsx`,
+    a line of stitches across the top of the synth sewn into the shape of the sound, with a needle at its
+    end (never drawn during match-by-ear, where it would give the target away); a band of coloured light
+    orbiting the instrument's edge, brighter with level; a connected LFO's panel pulsing once per turn of
+    that LFO (`--period` on the panel); knob rims that turn while held or while a source moves them; keys
+    that flash and send up a ring when struck; name patches that swell with the sound.
   - Not built yet: drag-and-drop on touch screens, reordering effects. **Owner's order (13 Nov 2026), after
     warp/FM/ring which is done: the first impact lessons (they need nothing new); then physical modelling
     and bioacoustics.**

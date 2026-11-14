@@ -27,6 +27,49 @@ function setup(canvas: HTMLCanvasElement) {
   return { g, w, h, line: css.getPropertyValue("--accent").trim() || "#c2186b", grid: css.getPropertyValue("--line").trim() || "#ccc" };
 }
 
+/**
+ * Part of the skin's motion: a line of stitches across the top of the synth that is sewn into the shape of
+ * the sound as it plays, with the needle at its end. Silent, it lies almost flat and sways a little.
+ */
+export function StitchThread({ synth }: { synth: Synth }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  const buf = useRef(new Float32Array(2048));
+  const size = useRef(0);
+  useFrame(() => {
+    const canvas = ref.current, an = synth.engine.current?.running ? synth.engine.current.analyser : undefined;
+    if (!canvas) return;
+    const { g, w, h } = setup(canvas);
+    const b = buf.current, t = performance.now() / 1000, mid = h / 2;
+    let peak = 0, start = 0;
+    if (an) {
+      an.getFloatTimeDomainData(b);
+      for (let i = 0; i < b.length; i++) peak = Math.max(peak, Math.abs(b[i]!));
+      for (let i = 1; i < b.length / 2; i++) if (b[i - 1]! <= 0 && b[i]! > 0) { start = i; break; }
+    }
+    // the height grows quickly with the sound and settles slowly, so quiet sounds still show their shape
+    size.current = peak > size.current ? peak : size.current * 0.92 + peak * 0.08;
+    const live = size.current > 0.002, span = 700, scale = live ? (mid - 4) / Math.max(size.current, 0.05) : 0;
+    const y = (x: number) => (live ? mid - b[start + Math.floor((x / w) * span)]! * scale : mid) + Math.sin(x / 46 + t * 1.3) * (live ? 0.6 : 2.2);
+    const thread = g.createLinearGradient(0, 0, w, 0);
+    thread.addColorStop(0, "#ff4fa8"); thread.addColorStop(0.5, "#ffe14a"); thread.addColorStop(1, "#3df5ff");
+    g.lineCap = "round"; g.lineJoin = "round";
+    // the holes the thread passes through, then the thread itself, sewn as dashes that creep along
+    g.setLineDash([9, 6]); g.lineDashOffset = -t * 14;
+    g.shadowColor = "#ff4fa8"; g.shadowBlur = 6 + 14 * Math.min(1, size.current * 3);
+    g.strokeStyle = thread; g.lineWidth = 2.4;
+    g.beginPath();
+    for (let x = 0; x <= w - 10; x += 2) { if (x === 0) g.moveTo(x, y(x)); else g.lineTo(x, y(x)); }
+    g.stroke();
+    // the needle: a bright point where the thread ends, with a short tail
+    const nx = w - 10, ny = y(nx);
+    g.setLineDash([]); g.shadowColor = "#fff"; g.shadowBlur = 12;
+    g.strokeStyle = "#fff"; g.lineWidth = 1.6; g.beginPath(); g.moveTo(nx, ny); g.lineTo(nx + 8, ny - 3); g.stroke();
+    g.fillStyle = "#fff"; g.beginPath(); g.arc(nx, ny, 2.2, 0, Math.PI * 2); g.fill();
+    g.shadowBlur = 0;
+  }, true);
+  return <canvas ref={ref} className="stitch-thread" aria-hidden="true" />;
+}
+
 /** The wave over time. Drawing starts at an upward zero crossing so a steady tone stands still. */
 export function Scope({ synth }: { synth: Synth }) {
   const ref = useRef<HTMLCanvasElement>(null);

@@ -74,10 +74,37 @@ function Display({ module, synth, note }: { module: Module; synth: Synth; note: 
     if (module.source) return lfoPath(s[`${module.source as "lfo1"}Shape`], s[`${module.source as "lfo1"}Way`] === "up", s[`${module.source as "lfo1"}Steps`]);
     return NOISE_PATH;
   }, [module, s.shape, s.table, s.position, s.phase, s.warp, s.warpAmount, s.bShape, s.bPhase, s.envA, s.envD, s.envS, s.envR, s.env2A, s.env2D, s.env2S, s.env2R, s.lfo1Shape, s.lfo2Shape, s.lfo3Shape, s.lfo1Way, s.lfo2Way, s.lfo3Way, s.lfo1Steps, s.lfo2Steps, s.lfo3Steps]); // eslint-disable-line react-hooks/exhaustive-deps
+  // While a note sounds, an oscillator's picture follows whatever is moving its wave (position, warp,
+  // phase, shape), drawn straight onto the page each frame; it returns to the settings when the note stops.
+  const wave = useRef<SVGPathElement>(null);
+  const latest = useRef({ synth, d });
+  latest.current = { synth, d };
+  const moving = module.id === "a" || module.id === "b";
+  useEffect(() => {
+    if (!moving) return;
+    let frame = 0, shown = "", lastRest = "";
+    const loop = () => {
+      const { synth: sy, d: rest } = latest.current, el = wave.current;
+      if (rest !== lastRest) { lastRest = rest; shown = "?"; } // the settings changed: draw afresh
+      if (el) {
+        const l = sy.engine.current?.liveNote ? sy.live() : null;
+        const key = !l ? "" : module.id === "a" ? `${l.shape}|${l.table}|${l.position.toFixed(1)}|${l.phase.toFixed(0)}|${l.warp}|${l.warpAmount.toFixed(1)}` : `${l.bShape}|${l.bPhase.toFixed(0)}`;
+        if (key !== shown) {
+          shown = key;
+          if (!l) el.setAttribute("d", rest);
+          else if (module.id === "a") { const sp = spectrumA(l); el.setAttribute("d", wavePath(sp.sin, l.phase / 360, sp.cos)); }
+          else el.setAttribute("d", wavePath(shapeHarmonics(l.bShape), l.bPhase / 360));
+        }
+      }
+      frame = requestAnimationFrame(loop);
+    };
+    frame = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(frame);
+  }, [moving, module.id]);
   if (module.id === "filter") return <FilterCurve synth={synth} note={note} compact />;
   if (!d) return null;
   if (module.source?.startsWith("lfo") && synth.state[`${module.source as "lfo1"}Shape`] === "drawn") return <LfoDraw id={module.source as "lfo1"} synth={synth} />;
-  return <svg className="mod-wave" viewBox="0 0 200 64" preserveAspectRatio="none" role="img" aria-label={`${module.name} wave`}>{module.source?.startsWith("lfo") && <line className="mod-mid" x1="0" x2="200" y1="32" y2="32" />}<path d={d} />{module.source?.startsWith("lfo") && <Playhead id={module.source as "lfo1"} synth={synth} width={100} height={64} />}</svg>;
+  return <svg className="mod-wave" viewBox="0 0 200 64" preserveAspectRatio="none" role="img" aria-label={`${module.name} wave`}>{module.source?.startsWith("lfo") && <line className="mod-mid" x1="0" x2="200" y1="32" y2="32" />}<path ref={wave} d={d} />{module.source?.startsWith("lfo") && <Playhead id={module.source as "lfo1"} synth={synth} width={100} height={64} />}</svg>;
 }
 
 /**
@@ -126,6 +153,8 @@ export function Rack({ synth, show, all, lesson, note }: { synth: Synth; show: P
   const [tabs, setTabs] = useState<Record<string, string>>({ env: "env1", lfo: "lfo1", note: "vel" });
   /** A source that is not sent anywhere yet. */
   const idle = (m: Module) => !!m.source && s[`${m.source}Dest`] === "none";
+  /** How long one turn of an LFO takes, for the skin: a connected LFO's panel pulses at the LFO's own speed. */
+  const period = (m: Module) => (m.source?.startsWith("lfo") ? `${Math.min(20, Math.max(0.08, 1 / lfoHz(s, m.source as "lfo1"))).toFixed(3)}s` : undefined);
   const idsOf = (m: Module) => (Object.keys(PARAMS) as (keyof SynthState)[]).filter((id) => m.groups.includes(PARAMS[id]!.group) && id !== m.toggle && on(id) && (id !== "freeHz" || s.freeHz !== null));
   /** A module's picture and controls: menus, choices, number boxes, then knobs. */
   const body = (m: Module, ids: (keyof SynthState)[], curve: boolean) => {
@@ -166,7 +195,7 @@ export function Rack({ synth, show, all, lesson, note }: { synth: Synth; show: P
         {panels.map(({ m, ids, toggle, curve }) => {
           const off = !!m.toggle && !s[m.toggle];
           return (
-            <section key={m.id} className={`mod mod-${m.id}${off && all ? " off" : ""}${m.color ? " neon" : ""}${idle(m) ? " idle" : ""}`} style={m.color ? ({ "--glow": m.color } as React.CSSProperties) : undefined} aria-label={m.name}>
+            <section key={m.id} className={`mod mod-${m.id}${off && all ? " off" : ""}${m.color ? " neon" : ""}${idle(m) ? " idle" : ""}`} style={m.color ? ({ "--glow": m.color, "--period": period(m) } as React.CSSProperties) : undefined} aria-label={m.name}>
               {toggle ? (
                 <label className={`mod-head${show.includes(toggle) ? " spot" : ""}`}>
                   <input type="checkbox" checked={!!s[toggle]} aria-label={PARAMS[toggle]!.label} onChange={(e) => synth.setState({ [toggle]: e.target.checked } as Partial<SynthState>)} />
@@ -195,7 +224,7 @@ export function Rack({ synth, show, all, lesson, note }: { synth: Synth; show: P
     const m = modules.find((x) => x.id === tabs[key]) ?? modules[0]!;
     const count = (x: Module) => (x.source ? routes(s).filter((r) => r.source.id === x.source && r.amount !== 0).length : 0);
     return (
-      <section className={`mod neon tabbed group-${key}${idle(m) ? " idle" : ""}`} style={{ "--glow": m.color } as React.CSSProperties} aria-label={label}>
+      <section className={`mod neon tabbed group-${key}${idle(m) ? " idle" : ""}`} style={{ "--glow": m.color, "--period": period(m) } as React.CSSProperties} aria-label={label}>
         <div className="mod-tabs" role="tablist" aria-label={label}>
           {modules.map((x) => (
             // not a <button>: browsers will not start a drag from inside one, and the handle lives in here

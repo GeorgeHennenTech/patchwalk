@@ -682,7 +682,7 @@ describe("macros", () => {
     expect(MACRO_DESTS[0]).toBe("none");
   });
   it("the macro chapter is listed after Modulation, and every recipe wires what it teaches", () => {
-    expect(CHAPTER_ORDER.map((c) => CHAPTERS[c])).toEqual(["Sound itself", "Oscillators", "Filters", "Envelopes", "LFOs", "Modulation", "Macros", "Reshaping the wave", "Effects", "Impacts"]);
+    expect(CHAPTER_ORDER.map((c) => CHAPTERS[c])).toEqual(["Sound itself", "Oscillators", "Filters", "Envelopes", "LFOs", "Modulation", "Macros", "Reshaping the wave", "Effects", "Playing a line", "Impacts"]);
     expect(new Set(LESSONS.map((l) => chapterOf(l))).size).toBe(CHAPTER_ORDER.length);
     expect(MACRO_CHAPTER.map((l) => l.id)).toEqual(["C5M.1", "C5M.2", "C5M.3", "C5M.4", "C5M.5", "C5M.6", "C5M.7", "C5M.8", "C5M.9", "C5M.10", "C5M.11", "C5M.12", "C5M.13", "C5M.14", "C5M.15", "C5M.16", "C5M.C"]);
     for (const l of MACRO_CHAPTER.slice(0, 7)) {
@@ -1098,5 +1098,30 @@ describe("what the screen shows of a source's movement", () => {
     expect(modulated(s, note(0.25), true)).toBe(s);
     const t = { ...INITIAL, lfo1Dest: "cutoff", lfo1Amount: 100 };
     expect(modulated(t, undefined, true)).toBe(t);
+  });
+});
+
+import { CHAPTER_8 } from "../src/course/lessons/chapter8";
+describe("mono, legato and glide", () => {
+  const snap = (state: Partial<SynthState>, extra: Partial<Snapshot> = {}) => ({ ...snapshot(newTrack(INITIAL), { ...INITIAL, ...state }, { audioRunning: true, held: [], holdOn: false, now: 0 }), ...extra }) as Snapshot;
+  it("the starting patch plays chords and does not slide", () => {
+    expect(INITIAL).toMatchObject({ voiceMode: "poly", legato: "off", glide: 0, glideMode: "always" });
+    expect(MOD_DESTS).not.toContain("glide");
+  });
+  it("the chapter sits between Effects and Impacts", () => {
+    expect(placeOf(CHAPTER_8[1]!)).toEqual({ chapter: "Playing a line", number: 2, of: 2 });
+  });
+  it("mono is checked by what sounds, legato and glide by their switches and the notes played", () => {
+    const [mono, glide] = CHAPTER_8 as [typeof CHAPTER_8[0], typeof CHAPTER_8[0]];
+    const played = { mouse: 0, keys: 6, midi: 0 };
+    expect(mono.steps[1]!.check(snap({ voiceMode: "mono" }, { distinctNotes: 2, held: [60, 64] }))).toBe(false);
+    expect(mono.steps[1]!.check(snap({ voiceMode: "mono" }, { distinctNotes: 2, held: [64] }))).toBe(true);
+    expect(mono.steps[4]!.check(snap({ voiceMode: "mono", legato: "off" }, { played }))).toBe(false);
+    expect(mono.steps[4]!.check(snap({ voiceMode: "mono", legato: "on" }, { played }))).toBe(true);
+    expect(glide.steps[2]!.check(snap({ glide: 1000 }, { longestHeld: 0.5 }))).toBe(false);
+    expect(glide.steps[2]!.check(snap({ glide: 1000 }, { longestHeld: 1.5 }))).toBe(true);
+    expect(glide.steps[2]!.remark!(snap({ glide: 1000 }))).toContain("1.0 s");
+    expect(glide.steps[4]!.check(snap({ voiceMode: "mono", legato: "on", glideMode: "always", glide: 200 }, { played }))).toBe(false);
+    expect(glide.steps[4]!.check(snap({ voiceMode: "mono", legato: "on", glideMode: "legato", glide: 200 }, { played }))).toBe(true);
   });
 });

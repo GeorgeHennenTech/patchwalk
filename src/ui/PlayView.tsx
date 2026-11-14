@@ -297,7 +297,7 @@ export function PlayView({ cards, wanted }: { cards: Card[]; wanted?: { id: stri
   const playDemo = async () => {
     await synth.start();
     for (const t of lesson.demo?.tones ?? []) {
-      if (t.patch) synth.engine.current?.auditionPatch({ ...INITIAL, ...t.patch }, t.note ?? 57, t.seconds, t.at, t.velocity);
+      if (t.patch) synth.engine.current?.auditionPatch({ ...INITIAL, ...t.patch }, t.note ?? 57, t.seconds, t.at, t.velocity, t.from);
       else if (t.shape && t.hz) synth.engine.current?.audition(t.shape, t.hz, t.seconds, t.at, t.gainDb);
     }
   };

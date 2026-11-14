@@ -34,11 +34,15 @@ interface Voice {
   mods: { route: Route; src: OscillatorNode | ConstantSourceNode; depth: GainNode; bias: ConstantSourceNode; fade: GainNode; phase: number }[];
   filter: { mix: GainNode; shaper: WaveShaperNode; one: BiquadFilterNode; two: BiquadFilterNode; trim: GainNode; drive: number };
   amp: GainNode;
+  /** A pitch offset in cents that every oscillator of the note follows: it starts at the distance from the previous note and runs down to nothing, which is the slide. */
+  glide: ConstantSourceNode;
 }
 
 /** Settings whose change means rebuilding the sounding notes (the set of sound sources changes). */
-const STRUCTURAL: (keyof SynthState)[] = ["voices", "bOn", "subOn", "noiseOn", "noiseType", "randomPhase", "env2Dest", "lfo1Dest", "lfo2Dest", "lfo3Dest", "velDest", "keyDest", "lfo1Trig", "lfo2Trig", "lfo3Trig"];
+const STRUCTURAL: (keyof SynthState)[] = ["voiceMode", "voices", "bOn", "subOn", "noiseOn", "noiseType", "randomPhase", "env2Dest", "lfo1Dest", "lfo2Dest", "lfo3Dest", "velDest", "keyDest", "lfo1Trig", "lfo2Trig", "lfo3Trig"];
 /** Stop changing a value from `t` on, keeping whatever it has reached (older browsers: drop what was planned). */
+/** Cancel a slide: the pitch goes straight to the note. */
+const holdAtZero = (p: AudioParam, t: number) => { p.cancelScheduledValues(t); p.setValueAtTime(0, t); };
 const holdAt = (p: AudioParam, t: number) => (p.cancelAndHoldAtTime ? p.cancelAndHoldAtTime(t) : p.cancelScheduledValues(t));
 
 export class Engine {
@@ -302,13 +306,18 @@ export class Engine {
     for (const x of v.a) x.osc.stop(stopAt);
     v.b?.osc.stop(stopAt);
     v.modB.osc.stop(stopAt);
+    v.glide.stop(stopAt);
     v.sub?.osc.stop(stopAt);
     v.noise?.src.stop(stopAt);
     for (const m of v.mods) { m.src.stop(stopAt); m.bias.stop(stopAt); }
   }
 
-  private build(note: number, phaseA: number, t = this.ctx.currentTime, velocity = 100): Voice {
+  private build(note: number, phaseA: number, t = this.ctx.currentTime, velocity = 100, slideFrom?: number): Voice {
     const s = this.state;
+    const glide = this.ctx.createConstantSource();
+    glide.offset.value = 0;
+    if (slideFrom !== undefined && slideFrom !== note && s.glide > 0) { glide.offset.setValueAtTime((slideFrom - note) * 100, t); glide.offset.linearRampToValueAtTime(0, t + s.glide / 1000); }
+    glide.start(t);
     const amp = this.ctx.createGain();
     // Envelope 1: a straight rise over the attack, then easing down to the sustain level.
     const env = adsr(s, 1);
@@ -330,6 +339,7 @@ export class Engine {
     const modB = { osc: modOsc, fm: this.ctx.createGain(), dry: this.ctx.createGain(), wet: this.ctx.createGain() };
     modB.fm.gain.value = fmIndex(s.fmAmount) * playedHzB(s, note);
     modOsc.connect(modB.fm);
+    glide.connect(modOsc.detune);
     // ring modulation: `times` is a volume control that B itself turns, so what passes is A times B
     const times = this.ctx.createGain();
     times.gain.value = 0;
@@ -344,6 +354,7 @@ export class Engine {
       // The centre voice keeps the set phase; the others start elsewhere so a stack does not begin as one spike.
       osc.setPeriodicWave(this.wave(hA.sin, phaseA + (s.voices > 1 ? i / s.voices : 0), hA.cos));
       modB.fm.connect(osc.frequency);
+      glide.connect(osc.detune);
       osc.frequency.value = base * 2 ** (cents / 1200);
       const gain = this.ctx.createGain();
       gain.gain.value = this.levelA(s);
@@ -356,7 +367,7 @@ export class Engine {
       return { osc, gain, pan };
     });
 
-    const voice: Voice = { note, phaseA, velocity, startedAt: t, out, a, modB, mods: [], filter, amp };
+    const voice: Voice = { note, phaseA, velocity, startedAt: t, out, a, modB, mods: [], filter, amp, glide };
     this.applyFilter(voice, s, true, t);
     if (s.bOn) {
       const osc = this.ctx.createOscillator();
@@ -365,6 +376,7 @@ export class Engine {
       const gain = this.ctx.createGain();
       gain.gain.value = OSC_GAIN * dbToGain(s.bLevelDb);
       osc.connect(gain).connect(into);
+      glide.connect(osc.detune);
       osc.start(t);
       voice.b = { osc, gain };
     }
@@ -375,6 +387,7 @@ export class Engine {
       const gain = this.ctx.createGain();
       gain.gain.value = OSC_GAIN * dbToGain(s.subLevelDb);
       osc.connect(gain).connect(into);
+      glide.connect(osc.detune);
       osc.start(t);
       voice.sub = { osc, gain };
     }
@@ -437,7 +450,8 @@ export class Engine {
       // The set of sources changed: restart the sounding notes with the new layout.
       const notes = this.voices.map((v) => [v.note, v.velocity] as const);
       this.voices.forEach((v) => this.release(v));
-      this.voices = notes.map(([n, velocity]) => this.build(n, this.startPhase(), undefined, velocity));
+      this.voices = (next.voiceMode === "mono" ? notes.slice(-1) : notes).map(([n, velocity]) => this.build(n, this.startPhase(), undefined, velocity));
+      this.stack = next.voiceMode === "mono" ? this.voices.map((v) => v.note) : [];
       return;
     }
     for (const v of this.voices) this.applyVoice(v, next, prev);
@@ -495,18 +509,80 @@ export class Engine {
   }
 
   /** `velocity` is how hard the key was struck, 1 to 127. */
-  noteOn(note: number, velocity = 100): void {
+  /** Mono: the keys held, oldest first, so letting go of one falls back to the one before. */
+  private stack: number[] = [];
+  /** The last note started, for sliding to the next one. */
+  private lastNote: number | undefined;
+
+  /**
+   * Carry a sounding note over to another key without starting it again (legato): its oscillators jump to
+   * the new pitch and the slide offset is set to the distance just covered, so what is heard is a slide.
+   */
+  private moveVoice(v: Voice, note: number): void {
+    const s = this.state, t = this.ctx.currentTime, from = v.note;
+    v.note = note;
+    const base = playedHz(s, note), offsets = unisonOffsets(s.voices, s.detune);
+    v.a.forEach((x, i) => x.osc.frequency.setValueAtTime(base * 2 ** (offsets[i]! / 1200), t));
+    v.modB.osc.frequency.setValueAtTime(playedHzB(s, note), t);
+    v.modB.fm.gain.setValueAtTime(fmIndex(s.fmAmount) * playedHzB(s, note), t);
+    v.b?.osc.frequency.setValueAtTime(playedHzB(s, note), t);
+    v.sub?.osc.frequency.setValueAtTime(subHz(s, note), t);
+    this.applyFilter(v, s, true, t);
+    // wherever the slide had got to, plus the new distance
+    const left = v.glide.offset.value + (from - note) * 100;
+    holdAt(v.glide.offset, t);
+    if (s.glide > 0) { v.glide.offset.setValueAtTime(left, t); v.glide.offset.linearRampToValueAtTime(0, t + s.glide / 1000); }
+    else v.glide.offset.setValueAtTime(0, t);
+  }
+
+  /**
+   * `velocity` is how hard the key was struck, 1 to 127. `latch` is set when Hold is on: the new note then
+   * replaces whatever was latched instead of joining it.
+   */
+  noteOn(note: number, velocity = 100, latch = false): void {
+    const s = this.state, overlapping = this.voices.length > 0;
+    // the pitch slides from the previous note: on every note, or only when keys overlap
+    const slideFrom = s.glide > 0 && (s.glideMode === "always" || overlapping) ? this.lastNote : undefined;
+    this.lastNote = note;
+    if (s.voiceMode === "mono") {
+      if (latch) this.stack = [];
+      this.stack = [...this.stack.filter((n) => n !== note), note];
+      const v = this.voices[0];
+      if (v && v.note === note) return;
+      if (v && s.legato === "on") { this.moveVoice(v, note); if (slideFrom === undefined) holdAtZero(v.glide.offset, this.ctx.currentTime); return; }
+      if (v) { this.release(v); this.voices = []; }
+      this.voices = [this.build(note, this.startPhase(), undefined, velocity, slideFrom)];
+      return;
+    }
     if (this.voices.some((v) => v.note === note)) return;
-    this.voices.push(this.build(note, this.startPhase(), undefined, velocity));
+    this.voices.push(this.build(note, this.startPhase(), undefined, velocity, slideFrom));
   }
 
   noteOff(note: number): void {
+    if (this.state.voiceMode === "mono") {
+      this.stack = this.stack.filter((n) => n !== note);
+      const v = this.voices[0];
+      if (!v || v.note !== note) return;
+      const back = this.stack[this.stack.length - 1];
+      // another key is still down: go back to it, as a mono synth does
+      if (back !== undefined) {
+        this.lastNote = back;
+        if (this.state.legato === "on") { this.moveVoice(v, back); return; }
+        this.release(v);
+        this.voices = [this.build(back, this.startPhase(), undefined, v.velocity, this.state.glide > 0 ? note : undefined)];
+        return;
+      }
+      this.release(v); this.voices = [];
+      return;
+    }
     this.voices.filter((v) => v.note === note).forEach((v) => this.release(v));
     this.voices = this.voices.filter((v) => v.note !== note);
   }
 
   allNotesOff(): void {
-    for (const v of [...this.voices]) this.noteOff(v.note);
+    this.stack = [];
+    for (const v of [...this.voices]) { this.release(v); }
+    this.voices = [];
   }
 
   /**
@@ -528,11 +604,11 @@ export class Engine {
   }
 
   /** Play a whole patch for a moment, without disturbing held notes or the learner's settings. */
-  auditionPatch(patch: SynthState, note: number, seconds = 1.2, when = 0, velocity = 100): void {
+  auditionPatch(patch: SynthState, note: number, seconds = 1.2, when = 0, velocity = 100, slideFrom?: number): void {
     patch = applyMacros(patch);
     const keep = this.state, at = this.ctx.currentTime + when;
     this.state = patch;
-    const v = this.build(note, patch.phase / 360, at, velocity);
+    const v = this.build(note, patch.phase / 360, at, velocity, slideFrom);
     this.state = keep;
     this.releaseAt(v, patch, at + seconds - 0.08);
     this.auditions.push({ voice: v, base: patch, played: patch, until: at + seconds + 0.5 });

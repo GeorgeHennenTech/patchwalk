@@ -431,10 +431,11 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 .rack.full.sources .mod-a { flex: 3.4 1 300px; }
 .rack.full.sources .mod-b { flex: 2 1 170px; }
 .rack.full.sources .mod-filter { flex: 2.4 1 210px; }
+.rack.full.sources .mod-voice { flex: 1.2 1 120px; }
 .rack.full.modrow .mod-macros { flex: 0 0 176px; }
 .rack.full.modrow .group-env { flex: 2 1 230px; }
 .rack.full.modrow .group-lfo { flex: 3.2 1 330px; }
-.rack.full.modrow .group-note { flex: 1 1 150px; }
+.rack.full.modrow .group-note { flex: 1.3 1 190px; }
 .rack.full.fx .mod { flex: 1 1 150px; }
 .rack.full .mod-body { flex-direction: row; flex-wrap: wrap; align-items: flex-start; align-content: flex-start; }
 .rack.full .mod-body > .mod-wave, .rack.full .mod-body > .view, .rack.full .mod-body > .lfo-draw, .rack.full .mod-body > .mod-row, .rack.full .mod-body > .ctl { flex: 1 1 100%; }

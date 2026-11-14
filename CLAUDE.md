@@ -170,7 +170,9 @@ Added after the first eight milestones (owner asked for all four in one go):
     C5.5 ("Setting depth on the knob itself") and C5.7 ("Any knob can be a destination") were added to chapter 5
     with the depth handles and the wider destination list.
     C5.8 ("Drag a source onto a knob") was added with drag-and-drop.
-    **Eighty-two playable lessons.**
+    `lessons/chapter8.ts` holds "Playing a line" (C8.1 one note at a time, C8.2 glide), listed between
+    "Effects" and "Impacts".
+    **Eighty-four playable lessons.**
   - `src/ui/PlayView.tsx` ("Lessons" tab) and `src/ui/synth/` — spotlighted controls per step, live targets,
     scope, spectrum, meter, on-screen keyboard, Hold, blind ear checks, recap, guide remarks and suggestion.
   - "Hear it first" demos (`demo` on a lesson), match-by-ear rounds (`rounds`, compared by `src/course/match.ts`:
@@ -393,6 +395,20 @@ Added after the first eight milestones (owner asked for all four in one go):
     breathes, a sheen crosses an effect that is on, a page arrives with a small lift. A "Motion: on/off"
     button sits beside "Skin" (class `still`, remembered in the browser); all motion is also off when the
     system asks for reduced motion, and with the skin off. CSS and two gradients only; no new artwork.
+  - **Mono, legato and glide (14 Nov 2026; first item of `docs/SERUM_GAPS.md`).** A Voicing panel (its own
+    panel in a lesson step; the "Voice" tab beside Vel and Key in the whole synth): `voiceMode` (poly/mono),
+    `legato`, `glide` (0-2000 ms) and `glideMode` (every note, or only notes pressed while another sounds).
+    In mono the engine keeps a stack of held keys, so letting one go falls back to the one before. Glide is
+    one constant source per note, in cents, wired to the detune of every oscillator of that note; it starts
+    at the distance from the previous note and runs straight down to zero, so it never fights the frequency
+    updates. Legato moves the sounding note (`moveVoice`) without touching its envelopes. With Hold on in
+    mono the engine does the replacing (`latch`), so legato and glide still work. A demo tone can carry
+    `from` (the note it slides from). Glide can be moved by a macro, not by a source. Measured: poly held
+    two notes, mono one; mono fell back from 880 to 440 Hz when the upper key was let go; a 1 s glide from
+    440 to 880 read 474, 544, 624, 716, 824, 877 Hz at 0.2 s steps; on "overlapped notes" a separated note
+    did not slide and an overlapped one did; with a slow attack a new key dipped the level without legato
+    and did not with it. Not built: glide curve, glide scaled by distance, a note limit, legato for LFOs
+    on slow destinations.
   - Not built yet: MIDI input, a mod wheel, drag-and-drop on touch screens, reordering effects. **Owner's order (13 Nov 2026), after
     warp/FM/ring which is done: the first impact lessons (they need nothing new); then physical modelling
     and bioacoustics.**
@@ -592,7 +608,7 @@ use explicit `.js` import suffixes so they load as plain Node ESM.
 - New knowledge cards: copy `knowledge-cards/_template.md`. Avoid numbers in cards. Only add reading links
   that have been opened and checked.
 - **Lesson labels.** Codes such as `C2.5` are for code, scripts and plans only. The learner sees lessons grouped
-  under chapter names ("Sound itself", "Oscillators", "Filters", "Envelopes", "LFOs", "Modulation", "Macros", "Reshaping the wave", "Effects", "Impacts"; `CHAPTERS` in `src/course/lessons/index.ts`),
+  under chapter names ("Sound itself", "Oscillators", "Filters", "Envelopes", "LFOs", "Modulation", "Macros", "Reshaping the wave", "Effects", "Playing a line", "Impacts"; `CHAPTERS` in `src/course/lessons/index.ts`),
   numbered within the chapter, with "Filters · lesson 5 of 8" above the title. A test stops lesson text from
   citing another lesson by code. Add the chapter's name to `CHAPTERS` when starting a new chapter.
 - Skin: content must stay on solid panels for legibility; fabric textures are for chrome only (header, tabs,

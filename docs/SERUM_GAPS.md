@@ -545,16 +545,16 @@ Already covered: playing several notes at once.
 
 | Feature | What it does | Page(s) | Status | Size |
 |---|---|---|---|---|
-| MONO | Only one note at a time; a new note takes over the old one | 216 | Missing | Medium |
-| LEGATO | In mono, overlapping notes do not restart the envelopes and LFOs | 216 | Missing | Medium |
+| MONO | Only one note at a time; a new note takes over the old one | 216 | **Built** (Voices play: Mono; falls back to a key still held) | Medium |
+| LEGATO | In mono, overlapping notes do not restart the envelopes and LFOs | 216 | **Built** | Medium |
 | LEGATO with MONO off | Envelopes shared across notes ("paraphonic" behaviour) | 216 | Missing | Medium |
 | POLY | The most notes allowed at once | 216 | Missing | Small |
 | Voice count readout | Shows voices sounding against the limit (unison and grains count) | 216 | Missing | Small |
 | Limit Same Note Poly to 1 | Replaying a key does not stack a second copy | 217 | Missing | Small |
 | Voice Steal Priority: Newest, Oldest, Highest, Lowest, Velocity | Which note is cut when the limit is reached | 217 | Missing | Small |
-| PORTA | Glide time between notes | 218 | Missing | Medium |
+| PORTA | Glide time between notes | 218 | **Built** (Glide, 0 to 2 s, a straight slide in pitch) | Medium |
 | CURVE | The shape of the glide (fast then slow, or slow then fast) | 218 | Missing | Small |
-| ALWAYS | Glide even when no note was held | 218 | Missing | Small |
+| ALWAYS | Glide even when no note was held | 218 | **Built** (Glide on: Every note / Overlapped notes) | Small |
 | SCALED | Shorter glides for small intervals, longer for big ones | 218 | Missing | Small |
 
 ## 17. Clips (pages 219-243)
@@ -790,7 +790,7 @@ Shift for fine knob moves; reset on double-click.
 
 Ranked by how much each gap would add to *learning sound design on this synth* compared with the work.
 
-1. **Mono, legato and portamento (PORTA, CURVE, ALWAYS, SCALED).** Glide and "one note at a time" are basic
+1. **Done 14 Nov 2026, except CURVE and SCALED.** **Mono, legato and portamento (PORTA, CURVE, ALWAYS, SCALED).** Glide and "one note at a time" are basic
    to basses and leads and already appear in the rebuilt-patch lessons ("glide" is a detected combination);
    medium work, no new audio parts.
 2. **Mod wheel, pitch bend and MIDI keyboard input.** Small work with the browser's MIDI support, and it

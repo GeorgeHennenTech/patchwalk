@@ -67,8 +67,10 @@ export function useSynth() {
     if (!engine.current?.running) return;
     down.current.add(note);
     // With Hold on, a new note replaces whatever was latched.
-    if (holdRef.current) for (const n of engine.current.held) if (n !== note) engine.current.noteOff(n);
-    engine.current.noteOn(note, velocity);
+    // (in mono the engine does the replacing itself, so that legato and glide still work with Hold on)
+    const mono = stateRef.current.voiceMode === "mono";
+    if (holdRef.current && !mono) for (const n of engine.current.held) if (n !== note) engine.current.noteOff(n);
+    engine.current.noteOn(note, velocity, holdRef.current && mono && down.current.size <= 1);
     track.current = trackNoteOn(track.current, source, note, now(), velocity);
     sync();
   }, []);

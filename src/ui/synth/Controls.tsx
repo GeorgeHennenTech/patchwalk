@@ -158,7 +158,7 @@ function Knob({ id, synth, spot }: { id: keyof SynthState; synth: Synth; spot: b
       onDragLeave={() => setOver(null)}
       onDrop={(e) => { e.preventDefault(); const c = offer(); setOver(null); endDrag(); if (c?.ok) { synth.flag("dropped"); synth.setState(c.change); } }} style={lit ? ({ "--glow": mods[0]?.source.color ?? slots[0]!.color } as React.CSSProperties) : undefined} role="slider" tabIndex={0} aria-label={spec.label} aria-orientation="vertical"
       aria-valuemin={spec.min} aria-valuemax={spec.max} aria-valuenow={value} aria-valuetext={fmt(id, value)}
-      title={`${spec.label}: {box ? "click the right half to go up and the left half to go down, drag up or down, or use the arrow keys" : "drag up or down, or click and use the arrow keys"}. Double-click to reset.${lit ? ` Moved by ${[...mods.map((m) => m.source.name), ...slots.map((m) => m.name)].join(" and ")}.` : ""}`}
+      title={`${spec.label}: ${box ? "click the right half to go up and the left half to go down, drag up or down, or use the arrow keys" : "drag up or down, or click and use the arrow keys"}. Double-click to reset.${lit ? ` Moved by ${[...mods.map((m) => m.source.name), ...slots.map((m) => m.name)].join(" and ")}.` : ""}`}
       onKeyDown={onKey} onDoubleClick={reset}
       onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); e.currentTarget.focus(); drag.current = { y: e.clientY, travel: t, moved: false }; }}
       onPointerMove={(e) => {

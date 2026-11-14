@@ -57,6 +57,8 @@ export interface DemoTone {
   /** ...or a whole patch (changes from the starting settings) played on a key. */
   patch?: Partial<SynthState>;
   note?: number;
+  /** The note the pitch slides from, when the patch has glide. */
+  from?: number;
   at: number;
   seconds: number;
   /** How hard a patch tone is struck, 1 to 127. Default 100. */

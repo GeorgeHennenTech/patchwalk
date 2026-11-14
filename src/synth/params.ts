@@ -137,6 +137,15 @@ export interface SynthState {
   // ---- two sources that are fixed for the length of a note: how hard it was struck, and which key it was
   velDest: Dest; velAmount: number;
   keyDest: Dest; keyAmount: number;
+  // ---- voicing: how many notes at once, and whether the pitch slides between notes
+  /** "poly" plays every key held; "mono" plays one note at a time (the last key pressed). */
+  voiceMode: "poly" | "mono";
+  /** Mono only: when a new key is pressed while another is held, carry on the same note without starting its envelopes again. */
+  legato: "off" | "on";
+  /** How long the pitch takes to slide from the previous note, in ms. 0 is no slide. */
+  glide: number;
+  /** Slide on every note ("always"), or only when the new key is pressed while another is still held ("legato"). */
+  glideMode: "always" | "legato";
   /** Extra connections added in the matrix, so one source can move several things. Replaced on every edit. */
   matrix: MatrixRow[];
   // ---- effects, in the order the sound passes through them (see fx.ts)
@@ -183,6 +192,7 @@ export const INITIAL: SynthState = {
   lfo3Sync: "hz", lfo3Div: "1", lfo3Trig: "retrig", lfo3Rise: 0, lfo3Steps: DEFAULT_STEPS,
   velDest: "none", velAmount: 60, keyDest: "none", keyAmount: 50,
   matrix: [],
+  voiceMode: "poly", legato: "off", glide: 0, glideMode: "always",
   distOn: false, distType: "soft", distDrive: 30, distMix: 100,
   eqOn: false, eqLow: 0, eqMid: 0, eqMidHz: 1000, eqHigh: 0,
   compOn: false, compThreshold: -24, compRatio: 4, compAttack: 10, compRelease: 150, compMakeup: 0,
@@ -195,7 +205,7 @@ export const INITIAL: SynthState = {
   macro4: 0, macro4Name: "Macro 4", macro4Dest1: "none", macro4Amt1: 50, macro4Dest2: "none", macro4Amt2: 50, macro4Dest3: "none", macro4Amt3: 50,
 };
 
-export type Group = "Master" | "Oscillator A" | "Unison" | "Oscillator B" | "Sub" | "Noise" | "Filter" | "Envelope 1" | "Envelope 2" | "LFO 1" | "LFO 2" | "LFO 3" | "Velocity" | "Key position" | "Distortion" | "EQ" | "Compressor" | "Chorus" | "Delay" | "Reverb" | "Macro 1" | "Macro 2" | "Macro 3" | "Macro 4";
+export type Group = "Master" | "Oscillator A" | "Unison" | "Oscillator B" | "Sub" | "Noise" | "Filter" | "Envelope 1" | "Envelope 2" | "LFO 1" | "LFO 2" | "LFO 3" | "Velocity" | "Key position" | "Voicing" | "Distortion" | "EQ" | "Compressor" | "Chorus" | "Delay" | "Reverb" | "Macro 1" | "Macro 2" | "Macro 3" | "Macro 4";
 
 export interface ParamSpec {
   id: keyof SynthState;
@@ -264,6 +274,10 @@ const BASE_PARAMS: Record<string, ParamSpec> = {
   ...lfo(1), ...lfo(2), ...lfo(3),
   ...source("vel", "Velocity", "Velocity"),
   ...source("key", "Key position", "Key position"),
+  voiceMode: { id: "voiceMode", label: "Voices play", group: "Voicing", kind: "choice", choices: ["poly", "mono"], names: { poly: "Poly", mono: "Mono" } },
+  legato: { id: "legato", label: "Legato", group: "Voicing", kind: "choice", choices: ["off", "on"], names: { off: "Off", on: "On" } },
+  glideMode: { id: "glideMode", label: "Glide on", group: "Voicing", kind: "choice", choices: ["always", "legato"], names: { always: "Every note", legato: "Overlapped notes" } },
+  glide: { id: "glide", label: "Glide", group: "Voicing", kind: "range", min: 0, max: 2000, step: 5, unit: "ms" },
   distOn: { id: "distOn", label: "Distortion", group: "Distortion", kind: "toggle" },
   distType: { id: "distType", label: "Distortion type", group: "Distortion", kind: "choice", choices: DIST_TYPES, names: { soft: "Soft clip", hard: "Hard clip", fold: "Fold", crush: "Crush" } },
   distDrive: { id: "distDrive", label: "Distortion drive", group: "Distortion", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
@@ -298,7 +312,7 @@ const BASE_PARAMS: Record<string, ParamSpec> = {
  * Knobs that cannot be destinations: the main volume and tempo; random phase and reverb size, because
  * changing them rebuilds something too heavy to do fifty times a second.
  */
-const NOT_DESTS = ["volumeDb", "bpm", "freeHz", "randomPhase", "reverbSize"];
+const NOT_DESTS = ["volumeDb", "bpm", "freeHz", "randomPhase", "reverbSize", "glide"];
 /** Whole-step settings shown as number boxes. A macro cannot move these. */
 export const BOX_IDS = ["octave", "semitone", "bOctave", "bSemitone", "voices", "subOctave"] as const;
 /** Every knob a macro can be sent to: all the continuous settings. "none" means the slot is empty. */

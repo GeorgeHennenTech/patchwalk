@@ -4,6 +4,7 @@
     "api/lesson.ts": { "maxDuration": 120 },
     "api/ask.ts": { "maxDuration": 120, "includeFiles": "{library/*.json,library/images/*/index.json,knowledge-cards/*.md}" },
     "api/image.ts": { "includeFiles": "library/images/**" },
+    "api/store.ts": { "maxDuration": 30 },
     "api/point.ts": { "maxDuration": 120, "includeFiles": "{library/*.json,library/images/**}" }
   },
   "headers": [{ "source": "/(.*)", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }] }]

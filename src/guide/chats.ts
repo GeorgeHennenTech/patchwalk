@@ -16,8 +16,16 @@ export function loadChats(storage: Pick<Storage, "getItem"> | undefined = global
     return Array.isArray(raw) ? raw.filter(valid) : [];
   } catch { return []; }
 }
-function store(chats: SavedChat[], storage: Pick<Storage, "setItem"> | undefined): boolean {
-  try { storage?.setItem(KEY, JSON.stringify(chats)); return !!storage; } catch { return false; }
+/** Called after the saved chats change, so they can be copied to the site's database. Set by the app. */
+let changed: (exact?: boolean) => void = () => {};
+/** `exact` is true after a deletion: the copy in the database must then match this browser's, not be joined with it. */
+export const onChatsChanged = (fn: (exact?: boolean) => void) => { changed = fn; };
+function store(chats: SavedChat[], storage: Pick<Storage, "setItem"> | undefined, exact = false): boolean {
+  try { storage?.setItem(KEY, JSON.stringify(chats)); if (storage) changed(exact); return !!storage; } catch { return false; }
+}
+/** Replace every saved chat at once (when a person's chats arrive from the database). Does not report a change. */
+export function replaceChats(chats: SavedChat[], storage: Pick<Storage, "setItem"> | undefined = globalThis.localStorage): void {
+  try { storage?.setItem(KEY, JSON.stringify(chats.filter(valid).slice(0, MAX_CHATS))); } catch { /* not kept */ }
 }
 /**
  * Save a conversation, newest first. Saving one that is already saved (same id) replaces it, so a chat can be
@@ -33,6 +41,6 @@ export function saveChat(chat: { id?: string; turns: Turn[] }, now = new Date(),
 }
 export function deleteChat(id: string, storage: Pick<Storage, "getItem" | "setItem"> | undefined = globalThis.localStorage): SavedChat[] {
   const chats = loadChats(storage).filter((c) => c.id !== id);
-  store(chats, storage);
+  store(chats, storage, true);
   return chats;
 }

@@ -5,7 +5,9 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import Anthropic from "@anthropic-ai/sdk";
 import { gate } from "../src/lesson/auth.js";
-import { answerQuestion, AskRequestSchema, GUIDE_SYSTEM, type GuideModel } from "../src/library/answer.js";
+import { answerQuestion, AskRequestSchema, GUIDE_SYSTEM, type AskResponse, type GuideModel } from "../src/library/answer.js";
+import { kvFromEnv } from "../src/store/kv.js";
+import { answerKey, fingerprint, ownKey, recallShared, rememberShared } from "../src/store/shared.js";
 import { buildIndex, search, type Index, type Passage, type PassageImage } from "../src/library/search.js";
 
 const MODEL = "claude-opus-5-5";
@@ -14,6 +16,8 @@ const json = (status: number, body: unknown) =>
   new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json", "cache-control": "no-store" } });
 
 let cached: Index | undefined;
+/** Changes whenever the library's contents do, so answers remembered from an older library are not reused. */
+export let libraryVersion = "";
 
 /** Loads every document under library/ and every knowledge card, once per server instance. */
 export function loadLibrary(root = process.cwd()): Index {
@@ -39,6 +43,7 @@ export function loadLibrary(root = process.cwd()): Index {
     const title = /^title:\s*(.+)$/m.exec(m[1]!)?.[1]?.trim() ?? file;
     passages.push({ id: `card:${file.replace(/\.md$/, "")}`, source: "Knowledge card (draft)", section: title, text: m[2]!.trim() });
   }
+  libraryVersion = fingerprint(passages.map((p) => `${p.id}:${p.text.length}`));
   cached = buildIndex(passages);
   return cached;
 }
@@ -47,7 +52,8 @@ export async function POST(request: Request): Promise<Response> {
   const access = gate(request.headers.get("authorization"), { APP_PASSWORD: process.env.APP_PASSWORD, VERCEL: process.env.VERCEL });
   if (access === "locked") return json(503, { error: "locked", message: "This site is locked: APP_PASSWORD is not set on the server." });
   if (access === "denied") return json(401, { error: "unauthorized", message: "Password required." });
-  if (!process.env.ANTHROPIC_API_KEY) {
+  const own = ownKey(request.headers);
+  if (!own && !process.env.ANTHROPIC_API_KEY) {
     return json(503, { error: "not-configured", message: "The guide is switched off: no ANTHROPIC_API_KEY is set on the server." });
   }
   const raw = await request.text();
@@ -69,11 +75,20 @@ export async function POST(request: Request): Promise<Response> {
     return json(500, { error: "no-library", message: "The library could not be loaded on the server." });
   }
   // The first line of the context is the topic (a lesson or step title); the rest is detail for the model only.
+  // An opening question that has been answered before, by anyone using the site, is given the same answer
+  // again with no new call. A follow-up, or a question asked from inside a lesson, depends on its context
+  // and is always asked. `fresh` asks anew on purpose.
+  const kv = kvFromEnv();
+  const sharedKey = !parsed.data.history?.length && !parsed.data.context ? answerKey(libraryVersion, parsed.data.question) : undefined;
+  if (sharedKey && !parsed.data.fresh) {
+    const known = await recallShared<AskResponse>(kv, sharedKey);
+    if (known?.covered) return json(200, { ...known, remembered: true });
+  }
   // A follow-up ("and what about its rate?") is searched together with the question before it.
   const before = parsed.data.history?.at(-1)?.question ?? "";
   const hits = search(index, `${parsed.data.question} ${(parsed.data.context ?? "").split("\n")[0]} ${before}`, 6);
 
-  const client = new Anthropic();
+  const client = own ? new Anthropic({ apiKey: own }) : new Anthropic();
   const model: GuideModel = async ({ question, context, passages, history }) => {
     const response = await client.messages.create({
       model: MODEL,
@@ -102,7 +117,9 @@ export async function POST(request: Request): Promise<Response> {
   };
 
   try {
-    return json(200, await answerQuestion(parsed.data, hits, model));
+    const answer = await answerQuestion(parsed.data, hits, model);
+    if (sharedKey && answer.covered) await rememberShared(kv, sharedKey, answer);
+    return json(200, answer);
   } catch (e) {
     if (e instanceof Anthropic.AuthenticationError) return json(503, { error: "not-configured", message: "The server's API key was rejected." });
     if (e instanceof Anthropic.RateLimitError) return json(429, { error: "rate-limited", message: "The guide is busy. Try again shortly." });

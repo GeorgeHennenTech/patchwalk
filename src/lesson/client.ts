@@ -1,4 +1,5 @@
 // Browser side of the lesson call. Sends rendered instructions and cards — never the preset.
+import { guideHeaders } from "../guide/me.js";
 import type { Card } from "./cards";
 import { cardsFor } from "./cards";
 import type { Difficulty, Lesson, LessonRequest, LessonResponse, LessonStep } from "./contract";
@@ -41,7 +42,7 @@ export async function fetchLessons(req: LessonRequest, fetchImpl: typeof fetch =
     const batch = req.steps.slice(i, i + BATCH);
     let res: Response;
     try {
-      res = await fetchImpl("/api/lesson", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ ...req, steps: batch }) });
+      res = await fetchImpl("/api/lesson", { method: "POST", headers: guideHeaders(), body: JSON.stringify({ ...req, steps: batch }) });
     } catch {
       return { kind: "unavailable", message: "Could not reach the explanation service." };
     }

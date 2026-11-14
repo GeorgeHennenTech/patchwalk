@@ -11,6 +11,8 @@ export const PointRequestSchema = z.object({
   question: z.string().trim().min(3).max(600),
   /** The guide's answer to that question, so the marks can follow its steps. Optional. */
   answer: z.string().max(MAX_POINT_ANSWER).optional(),
+  /** Look again even if this picture has been marked for this question before. */
+  fresh: z.boolean().optional(),
 });
 export type PointRequest = z.infer<typeof PointRequestSchema>;
 
@@ -27,7 +29,7 @@ export type PointModelReply = z.infer<typeof PointModelSchema>;
 
 /** A mark ready to draw: a box as fractions of the picture (0..1), a number and a label. */
 export interface Mark { n: number; /** A, B, C...: letters, because manuals print their own numbers on pictures. */ letter: string; label: string; x: number; y: number; w: number; h: number }
-export interface PointResponse { about: string; marks: Mark[] }
+export interface PointResponse { about: string; marks: Mark[]; /** Shown again from the site's memory, with no new call. */ remembered?: boolean }
 /** The model's sentence about the picture, tidied and kept short. */
 export const cleanAbout = (about: string) => about.replace(/\*\*|^#{1,6} /gm, "").replace(/\s+/g, " ").trim().slice(0, 600);
 

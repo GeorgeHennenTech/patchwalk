@@ -3,6 +3,7 @@
 // and knowledge cards — never the preset file.
 import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
+import { ownKey } from "../src/store/shared.js";
 import { gate } from "../src/lesson/auth.js";
 import { LessonRequestSchema, ModelOutputSchema } from "../src/lesson/contract.js";
 import { SYSTEM_PROMPT, userPrompt } from "../src/lesson/prompt.js";
@@ -19,7 +20,9 @@ export async function POST(request: Request): Promise<Response> {
   const access = gate(request.headers.get("authorization"), { APP_PASSWORD: process.env.APP_PASSWORD, VERCEL: process.env.VERCEL });
   if (access === "locked") return json(503, { error: "locked", message: "This site is locked: APP_PASSWORD is not set on the server." });
   if (access === "denied") return json(401, { error: "unauthorized", message: "Password required." });
-  if (!process.env.ANTHROPIC_API_KEY) {
+  // A learner may send their own Claude key with the request; it is used for this call only and never kept.
+  const own = ownKey(request.headers);
+  if (!own && !process.env.ANTHROPIC_API_KEY) {
     return json(503, { error: "not-configured", message: "Explanations are switched off: no ANTHROPIC_API_KEY is set on the server." });
   }
   const raw = await request.text();
@@ -33,7 +36,7 @@ export async function POST(request: Request): Promise<Response> {
   const parsed = LessonRequestSchema.safeParse(body);
   if (!parsed.success) return json(400, { error: "bad-request", message: "Request does not match the lesson contract." });
 
-  const client = new Anthropic();
+  const client = own ? new Anthropic({ apiKey: own }) : new Anthropic();
   const callModel: ModelCall = async ({ difficulty, steps, patchText, feedback }) => {
     const response = await client.messages.parse({
       model: MODEL,

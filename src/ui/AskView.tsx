@@ -34,9 +34,10 @@ export function AskView() {
     const known = again === undefined && history.length === 0 ? recall<AskResponse>(ANSWERS, key) : undefined;
     if (known) { setTurns([...before, { question: text, outcome: { kind: "ok", answer: known }, remembered: true }]); return; }
     setTurns([...before, { question: text }]);
-    const outcome = await askGuide(text, undefined, fetch, history);
+    const outcome = await askGuide(text, undefined, fetch, history, again !== undefined);
     if (outcome.kind === "ok" && outcome.answer.covered && history.length === 0) remember(ANSWERS, key, outcome.answer);
-    setTurns((t) => t.map((turn, i) => (i === before.length && !turn.outcome ? { ...turn, outcome } : turn)));
+    const remembered = outcome.kind === "ok" && outcome.answer.remembered === true;
+    setTurns((t) => t.map((turn, i) => (i === before.length && !turn.outcome ? { ...turn, outcome, remembered } : turn)));
   }
   function save() {
     const done = saveChat({ id: chatId, turns });
@@ -76,7 +77,7 @@ export function AskView() {
         <article key={i} className="step turn">
           <h4>{t.question}</h4>
           {!t.outcome && <p className="muted">Looking through the library…</p>}
-          {t.remembered && <p className="note">You asked this before on this device, so this is the answer from then and no new call was made. <button className="link" disabled={busy} onClick={() => void ask(t.question, i)}>Ask again fresh</button></p>}
+          {t.remembered && <p className="note">This question has been answered before, so this is the answer from then and no new call was made. <button className="link" disabled={busy} onClick={() => void ask(t.question, i)}>Ask again fresh</button></p>}
           {t.outcome && <Answer outcome={t.outcome} question={t.question} />}
         </article>
       ))}

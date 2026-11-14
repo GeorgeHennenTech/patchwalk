@@ -1,5 +1,6 @@
 // One-click check of the explanation service: sends a small built-in step (no preset involved) and
 // reports, in plain words, how far the request got. Used to diagnose a deployment.
+import { guideHeaders } from "../guide/me.js";
 import type { Card } from "./cards";
 import type { LessonRequest, LessonResponse } from "./contract";
 import { validateLesson } from "./validator";
@@ -43,7 +44,7 @@ export async function runSelfTest(cards: Card[], fetchImpl: typeof fetch = fetch
   const started = now();
   let res: Response;
   try {
-    res = await fetchImpl("/api/lesson", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(req) });
+    res = await fetchImpl("/api/lesson", { method: "POST", headers: guideHeaders(), body: JSON.stringify(req) });
   } catch {
     return { ok: false, headline: "The request never reached the server.", details: ["Network error calling /api/lesson. Check your connection, or that the site is deployed with its api folder."] };
   }

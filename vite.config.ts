@@ -9,8 +9,8 @@ function devApi(): Plugin {
     name: "dev-api",
     configureServer(server) {
       const env = loadEnv("development", process.cwd(), "");
-      for (const k of ["ANTHROPIC_API_KEY", "APP_PASSWORD"]) if (env[k] && !process.env[k]) process.env[k] = env[k];
-      for (const route of ["lesson", "ask", "image", "point"]) server.middlewares.use(`/api/${route}`, async (req: IncomingMessage, res) => {
+      for (const k of ["ANTHROPIC_API_KEY", "APP_PASSWORD", "KV_REST_API_URL", "KV_REST_API_TOKEN", "UPSTASH_REDIS_REST_URL", "UPSTASH_REDIS_REST_TOKEN"]) if (env[k] && !process.env[k]) process.env[k] = env[k];
+      for (const route of ["lesson", "ask", "image", "point", "store"]) server.middlewares.use(`/api/${route}`, async (req: IncomingMessage, res) => {
         try {
           const chunks: Buffer[] = [];
           for await (const c of req) chunks.push(c as Buffer);
@@ -18,7 +18,7 @@ function devApi(): Plugin {
           const handler = (mod as Record<string, (r: Request) => Promise<Response>>)[req.method ?? "GET"];
           if (!handler) { res.statusCode = 405; res.end(); return; }
           const isGet = req.method === "GET" || req.method === "HEAD";
-          const out = await handler(new Request(`http://localhost${(req as IncomingMessage & { originalUrl?: string }).originalUrl ?? `/api/${route}`}`, { method: req.method, ...(isGet ? {} : { body: Buffer.concat(chunks) }), headers: { "content-type": "application/json", ...(req.headers.authorization ? { authorization: req.headers.authorization } : {}) } }));
+          const out = await handler(new Request(`http://localhost${(req as IncomingMessage & { originalUrl?: string }).originalUrl ?? `/api/${route}`}`, { method: req.method, ...(isGet ? {} : { body: Buffer.concat(chunks) }), headers: { "content-type": "application/json", ...(req.headers.authorization ? { authorization: req.headers.authorization } : {}), ...(typeof req.headers["x-anthropic-key"] === "string" ? { "x-anthropic-key": req.headers["x-anthropic-key"] } : {}) } }));
           res.statusCode = out.status;
           res.setHeader("content-type", out.headers.get("content-type") ?? "application/json");
           res.end(Buffer.from(await out.arrayBuffer()));

@@ -12,9 +12,13 @@ export function loadDone(storage: Pick<Storage, "getItem"> | undefined = globalT
     return [];
   }
 }
-export function saveDone(ids: string[], storage: Pick<Storage, "setItem"> | undefined = globalThis.localStorage): void {
+/** Called after finished lessons change, so they can be copied to the site's database. Set by the app. */
+let changed: () => void = () => {};
+export const onProgressChanged = (fn: () => void) => { changed = fn; };
+export function saveDone(ids: string[], storage: Pick<Storage, "setItem"> | undefined = globalThis.localStorage, report = false): void {
   try {
     storage?.setItem(KEY, JSON.stringify(ids));
+    if (report) changed();
   } catch {
     /* private window or blocked storage: progress is just not remembered */
   }

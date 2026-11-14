@@ -12,6 +12,8 @@ export const AskRequestSchema = z.object({
   /** Optional: what the learner is looking at (a lesson title or step text). Never a preset file. */
   context: z.string().max(2000).optional(),
   /** Earlier turns of this conversation, oldest first, so a follow-up can be understood. Never a source. */
+  /** Ask anew even if this question has been answered before. */
+  fresh: z.boolean().optional(),
   history: z.array(z.object({ question: z.string().max(600), answer: z.string().max(MAX_HISTORY_ANSWER) })).max(MAX_HISTORY_TURNS).optional(),
 });
 export type AskRequest = z.infer<typeof AskRequestSchema>;
@@ -39,6 +41,8 @@ export interface AskResponse {
   covered: boolean;
   segments: AnswerSegment[];
   sources: AnswerSource[];
+  /** Set by the server when this answer was given before and is being shown again without a new call. */
+  remembered?: boolean;
 }
 
 /** What the model returns, reduced to the parts used here. */

@@ -15,6 +15,7 @@ import { LearnView } from "./ui/LearnView";
 import { LessonView } from "./ui/LessonView";
 import { ModulesView } from "./ui/ModulesView";
 import { OpenLesson } from "./ui/Answer";
+import { DatabaseCheck, Players } from "./ui/Players";
 import { PlayView } from "./ui/PlayView";
 import { SelfTest } from "./ui/SelfTest";
 
@@ -111,6 +112,7 @@ export function App() {
           <button role="tab" aria-selected={mode === "check"} className={mode === "check" ? "on" : ""} onClick={() => setMode("check")}>System check</button>
         </div>
       </header>
+      <Players />
 
       {mode === "play" && (
         <section className="panel">
@@ -125,7 +127,7 @@ export function App() {
       )}
 
       {mode === "ask" && <AskView />}
-      {mode === "check" && <SelfTest cards={CARDS} />}
+      {mode === "check" && <><SelfTest cards={CARDS} /><DatabaseCheck /></>}
 
       {mode === "rebuild" && <DropZone onFile={onFile} compact={state.kind !== "empty"} />}
 

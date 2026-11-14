@@ -3,8 +3,7 @@
 // for a limited time because the library changes; anything remembered can be asked again fresh.
 export const CACHE_DAYS = 30, CACHE_MAX = 200;
 
-/** Two wordings count as the same question when they differ only in capitals, punctuation and spacing. */
-export const sameQuestionKey = (q: string) => q.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+export { sameQuestionKey } from "../library/keys";
 
 type Store = Pick<Storage, "getItem" | "setItem">;
 interface Entry<T> { at: number; value: T }

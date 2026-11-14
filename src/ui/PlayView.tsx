@@ -230,7 +230,7 @@ export function PlayView({ cards, wanted }: { cards: Card[]; wanted?: { id: stri
   const step = lesson.steps[Math.min(stepIndex, lesson.steps.length - 1)] ?? { do: "", show: [], hear: "", target: "", check: () => false };
   const begun = useRef("");
 
-  useEffect(() => saveDone(done), [done]);
+  useEffect(() => saveDone(done, undefined, true), [done]);
   // The guide pointed here from an answer.
   useEffect(() => { if (wanted && LESSONS.some((l) => l.id === wanted.id)) setLessonId(wanted.id); }, [wanted]);
   const [plain, setPlain] = useState(() => { try { return localStorage.getItem(SKIN_KEY) === "off"; } catch { return false; } });

@@ -391,6 +391,32 @@ Added after the first eight milestones (owner asked for all four in one go):
   **Open with the owner:** a database (shared answer and picture memory, logins or a "who's playing" picker,
   per-person keys), and a search upgrade once more books are in (plan given: split pages into passages,
   widen the keyword search, then have a small model pick the best passages).
+- **Database, "Who's playing?", shared memory, own keys (14 Nov 2026, owner's request).** The owner connected
+  an Upstash Redis store to the Vercel project (free plan). `src/store/kv.ts` talks to it over its REST API
+  with plain `fetch` (no new dependency), finding the settings under `KV_REST_API_URL`/`_TOKEN`,
+  `UPSTASH_REDIS_REST_URL`/`_TOKEN`, or a custom prefix. **Everything works without it**: no store, or one
+  that fails, means the app behaves as before. Server files under `src/store/` use `.js` import suffixes.
+  - `api/store.ts` + `src/store/players.ts`: the list of people (`pw:players`, at most 12, names unique) and
+    each person's saved things (`pw:p:<id>`: finished lessons and saved chats). No passwords: the site's one
+    password is the gate; the picker only keeps people's things apart. `?check=1` does a write-and-read for
+    the System check tab (`DatabaseCheck`).
+  - `src/ui/Players.tsx`: the "Who's playing?" panel under the header, shown only when a store is
+    configured: pick a name, add yourself, remove someone, stop playing on this browser. The first name
+    chosen on a browser that already held progress adopts it. `src/guide/sync.ts`: the browser's storage
+    stays the working copy; `playAs` brings a person's things down (then reloads), `schedulePush` copies
+    changes up 1.5 s later, and `pushNow` reads the database's copy first and joins the two (`merge`: every
+    lesson, newest version of each chat) so a stale browser never overwrites newer work; a deletion pushes
+    the exact copy instead. The Serum-tasks progress is not synced.
+  - Shared memory (`src/store/shared.ts`): `api/ask.ts` returns a stored answer for an opening question
+    (no history, no lesson context) that anyone has asked before, keyed by a hash of the tidied question and
+    a fingerprint of the library, kept 90 days; `api/point.ts` does the same per picture and question.
+    `fresh: true` on the request asks anew. The reply carries `remembered: true`.
+  - Own key: a person can enter their own Claude key in the picker; it is kept in that browser only
+    (`src/guide/me.ts`) and sent as `x-anthropic-key` with guide, picture and lesson requests; the server
+    uses it for that request and never stores or logs it.
+  Tested with a store kept in memory and, in a browser, with a stand-in for `/api/store`. **Not yet run
+  against the real database** (the build session has no access to it): the System check tab's "Check the
+  database" button is the first real test.
 - **Guide in context** — `src/ui/Answer.tsx` (`AskBox`): an ask box inside each practice lesson (sends lesson,
   step, current synth settings and finished lessons) and at the top of a rebuilt patch (sends only the
   code-written instructions, per rule 5; never the preset). The first line of the context is the retrieval
@@ -403,7 +429,9 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
 
 ## Long-term direction (owner's stated goals; not yet scheduled or built)
 - **Private, single-user.** The owner has said this program is strictly for them and will never be distributed.
-  Design for one user; do not add accounts, sharing or public pages. On 14 Nov 2026 the owner said they
+  Design for one user; do not add accounts, sharing or public pages (superseded in part on 14 Nov 2026: the
+  owner asked for a "Who's playing?" picker so a few friends each keep their own progress; still no passwords,
+  no public pages). On 14 Nov 2026 the owner said they
   were giving the link and password to one friend: a private share behind the same single password, which
   changes nothing in the design (progress is per browser; the friend's guide questions bill the owner's key). Rule 4 still applies to the name and look.
 - **Course:** `docs/CURRICULUM.md` maps 16 tracks and about 400 lessons (one line each); `docs/lessons/` holds

@@ -1,0 +1,496 @@
+{
+ "C6.1": [
+  {
+   "q": "How is warp different from a filter?",
+   "options": [
+    "Warp removes harmonics; a filter can only add them",
+    "Warp changes the note; a filter changes the loudness",
+    "Warp can add harmonics; a filter can only take them away",
+    "Warp needs a second oscillator; a filter does not"
+   ],
+   "answer": 2,
+   "why": "Warp changes the wave's outline, so it can add harmonics, while a filter can only take them away.",
+   "point": 1
+  },
+  {
+   "q": "Why does the note stay the same when you turn warp up?",
+   "options": [
+    "The wave still repeats just as often",
+    "The filter holds the pitch in place",
+    "Hold is switched on for the note",
+    "The new harmonics are too quiet to hear"
+   ],
+   "answer": 0,
+   "why": "Pitch comes from how often the wave repeats, and warp does not change that.",
+   "point": 2
+  },
+  {
+   "q": "You set a saw to Mirror at 100%. What happens to the sound?",
+   "options": [
+    "It turns brighter and buzzier, like a pulse",
+    "It jumps up to a higher note",
+    "It becomes a pure tone with one harmonic",
+    "It turns soft and hollow, like a triangle"
+   ],
+   "answer": 3,
+   "why": "Read forwards then backwards, the saw's outline becomes a triangle, and a new outline means different harmonics.",
+   "point": 0
+  }
+ ],
+ "C6.2": [
+  {
+   "q": "Why does the pitch hold when sync reads the wave faster?",
+   "options": [
+    "The wave is read forwards and then backwards",
+    "The wave starts again at the end of every cycle",
+    "A macro keeps pulling the pitch back down",
+    "The extra copies are too quiet to hear"
+   ],
+   "answer": 1,
+   "why": "Sync restarts the wave every time the cycle ends, so the cycle is as long as before.",
+   "point": 0
+  },
+  {
+   "q": "What makes sync sound torn and bright?",
+   "options": [
+    "A filter opens wider as the amount is turned up",
+    "A second oscillator plays slightly out of tune with the first",
+    "The wave gets louder until its top is cut flat",
+    "The last copy of the wave is cut short, leaving a sharp edge"
+   ],
+   "answer": 3,
+   "why": "The cut-short copy leaves a sharp edge, and sharp edges are bright.",
+   "point": 1
+  },
+  {
+   "q": "You want to play the sync sweep from one knob you can name. What do you do?",
+   "options": [
+    "Send a macro to Warp amount and turn the macro",
+    "Leave Warp amount at full and play other notes",
+    "Change the shape from saw to sine and back",
+    "Switch Hold off and strike the key harder"
+   ],
+   "answer": 0,
+   "why": "The sweep of the amount is the sound, so a macro sent to Warp amount lets you play it.",
+   "point": 2
+  }
+ ],
+ "C6.3": [
+  {
+   "q": "What does Squeeze do to a square wave?",
+   "options": [
+    "Makes it repeat faster, raising the pitch",
+    "Rounds off its corners, turning it into a sine",
+    "Makes the high part shorter, turning it into a pulse",
+    "Reads it forwards and then backwards"
+   ],
+   "answer": 2,
+   "why": "Squeeze hurries through the first half, so the square's high part gets shorter and its pulse width changes.",
+   "point": 0
+  },
+  {
+   "q": "How does a narrow pulse sound next to a square, and why?",
+   "options": [
+    "Hollower, because the even harmonics are taken out",
+    "Thinner and more nasal, because even harmonics come in",
+    "Duller, because the high harmonics are filtered off",
+    "Lower, because the wave repeats less often"
+   ],
+   "answer": 1,
+   "why": "A square has only odd harmonics, and narrowing the pulse lets the even ones in, which sounds thinner and more nasal.",
+   "point": 1
+  },
+  {
+   "q": "What do you get by moving the pulse width slowly back and forth?",
+   "options": [
+    "A steady rise and fall in the note's pitch",
+    "A tone that fades slowly away to silence",
+    "A clean jump up an octave and back",
+    "A rich, shifting tone, as in string and pad patches"
+   ],
+   "answer": 3,
+   "why": "Slowly moving the pulse width gives a rich, animated tone.",
+   "point": 2
+  }
+ ],
+ "C6.4": [
+  {
+   "q": "What happens when a pitch wobble is sped up until it is as fast as a note?",
+   "options": [
+    "You stop hearing the pitch move and hear new harmonics",
+    "The vibrato gets wider and easier to hear",
+    "The note gets louder but keeps its tone",
+    "The note drops out and leaves a gap"
+   ],
+   "answer": 0,
+   "why": "FM is pitch modulation so fast that it is heard as tone, not as movement.",
+   "point": 0
+  },
+  {
+   "q": "With FM on, B sits an octave and 6 semitones above A. Why does it clang?",
+   "options": [
+    "The FM amount has been turned up too far",
+    "Oscillator B is now loud enough to be heard",
+    "The new partials no longer line up with the note's harmonics",
+    "The envelope is making the note far too short"
+   ],
+   "answer": 2,
+   "why": "B's pitch against A's sets where the new partials fall, and in between whole octaves they miss the harmonics.",
+   "point": 1
+  },
+  {
+   "q": "How do you make a bell that starts bright and mellows as it rings out?",
+   "options": [
+    "Send a slow LFO to oscillator A's pitch",
+    "Send an envelope to the FM amount",
+    "Turn the FM amount up and leave it",
+    "Switch oscillator B on and raise its level"
+   ],
+   "answer": 1,
+   "why": "An envelope on the FM amount gives a bright strike that mellows to a pure tone.",
+   "point": 2
+  }
+ ],
+ "C6.5": [
+  {
+   "q": "Two pure tones are ring modulated at full amount. What comes out?",
+   "options": [
+    "Both original tones, a little louder",
+    "The original tones plus two new ones",
+    "Only the lower tone, an octave down",
+    "Only their sum and their difference"
+   ],
+   "answer": 3,
+   "why": "Two pure tones give one tone at the sum of their frequencies and one at the difference, and the originals are gone.",
+   "point": 1
+  },
+  {
+   "q": "How does ring modulation combine oscillators A and B?",
+   "options": [
+    "It multiplies one signal by the other",
+    "It adds one signal to the other",
+    "It plays one signal after the other",
+    "It uses one signal to filter the other"
+   ],
+   "answer": 0,
+   "why": "Ring modulation multiplies one signal by another.",
+   "point": 0
+  },
+  {
+   "q": "With two sines, how does FM differ from ring modulation as you turn it up?",
+   "options": [
+    "Ring keeps adding pairs of partials; FM makes just one pair",
+    "FM changes the note's loudness; ring changes its pitch",
+    "FM keeps adding pairs of partials; ring makes just one pair",
+    "Ring needs B to be heard; FM works with B off"
+   ],
+   "answer": 2,
+   "why": "FM makes many pairs of partials as it rises, while ring modulation makes one pair per pair of harmonics.",
+   "point": 2
+  }
+ ],
+ "C6.C": [
+  {
+   "q": "The hidden sound no longer contains the note being played. What should you suspect?",
+   "options": [
+    "Sync",
+    "Ring modulation",
+    "Bend",
+    "Squeeze"
+   ],
+   "answer": 1,
+   "why": "Ring modulation removes the played note and leaves new tones in its place.",
+   "point": 0
+  },
+  {
+   "q": "The hidden sound's added brightness is smooth, not torn. Which should you try?",
+   "options": [
+    "Sync or bend",
+    "Sync or squeeze",
+    "Bend or squeeze",
+    "Sync only"
+   ],
+   "answer": 2,
+   "why": "A smooth brightness points to bend or squeeze, while a torn, vowel-like one is sync.",
+   "point": 1
+  },
+  {
+   "q": "In an FM round, the new partials are further apart than yours. What do you change?",
+   "options": [
+    "The pitch of oscillator B",
+    "The level of oscillator B",
+    "The FM amount",
+    "The warp amount"
+   ],
+   "answer": 0,
+   "why": "With FM, B's pitch sets how far apart the new partials are.",
+   "point": 2
+  }
+ ],
+ "C7.1": [
+  {
+   "q": "Why does distortion make a sound brighter?",
+   "options": [
+    "It turns up the high harmonics that were already there",
+    "It takes away the low harmonics below a set point",
+    "It reshapes the wave, and a new shape means new harmonics",
+    "It plays a second, higher note on top"
+   ],
+   "answer": 2,
+   "why": "Distortion reshapes a signal that is too big to fit, and the changed shape has new harmonics.",
+   "point": 0
+  },
+  {
+   "q": "On the scope the smooth wave has become a staircase. Which type is on?",
+   "options": [
+    "Soft clip",
+    "Crush",
+    "Hard clip",
+    "Fold"
+   ],
+   "answer": 1,
+   "why": "Crush rounds every value to a coarse grid of steps, which looks like a staircase.",
+   "point": 1
+  },
+  {
+   "q": "You want the weight of the clean sound with some distorted edge. What do you do?",
+   "options": [
+    "Turn Drive all the way up",
+    "Turn Drive all the way down",
+    "Turn Mix all the way up",
+    "Turn Mix down to about half"
+   ],
+   "answer": 3,
+   "why": "Mix blends the clean sound back in with the distorted one.",
+   "point": 2
+  }
+ ],
+ "C7.2": [
+  {
+   "q": "Cutting High on the EQ made the sound duller but not muffled. Why?",
+   "options": [
+    "The high harmonics are quieter, not gone",
+    "The low harmonics were boosted to match",
+    "The EQ only works on the middle band",
+    "The high harmonics were removed past a point"
+   ],
+   "answer": 0,
+   "why": "An EQ turns a region down by a set amount, while a filter removes everything past a point.",
+   "point": 0
+  },
+  {
+   "q": "A sound is too thin and needs more weight at the bottom. What do you do?",
+   "options": [
+    "Cut the low band",
+    "Boost the high band",
+    "Boost the low band",
+    "Cut the middle band"
+   ],
+   "answer": 2,
+   "why": "The low band turns the bottom end up or down, and boosting it makes the sound heavier.",
+   "point": 1
+  },
+  {
+   "q": "What is the usual way to find and fix a boxy part of a sound?",
+   "options": [
+    "Cut Low and High until only the boxy part is left",
+    "Boost Mid, sweep its frequency to find it, then cut",
+    "Cut Mid fully, then sweep until the sound goes quiet",
+    "Boost all three bands, then turn the level down"
+   ],
+   "answer": 1,
+   "why": "A big boost swept across the range makes the problem jump out, and then you set the amount you want.",
+   "point": 2
+  }
+ ],
+ "C7.3": [
+  {
+   "q": "The threshold is set so high that no note reaches it. What does the compressor do?",
+   "options": [
+    "It turns every note down equally",
+    "It turns down only the soft notes",
+    "It turns down only the start of each note",
+    "Nothing: no note is turned down"
+   ],
+   "answer": 3,
+   "why": "A compressor only turns down what goes over the threshold.",
+   "point": 0
+  },
+  {
+   "q": "After compressing, you turn Make-up up. What happens to the soft notes?",
+   "options": [
+    "They end up much louder than before",
+    "They stay as quiet as before",
+    "They are turned down more than hard notes",
+    "They get a sharper front than hard notes"
+   ],
+   "answer": 0,
+   "why": "Make-up gain brings the level back up, which lifts the quiet parts.",
+   "point": 1
+  },
+  {
+   "q": "Which setting lets the very start of a hard note through at full level?",
+   "options": [
+    "A fast attack",
+    "A fast release",
+    "A slow attack",
+    "A higher ratio"
+   ],
+   "answer": 2,
+   "why": "With a slow attack the start gets through before the compressor catches up.",
+   "point": 2
+  }
+ ],
+ "C7.4": [
+  {
+   "q": "Why do a chorus's copies drift flat and sharp against the original?",
+   "options": [
+    "Each copy comes from an extra detuned oscillator",
+    "Their delays keep changing, which shifts the pitch slightly",
+    "Each copy is passed through a moving filter",
+    "Their levels keep changing, which sounds like pitch"
+   ],
+   "answer": 1,
+   "why": "A chorus keeps changing each copy's delay, and a changing delay raises or lowers the pitch a little.",
+   "point": 0
+  },
+  {
+   "q": "With Depth at 0, what does the chorus sound like?",
+   "options": [
+    "A gentle swirl that moves slowly",
+    "A fast wobble that sounds out of tune",
+    "No effect: only the original sound",
+    "A hollow, static colour with no movement"
+   ],
+   "answer": 3,
+   "why": "Depth is how far the copies drift, so at 0 they sit still and give a fixed, hollow colour.",
+   "point": 1
+  },
+  {
+   "q": "How is chorus different from unison?",
+   "options": [
+    "Chorus is applied afterwards to the whole sound; unison is inside each note",
+    "Chorus is inside each note; unison is applied afterwards to the whole sound",
+    "Chorus changes only the pitch; unison changes only the loudness of each note",
+    "Chorus adds echoes after each note; unison adds a long smooth wash"
+   ],
+   "answer": 0,
+   "why": "Unison is extra oscillators inside each note, and chorus is applied afterwards to everything at once.",
+   "point": 2
+  }
+ ],
+ "C7.5": [
+  {
+   "q": "You want exactly one echo after each note. What do you set?",
+   "options": [
+    "Feedback to about 75%",
+    "Time to half a beat",
+    "Feedback to 0",
+    "Time to about 60 ms"
+   ],
+   "answer": 2,
+   "why": "Feedback sets how many echoes there are, and with none there is a single echo.",
+   "point": 0
+  },
+  {
+   "q": "What happens when the delay time is made very short?",
+   "options": [
+    "The echoes blur into a metallic flutter stuck to the note",
+    "The echoes stop and the note is left clean",
+    "The echoes get louder with every repeat",
+    "The echoes land exactly on every click"
+   ],
+   "answer": 0,
+   "why": "Very short times stop sounding like separate echoes and colour the tone.",
+   "point": 1
+  },
+  {
+   "q": "Why set the delay time in beats?",
+   "options": [
+    "The echoes die away more slowly",
+    "The echoes keep one fixed gap at any tempo",
+    "The delay makes more echoes for each note",
+    "The echoes stay in time when the tempo changes"
+   ],
+   "answer": 3,
+   "why": "Set in beats, the delay time follows the tempo, so the echoes stay on the rhythm.",
+   "point": 2
+  }
+ ],
+ "C7.6": [
+  {
+   "q": "What is reverb made of?",
+   "options": [
+    "A few clear echoes spaced evenly in time",
+    "Thousands of echoes too close together to hear separately",
+    "Copies of the sound drifting slightly out of tune",
+    "One long echo that repeats on the beat"
+   ],
+   "answer": 1,
+   "why": "Reverb is a dense wash of echoes from every surface, which then dies away.",
+   "point": 0
+  },
+  {
+   "q": "You want the sound to seem further away without making the tail longer. What do you do?",
+   "options": [
+    "Turn Mix down",
+    "Turn Mix up",
+    "Turn Size up",
+    "Turn Size down"
+   ],
+   "answer": 1,
+   "why": "Mix sets how far away the sound seems, and Size sets how long the tail lasts.",
+   "point": 1
+  },
+  {
+   "q": "Which kind of playing suits a long reverb best?",
+   "options": [
+    "A fast run of short notes",
+    "Quick repeated notes with no gaps",
+    "Fast playing with Mix at full",
+    "Single notes with long gaps after them"
+   ],
+   "answer": 3,
+   "why": "Long tails blur fast notes together, while a single note has room to ring.",
+   "point": 2
+  }
+ ],
+ "C7.C": [
+  {
+   "q": "The hidden sound differs in the tone itself, not in what follows the note. Which effects do you check?",
+   "options": [
+    "Delay or reverb",
+    "Distortion or EQ",
+    "Delay or EQ",
+    "Reverb or distortion"
+   ],
+   "answer": 1,
+   "why": "A change in the tone itself points to distortion or EQ.",
+   "point": 0
+  },
+  {
+   "q": "After the note you hear separate repeats, not a smooth wash. Which effect is it?",
+   "options": [
+    "A reverb",
+    "A distortion",
+    "An EQ",
+    "A delay"
+   ],
+   "answer": 3,
+   "why": "Separate repeats are a delay, and a smooth wash is a reverb.",
+   "point": 1
+  },
+  {
+   "q": "How can you judge the hidden sound's delay time by ear?",
+   "options": [
+    "Count how many echoes there are",
+    "Listen to how bright the echoes are",
+    "Count the gap between the echoes",
+    "Listen to how long the space rings"
+   ],
+   "answer": 2,
+   "why": "The gap between echoes is the delay time, so counting it tells you the setting.",
+   "point": 2
+  }
+ ]
+}

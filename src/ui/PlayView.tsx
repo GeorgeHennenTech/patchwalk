@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { CHAPTER_ORDER, CHAPTERS, chapterOf, LESSONS, placeOf } from "../course/lessons";
 import { allMatch, compareToTarget, type MatchVerdict } from "../course/match";
+import { ago, focusOn, loadPlace, minutesLeft, savePlace, setFocus, stopNote, unitsIn, type Place } from "../course/focus";
 import { guideContext, loadDone, saveDone, suggestNext } from "../course/progress";
 import type { MatchRound, Panel, PlayableLesson } from "../course/types";
 import type { Card } from "../lesson/cards";
@@ -248,7 +249,13 @@ function EarCheck({ kind, synth, onPass }: { kind: "shape" | "higher"; synth: Sy
 export function PlayView({ cards, wanted }: { cards: Card[]; wanted?: { id: string; n: number } }) {
   const synth = useSynth();
   const [done, setDone] = useState<string[]>(() => loadDone());
-  const [lessonId, setLessonId] = useState(() => (suggestNext(LESSONS, loadDone()) ?? LESSONS[0]!).id);
+  // Focus mode: with it on, the page opens where the learner left off, settings and all
+  const [focus, setFocusState] = useState(() => focusOn());
+  const [was, setWas] = useState<Place | undefined>(() => (focusOn() ? loadPlace(LESSONS, loadDone()) : undefined));
+  const resume = useRef<Place | undefined>(was);
+  const sitting = useRef(0); // lessons finished since the page was opened
+  const [navOpen, setNavOpen] = useState(false);
+  const [lessonId, setLessonId] = useState(() => was?.lessonId ?? (suggestNext(LESSONS, loadDone()) ?? LESSONS[0]!).id);
   const [stepIndex, setStepIndex] = useState(0);
   const [remarks, setRemarks] = useState<Record<number, string>>({});
   const [earPassed, setEarPassed] = useState(false);
@@ -276,9 +283,14 @@ export function PlayView({ cards, wanted }: { cards: Card[]; wanted?: { id: stri
 
   // Entering a lesson: load its starting settings.
   useEffect(() => {
-    synth.reset({ ...INITIAL, ...lesson.initial });
-    setStepIndex(0); setRemarks({}); setEarPassed(false); setRoundsPassed(false); setAll(false);
-    begun.current = "";
+    // (kept until another lesson is opened, so running this twice gives the same result)
+    const back = resume.current?.lessonId === lessonId ? resume.current : undefined;
+    if (!back) { resume.current = undefined; setWas(undefined); }
+    synth.reset({ ...INITIAL, ...lesson.initial, ...(back?.state ?? {}) } as typeof INITIAL);
+    setStepIndex(back?.stepIndex ?? 0); setRemarks({}); setEarPassed(false); setRoundsPassed(false); setAll(false);
+    // a step picked up where it was left must not have its settings put back to the step's starting ones
+    begun.current = back ? `${lessonId}:${back.stepIndex}` : "";
+    if (back) synth.beginStep(undefined);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lessonId]);
   // Entering a step: forget what was done before.
@@ -290,12 +302,18 @@ export function PlayView({ cards, wanted }: { cards: Card[]; wanted?: { id: stri
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lessonId, stepIndex]);
 
+  // Remember the place: on every step, and when the page is hidden or closed (with the knobs as they were then)
+  const here = useRef<Place | undefined>(undefined);
+  here.current = finishedSteps ? undefined : { lessonId, stepIndex, state: synth.state as unknown as Record<string, unknown>, at: Date.now() };
+  useEffect(() => { savePlace(here.current); }, [lessonId, stepIndex, finishedSteps]);
+  useEffect(() => { const keep = () => savePlace(here.current); window.addEventListener("pagehide", keep); document.addEventListener("visibilitychange", keep); return () => { window.removeEventListener("pagehide", keep); document.removeEventListener("visibilitychange", keep); }; }, []);
+
   const snap = synth.snap();
   const passed = !finishedSteps && step.check(snap);
   const next = () => {
     const remark = step.remark?.(snap);
     if (remark) setRemarks((r) => ({ ...r, [stepIndex]: remark }));
-    setStepIndex(stepIndex + 1);
+    setStepIndex(stepIndex + 1); setWas(undefined);
   };
   const complete = finishedSteps && (!lesson.earCheck || earPassed) && (!lesson.rounds || roundsPassed);
   const inRounds = finishedSteps && !!lesson.rounds && !roundsPassed;
@@ -306,7 +324,10 @@ export function PlayView({ cards, wanted }: { cards: Card[]; wanted?: { id: stri
       else if (t.shape && t.hz) synth.engine.current?.audition(t.shape, t.hz, t.seconds, t.at, t.gainDb);
     }
   };
-  useEffect(() => { if (complete && !done.includes(lesson.id)) setDone((d) => [...d, lesson.id]); }, [complete, done, lesson.id]);
+  useEffect(() => { if (complete && !done.includes(lesson.id)) { sitting.current += 1; setDone((d) => [...d, lesson.id]); } }, [complete, done, lesson.id]);
+  const unitsDone = Math.min(stepIndex, lesson.steps.length) + (roundsPassed ? lesson.rounds?.length ?? 0 : 0) + (earPassed ? 2 : 0);
+  const left = complete ? 0 : minutesLeft(lesson, unitsDone), allUnits = unitsIn(lesson);
+  const toggleFocus = () => { setFocus(!focus); setFocusState(!focus); };
 
   const lessonCards = lesson.cardIds.map((id) => cards.find((c) => c.id === id)).filter((c): c is Card => !!c);
   const suggestion = suggestNext(LESSONS, done);
@@ -316,8 +337,9 @@ export function PlayView({ cards, wanted }: { cards: Card[]; wanted?: { id: stri
   const context = useMemo(() => guideContext(lesson, stepIndex, describe(synth.state), LESSONS, done), [lesson, stepIndex, synth.state, done]);
 
   return (
-    <div className="learn">
-      <nav className="learn-nav" aria-label="Lessons">
+    <div className={`learn${focus ? " focus" : ""}${focus && !navOpen ? " nav-shut" : ""}`}>
+      {focus && <button className="link nav-toggle" aria-expanded={navOpen} onClick={() => setNavOpen(!navOpen)}>{navOpen ? "Hide the lesson list" : `All lessons (${done.length} of ${LESSONS.length} done)`}</button>}
+      <nav className="learn-nav" aria-label="Lessons" hidden={focus && !navOpen}>
         <div className="learn-progress">{done.length} of {LESSONS.length} done. Take them in any order.</div>
         {CHAPTER_ORDER.map((c) => (
           <div key={c} className="learn-chapter" role="group" aria-label={CHAPTERS[c]}>
@@ -334,8 +356,25 @@ export function PlayView({ cards, wanted }: { cards: Card[]; wanted?: { id: stri
       </nav>
 
       <article className="learn-body">
-        <p className="learn-place">{place.chapter} · lesson {place.number} of {place.of}</p>
+        <p className="learn-place">{place.chapter} · lesson {place.number} of {place.of} <button className="focus-switch" aria-pressed={focus} onClick={toggleFocus} title="Keeps the time and steps left in view, hides the lesson list, and brings you back to where you were">Focus mode: {focus ? "on" : "off"}</button></p>
         <h2>{lesson.title}</h2>
+        {focus && (
+          <div className="focus-bar" role="status" aria-label="Where you are in this lesson">
+            <div className="focus-bar-text">
+              <strong>{complete ? "Lesson done" : inRounds ? "Match by ear" : finishedSteps ? (lesson.earCheck && !earPassed ? "Ear check" : "Recap") : `Step ${stepIndex + 1} of ${lesson.steps.length}`}</strong>
+              <span>{complete ? "nothing left" : `about ${left} min left`}</span>
+            </div>
+            <div className="focus-bar-track" aria-hidden="true">{Array.from({ length: allUnits }, (_, i) => <i key={i} className={i < unitsDone ? "had" : i === unitsDone && !complete ? "now" : ""} />)}</div>
+            {!finishedSteps && <p className="focus-bar-do"><span>Now:</span> {step.do}</p>}
+          </div>
+        )}
+        {focus && was && was.lessonId === lesson.id && (
+          <aside className="builds-on you-were-here" aria-label="Where you were">
+            <span className="builds-on-tag">You were here</span>
+            <p>You left this lesson {ago(was.at, Date.now())}, on step {was.stepIndex + 1} of {lesson.steps.length}. The synth is set the way you left it.{was.stepIndex > 0 && <> The last thing you did: <em>{lesson.steps[was.stepIndex - 1]!.do}</em></>}</p>
+            <p><button className="link" onClick={() => setWas(undefined)}>Got it</button> · <button className="link" onClick={() => { setWas(undefined); resume.current = undefined; synth.reset({ ...INITIAL, ...lesson.initial }); begun.current = ""; setStepIndex(0); }}>Start this lesson again instead</button></p>
+          </aside>
+        )}
         {needs.length > 0 && (
           <aside className="builds-on" aria-label="Lessons this one builds on">
             <span className="builds-on-tag">Builds on</span>
@@ -392,6 +431,13 @@ export function PlayView({ cards, wanted }: { cards: Card[]; wanted?: { id: stri
             {complete && !suggestion && <p><strong>Guide:</strong> That is every lesson built so far.</p>}
           </section>
         )}
+
+        {focus && complete && (() => { const n = stopNote(sitting.current); return (
+          <aside className="builds-on stop-here" aria-label={n.title}>
+            <span className="builds-on-tag">{n.title}</span>
+            <p>{n.text}</p>
+          </aside>
+        ); })()}
 
         <AskBox context={context} placeholder="Stuck, or curious? Ask about this step" />
       </article>

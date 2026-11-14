@@ -1313,3 +1313,40 @@ describe("the Res 2 model", () => {
     expect([440, 110, 55, 261.63].map(noteNear)).toEqual(["A4", "A2", "A1", "C4"]);
   });
 });
+
+import { ago, focusOn, loadPlace, minutesLeft, savePlace, setFocus, stopNote, unitsIn } from "../src/course/focus";
+describe("focus mode", () => {
+  const store = () => { const m = new Map<string, string>(); return { getItem: (k: string) => m.get(k) ?? null, setItem: (k: string, v: string) => { m.set(k, v); }, removeItem: (k: string) => { m.delete(k); } }; };
+  it("is off until switched on, and the choice is remembered", () => {
+    const s = store();
+    expect(focusOn(s)).toBe(false); setFocus(true, s); expect(focusOn(s)).toBe(true); setFocus(false, s); expect(focusOn(s)).toBe(false);
+    expect(focusOn(undefined)).toBe(false);
+  });
+  it("remembers the place, settings and all, and forgets it when it no longer makes sense", () => {
+    const s = store(), lesson = LESSONS.find((l) => l.steps.length >= 3)!;
+    expect(loadPlace(LESSONS, [], s)).toBeUndefined();
+    savePlace({ lessonId: lesson.id, stepIndex: 2, state: { cutoff: 900 }, at: 1000 }, s);
+    expect(loadPlace(LESSONS, [], s)).toEqual({ lessonId: lesson.id, stepIndex: 2, state: { cutoff: 900 }, at: 1000 });
+    expect(loadPlace(LESSONS, [lesson.id], s)).toBeUndefined(); // finished since
+    savePlace({ lessonId: lesson.id, stepIndex: 99, state: {}, at: 1 }, s); expect(loadPlace(LESSONS, [], s)).toBeUndefined(); // no such step
+    savePlace({ lessonId: "gone", stepIndex: 0, state: {}, at: 1 }, s); expect(loadPlace(LESSONS, [], s)).toBeUndefined();
+    s.setItem("patchwalk.place.v1", "not json"); expect(loadPlace(LESSONS, [], s)).toBeUndefined();
+    savePlace(undefined, s); expect(s.getItem("patchwalk.place.v1")).toBeNull();
+  });
+  it("counts time down as the lesson is worked through, never showing zero while something is left", () => {
+    for (const l of LESSONS) {
+      const all = unitsIn(l); if (!all) continue;
+      expect(minutesLeft(l, 0)).toBe(Math.max(1, l.minutes));
+      expect(minutesLeft(l, all)).toBe(0);
+      expect(minutesLeft(l, all - 1)).toBeGreaterThanOrEqual(1);
+      for (let u = 1; u <= all; u++) expect(minutesLeft(l, u)).toBeLessThanOrEqual(minutesLeft(l, u - 1));
+    }
+  });
+  it("says how long ago in plain words, and suggests moving only after two lessons in a sitting", () => {
+    const min = 60000;
+    expect([0.5, 12, 60, 180, 26 * 60, 72 * 60].map((m) => ago(0, m * min))).toEqual(["a moment ago", "12 minutes ago", "an hour ago", "3 hours ago", "yesterday", "3 days ago"]);
+    expect(stopNote(1).text).not.toMatch(/move|stand/i);
+    expect(stopNote(2).text).toMatch(/move/);
+    for (const n of [1, 2, 5]) expect(stopNote(n).text).not.toMatch(/streak|fail|behind/i); // nothing here punishes
+  });
+});

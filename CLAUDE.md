@@ -625,6 +625,21 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   mode first, then end-of-lesson recall, spaced return, mixed by-ear checkpoints, "why this matters",
   fading guidance, optional noise while reading). Most ADHD studies are on children, so the owner's own
   report of what helps outranks the papers. It is design guidance, not medical advice.
+- **Focus mode (14 Nov 2026; first item of the build order in `docs/LEARNING_RESEARCH.md` and of the
+  queue in `docs/TODO.md`).** A "Focus mode" switch beside the chapter line of every lesson, off by
+  default, remembered in the browser (`patchwalk.focus.v1`; not yet stored with the account). With it on:
+  a bar that stays at the top of the lesson shows the step number, minutes left (`minutesLeft` in
+  `src/course/focus.ts`: the lesson's stated minutes scaled by the steps, by-ear rounds and ear check
+  still to do), a segment per part, and the current instruction; the lesson list is folded behind "All
+  lessons"; later steps are dimmed and reading is spaced wider with shorter lines; the page opens where
+  the learner left off with a stitched "You were here" patch (how long ago, which step, the last thing
+  done) and **the synth set as they left it** (`Place` in localStorage, `patchwalk.place.v1`, saved on
+  every step and when the page is hidden; it is saved whether or not Focus is on, used only when it is);
+  and a finished lesson shows "A good place to stop", which after two lessons in one sitting suggests
+  moving for a couple of minutes. Nothing counts streaks or marks failure. Checked in a browser: the bar
+  counted down, a saved place in the filter lesson came back on step 3 with the cutoff where it was and
+  the step already passing, and with Focus off none of it showed. In development React runs a lesson's
+  start-up twice, so that code must give the same result both times (it once wiped the saved place).
 - **Blender for 3D teaching pictures (owner asked 14 Nov 2026; first test made).** Blender runs in the build
   session without a screen as a Python module (`pip install bpy` in a virtual environment, Python 3.13;
   Cycles on the processor, about a minute for a 2700 by 1400 picture at 96 samples). `scripts/blender/driver.py`

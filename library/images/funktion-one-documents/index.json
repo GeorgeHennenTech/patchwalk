@@ -2939,22 +2939,6 @@
    ]
   },
   {
-   "file": "p372-1.webp",
-   "page": 372,
-   "chapter": "Evo 2 user guide",
-   "width": 1145,
-   "height": 344,
-   "captions_on_page": []
-  },
-  {
-   "file": "p372-2.webp",
-   "page": 372,
-   "chapter": "Evo 2 user guide",
-   "width": 1135,
-   "height": 344,
-   "captions_on_page": []
-  },
-  {
    "file": "p375-1.webp",
    "page": 375,
    "chapter": "Evolution X user guide",
@@ -2968,6 +2952,19 @@
    "chapter": "Evolution X user guide",
    "width": 664,
    "height": 170,
+   "captions_on_page": [
+    "Low Voltage Directive 2014/35/EU.",
+    "Electrical Equipment (Safety) Regulations 2016.",
+    "Regulations 2012.",
+    "Funktion-One Research Limited."
+   ]
+  },
+  {
+   "file": "p379-2.webp",
+   "page": 379,
+   "chapter": "Evolution X user guide",
+   "width": 189,
+   "height": 146,
    "captions_on_page": [
     "Low Voltage Directive 2014/35/EU.",
     "Electrical Equipment (Safety) Regulations 2016.",

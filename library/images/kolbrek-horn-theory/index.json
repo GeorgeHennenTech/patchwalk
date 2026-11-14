@@ -3,17 +3,6 @@
  "note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text.",
  "images": [
   {
-   "file": "p001-1.webp",
-   "page": 1,
-   "chapter": "Part 1",
-   "width": 1145,
-   "height": 233,
-   "captions_on_page": [
-    "Driver: Loudspeaker unit used for driving the horn.",
-    "ZA: Acoustical impedance."
-   ]
-  },
-  {
    "file": "p003-1.webp",
    "page": 3,
    "chapter": "Part 1",

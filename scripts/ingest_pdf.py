@@ -31,6 +31,12 @@ def is_blank(im):
     hist = edges.crop((2, 2, w - 2, h - 2)).histogram()
     return sum(hist[40:]) / max(1, sum(hist)) < 0.004
 
+def is_dark(im):
+    """True for a picture that is black nearly all over: usually the backing of a logo or drawing whose visible part the page draws separately."""
+    small = im.convert("L"); small.thumbnail((200, 200))
+    hist = small.histogram()
+    return sum(hist[:40]) / max(1, sum(hist)) > 0.985
+
 def main():
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     skip = set()
@@ -98,7 +104,7 @@ def main():
             # files are masks, so every file is tried as a picture; blank and tiny ones are still dropped below.
             if len(files) != len(kinds): kinds = ["image"] * len(files)
             per_page = {}
-            for name, kind in zip(files, kinds):
+            for at, (name, kind) in enumerate(zip(files, kinds)):
                 page = offset + int(name.split("-")[1])
                 if kind != "image" or page in skip:
                     continue
@@ -106,8 +112,19 @@ def main():
                     im = Image.open(f"{tmp}/{name}"); im.load()
                 except Exception as e:
                     print("unreadable picture skipped:", name, e, file=sys.stderr); continue
+                # A picture with see-through parts is stored as colour plus a separate mask saying where it shows.
+                # Without the mask the hidden parts come out black (a diagram becomes black on black), so put the
+                # picture on white through its mask, as the page would show it.
+                if at + 1 < len(files) and kinds[at + 1] == "smask" and files[at + 1].split("-")[1] == name.split("-")[1]:
+                    try:
+                        mask = Image.open(f"{tmp}/{files[at + 1]}").convert("L").resize(im.size)
+                        im = Image.composite(im.convert("RGB"), Image.new("RGB", im.size, "white"), mask)
+                    except Exception as e:
+                        print("mask not used:", files[at + 1], e, file=sys.stderr)
+                elif im.mode in ("RGBA", "LA", "P"):
+                    rgba = im.convert("RGBA"); flat = Image.new("RGB", im.size, "white"); flat.paste(rgba, mask=rgba.split()[3]); im = flat
                 w, h = im.size
-                if w < MIN_W or h < MIN_H or w * h < MIN_AREA or is_blank(im):
+                if w < MIN_W or h < MIN_H or w * h < MIN_AREA or is_blank(im) or is_dark(im):
                     continue
                 if im.mode not in ("RGB", "RGBA"):
                     im = im.convert("RGB")

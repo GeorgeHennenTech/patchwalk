@@ -17,6 +17,7 @@ export function SignInGate({ ownerSet, mail }: { ownerSet: boolean; mail: boolea
   const [mode, setMode] = useState<"in" | "new" | "forgot" | "reset">(token ? "reset" : "in");
   const [name, setName] = useState(""), [email, setEmail] = useState(""), [password, setPassword] = useState("");
   const [note, setNote] = useState<string>(), [busy, setBusy] = useState(false);
+  const [shown, setShown] = useState(false); // the eye: show the password as typed
   const making = mode === "new";
   const home = () => { window.location.replace(window.location.pathname); }; // reload without the link's token
   async function go() {
@@ -30,7 +31,7 @@ export function SignInGate({ ownerSet, mail }: { ownerSet: boolean; mail: boolea
     if (!done.ok) { setBusy(false); setNote(done.message); return; }
     home(); // every view re-reads this person's things
   }
-  const to = (m: typeof mode) => { setMode(m); setNote(undefined); setPassword(""); };
+  const to = (m: typeof mode) => { setMode(m); setNote(undefined); setPassword(""); setShown(false); };
   return (
     <section className="panel account-gate">
       <h2>{{ in: "Sign in", new: "Make your account", forgot: "Forgot your password?", reset: "Choose a new password" }[mode]}</h2>
@@ -39,7 +40,10 @@ export function SignInGate({ ownerSet, mail }: { ownerSet: boolean; mail: boolea
         <form onSubmit={(e) => { e.preventDefault(); void go(); }}>
           {making && <label>Your name<input value={name} onChange={(e) => setName(e.target.value)} maxLength={24} autoComplete="nickname" required /></label>}
           {mode !== "reset" && <label>Email<input type="email" value={email} onChange={(e) => setEmail(e.target.value)} maxLength={120} autoComplete="email" required /></label>}
-          {mode !== "forgot" && <label>{mode === "reset" ? "New password" : "Password"}{mode !== "in" && <span className="muted"> (8 characters or more)</span>}<input type="password" value={password} onChange={(e) => setPassword(e.target.value)} minLength={mode === "in" ? 1 : 8} maxLength={200} autoComplete={mode === "in" ? "current-password" : "new-password"} required /></label>}
+          {mode !== "forgot" && <label>{mode === "reset" ? "New password" : "Password"}{mode !== "in" && <span className="muted"> (8 characters or more)</span>}<span className="pw-field"><input type={shown ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} minLength={mode === "in" ? 1 : 8} maxLength={200} autoComplete={mode === "in" ? "current-password" : "new-password"} required />
+            <button type="button" className="pw-eye" aria-pressed={shown} aria-label={shown ? "Hide password" : "Show password"} title={shown ? "Hide password" : "Show password"} onClick={() => setShown(!shown)}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" /><circle cx="12" cy="12" r="3" />{shown && <path d="M4 4l16 16" />}</svg>
+            </button></span></label>}
           <button className="primary" disabled={busy}>{busy ? "One moment…" : { in: "Sign in", new: "Make my account", forgot: "Email me a link", reset: "Save and sign in" }[mode]}</button>
         </form>
       )}

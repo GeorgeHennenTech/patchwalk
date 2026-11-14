@@ -797,3 +797,9 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 .account-gate label { display: grid; gap: 4px; font-weight: 700; }
 .account-gate input { padding: 9px 12px; border: 2px solid var(--thread); border-radius: 12px; background: var(--panel, #fff); color: inherit; font: inherit; font-weight: 400; }
 .players .people { list-style: none; padding: 0; margin: 8px 0; display: grid; gap: 6px; }
+
+/* The eye that shows a password as typed. */
+.account-gate .pw-field { position: relative; display: block; }
+.account-gate .pw-field input { width: 100%; box-sizing: border-box; padding-right: 46px; }
+.account-gate .pw-eye { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); display: grid; place-items: center; width: 34px; height: 34px; padding: 0; border: 0; border-radius: 10px; background: none; color: inherit; opacity: 0.65; cursor: pointer; box-shadow: none; }
+.account-gate .pw-eye:hover, .account-gate .pw-eye[aria-pressed="true"] { opacity: 1; }

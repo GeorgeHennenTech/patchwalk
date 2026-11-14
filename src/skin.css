@@ -493,6 +493,8 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 .synth.plain .mod.neon .mod-head span { text-decoration: underline; text-decoration-color: var(--glow); text-decoration-thickness: 3px; text-underline-offset: 3px; }
 .view-toggles .skin-toggle { margin-left: 8px; border-style: dashed; }
 .keys-wrap { display: flex; flex-direction: column; gap: 4px; }
+.intro-clip { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.intro-clip audio { height: 36px; max-width: 100%; }
 .midi-how { margin-top: 4px; }
 .midi-how summary { cursor: pointer; width: fit-content; text-decoration: underline dotted; }
 .midi-how ol { margin: 6px 0 6px 20px; padding: 0; display: grid; gap: 3px; }

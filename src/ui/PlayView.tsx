@@ -37,6 +37,9 @@ const VIEWS: { id: Panel; label: string }[] = [
 const VIEWS_KEY = "patchwalk.play.views";
 const SKIN_KEY = "patchwalk.play.skin";
 const MOTION_KEY = "patchwalk.play.motion";
+// Spoken introductions, one audio file per lesson, named by the lesson's id. A lesson without one has no player.
+const INTRO_CLIPS = Object.fromEntries(Object.entries(import.meta.glob("../assets/intros/*.mp3", { eager: true, query: "?url", import: "default" }) as Record<string, string>).map(([path, url]) => [path.split("/").pop()!.replace(/\.mp3$/, ""), url]));
+
 function loadViews(): Panel[] {
   try { const v = JSON.parse(localStorage.getItem(VIEWS_KEY) ?? "[]"); return Array.isArray(v) ? VIEWS.map((x) => x.id).filter((id) => v.includes(id)) : []; } catch { return []; }
 }
@@ -333,6 +336,9 @@ export function PlayView({ cards, wanted }: { cards: Card[]; wanted?: { id: stri
         <p className="learn-place">{place.chapter} · lesson {place.number} of {place.of}</p>
         <h2>{lesson.title}</h2>
         {unmet.length > 0 && <p className="muted">Builds on {unmet.map((l, i) => <span key={l.id}>{i > 0 && (i === unmet.length - 1 ? " and " : ", ")}<button className="link" onClick={() => setLessonId(l.id)}>{l.title}</button></span>)}, which you have not finished yet. You can still take this one now.</p>}
+        {INTRO_CLIPS[lesson.id] && (
+          <p className="intro-clip"><span className="muted">Hear what this lesson covers:</span> <audio key={lesson.id} controls preload="none" src={INTRO_CLIPS[lesson.id]} aria-label="Spoken introduction to this lesson" /></p>
+        )}
         <p><strong>You will be able to:</strong> {lesson.outcome}</p>
         {lesson.demo && (
           <p className="hear-first"><button className="primary" onClick={() => void playDemo()}>Hear it first</button> <span className="muted">{lesson.demo.caption}</span></p>

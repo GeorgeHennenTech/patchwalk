@@ -27,6 +27,7 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 - [ ] Scaling a route with a second source (mod wheel) and its lesson
 - [ ] Blind ear checks for the filter, envelope, LFO and modulation lessons
 - [ ] Pulse-width lesson in the oscillator chapter
+- [ ] Processing chains track (owner, 14 Nov 2026): after the synth material and our own effect courses, lessons on stacking stock plugins after the synth. Needs a reorderable effects rack with a bypass per effect first.
 - [ ] Remaining synthesis chapters from the course plan (87 lessons built)
 
 ## Synth

@@ -571,6 +571,14 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   delay cannot loop faster than one 128-sample block) and bioacoustics with hearing and illusions
   (`docs/BIOACOUSTICS.md`, about 45 lessons; teaches mechanisms, never claims an artist's method or that sound
   alters the brain; explanations wait for texts in the library).
+- **Processing chains (owner asked 14 Nov 2026), planned and not built.** After the learner has finished the
+  synthesizer material, and after our own in-depth effect courses (EQ, compression and the rest: track F in
+  `docs/CURRICULUM.md`), a track on stacking stock plugins after the synth in a chain. Agreed shape, pending
+  the owner's reply: practised in the app on our own effects rack (the app cannot run a DAW's plugins), with
+  each lesson ending in "the same chain with Ableton's stock devices", cited from the Ableton manual in the
+  library; "stock plugins" is assumed to mean Ableton Live's. Needs first: a reorderable rack with a bypass
+  per effect (`docs/SERUM_GAPS.md`, effects), and the effect courses. Order of work: synth gaps, effect
+  courses, then chains.
 - **Impact sounds (owner asked 13 Nov 2026):** `docs/IMPACTS.md`, about 50 lessons on hits, striking bass
   notes, weight, making room, impact effects and contrast. The first seven are built (see `lessons/impacts.ts`);
   the rest wait for effects, physical modelling, the mini DAW and library texts on hearing.

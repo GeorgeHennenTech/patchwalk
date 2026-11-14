@@ -691,6 +691,24 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   on white through its mask (`smask`), and drops pictures that are black nearly all over (`is_dark`): the
   owner was shown a black box with a fragment of the magazine's logo as the picture for a Kolbrek page.
   Some photographs in the Evolution brochure are dark by design and were kept.
+- **What is inside a Funktion-One (owner, 14 Nov 2026: "that's the most important part").** Two public
+  sources were found and taken in. (1) **US Patent 6,650,760, "Loudspeaker"** (Andrews, Hunt, Newsham;
+  assigned to Funktion One; granted 2003): `library/funktion-one-patent-us6650760.json` (8 pages) and four
+  drawings as whole-page pictures in `library/images/funktion-one-patent-us6650760/` (FIG. 1 and 2 are
+  cross-sections with every part named). It describes an upper bass/low mid horn: a cone driver, a
+  **central member** fixed to the pole piece that reaches into the cone, a ring-shaped channel that first
+  widens (inside the cone) and then narrows (a "constriction"), then a throat and a horn; it says the
+  plug keeps the top of the range coherent and the constriction lowers the bottom from about 150-200 Hz
+  to about 75 Hz, covering about 75 to 750 Hz, and that the mechanism "is not fully understood".
+  **It is not known which products use this exact device, and it is not established that it is the
+  "Axhead" on the Res 5's 8-inch midrange: never say a Res contains it without a source.** (2) **The
+  maker's own drawing files** in `library/cad/funktion-one/`: dimensioned 2D drawings (DXF, millimetres)
+  of the Res 1, Res 2 and Res 2SH, 3D drawings (DWG, not yet opened: no converter in the session) of the
+  Res 2, Res 2SH and Res 4E, and measured coverage data (EASE) for the Res 4 and Res 2SH. `ezdxf` reads
+  the DXFs; the Res 2 one gives 560 wide, 920 high and 810 deep among others. The owner is studying
+  Funktion-One specifically, so models may be named as theirs; no logo artwork is needed. Other leads not
+  yet followed: the UK patent GB2270606B (Andrews, "Loudspeaker enclosure"), the Justia list of patents
+  assigned to Funktion One, and Tony Andrews's earlier Turbosound patents.
 - **`scripts/ingest_pdf.py`** is the standard way to take in any PDF book, text and pictures together, from one
   or more parts numbered straight through (`--skip-pages` for contents pages, `--append <last page>` to add
   later parts). A test checks every book's text and picture index agree.

@@ -12,6 +12,8 @@ maker or author gives away; copies from piracy sites are not taken in.
 | Rift manual (Minimal Audio) | 64 pages of text, 112 pictures. For the Rift lessons and distortion |
 | Kolbrek, "Horn Theory: An Introduction", parts 1 and 2 (audioXpress, 2008) | 17 pages of text, 45 pictures. Downloaded on 14 Nov 2026 from the publisher's own site, where it is given away. Pages are numbered 1 to 17 straight through the two parts, not by the magazine's page numbers. For the sound-systems track |
 | Funktion-One user guides, spec sheets and brochures | 537 pages of text, 508 pictures, from 71 documents downloaded on 14 Nov 2026 from the maker's own site: the Resolution 4 and 5 series user guides, the Resolution 1 manual, ground-stack and nightclub guides, the Evolution brochure and guides, and about 55 one-page spec sheets (Resolution, Dance Stack, bass units, Evolution, monitors). Each document is a chapter; pages are numbered 1 to 555 straight through, not by each document's own numbers. Left out: engineering drawings and rigging hardware sheets, three near-duplicate powered-speaker guides, and the Vero VX brochure and rigging manual, whose text is stored as pictures and cannot be searched |
+| US Patent 6,650,760, "Loudspeaker" (Andrews, Hunt, Newsham; Funktion One; 2003) | 8 pages of text and four drawings, from Google Patents (a public document). Describes the inside of an upper bass/low mid horn with a central plug. For the sound-systems track |
+| Funktion-One drawing files (Res 1, Res 2, Res 2SH, Res 4E) and coverage data | In `library/cad/funktion-one/`, from the maker's site. Dimensions for scale models |
 | This app's 36 knowledge cards | Drafts written for the app |
 
 ## Listed by the owner; files not received yet

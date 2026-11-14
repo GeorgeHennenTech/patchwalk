@@ -1,0 +1,46 @@
+{
+ "source": "US Patent 6,650,760: Loudspeaker (Andrews, Hunt and Newsham; Funktion One; granted 2003)",
+ "note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text. The drawings are whole pages rendered from the PDF (they are stored there as one-bit scans the usual extraction cannot read).",
+ "images": [
+  {
+   "file": "p002-1.webp",
+   "page": 2,
+   "chapter": "Patent drawings",
+   "width": 954,
+   "height": 1400,
+   "captions_on_page": [
+    "FIG. 1: horizontal cross-section of the loudspeaker"
+   ]
+  },
+  {
+   "file": "p003-1.webp",
+   "page": 3,
+   "chapter": "Patent drawings",
+   "width": 954,
+   "height": 1400,
+   "captions_on_page": [
+    "FIG. 2: vertical cross-section of the loudspeaker"
+   ]
+  },
+  {
+   "file": "p004-1.webp",
+   "page": 4,
+   "chapter": "Patent drawings",
+   "width": 954,
+   "height": 1400,
+   "captions_on_page": [
+    "FIG. 3: cross-sections of the channel at points A to G"
+   ]
+  },
+  {
+   "file": "p005-1.webp",
+   "page": 5,
+   "chapter": "Patent drawings",
+   "width": 954,
+   "height": 1400,
+   "captions_on_page": [
+    "FIG. 4: a second form, with the channel folded"
+   ]
+  }
+ ]
+}

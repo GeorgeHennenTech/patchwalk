@@ -117,10 +117,10 @@
   {
    "q": "Why can turning up detune and spread be a problem in a mix?",
    "options": [
-    "Wider sounds are always quieter, so the part gets lost",
+    "Wider sounds are always quieter, so the part gets lost in it",
     "Detune puts the note out of tune with the track",
     "Spread removes the low end, so the sound thins",
-    "Bigger tends to be heard as louder, so the level seems to jump"
+    "Bigger tends to be heard as louder, so the level jumps"
    ],
    "answer": 3,
    "why": "Detuned, spread-out unison sounds bigger, and bigger tends to be heard as louder.",
@@ -395,8 +395,8 @@
   {
    "q": "The Heat macro's second slot is EQ high with a negative amount. What does that do?",
    "options": [
-    "Adds more top as the drive goes up",
-    "Rounds off more of the top as the drive goes up",
+    "Adds more and more top as the drive goes up",
+    "Rounds off more top as the drive goes up",
     "Turns the drive down as the macro rises",
     "Cuts the bass so the growl sounds thinner"
    ],
@@ -434,7 +434,7 @@
    "q": "Why is a macro a natural home for the sync sweep?",
    "options": [
     "The sweep only sounds right when left in one place",
-    "The sweep is a sound you play by hand, not a setting you leave",
+    "The sweep is played by hand, not set and left",
     "The sweep needs three slots to work at all",
     "The sweep is too quiet without a macro's help"
    ],
@@ -443,16 +443,16 @@
    "point": 0
   },
   {
-   "q": "On its own, without the filter slot, how can the sync sweep sound?",
+   "q": "Why reach for a macro, not an LFO or envelope, to move the warp amount?",
    "options": [
-    "Piercing at the bottom and thin at the top",
-    "Dark and muffled all the way up",
-    "Thin at the bottom and piercing at the top",
-    "Exactly the same from bottom to top"
+    "A macro moves a control faster than any source can",
+    "A source can only ever move the filter's cutoff",
+    "A macro can move a control that sources cannot reach",
+    "A source would move the cutoff slot the opposite way"
    ],
    "answer": 2,
-   "why": "Alone the sweep can be thin low down and piercing high up, which the filter slot softens.",
-   "point": 1
+   "why": "Warp amount belongs on a macro, which is the way to move a control that sources cannot reach.",
+   "point": 2
   }
  ],
  "C5M.13": [
@@ -536,7 +536,7 @@
    "q": "Why keep the Shimmer macro's amounts moderate?",
    "options": [
     "A macro with large amounts stops working halfway up",
-    "A macro that goes too far at the top never gets turned right up",
+    "A macro that goes too far never gets turned right up",
     "Moderate amounts make the three changes easy to tell apart",
     "Large amounts would make the sound narrower at the top"
    ],
@@ -597,8 +597,8 @@
   {
    "q": "Slot 1 of the Knock macro goes to Env 2 amount. What does that show about macros?",
    "options": [
-    "A macro can only be sent to envelope settings",
-    "An envelope can turn a macro for you",
+    "A macro can only ever be sent to an envelope's settings",
+    "An envelope can turn a macro up and down for you",
     "A macro takes the place of the envelope",
     "A macro can move an envelope's amount as well as a knob"
    ],

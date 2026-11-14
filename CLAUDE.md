@@ -624,8 +624,18 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   and offers four names, with the answer and its job shown at once and a first-try score at the end
   (the recall rule in `docs/LEARNING_RESEARCH.md`). Checked in a browser: pointing named the cone, magnet,
   pole piece and surround correctly, and background gave nothing. It is the pattern for further
-  diagrams: render frames plus maps, then let code do the interaction. A live 3D model in the page
-  (turn it, tie the cone to the synth's sound) is the next step up and is not built.
+  diagrams: render frames plus maps, then let code do the interaction. **Live 3D model (14 Nov 2026, owner's request):** `src/ui/Driver3D.tsx` draws the same model in the
+  browser with `three` (MIT; the one new dependency, fetched only when the view is opened: `DriverPage`
+  loads it lazily). `driver.py -- <file.glb> --glb` exports one object per part, and gives the surround
+  and spider a second shape ("out") so the page can bend them; the page moves the coil, former, cone and
+  dust cap along the axis and blends the two suspensions. Drag turns it, scroll zooms, pointing or the
+  part buttons light a part and say what it does, a slider sets the cone's position, and "Play a tone
+  and watch" plays a quiet sine (30 to 200 Hz) while the cone follows it 50 times slower than real, with
+  the travel exaggerated (the page says both). The "Sound systems" tab opens on the 3D view; the
+  rendered picture with the naming exercise is the second view. Checked in a headless browser with
+  software 3D: it drew, turned, named the cone under the pointer, and the picture changed with the slider
+  and while a tone played. Not built: the cone following the practice synth's own sound, a cut that
+  opens and closes, naming practice in the 3D view, touch testing.
 - **Impact sounds (owner asked 13 Nov 2026):** `docs/IMPACTS.md`, about 50 lessons on hits, striking bass
   notes, weight, making room, impact effects and contrast. The first seven are built (see `lessons/impacts.ts`);
   the rest wait for effects, physical modelling, the mini DAW and library texts on hearing.

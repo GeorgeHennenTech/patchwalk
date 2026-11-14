@@ -1,6 +1,6 @@
 // An interactive cutaway of a loudspeaker driver: point at a part to see what it does, move the cone, or
 // hide the names and try to name each part. The pictures are rendered ahead of time; code does the rest.
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DRIVER_PARTS, nameChoices, partAt, quizOrder, type Rgb } from "../soundsystems/driver";
 import meta from "../assets/diagrams/driver/parts.json";
 
@@ -10,6 +10,25 @@ const MAPS = urls(import.meta.glob("../assets/diagrams/driver/map*.png", { eager
 const COLORS = meta.parts.map((p) => p.map as unknown as Rgb);
 const W = 1600, H = 830, REST = meta.rest;
 const NAMES = DRIVER_PARTS.map((p) => p.name);
+
+// the 3D view brings a large drawing library with it, so it is only fetched when asked for
+const Driver3D = lazy(() => import("./Driver3D"));
+
+/** The page: the live 3D model, or the rendered picture with the naming exercise. */
+export function DriverPage() {
+  const [view, setView] = useState<"3d" | "picture">("3d");
+  return (
+    <section className="driver">
+      <h2>Inside a cone loudspeaker driver</h2>
+      <div className="seg driver-views" role="tablist" aria-label="Ways to look at the driver">
+        <button role="tab" aria-selected={view === "3d"} className={view === "3d" ? "on" : ""} onClick={() => setView("3d")}>Live 3D model</button>
+        <button role="tab" aria-selected={view === "picture"} className={view === "picture" ? "on" : ""} onClick={() => setView("picture")}>Picture and naming practice</button>
+      </div>
+      {view === "3d" ? <Suspense fallback={<p className="muted">Loading the model…</p>}><Driver3D /></Suspense> : <DriverDiagram />}
+      <p className="muted driver-draft">Draft. The proportions are illustrative and the wording has not yet been checked against a loudspeaker text in the library.</p>
+    </section>
+  );
+}
 
 type Quiz = { order: number[]; at: number; firstTry: number; missed: number[]; wrong?: string; solved: boolean; seed: number };
 
@@ -91,8 +110,7 @@ export function DriverDiagram() {
   const travel = meta.travel[frame]!;
 
   return (
-    <section className="driver">
-      <h2>Inside a cone loudspeaker driver</h2>
+    <>
       <p className="muted">A driver cut open so you can see inside. {quiz ? "Name the part that is lit." : "Point at any part, or pick one from the list, to see what it does. Then move the cone."}</p>
       <div className="driver-grid">
         <div className="driver-stage">
@@ -142,7 +160,6 @@ export function DriverDiagram() {
         {quiz ? <button onClick={() => setQuiz(undefined)}>Back to exploring</button> : <button className="primary" onClick={startQuiz}>Name the parts</button>}
       </div>
       <p className="muted">Watch what moves: the coil, former, cone and dust cap travel together; the surround and spider flex; the magnet, the steel parts and the basket stay where they are.</p>
-      <p className="muted driver-draft">Draft picture. The proportions are illustrative and the wording has not yet been checked against a loudspeaker text in the library.</p>
-    </section>
+    </>
   );
 }

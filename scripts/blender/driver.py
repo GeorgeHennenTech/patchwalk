@@ -1,6 +1,8 @@
 # A cutaway of a moving-coil cone loudspeaker driver, built from revolved outlines. Units: centimetres.
 #
 #   python driver.py -- <out-prefix> [samples]                 one large picture + <out>.json (where each label points)
+#   python driver.py -- <out.glb> --glb                        the model itself for the live 3D view: one object per
+#                                                              part; the surround and spider carry an "out" shape
 #   python driver.py -- <out-dir> [samples] --frames           the cone at seven positions, each with a map of
 #                                                              which part is where (flat colours), + parts.json
 #
@@ -10,8 +12,8 @@ from mathutils import Vector
 from bpy_extras.object_utils import world_to_camera_view
 
 ARGS = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else ["driver"]
-OUT, SAMPLES, FRAMES = ARGS[0], int(ARGS[1]) if len(ARGS) > 1 and ARGS[1].isdigit() else 64, "--frames" in ARGS
-A0, A1, STEPS = math.radians(-38), math.radians(218), 128   # the wedge facing the camera is left out
+OUT, SAMPLES, FRAMES, GLB = ARGS[0], int(ARGS[1]) if len(ARGS) > 1 and ARGS[1].isdigit() else 64, "--frames" in ARGS, "--glb" in ARGS
+A0, A1, STEPS = math.radians(-38), math.radians(218), 72 if "--glb" in sys.argv else 128   # the wedge facing the camera is left out
 TRAVEL = [-0.6, -0.4, -0.2, 0.0, 0.2, 0.4, 0.6]             # how far the cone is pushed out (+) or pulled in (-)
 
 # name, colour, roughness, metallic. The order is also each part's number in the map.
@@ -126,7 +128,20 @@ def render_map(scene, obs, ground, path):
     scene.view_settings.view_transform = "Raw"; scene.render.image_settings.color_mode = "RGB"
     scene.render.filepath = path; bpy.ops.render.render(write_still=True)
 
-if FRAMES:
+if GLB:
+    # The model for the browser. Moving parts are moved by the page; the two suspensions bend, so each carries
+    # a second shape ("out": the cone pushed 6 mm out) that the page blends towards or away from.
+    scene, cam, obs, ground = build(0.0)
+    scene2, _c, obs2, _g = build(TRAVEL[-1])
+    out = {n: [v.co.copy() for v in obs2[n].data.vertices] for n in ("Surround", "Spider")}
+    scene, cam, obs, ground = build(0.0)
+    for n in ("Surround", "Spider"):
+        ob = obs[n]; assert len(ob.data.vertices) == len(out[n]), n
+        ob.shape_key_add(name="Basis"); key = ob.shape_key_add(name="out")
+        for v, co in zip(key.data, out[n]): v.co = co
+    for o in scene.objects: o.select_set(o.name in obs)
+    bpy.ops.export_scene.gltf(filepath=OUT, export_format="GLB", use_selection=True, export_morph=True, export_yup=True, export_apply=False)
+elif FRAMES:
     os.makedirs(OUT, exist_ok=True)
     for k, off in enumerate(TRAVEL):
         scene, cam, obs, ground = build(off, size=(1600, 830))

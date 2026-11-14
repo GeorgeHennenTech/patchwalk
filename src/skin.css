@@ -739,3 +739,8 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 @media (max-width: 760px) { .driver-grid { grid-template-columns: 1fr; } }
 .driver-controls button:not(.primary) { border: 2px solid var(--thread); border-radius: 12px; padding: 7px 14px; background: transparent; color: inherit; font: inherit; font-weight: 700; cursor: pointer; }
 .driver-controls button:disabled { opacity: 0.5; cursor: default; }
+.driver-views { margin: 8px 0 12px; }
+.driver-stage.three { min-height: 240px; touch-action: none; cursor: grab; }
+.driver-stage.three canvas { position: static; display: block; width: 100%; height: auto; cursor: inherit; }
+.driver-failed { padding: 20px; margin: 0; }
+.driver-slider.tone { flex: 0 1 260px; }

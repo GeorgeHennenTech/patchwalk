@@ -6,7 +6,7 @@ import { parseCard, type Card } from "./lesson/cards";
 import { INIT_BASELINE } from "./patch/baseline";
 import { Badge } from "./ui/Badge";
 import { AskView } from "./ui/AskView";
-import { DriverDiagram } from "./ui/DriverDiagram";
+import { DriverPage } from "./ui/DriverDiagram";
 import { CompareView } from "./ui/CompareView";
 import { DisplayTable } from "./ui/DisplayTable";
 import { DropZone } from "./ui/DropZone";
@@ -129,7 +129,7 @@ export function App() {
       )}
 
       {mode === "ask" && <AskView />}
-      {mode === "sound" && <DriverDiagram />}
+      {mode === "sound" && <DriverPage />}
       {mode === "check" && <><SelfTest cards={CARDS} /><DatabaseCheck /></>}
 
       {mode === "rebuild" && <DropZone onFile={onFile} compact={state.kind !== "empty"} />}

@@ -604,6 +604,16 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   mode first, then end-of-lesson recall, spaced return, mixed by-ear checkpoints, "why this matters",
   fading guidance, optional noise while reading). Most ADHD studies are on children, so the owner's own
   report of what helps outranks the papers. It is design guidance, not medical advice.
+- **Blender for 3D teaching pictures (owner asked 14 Nov 2026; first test made).** Blender runs in the build
+  session without a screen as a Python module (`pip install bpy` in a virtual environment, Python 3.13;
+  Cycles on the processor, about a minute for a 2700 by 1400 picture at 96 samples). `scripts/blender/driver.py`
+  builds a cutaway of a cone loudspeaker driver from revolved outlines (every part is an `(r, z)` outline
+  swept round the axis with a wedge left out), renders it with no text, and writes where each part is in
+  the picture; `scripts/blender/label.py` then draws the names, one-line jobs and leader lines. The result
+  is `docs/diagrams/driver-cutaway.jpg`. The proportions are illustrative, not taken from a source, and the
+  part descriptions are general knowledge, not yet from a text in the library: check both against a
+  loudspeaker text before it goes into a lesson. Use Blender only for 3D objects with hidden parts
+  (drivers, horns, cabinets); labels are always drawn by code, never by an image generator.
 - **Impact sounds (owner asked 13 Nov 2026):** `docs/IMPACTS.md`, about 50 lessons on hits, striking bass
   notes, weight, making room, impact effects and contrast. The first seven are built (see `lessons/impacts.ts`);
   the rest wait for effects, physical modelling, the mini DAW and library texts on hearing.

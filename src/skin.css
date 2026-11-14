@@ -803,3 +803,12 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 .account-gate .pw-field input { width: 100%; box-sizing: border-box; padding-right: 46px; }
 .account-gate .pw-eye { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); display: grid; place-items: center; width: 34px; height: 34px; padding: 0; border: 0; border-radius: 10px; background: none; color: inherit; opacity: 0.65; cursor: pointer; box-shadow: none; }
 .account-gate .pw-eye:hover, .account-gate .pw-eye[aria-pressed="true"] { opacity: 1; }
+
+/* Res 2: the strip showing which driver covers which part of the frequency range. */
+.res2-band { position: relative; display: flex; height: 30px; margin: 12px 0 2px; border: 2px solid var(--thread); border-radius: 10px; overflow: hidden; font-size: 0.78rem; font-weight: 700; }
+.res2-band i { font-style: normal; display: grid; place-items: center; white-space: nowrap; overflow: hidden; opacity: 0.55; border-right: 2px solid var(--thread); }
+.res2-band i:last-of-type { border-right: 0; }
+.res2-band i.below, .res2-band i.above { background: repeating-linear-gradient(45deg, transparent 0 6px, rgba(120,110,130,0.25) 6px 12px); }
+.res2-band i.bass { background: #b9a1ff55; } .res2-band i.midhigh { background: #ffd23d55; }
+.res2-band i.on { opacity: 1; box-shadow: inset 0 0 0 2px var(--accent); }
+.res2-band b { position: absolute; top: 0; bottom: 0; width: 3px; margin-left: -1px; background: var(--accent); }

@@ -1281,3 +1281,25 @@ describe("the patented horn", () => {
     expect(Object.keys(HORN_PARTS)).toEqual(["member", "cone", "motor", "baffle", "housing"]);
   });
 });
+
+import { bandAt, noteNear, OPENINGS, RES2, RES2_PARTS, spread } from "../src/soundsystems/res2";
+describe("the Res 2 model", () => {
+  it("sends each frequency to the part of the cabinet the maker's sheet gives it", () => {
+    expect([30, 59, 60, 110, 249, 250, 1000, 18000, 19000].map(bandAt)).toEqual(["below", "below", "bass", "bass", "bass", "midhigh", "midhigh", "midhigh", "above"]);
+    // every band that plays lights at least one part, and the parts named exist once each
+    for (const band of ["bass", "midhigh"] as const) expect(RES2_PARTS.some((p) => p.lights.includes(band))).toBe(true);
+    expect(new Set(RES2_PARTS.map((p) => p.id)).size).toBe(RES2_PARTS.length);
+  });
+  it("keeps the openings inside the front and in the drawing's order: mid horn, high horn, bass horn, from the top", () => {
+    for (const o of Object.values(OPENINGS)) { expect(o.x0).toBeGreaterThan(0); expect(o.x1).toBeLessThan(RES2.front); expect(o.y0).toBeGreaterThan(0); expect(o.y1).toBeLessThan(RES2.height); expect(o.x1).toBeGreaterThan(o.x0); expect(o.y1).toBeGreaterThan(o.y0); }
+    expect(OPENINGS.mid.y1).toBeLessThan(OPENINGS.high.y0); expect(OPENINGS.high.y1).toBeLessThan(OPENINGS.bass.y0);
+    expect(RES2.back).toBeLessThan(RES2.front);
+  });
+  it("spreads by its stated angles, and names the note nearest a frequency", () => {
+    const at10 = spread(10);
+    expect(at10.wide).toBeCloseTo(2 * 10 * Math.tan((25 * Math.PI) / 180), 6);
+    expect(at10.tall).toBeCloseTo(2 * 10 * Math.tan((12.5 * Math.PI) / 180), 6);
+    expect(spread(20).wide).toBeCloseTo(2 * at10.wide, 6);
+    expect([440, 110, 55, 261.63].map(noteNear)).toEqual(["A4", "A2", "A1", "C4"]);
+  });
+});

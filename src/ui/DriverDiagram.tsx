@@ -15,21 +15,23 @@ const NAMES = DRIVER_PARTS.map((p) => p.name);
 const Driver3D = lazy(() => import("./Driver3D"));
 const VeroScene = lazy(() => import("./VeroScene"));
 const HornCutaway = lazy(() => import("./HornCutaway"));
+const Res2View = lazy(() => import("./Res2View"));
 
 /** The page: the live 3D model, or the rendered picture with the naming exercise. */
 export function DriverPage() {
-  const [view, setView] = useState<"vero" | "horn" | "3d" | "picture">("vero");
-  const TITLES = { vero: "A Funktion-One Vero array", horn: "Inside a horn: a Funktion One patent", "3d": "Inside a cone loudspeaker driver", picture: "Inside a cone loudspeaker driver" };
+  const [view, setView] = useState<"vero" | "res2" | "horn" | "3d" | "picture">("vero");
+  const TITLES = { vero: "A Funktion-One Vero array", res2: "A Funktion-One Res 2", horn: "Inside a horn: a Funktion One patent", "3d": "Inside a cone loudspeaker driver", picture: "Inside a cone loudspeaker driver" };
   return (
     <section className="driver">
       <h2>{TITLES[view]}</h2>
       <div className="seg driver-views" role="tablist" aria-label="Ways to look at the driver">
         <button role="tab" aria-selected={view === "vero"} className={view === "vero" ? "on" : ""} onClick={() => setView("vero")}>Vero array</button>
+        <button role="tab" aria-selected={view === "res2"} className={view === "res2" ? "on" : ""} onClick={() => setView("res2")}>Res 2</button>
         <button role="tab" aria-selected={view === "horn"} className={view === "horn" ? "on" : ""} onClick={() => setView("horn")}>Inside a horn</button>
         <button role="tab" aria-selected={view === "3d"} className={view === "3d" ? "on" : ""} onClick={() => setView("3d")}>Inside a driver</button>
         <button role="tab" aria-selected={view === "picture"} className={view === "picture" ? "on" : ""} onClick={() => setView("picture")}>Driver naming practice</button>
       </div>
-      {view === "picture" ? <DriverDiagram /> : <Suspense fallback={<p className="muted">Loading the model…</p>}>{view === "vero" ? <VeroScene /> : view === "horn" ? <HornCutaway /> : <Driver3D />}</Suspense>}
+      {view === "picture" ? <DriverDiagram /> : <Suspense fallback={<p className="muted">Loading the model…</p>}>{view === "vero" ? <VeroScene /> : view === "res2" ? <Res2View /> : view === "horn" ? <HornCutaway /> : <Driver3D />}</Suspense>}
       {(view === "3d" || view === "picture") && <p className="muted driver-draft">Draft. The proportions are illustrative and the wording has not yet been checked against a loudspeaker text in the library.</p>}
     </section>
   );

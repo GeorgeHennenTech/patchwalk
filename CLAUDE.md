@@ -726,7 +726,7 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   maker's own drawing files** in `library/cad/funktion-one/`: dimensioned 2D drawings (DXF, millimetres)
   of the Res 1, Res 2 and Res 2SH, 3D drawings (DWG, not yet opened: no converter in the session) of the
   Res 2, Res 2SH and Res 4E, and measured coverage data (EASE) for the Res 4 and Res 2SH. `ezdxf` reads
-  the DXFs; the Res 2 one gives 560 wide, 920 high and 810 deep among others. The owner is studying
+  the DXFs; the Res 2 one gives a body 522 wide at the front, 344 at the back (a 28 degree taper), 920 high and 445 deep; 560 is its depth on the optional wheelboard and 810 the distance between flypoints (an earlier note here read 560 and 810 as width and depth: wrong). The owner is studying
   Funktion-One specifically, so models may be named as theirs; no logo artwork is needed. Other leads not
   yet followed: the UK patent GB2270606B (Andrews, "Loudspeaker enclosure"), the Justia list of patents
   assigned to Funktion One, and Tony Andrews's earlier Turbosound patents.
@@ -742,6 +742,21 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   four bass drawings are also kept as PDFs in `library/cad/funktion-one/`. The user guide is about
   setting up and flying the system; it does not describe the horns' insides. **The sound-systems models
   should be of Vero first** (V90 or V60, V315, and the F221 and F124 bass), not the Resolution range.
+- **Res 2 model (14 Nov 2026, owner asked for a Res model, "whichever is most relevant").** The Res 2 was
+  chosen: the maker's sheet calls it "the classic horn-loaded, full range Funktion-One loudspeaker", it is
+  one cabinet holding all three ways, and it is the only Res with both a spec sheet and a dimensioned
+  drawing we can read. `src/soundsystems/res2.ts` (sizes and the three front openings measured off
+  `R2-webdxf.dxf`; drivers, 60 Hz to 18 kHz, the 250 Hz crossover, 50 by 25 degree coverage, weight and
+  connectors from the spec sheet, Funktion-One documents page 537) and `src/ui/Res2View.tsx` (second view
+  of the "Sound systems" tab). A frequency slider (20 Hz to 20 kHz, with the nearest note, landmark
+  buttons such as "Kick thump" and a quiet tone) lights the horn that frequency comes out of and says so
+  in words, including "below this cabinet's range" under 60 Hz; "See the drivers" fades the walls and
+  shows stand-in drivers at the stated sizes; "Coverage" draws the 50 by 25 degree wedge with its width
+  and height at a chosen distance; "Sizes" shows the drawing's dimensions. **Not drawn because not
+  published: the horns' inner shapes, where the drivers sit, and where the 8-inch hands over to the
+  1-inch (the page says each).** The shaped piece the drawing shows in the mid horn's mouth is modelled
+  but nothing is claimed about it; the drawing's block for the mid-high section is named "AX88", which
+  is a name only and proves nothing about the Axhead. No logo is drawn. Checked with software 3D only.
 - **Realism pass on the 3D views (14 Nov 2026, owner's request).** `src/ui/three/look.ts`: surfaces drawn
   by code onto small canvases (textured speaker paint, a perforated grille, grass, plywood, paper pulp,
   steel), an open sky with haze, a studio table that shows only shadows, and `truss` (laced lighting

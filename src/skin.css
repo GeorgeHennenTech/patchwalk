@@ -812,3 +812,9 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 .res2-band i.bass { background: #b9a1ff55; } .res2-band i.midhigh { background: #ffd23d55; }
 .res2-band i.on { opacity: 1; box-shadow: inset 0 0 0 2px var(--accent); }
 .res2-band b { position: absolute; top: 0; bottom: 0; width: 3px; margin-left: -1px; background: var(--accent); }
+
+/* Res 2: the "what's missing" patch under the model. */
+.res2-missing { max-width: 78ch; margin: 30px 0 22px 6px; transform: rotate(-0.5deg); }
+.res2-missing p, .res2-missing li { font-size: 1.12rem; white-space: normal; }
+.res2-missing ul { margin: 8px 0; padding-left: 22px; display: grid; gap: 7px; font-family: "Patrick Hand", "Comic Sans MS", "Segoe Print", cursive; line-height: 1.35; }
+.res2-missing strong { font-weight: 400; color: var(--accent); }

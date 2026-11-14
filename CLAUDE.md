@@ -757,6 +757,11 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   1-inch (the page says each).** The shaped piece the drawing shows in the mid horn's mouth is modelled
   but nothing is claimed about it; the drawing's block for the mid-high section is named "AX88", which
   is a name only and proves nothing about the Axhead. No logo is drawn. Checked with software 3D only.
+  A stitched "What's missing here" patch under the model (owner's request) lists the four things the
+  diagram lacks and why each matters (horn shape: how low and how wide; driver positions: timing;
+  the handover frequency; the piece in the mid horn). The owner wants this kind of note on diagrams that
+  leave things out. Its "why" lines are general acoustics; only the horn-shape one has a text in the
+  library behind it (Kolbrek), so check the others when a loudspeaker text arrives.
 - **Realism pass on the 3D views (14 Nov 2026, owner's request).** `src/ui/three/look.ts`: surfaces drawn
   by code onto small canvases (textured speaker paint, a perforated grille, grass, plywood, paper pulp,
   steel), an open sky with haze, a studio table that shows only shadows, and `truss` (laced lighting

@@ -178,6 +178,19 @@ export default function Res2View() {
       <div className="driver-parts" role="group" aria-label="Jump to a sound">
         {LANDMARKS.map((l) => <button key={l.label} onClick={() => setV(toV(l.hz))}>{l.label} · {hzText(l.hz)}</button>)}
       </div>
+      <aside className="side-note res2-missing" aria-label="What this diagram is missing">
+        <div className="side-note-inner">
+          <span className="side-note-tag">What’s missing here</span>
+          <p>Funktion-One publishes the outside of this cabinet and its figures, not its insides. Four things you would want are not in this diagram, and each one matters:</p>
+          <ul>
+            <li><strong>The shape of each horn inside.</strong> A horn’s length and how fast it widens decide how low it can play and how it spreads the sound. Without it this diagram can show you <em>that</em> the cabinet stops at 60 Hz and covers 50° by 25°, but not <em>why</em>.</li>
+            <li><strong>Where the three drivers sit.</strong> Each one is a different distance from your ear, so their sound sets off at different moments and has to be lined up. The stand-ins here are only the right sizes, so nothing about timing can be read off them.</li>
+            <li><strong>Where the 8-inch hands over to the 1-inch.</strong> Around a handover two drivers play the same notes together. Not knowing it means this diagram cannot tell you which horn a lead at, say, 3 kHz comes out of: only that it is one of the upper two.</li>
+            <li><strong>What the shaped piece in the mid horn does.</strong> The drawing shows it and the sheet does not explain it. A Funktion One patent describes a centre piece in a different, lower horn, but nothing we have says this is the same idea, so the page does not guess.</li>
+          </ul>
+          <p>So treat the outside, the sizes and the numbers as the maker’s, and everything behind the front panel as a sketch.</p>
+        </div>
+      </aside>
       <p className="muted driver-draft">From the maker’s drawing: the cabinet’s sizes, its 28° taper, and where the three openings are on the front. From the maker’s spec sheet (Funktion-One documents, page {RES2.page}): the three drivers, 60 Hz to 18 kHz, the 250 Hz crossover, 50° by 25° coverage, 48 kg, two NL4 connectors, M10 flypoints. Drawn for illustration: how deep each horn goes and its shape inside, the drivers’ positions, the plinth, and panel thickness. The landmark sounds are rough conventions, not measurements. Your own speakers or headphones are what you hear the tone through, so very low and very high tones may be faint or silent on them.</p>
     </>
   );

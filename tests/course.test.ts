@@ -1249,3 +1249,24 @@ describe("the Vero array", () => {
     expect(VERO.V60.beam).toEqual({ across: 60, upDown: 6 }); expect(VERO.V90.beam!.across).toBe(90); expect(VERO.V315.beam).toBeUndefined();
   });
 });
+
+import { BACK, channelArea, HORN_PARTS, memberAt, MOUTH, STAGES, stageAt, coneAt } from "../src/soundsystems/horn";
+describe("the patented horn", () => {
+  const along = (from: number, to: number) => Array.from({ length: 12 }, (_, i) => channelArea(from + ((to - from) * (i + 0.5)) / 12));
+  const rising = (xs: number[]) => xs.every((x, i) => i === 0 || x > xs[i - 1]!), falling = (xs: number[]) => xs.every((x, i) => i === 0 || x < xs[i - 1]!);
+  it("the room for the sound widens in the cone, narrows at the constriction, then widens slowly and then quickly, as the patent says", () => {
+    const [first, second, throat, horn] = STAGES as [typeof STAGES[0], typeof STAGES[0], typeof STAGES[0], typeof STAGES[0]];
+    expect(rising(along(first.from, first.to))).toBe(true);
+    expect(falling(along(second.from + 0.3, second.to))).toBe(true);
+    expect(rising(along(throat.from, throat.to))).toBe(true);
+    expect(rising(along(horn.from, horn.to))).toBe(true);
+    const rate = (s: typeof first) => (channelArea(s.to) - channelArea(s.from)) / (s.to - s.from);
+    expect(rate(horn)).toBeGreaterThan(rate(throat) * 2);
+  });
+  it("the plug never touches the cone, ends at the start of the horn, and every point belongs to a stage", () => {
+    for (let z = BACK; z <= 0; z += 0.2) expect(memberAt(z)).toBeLessThan(coneAt(z));
+    expect(memberAt(10)).toBe(0); expect(memberAt(15)).toBe(0);
+    expect(stageAt(BACK).id).toBe("first"); expect(stageAt(3).id).toBe("second"); expect(stageAt(8).id).toBe("throat"); expect(stageAt(MOUTH).id).toBe("horn");
+    expect(Object.keys(HORN_PARTS)).toEqual(["member", "cone", "motor", "baffle", "housing"]);
+  });
+});

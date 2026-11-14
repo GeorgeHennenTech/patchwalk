@@ -731,8 +731,14 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   far it is tipped and where the middle of its beam meets the ground (`reach`), with the guide's page.
   Three camera views and a beams switch. The page says what is from the guide and what is drawn for
   illustration (column height, beam length, number of subs, stage, cabinet outline). `src/ui/three/stage.ts`
-  is the shared 3D set-up (renderer, camera, lights, pointing) for new views. Not built: the patented
-  horn as a cutaway, V315 and bass coverage, changing the array yourself.
+  is the shared 3D set-up (renderer, camera, lights, pointing) for new views. **The patented horn as a cutaway**
+  is the tab's second view (`src/ui/HornCutaway.tsx`, `src/soundsystems/horn.ts`): the loudspeaker of US
+  patent 6,650,760 with its top off, drawn after FIG. 1 and 2 by eye (cone driver, plug, baffle, housing
+  with flat parallel top and bottom). A "Follow the sound" slider moves a frame from the cone to the mouth
+  and a bar shows the room the channel gives the sound (`channelArea`), which widens, narrows at the
+  constriction, widens slowly in the throat and quickly in the horn, as the patent's words say; a test
+  holds the shapes to that. The page says it is the patent's device and not the inside of a Vero or any
+  cabinet. Not built: V315 and bass coverage, changing the array yourself, sound moving through the horn.
 - **Side notes in answers (owner's request, 14 Nov 2026).** A side note now sits in the free space to the
   right of the steps (`.answer-body.with-notes` is a two-column grid; underneath on narrow screens and
   inside lessons) as a fabric patch: a textured frame from the skin's artwork, a solid panel inside for

@@ -44,7 +44,7 @@ Already covered: switching an oscillator on and off; OCT, SEM and FIN pitch cont
 | Osc B as a full oscillator | B has everything A has (wavetable, unison, warp, pan) | 39 | Partly: B has shape, pitch, phase and level only | Medium |
 | CRS (coarse pitch) | Smooth, unstepped pitch offset in semitones, meant for big sweeps | 29-30 | Partly: "Osc A pitch, wide" exists as a destination but there is no knob, and nothing for B | Small |
 | Octave/semitone mode: Semitones, Harmonics, Ratio, Step | Sets pitch by harmonic number, by a ratio to another oscillator, or by microtuning steps instead of semitones | 30 | Missing (semitones only) | Medium |
-| PAN per oscillator | Places each oscillator left or right | 57 | Missing | Small |
+| PAN per oscillator | Places each oscillator left or right | 57 | **Built** for Osc A and Osc B (not sub or noise) | Small |
 | Routing button (Filter, Main, Direct, None) | Chooses where each oscillator's sound goes | 31-32 | Missing (see section 9) | Medium |
 | Enable Pitch Tracking (off) | Oscillator ignores the key played; plays a fixed pitch (drones, drums, or as a slow LFO) | 35 | Partly: `freeHz` exists for early lessons but is not a general switch | Small |
 | Pitch Bend Tracking | Whether pitch bend still moves an oscillator that ignores the keys | 36 | Missing (no pitch bend at all) | Small |
@@ -798,7 +798,7 @@ Ranked by how much each gap would add to *learning sound design on this synth* c
    source.
 3. **Done 14 Nov 2026, except INV and "Create Vibrato".** **AUX SOURCE in the matrix (with INV), then "Create Vibrato".** "One source sets how much another
    does" is a central idea (wheel-controlled vibrato) that we can only half-show with "LFO moves LFO amount".
-4. **Osc B as a full oscillator (wavetable, unison, warp) and PAN on every source.** Two equal oscillators
+4. **Partly done 14 Nov 2026 (pan on A and B, a wavetable on B; B still has no unison or warp).** **Osc B as a full oscillator (wavetable, unison, warp) and PAN on every source.** Two equal oscillators
    are needed for most real patches; pan is small and opens stereo lessons.
 5. **Filter 2 and routing (A/B/Sub/Noise switches, Filter/Main/Direct).** Lets lessons show "sub goes
    round the filter", series against parallel filters, and split sounds; medium work.

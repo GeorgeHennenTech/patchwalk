@@ -84,6 +84,10 @@ export interface SynthState {
   // ---- oscillator B
   bOn: boolean;
   bShape: Shape;
+  /** Oscillator B's own wavetable and where in it to read, as on A. */
+  bTable: Table; bPosition: number;
+  /** Where each oscillator sits between the speakers: -100 hard left, 0 centre, 100 hard right. */
+  aPan: number; bPan: number;
   bOctave: number;
   bSemitone: number;
   bFine: number;
@@ -181,7 +185,7 @@ export const INITIAL: SynthState = {
   volumeDb: -12, aOn: true, shape: "saw", table: "none", position: 0, octave: 0, semitone: 0, fine: 0, phase: 0, randomPhase: 0, freeHz: null, aLevelDb: 0,
   warp: "none", warpAmount: 0, fmAmount: 0, ringAmount: 0,
   voices: 1, detune: 0, spread: 0,
-  bOn: false, bShape: "saw", bOctave: 0, bSemitone: 0, bFine: 0, bPhase: 0, bLevelDb: 0,
+  bOn: false, bShape: "saw", bTable: "none", bPosition: 0, aPan: 0, bPan: 0, bOctave: 0, bSemitone: 0, bFine: 0, bPhase: 0, bLevelDb: 0,
   subOn: false, subOctave: -1, subLevelDb: -6, noiseOn: false, noiseType: "white", noiseLevelDb: -18,
   filterOn: false, filterType: "low", cutoff: 20000, resonance: 0, slope: "12", drive: 0, keyTrack: 0,
   envA: 5, envD: 300, envS: 100, envR: 30, envH: 0, env2H: 0, envBend: "eased", env2Bend: "eased",
@@ -237,6 +241,7 @@ const BASE_PARAMS: Record<string, ParamSpec> = {
   aOn: { id: "aOn", label: "Osc A", group: "Oscillator A", kind: "toggle" },
   shape: { id: "shape", label: "Wave shape", group: "Oscillator A", kind: "choice", choices: SHAPES, names: SHAPE_NAMES },
   table: { id: "table", label: "Wavetable", group: "Oscillator A", kind: "choice", choices: TABLES, names: { none: "Off", basic: "Basic morph", bright: "Bright sweep", vowel: "Vowel" } },
+  aPan: { id: "aPan", label: "A pan", group: "Oscillator A", kind: "range", min: -100, max: 100, step: 1, unit: "" },
   position: { id: "position", label: "Position", group: "Oscillator A", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
   octave: { id: "octave", label: "Octave", group: "Oscillator A", kind: "range", min: -3, max: 3, step: 1, unit: "oct" },
   semitone: { id: "semitone", label: "Semitone", group: "Oscillator A", kind: "range", min: -12, max: 12, step: 1, unit: "st" },
@@ -256,6 +261,9 @@ const BASE_PARAMS: Record<string, ParamSpec> = {
   bShape: { id: "bShape", label: "B shape", group: "Oscillator B", kind: "choice", choices: SHAPES, names: SHAPE_NAMES },
   bOctave: { id: "bOctave", label: "B octave", group: "Oscillator B", kind: "range", min: -3, max: 3, step: 1, unit: "oct" },
   bSemitone: { id: "bSemitone", label: "B semitone", group: "Oscillator B", kind: "range", min: -12, max: 12, step: 1, unit: "st" },
+  bTable: { id: "bTable", label: "B wavetable", group: "Oscillator B", kind: "choice", choices: TABLES, names: { none: "Off", basic: "Basic morph", bright: "Bright sweep", vowel: "Vowel" } },
+  bPosition: { id: "bPosition", label: "B position", group: "Oscillator B", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
+  bPan: { id: "bPan", label: "B pan", group: "Oscillator B", kind: "range", min: -100, max: 100, step: 1, unit: "" },
   bFine: { id: "bFine", label: "B fine", group: "Oscillator B", kind: "range", min: -100, max: 100, step: 1, unit: "cents" },
   bPhase: { id: "bPhase", label: "B phase", group: "Oscillator B", kind: "range", min: 0, max: 360, step: 5, unit: "°" },
   bLevelDb: { id: "bLevelDb", label: "B level", group: "Oscillator B", kind: "range", min: -36, max: 0, step: 1, unit: "dB" },
@@ -447,6 +455,9 @@ const FRAMES: Record<Exclude<Table, "none">, ((n: number) => number)[]> = {
 };
 
 export const frameCount = (table: Table) => (table === "none" ? 0 : FRAMES[table].length);
+
+/** Oscillator B's harmonics: its basic shape, or its own wavetable read at its own position. */
+export const harmonicsB = (s: Pick<SynthState, "bShape" | "bTable" | "bPosition">): Float32Array => harmonicsA({ shape: s.bShape, table: s.bTable, position: s.bPosition });
 
 /** Harmonic amplitudes (index 1..HARMONICS) for oscillator A, blending neighbouring frames by position. */
 export function harmonicsA(state: Pick<SynthState, "shape" | "table" | "position">): Float32Array {

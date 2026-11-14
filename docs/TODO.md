@@ -27,7 +27,7 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 - [ ] Scaling a route with a second source (mod wheel) and its lesson
 - [ ] Blind ear checks for the filter, envelope, LFO and modulation lessons
 - [ ] Pulse-width lesson in the oscillator chapter
-- [ ] Remaining synthesis chapters from the course plan (86 lessons built)
+- [ ] Remaining synthesis chapters from the course plan (87 lessons built)
 
 ## Synth
 - [x] Filter with a draggable curve

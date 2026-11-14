@@ -5,7 +5,7 @@ import { applyMacros } from "./macros";
 import { adsr, fallConstant, isLevel, keyValue, lfoCoefficients, lfoHz, lfoStartPhase, modDepth, noteLevelBase, routeLayout, routes, slowModulate, velocityValue, type Adsr, type Route } from "./mod";
 import { FxChain } from "./fx";
 import { DRIVE_RANGE, driveCurve, filterStages, resonanceTrim, type Stage } from "./filter";
-import { dbToGain, fmIndex, FM_MAX_INDEX, harmonic, spectrumA, HARMONICS, playedHz, playedHzB, subHz, unisonOffsets, unisonPans, type Shape, type SynthState } from "./params";
+import { dbToGain, fmIndex, FM_MAX_INDEX, harmonic, spectrumA, HARMONICS, playedHz, playedHzB, subHz, unisonOffsets, unisonPans, type Shape, type SynthState, harmonicsB } from "./params";
 
 const RAMP = 0.012; // seconds; short ramps avoid clicks when a value jumps
 const OSC_GAIN = 0.4;
@@ -21,7 +21,7 @@ interface Voice {
   /** The whole note's level, after the envelope: where "Note level" routes land. */
   out: GainNode;
   a: { osc: OscillatorNode; gain: GainNode; pan: StereoPannerNode }[];
-  b?: { osc: OscillatorNode; gain: GainNode };
+  b?: { osc: OscillatorNode; gain: GainNode; pan: StereoPannerNode };
   /**
    * A silent copy of oscillator B that every note has, whether or not B is heard. `fm` scales it into a
    * swing of A's frequency; `wet` is A multiplied by it (ring modulation) and `dry` is A left alone.
@@ -43,6 +43,8 @@ const STRUCTURAL: (keyof SynthState)[] = ["voiceMode", "voices", "bOn", "subOn",
 /** Stop changing a value from `t` on, keeping whatever it has reached (older browsers: drop what was planned). */
 /** Cancel a slide: the pitch goes straight to the note. */
 const holdAtZero = (p: AudioParam, t: number) => { p.cancelScheduledValues(t); p.setValueAtTime(0, t); };
+/** A unison voice's place between the speakers, moved by the oscillator's own pan and kept within the two sides. */
+const panOf = (spread: number, pan: number) => Math.min(1, Math.max(-1, spread + pan / 100));
 const holdAt = (p: AudioParam, t: number) => (p.cancelAndHoldAtTime ? p.cancelAndHoldAtTime(t) : p.cancelScheduledValues(t));
 
 export class Engine {
@@ -356,7 +358,7 @@ export class Engine {
     const base = playedHz(s, note), hA = spectrumA(s);
     // Oscillator B again, unheard: the modulator for FM and ring modulation. It starts in step with the B you hear.
     const modOsc = this.ctx.createOscillator();
-    modOsc.setPeriodicWave(this.wave(this.shapeHarmonics(s.bShape), s.bPhase / 360));
+    modOsc.setPeriodicWave(this.wave(harmonicsB(s), s.bPhase / 360));
     modOsc.frequency.value = playedHzB(s, note);
     const modB = { osc: modOsc, fm: this.ctx.createGain(), dry: this.ctx.createGain(), wet: this.ctx.createGain() };
     modB.fm.gain.value = fmIndex(s.fmAmount) * playedHzB(s, note);
@@ -381,7 +383,7 @@ export class Engine {
       const gain = this.ctx.createGain();
       gain.gain.value = this.levelA(s);
       const pan = this.ctx.createStereoPanner();
-      pan.pan.value = pans[i]!;
+      pan.pan.value = panOf(pans[i]!, s.aPan);
       osc.connect(gain).connect(pan);
       pan.connect(modB.dry);
       pan.connect(times);
@@ -393,14 +395,16 @@ export class Engine {
     this.applyFilter(voice, s, true, t);
     if (s.bOn) {
       const osc = this.ctx.createOscillator();
-      osc.setPeriodicWave(this.wave(this.shapeHarmonics(s.bShape), s.bPhase / 360));
+      osc.setPeriodicWave(this.wave(harmonicsB(s), s.bPhase / 360));
       osc.frequency.value = playedHzB(s, note);
       const gain = this.ctx.createGain();
       gain.gain.value = OSC_GAIN * dbToGain(s.bLevelDb);
-      osc.connect(gain).connect(into);
+      const pan = this.ctx.createStereoPanner();
+      pan.pan.value = s.bPan / 100;
+      osc.connect(gain).connect(pan).connect(into);
       glide.connect(osc.detune); this.bendSource().connect(osc.detune);
       osc.start(t);
-      voice.b = { osc, gain };
+      voice.b = { osc, gain, pan };
     }
     if (s.subOn) {
       const osc = this.ctx.createOscillator();
@@ -483,6 +487,7 @@ export class Engine {
   /** Make one sounding note match new settings, changing only what differs from the settings it had. */
   private applyVoice(v: Voice, next: SynthState, prev: SynthState): void {
     const t = this.ctx.currentTime;
+    const waveB = next.bShape !== prev.bShape || next.bPhase !== prev.bPhase || next.bTable !== prev.bTable || next.bPosition !== prev.bPosition;
     const waveA = next.shape !== prev.shape || next.table !== prev.table || next.position !== prev.position || next.phase !== prev.phase || next.warp !== prev.warp || next.warpAmount !== prev.warpAmount;
     const hA = waveA ? spectrumA(next) : undefined;
     const offsets = unisonOffsets(next.voices, next.detune), pans = unisonPans(next.voices, next.spread);
@@ -518,18 +523,19 @@ export class Engine {
     v.a.forEach((x, i) => {
       if (hA) x.osc.setPeriodicWave(this.wave(hA.sin, v.phaseA + (next.voices > 1 ? i / next.voices : 0), hA.cos));
       x.osc.frequency.setTargetAtTime(base * 2 ** (offsets[i]! / 1200), t, RAMP);
-      x.pan.pan.setTargetAtTime(pans[i]!, t, RAMP);
+      x.pan.pan.setTargetAtTime(panOf(pans[i]!, next.aPan), t, RAMP);
       if (next.aLevelDb !== prev.aLevelDb || next.aOn !== prev.aOn) x.gain.gain.setTargetAtTime(this.levelA(next), t, RAMP);
     });
-    if (next.bShape !== prev.bShape || next.bPhase !== prev.bPhase) v.modB.osc.setPeriodicWave(this.wave(this.shapeHarmonics(next.bShape), next.bPhase / 360));
+    if (waveB) v.modB.osc.setPeriodicWave(this.wave(harmonicsB(next), next.bPhase / 360));
     v.modB.osc.frequency.setTargetAtTime(playedHzB(next, v.note), t, RAMP);
     v.modB.fm.gain.setTargetAtTime(fmIndex(next.fmAmount) * playedHzB(next, v.note), t, RAMP);
     v.modB.dry.gain.setTargetAtTime(1 - next.ringAmount / 100, t, RAMP);
     v.modB.wet.gain.setTargetAtTime(next.ringAmount / 100, t, RAMP);
     if (v.b) {
-      if (next.bShape !== prev.bShape || next.bPhase !== prev.bPhase) v.b.osc.setPeriodicWave(this.wave(this.shapeHarmonics(next.bShape), next.bPhase / 360));
+      if (waveB) v.b.osc.setPeriodicWave(this.wave(harmonicsB(next), next.bPhase / 360));
       v.b.osc.frequency.setTargetAtTime(playedHzB(next, v.note), t, RAMP);
       v.b.gain.gain.setTargetAtTime(OSC_GAIN * dbToGain(next.bLevelDb), t, RAMP);
+      v.b.pan.pan.setTargetAtTime(next.bPan / 100, t, RAMP);
     }
     if (v.sub) {
       v.sub.osc.frequency.setTargetAtTime(subHz(next, v.note), t, RAMP);

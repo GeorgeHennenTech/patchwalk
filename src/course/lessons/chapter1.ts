@@ -140,6 +140,24 @@ export const CHAPTER_1: PlayableLesson[] = [
     inSerum: "On each oscillator, PHASE sets the start point and RAND sets how much it varies. Nothing is checked yet: how these settings read on screen is not confirmed.",
   },
   {
+    id: "C1.9", title: "Left and right, and a second wavetable", buildsOn: ["C1.4", "C1.3"], minutes: 7, cardIds: ["oscillator-level"], initial: { shape: "saw", bOn: true, bShape: "square", bOctave: 1, bLevelDb: -6 },
+    outcome: "Place each oscillator between the speakers, and give Osc B its own wavetable so the two can differ in tone as well as place.",
+    demo: { caption: "Two oscillators in the middle, then one in each speaker, then partly apart. Use headphones or two speakers.", tones: patches([{ shape: "saw", bOn: true, bShape: "square", bOctave: 1, bLevelDb: -6 }, { shape: "saw", bOn: true, bShape: "square", bOctave: 1, bLevelDb: -6, aPan: -100, bPan: 100 }, { shape: "saw", bOn: true, bShape: "square", bOctave: 1, bLevelDb: -6, aPan: -40, bPan: 40 }], 1.5) },
+    idea: [
+      "Everything so far has come from the middle: the same signal in both speakers. Pan sends an oscillator more to one side than the other. At 0 it is in the middle; at -100 it is only in the left speaker and at 100 only in the right.",
+      "Two oscillators panned apart are easier to tell from each other, and the sound seems wider. Osc B can also read its own wavetable at its own position, so the two sides need not be the same kind of sound at all. You need headphones or two speakers to hear any of this.",
+    ],
+    steps: [
+      { do: "Switch on Hold and play a note. Turn Osc A's Pan all the way to the left.", show: [...K, "aPan"], hear: "The saw moves into the left speaker. The square, an octave up, stays in the middle.", target: "A note held; A pan at -90 or further left", check: (s) => s.held.length >= 1 && s.state.aPan <= -90 },
+      { do: "Turn Osc B's Pan all the way to the right.", show: [...K, "aPan", "bPan"], hear: "One oscillator in each ear, completely apart. Cover one ear and you hear only one of them.", target: "A pan at -90 or less, B pan at 90 or more", check: (s) => s.state.aPan <= -90 && s.state.bPan >= 90 },
+      { do: "Bring them part of the way back: A to about -40, B to about +40.", show: [...K, "aPan", "bPan"], hear: "Still apart, but joined up: a wide sound with a middle. Fully apart often sounds like two separate things; partly apart sounds like one wide thing.", target: "A pan between -55 and -25, B pan between 25 and 55", check: (s) => between(s.state.aPan, -55, -25) && between(s.state.bPan, 25, 55),
+        remark: (s) => `A is at ${s.state.aPan} and B at ${s.state.bPan > 0 ? "+" : ""}${s.state.bPan}: the two are ${s.state.bPan - s.state.aPan} apart out of a possible 200.` },
+      { do: "Set Osc B's Wavetable to Bright sweep and move B's Position slowly from one end to the other.", show: [...K, "bTable", "bPosition", "bPan", "spectrum"], hear: "Only the right-hand side changes tone, from dull to bright. Osc A on the left stays as it was.", target: "B on a wavetable; B position taken below 10% and above 90%", check: (s) => s.state.bTable !== "none" && !!s.range.bPosition && s.range.bPosition.min <= 10 && s.range.bPosition.max >= 90 },
+    ],
+    recap: ["Pan places an oscillator between the speakers: 0 is the middle, -100 and 100 are the two sides.", "Oscillators panned partly apart sound like one wide sound; fully apart, like two.", "Osc B has its own wavetable and position, independent of Osc A's."],
+    inSerum: "Each of Serum's oscillators has a PAN knob and its own wavetable and WT POS (the oscillator panel on page 49 of its guide shows them). Pan Osc A left and Osc B right, then bring them partly back.",
+  },
+  {
     id: "C1.C", title: "Checkpoint: oscillators by ear", buildsOn: ["C1.3", "C1.4", "C1.5", "C1.6", "C1.7"], minutes: 10, cardIds: [],
     outcome: "Recreate hidden sounds using everything in this chapter: a second oscillator, unison, the sub, and wavetable position.",
     idea: [

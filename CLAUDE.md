@@ -173,7 +173,8 @@ Added after the first eight milestones (owner asked for all four in one go):
     `lessons/chapter8.ts` holds "Playing a line" (C8.1 one note at a time, C8.2 glide, C8.3 the bend and mod wheels), listed between
     "Effects" and "Impacts".
     C5.9 ("One source scaling another") was added to chapter 5 with the matrix's Scaled by column.
-    **Eighty-six playable lessons.**
+    C1.9 ("Left and right, and a second wavetable") was added to chapter 1 with pan and Osc B's wavetable.
+    **Eighty-seven playable lessons.**
   - `src/ui/PlayView.tsx` ("Lessons" tab) and `src/ui/synth/` — spotlighted controls per step, live targets,
     scope, spectrum, meter, on-screen keyboard, Hold, blind ear checks, recap, guide remarks and suggestion.
   - "Hear it first" demos (`demo` on a lesson), match-by-ear rounds (`rounds`, compared by `src/course/match.ts`:
@@ -449,6 +450,14 @@ Added after the first eight milestones (owner asked for all four in one go):
     movement, half an octave and a full octave each way at 0, 50 and 100%; scaled by velocity 32 it gave a
     quarter of the depth; scaled by Envelope 2 with a 3 s attack the depth grew over the note; scaled by a
     slow square LFO it switched on and off. The knob's ring still shows the row's full amount.
+  - **Pan, and a wavetable for Osc B (14 Nov 2026; part of the fourth item of `docs/SERUM_GAPS.md`).**
+    `aPan` and `bPan` (-100 to 100): A's pan is added to each unison voice's place and kept within the two
+    sides (`panOf`); B has its own panner. `bTable` and `bPosition` give B the same generated wavetables as A
+    (`harmonicsB`), and the silent copy of B used for FM and ring follows them too. All four are ordinary
+    knobs, so sources and macros can move them, and B's picture follows live. Measured with a left and a
+    right analyser: pan at 100 or -100 left the other side silent, -50 put A 7 dB louder on the left; B on
+    Bright sweep went from one harmonic to twenty across its position, and an LFO on B's position moved it.
+    Still missing on B: unison, warp, and FM or ring from A; there is no Osc C.
   - Not built yet: drag-and-drop on touch screens, reordering effects. **Owner's order (13 Nov 2026), after
     warp/FM/ring which is done: the first impact lessons (they need nothing new); then physical modelling
     and bioacoustics.**

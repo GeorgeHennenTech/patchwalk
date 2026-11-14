@@ -229,7 +229,7 @@ describe("extended synth maths", () => {
 describe("chapter 1 lessons", () => {
   const st = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
   it("chapters 0 and 1 come first, in chapter order, and every initial setting is a real setting", () => {
-    expect(LESSONS.map((l) => l.id).slice(0, 14)).toEqual(["C0.1", "C0.2", "C0.3", "C0.4", "C1.1", "C1.2", "C1.M", "C1.3", "C1.4", "C1.5", "C1.6", "C1.7", "C1.8", "C1.C"]);
+    expect(LESSONS.map((l) => l.id).slice(0, 15)).toEqual(["C0.1", "C0.2", "C0.3", "C0.4", "C1.1", "C1.2", "C1.M", "C1.3", "C1.4", "C1.5", "C1.6", "C1.7", "C1.8", "C1.9", "C1.C"]);
     for (const l of LESSONS) for (const k of Object.keys(l.initial ?? {})) expect(k in INITIAL, `${l.id}: ${k}`).toBe(true);
   });
   it("C1.3: sweeping means visiting both ends, and 'brightest' is judged from the harmonics", () => {
@@ -354,7 +354,7 @@ describe("filter maths", () => {
 describe("chapter 2 lessons", () => {
   const st = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
   it("the filter chapter follows chapter 1 and uses only real settings and cards that exist", async () => {
-    expect(LESSONS.map((l) => l.id).slice(14, 22)).toEqual(["C2.1", "C2.2", "C2.3", "C2.4", "C2.5", "C2.6", "C2.7", "C2.C"]);
+    expect(LESSONS.map((l) => l.id).slice(15, 23)).toEqual(["C2.1", "C2.2", "C2.3", "C2.4", "C2.5", "C2.6", "C2.7", "C2.C"]);
     const { readdirSync } = await import("node:fs");
     const cards = readdirSync("knowledge-cards").map((f) => f.replace(".md", ""));
     for (const l of CHAPTER_2) {
@@ -413,7 +413,7 @@ describe("how lessons are labelled for the learner", () => {
     for (const l of LESSONS) expect(CHAPTERS[chapterOf(l)], l.id).toBeTruthy();
     expect(placeOf(LESSONS.find((l) => l.id === "C0.1")!)).toEqual({ chapter: "Sound itself", number: 1, of: 4 });
     expect(placeOf(LESSONS.find((l) => l.id === "C2.5")!)).toEqual({ chapter: "Filters", number: 5, of: 8 });
-    expect(placeOf(LESSONS.find((l) => l.id === "C1.C")!)).toEqual({ chapter: "Oscillators", number: 10, of: 10 });
+    expect(placeOf(LESSONS.find((l) => l.id === "C1.C")!)).toEqual({ chapter: "Oscillators", number: 11, of: 11 });
   });
   it("no lesson text shown to the learner refers to another lesson by its code", () => {
     for (const l of LESSONS) {
@@ -553,7 +553,7 @@ describe("chapter 3 lessons", () => {
   const st = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
   const hit = { played: { mouse: 2, keys: 0, midi: 0 } };
   it("the envelope chapter follows the filters and starts from real settings", () => {
-    expect(LESSONS.map((l) => l.id).slice(22, 29)).toEqual(["C3.1", "C3.2", "C3.3", "C3.4", "C3.5", "C3.6", "C3.C"]);
+    expect(LESSONS.map((l) => l.id).slice(23, 30)).toEqual(["C3.1", "C3.2", "C3.3", "C3.4", "C3.5", "C3.6", "C3.C"]);
     for (const l of CHAPTER_3) for (const k of Object.keys(l.initial ?? {})) expect(k in INITIAL, `${l.id}: ${k}`).toBe(true);
     expect(placeOf(LESSONS.find((l) => l.id === "C3.4")!)).toEqual({ chapter: "Envelopes", number: 4, of: 7 });
   });
@@ -599,7 +599,7 @@ import { CHAPTER_4 } from "../src/course/lessons/chapter4";
 describe("chapter 4 lessons", () => {
   const st = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
   it("the LFO chapter follows the envelopes and starts from real settings", () => {
-    expect(LESSONS.map((l) => l.id).slice(29, 36)).toEqual(["C4.1", "C4.2", "C4.3", "C4.4", "C4.5", "C4.6", "C4.C"]);
+    expect(LESSONS.map((l) => l.id).slice(30, 37)).toEqual(["C4.1", "C4.2", "C4.3", "C4.4", "C4.5", "C4.6", "C4.C"]);
     for (const l of CHAPTER_4) for (const k of Object.keys(l.initial ?? {})) expect(k in INITIAL, `${l.id}: ${k}`).toBe(true);
     expect(placeOf(LESSONS.find((l) => l.id === "C4.2")!).chapter).toBe("LFOs");
   });
@@ -626,7 +626,7 @@ import { CHAPTER_5 } from "../src/course/lessons/chapter5";
 describe("chapter 5: routes, direction, and modulating a modulator", () => {
   const st = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
   it("the modulation chapter follows the LFOs and starts from real settings", () => {
-    expect(LESSONS.map((l) => l.id).slice(36, 46)).toEqual(["C5.1", "C5.2", "C5.3", "C5.4", "C5.5", "C5.6", "C5.7", "C5.8", "C5.9", "C5.C"]);
+    expect(LESSONS.map((l) => l.id).slice(37, 47)).toEqual(["C5.1", "C5.2", "C5.3", "C5.4", "C5.5", "C5.6", "C5.7", "C5.8", "C5.9", "C5.C"]);
     for (const l of CHAPTER_5) for (const k of Object.keys(l.initial ?? {})) expect(k in INITIAL, `${l.id}: ${k}`).toBe(true);
   });
   it("an LFO set to one way pushes one side only, like an envelope; both ways is the default", () => {

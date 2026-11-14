@@ -7,7 +7,7 @@ import { dragColor, dragName, endDrag, startDrag, type Draggable } from "../../s
 import { MACRO_COLORS } from "../../synth/macros";
 import { FX_NAMES, FX_ORDER } from "../../synth/fx";
 import { adsr, ENV1_COLOR, envLevel, lfoHz, lfoStartPhase, lfoValue, routes, SOURCES, type Adsr, type ModSource } from "../../synth/mod";
-import { harmonic, spectrumA, HARMONICS, LFO_STEPS, MACRO_SLOTS, MACROS, PARAMS, type Group, type SynthState } from "../../synth/params";
+import { harmonic, spectrumA, HARMONICS, LFO_STEPS, MACRO_SLOTS, MACROS, PARAMS, type Group, type SynthState, harmonicsB } from "../../synth/params";
 import type { Synth } from "../../synth/useSynth";
 import { Control, isBox } from "./Controls";
 import { FilterCurve, Matrix, Reduction } from "./Views";
@@ -66,14 +66,14 @@ function Display({ module, synth, note }: { module: Module; synth: Synth; note: 
   const s = synth.effective;
   const d = useMemo(() => {
     if (module.id === "a") { const sp = spectrumA(s); return wavePath(sp.sin, s.phase / 360, sp.cos); }
-    if (module.id === "b") return wavePath(shapeHarmonics(s.bShape), s.bPhase / 360);
+    if (module.id === "b") return wavePath(harmonicsB(s), s.bPhase / 360);
     if (module.id === "sub") return wavePath(SINE, 0);
     if (module.id === "env1") return envPath(adsr(s, 1));
     if (module.id === "env2") return envPath(adsr(s, 2));
     if (module.source === "vel" || module.source === "key" || module.source === "wheel" || module.id.startsWith("fx-") || module.id === "voice") return "";
     if (module.source) return lfoPath(s[`${module.source as "lfo1"}Shape`], s[`${module.source as "lfo1"}Way`] === "up", s[`${module.source as "lfo1"}Steps`]);
     return NOISE_PATH;
-  }, [module, s.shape, s.table, s.position, s.phase, s.warp, s.warpAmount, s.bShape, s.bPhase, s.envA, s.envD, s.envS, s.envR, s.env2A, s.env2D, s.env2S, s.env2R, s.lfo1Shape, s.lfo2Shape, s.lfo3Shape, s.lfo1Way, s.lfo2Way, s.lfo3Way, s.lfo1Steps, s.lfo2Steps, s.lfo3Steps]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [module, s.shape, s.table, s.position, s.phase, s.warp, s.warpAmount, s.bShape, s.bTable, s.bPosition, s.bPhase, s.envA, s.envD, s.envS, s.envR, s.env2A, s.env2D, s.env2S, s.env2R, s.lfo1Shape, s.lfo2Shape, s.lfo3Shape, s.lfo1Way, s.lfo2Way, s.lfo3Way, s.lfo1Steps, s.lfo2Steps, s.lfo3Steps]); // eslint-disable-line react-hooks/exhaustive-deps
   // While a note sounds, an oscillator's picture follows whatever is moving its wave (position, warp,
   // phase, shape), drawn straight onto the page each frame; it returns to the settings when the note stops.
   const wave = useRef<SVGPathElement>(null);
@@ -88,12 +88,12 @@ function Display({ module, synth, note }: { module: Module; synth: Synth; note: 
       if (rest !== lastRest) { lastRest = rest; shown = "?"; } // the settings changed: draw afresh
       if (el) {
         const l = sy.engine.current?.liveNote ? sy.live() : null;
-        const key = !l ? "" : module.id === "a" ? `${l.shape}|${l.table}|${l.position.toFixed(1)}|${l.phase.toFixed(0)}|${l.warp}|${l.warpAmount.toFixed(1)}` : `${l.bShape}|${l.bPhase.toFixed(0)}`;
+        const key = !l ? "" : module.id === "a" ? `${l.shape}|${l.table}|${l.position.toFixed(1)}|${l.phase.toFixed(0)}|${l.warp}|${l.warpAmount.toFixed(1)}` : `${l.bShape}|${l.bTable}|${l.bPosition.toFixed(1)}|${l.bPhase.toFixed(0)}`;
         if (key !== shown) {
           shown = key;
           if (!l) el.setAttribute("d", rest);
           else if (module.id === "a") { const sp = spectrumA(l); el.setAttribute("d", wavePath(sp.sin, l.phase / 360, sp.cos)); }
-          else el.setAttribute("d", wavePath(shapeHarmonics(l.bShape), l.bPhase / 360));
+          else el.setAttribute("d", wavePath(harmonicsB(l), l.bPhase / 360));
         }
       }
       frame = requestAnimationFrame(loop);

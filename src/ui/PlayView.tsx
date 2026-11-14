@@ -311,7 +311,8 @@ export function PlayView({ cards, wanted }: { cards: Card[]; wanted?: { id: stri
   const lessonCards = lesson.cardIds.map((id) => cards.find((c) => c.id === id)).filter((c): c is Card => !!c);
   const suggestion = suggestNext(LESSONS, done);
   const place = placeOf(lesson);
-  const unmet = LESSONS.filter((l) => lesson.buildsOn.includes(l.id) && !done.includes(l.id));
+  const needs = LESSONS.filter((l) => lesson.buildsOn.includes(l.id));
+  const unmet = needs.filter((l) => !done.includes(l.id));
   const context = useMemo(() => guideContext(lesson, stepIndex, describe(synth.state), LESSONS, done), [lesson, stepIndex, synth.state, done]);
 
   return (
@@ -335,7 +336,15 @@ export function PlayView({ cards, wanted }: { cards: Card[]; wanted?: { id: stri
       <article className="learn-body">
         <p className="learn-place">{place.chapter} · lesson {place.number} of {place.of}</p>
         <h2>{lesson.title}</h2>
-        {unmet.length > 0 && <p className="muted">Builds on {unmet.map((l, i) => <span key={l.id}>{i > 0 && (i === unmet.length - 1 ? " and " : ", ")}<button className="link" onClick={() => setLessonId(l.id)}>{l.title}</button></span>)}, which you have not finished yet. You can still take this one now.</p>}
+        {needs.length > 0 && (
+          <aside className="builds-on" aria-label="Lessons this one builds on">
+            <span className="builds-on-tag">Builds on</span>
+            <div className="builds-on-list">
+              {needs.map((l) => <button key={l.id} className={done.includes(l.id) ? "had" : ""} onClick={() => setLessonId(l.id)} title={done.includes(l.id) ? "You have finished this one" : "Not finished yet. Click to open it."}>{done.includes(l.id) && <span aria-hidden="true">✓ </span>}{l.title}</button>)}
+            </div>
+            <p>{unmet.length === 0 ? "You have done all of these." : unmet.length === needs.length ? "You have not finished these yet. You can still take this lesson now." : "The ticked ones are done. You can still take this lesson now."}</p>
+          </aside>
+        )}
         {INTRO_CLIPS[lesson.id] && (
           <p className="intro-clip"><span className="muted">Hear what this lesson covers:</span> <audio key={lesson.id} controls preload="none" src={INTRO_CLIPS[lesson.id]} aria-label="Spoken introduction to this lesson" /></p>
         )}

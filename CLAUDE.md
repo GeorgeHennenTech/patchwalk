@@ -770,6 +770,13 @@ use explicit `.js` import suffixes so they load as plain Node ESM.
   under chapter names ("Sound itself", "Oscillators", "Filters", "Envelopes", "LFOs", "Modulation", "Macros", "Reshaping the wave", "Effects", "Playing a line", "Impacts"; `CHAPTERS` in `src/course/lessons/index.ts`),
   numbered within the chapter, with "Filters · lesson 5 of 8" above the title. A test stops lesson text from
   citing another lesson by code. Add the chapter's name to `CHAPTERS` when starting a new chapter.
+- **"Builds on" patch (owner's request, 14 Nov 2026).** The lessons a lesson builds on are shown in their own
+  box styled as a patch stitched onto the page (`.builds-on` in `skin.css`: tilted slightly, dashed stitching,
+  a cross-stitch in each corner, a "Builds on" tag), each lesson a button that opens it, finished ones
+  ticked. It is shown whenever a lesson builds on others, not only when some are unfinished. The owner
+  likes important side information set apart in this stitched style; reuse it for similar call-outs.
+  The same day the owner's screenshot showed "Playing as" a name in the header, so the "Who's playing?"
+  picker and its database work on the live site.
 - Skin: content must stay on solid panels for legibility; fabric textures are for chrome only (header, tabs,
   drop zones, page background). Keep both light and dark schemes working.
 

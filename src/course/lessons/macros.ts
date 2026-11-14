@@ -206,7 +206,7 @@ const MORE_RECIPES: Recipe[] = [
     initial: { shape: "saw", octave: -1, warp: "sync", warpAmount: 0, filterOn: true, cutoff: 900, resonance: 10 },
     outcome: "Put a sync sweep and the filter on one knob, so the tear opens up as it rises.",
     idea: [
-      "The sync sweep is a sound you play, not a setting you leave. Warp amount cannot be moved by an LFO or envelope on this synth, but it can be moved by a macro, which is the natural home for it anyway.",
+      "The sync sweep is a sound you play, not a setting you leave. A macro is the natural home for it: one knob you turn by hand.",
       "On its own the sweep can be thin at the bottom and piercing at the top. Opening the filter along with it keeps the low end of the sweep dark and lets the top through only when the sweep gets there.",
     ],
     slots: [{ to: "warpAmount", amount: 100, hear: "" }, { to: "cutoff", amount: 25, hear: "" }],

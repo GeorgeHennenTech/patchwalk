@@ -61,14 +61,17 @@ export function Answer({ outcome, question }: { outcome: AskOutcome; question?: 
  */
 function SourceImage({ im, from, question, answer }: { im: { book: string; file: string; width: number; height: number }; from: string; question?: string; answer?: string }) {
   const [state, setState] = useState<PointOutcome | "busy">();
+  // a picture that is no longer in the library (an answer remembered from before it was removed) is not shown
+  const [gone, setGone] = useState(false);
   const src = `/api/image?book=${im.book}&file=${im.file}`;
   const done = state && state !== "busy" && state.kind === "ok" ? state : undefined;
   const failed = state && state !== "busy" && state.kind === "unavailable" ? state : undefined;
   const go = async (fresh = false) => { if (!question) return; setState("busy"); setState(await pointAt(im.book, im.file, question, answer, fresh)); };
+  if (gone) return null;
   return (
     <figure className="source-image">
       <div className="marked">
-        <a href={src} target="_blank" rel="noreferrer"><img src={src} width={im.width} height={im.height} loading="lazy" alt={`Picture from ${from}`} /></a>
+        <a href={src} target="_blank" rel="noreferrer"><img src={src} width={im.width} height={im.height} loading="lazy" alt={`Picture from ${from}`} onError={() => setGone(true)} /></a>
         {done?.marks.map((m) => <span key={m.n} className="mark" style={{ left: `${m.x * 100}%`, top: `${m.y * 100}%`, width: `${m.w * 100}%`, height: `${m.h * 100}%` }} aria-hidden="true"><b>{m.letter}</b></span>)}
       </div>
       <figcaption>From {from}. Click the picture to enlarge it.</figcaption>

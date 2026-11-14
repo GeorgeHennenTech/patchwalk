@@ -43,7 +43,8 @@ export function loadLibrary(root = process.cwd()): Index {
     const title = /^title:\s*(.+)$/m.exec(m[1]!)?.[1]?.trim() ?? file;
     passages.push({ id: `card:${file.replace(/\.md$/, "")}`, source: "Knowledge card (draft)", section: title, text: m[2]!.trim() });
   }
-  libraryVersion = fingerprint(passages.map((p) => `${p.id}:${p.text.length}`));
+  // pictures count too: an answer remembered with a picture that has since been removed must not come back
+  libraryVersion = fingerprint(passages.map((p) => `${p.id}:${p.text.length}:${(p.images ?? []).map((i) => i.file).join(",")}`));
   cached = buildIndex(passages);
   return cached;
 }

@@ -23,4 +23,4 @@ export function recall<T>(name: string, key: string, now = Date.now(), storage: 
     return hit && now - hit.at < CACHE_DAYS * 86_400_000 ? hit.value : undefined;
   } catch { return undefined; }
 }
-export const ANSWERS = "patchwalk.answers.v1", MARKS = "patchwalk.marks.v1";
+export const ANSWERS = "patchwalk.answers.v2", MARKS = "patchwalk.marks.v2";

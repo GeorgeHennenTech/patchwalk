@@ -35,6 +35,30 @@
       "answer": 0,
       "why": "Very fast movement stops sounding like movement and becomes part of the tone.",
       "point": 2
+    },
+    {
+      "q": "LFO 1 is sent to Osc A level. You slow the Rate to about half a cycle a second. What do you hear?",
+      "options": [
+        "A slow swell you can count, up then down",
+        "A quick flutter in the level",
+        "A lower pitch on the same note",
+        "A steady note with no movement"
+      ],
+      "answer": 0,
+      "why": "Rate is how often the LFO repeats, so a slow rate gives a slow swell you can count.",
+      "point": 1
+    },
+    {
+      "q": "You hold a note while LFO 1 is not connected to anything. What do you hear?",
+      "options": [
+        "A note swelling and fading",
+        "A low buzz from the LFO itself",
+        "A steady note",
+        "A note that flutters quickly"
+      ],
+      "answer": 2,
+      "why": "You do not listen to an LFO itself, so until it is sent to a control the note stays steady.",
+      "point": 0
     }
   ],
   "C4.2": [
@@ -73,6 +97,30 @@
       "answer": 1,
       "why": "The cutoff knob sets the middle of the swing, so turning it shifts the whole wobble brighter or darker.",
       "point": 2
+    },
+    {
+      "q": "You change the wobble's Shape to Saw. What does each wub do now?",
+      "options": [
+        "Sweeps upward, then snaps shut",
+        "Flips between two filter positions",
+        "Glides smoothly open and closed",
+        "Stays open, then fades to silence"
+      ],
+      "answer": 0,
+      "why": "A saw ramps and drops, so each wub is a rising sweep followed by a snap shut.",
+      "point": 1
+    },
+    {
+      "q": "You want each sweep of the filter to have a vowel-like \"wow\". What does the filter need?",
+      "options": [
+        "A faster rate",
+        "A square shape",
+        "A higher cutoff",
+        "Some resonance"
+      ],
+      "answer": 3,
+      "why": "With some resonance on the filter, each sweep of the cutoff has a vowel-like wow to it.",
+      "point": 0
     }
   ],
   "C4.3": [
@@ -110,6 +158,30 @@
       ],
       "answer": 3,
       "why": "Several LFOs can run at once, each on its own control and at its own speed.",
+      "point": 2
+    },
+    {
+      "q": "Your vibrato has turned into a siren. How do you get a gentle waver back?",
+      "options": [
+        "Bring the Amount right down to a tiny value",
+        "Raise the Amount to a large value",
+        "Send the LFO to Osc A level instead",
+        "Switch on a second LFO"
+      ],
+      "answer": 0,
+      "why": "On pitch a tiny amount gives a gentle waver, and a larger one sweeps across several notes like a siren.",
+      "point": 1
+    },
+    {
+      "q": "Two LFOs are moving two knobs at once. How can you see which LFO moves which knob?",
+      "options": [
+        "Each knob shows its LFO's name as a label",
+        "Each knob wears a ring in its LFO's colour",
+        "The knobs turn at two different speeds",
+        "The LFO panels sit beside their knobs"
+      ],
+      "answer": 1,
+      "why": "A knob moved by an LFO wears a ring in that LFO's colour, cyan for LFO 1 and green for LFO 2.",
       "point": 2
     }
   ],
@@ -149,6 +221,30 @@
       "answer": 3,
       "why": "A third of a beat fits three wobbles into each beat, which is a triplet.",
       "point": 2
+    },
+    {
+      "q": "You set \"Repeats every\" to 4 beats. What do you hear?",
+      "options": [
+        "One slow sweep per bar",
+        "Four wobbles per click",
+        "Two wobbles per click",
+        "One wobble per click"
+      ],
+      "answer": 0,
+      "why": "Repeating every 4 beats, the LFO makes one slow sweep for each bar.",
+      "point": 0
+    },
+    {
+      "q": "This LFO is set to run free. You press a key a little late. What does the wobble do?",
+      "options": [
+        "It starts late and stays behind the click",
+        "It drifts slowly against the click",
+        "It still keeps time with the click",
+        "It waits for the next bar to begin"
+      ],
+      "answer": 2,
+      "why": "Running free here means the LFO keeps time with the click however late or early you press a key.",
+      "point": 1
     }
   ],
   "C4.5": [
@@ -187,6 +283,30 @@
       "answer": 1,
       "why": "Rise fades the movement in, so long notes get more of it than short ones.",
       "point": 2
+    },
+    {
+      "q": "A vibrato LFO is set to Restart, with no Rise. When does the vibrato begin on each note?",
+      "options": [
+        "After the note is held a while",
+        "Only on the longest notes",
+        "At a different moment each time",
+        "From the first instant of the note"
+      ],
+      "answer": 3,
+      "why": "With Restart and no fade-in, the vibrato is on from the first instant of every note.",
+      "point": 0
+    },
+    {
+      "q": "Every note of your pad moves in exactly the same way and sounds mechanical. What do you change?",
+      "options": [
+        "Switch Start to Free",
+        "Switch Start to Restart",
+        "Turn the Rise up",
+        "Send the LFO to pitch"
+      ],
+      "answer": 0,
+      "why": "Free lets the LFO run on, so each note catches it somewhere different and the pad sounds varied.",
+      "point": 1
     }
   ],
   "C4.6": [
@@ -225,6 +345,30 @@
       "answer": 2,
       "why": "One held note with a drawn LFO on the filter is already a pattern, made of changes in brightness.",
       "point": 2
+    },
+    {
+      "q": "Your drawn pattern repeats every 4 beats. You set \"Repeats every\" to 2 beats. What do you hear?",
+      "options": [
+        "The same pattern, half as fast",
+        "The same pattern, twice as fast",
+        "Only the first half of the pattern",
+        "A new pattern with fewer steps"
+      ],
+      "answer": 1,
+      "why": "The LFO still plays the same steps in order, so a shorter repeat plays the same pattern twice as fast.",
+      "point": 1
+    },
+    {
+      "q": "You change the Shape from Sine to Drawn, before drawing anything yourself. What do you hear?",
+      "options": [
+        "The same smooth sweep as the sine",
+        "Silence until you draw a bar",
+        "A staircase stepping down through the bar",
+        "Bright bursts with dark gaps between"
+      ],
+      "answer": 2,
+      "why": "A drawn shape is a row of steps, and here it begins as a staircase stepping down through the bar.",
+      "point": 0
     }
   ],
   "C4.C": [
@@ -301,6 +445,30 @@
       "answer": 3,
       "why": "Several routes on one knob add together, which builds complicated motion from simple parts.",
       "point": 2
+    },
+    {
+      "q": "LFO 1 is sent to Filter cutoff with its Amount at exactly 0. What do you hear?",
+      "options": [
+        "Nothing moving, because the route is removed",
+        "A wobble at half its depth",
+        "Silence, because the filter has closed",
+        "Nothing moving, though the route still exists"
+      ],
+      "answer": 3,
+      "why": "A route with an amount of zero still exists, but it moves nothing.",
+      "point": 0
+    },
+    {
+      "q": "LFO 1 and LFO 3 are both sent to Filter cutoff. What does the Cutoff knob wear?",
+      "options": [
+        "Two rings, one in each LFO's colour",
+        "One ring, for the faster LFO only",
+        "One ring, for the LFO sent last",
+        "No ring, because the two cancel"
+      ],
+      "answer": 0,
+      "why": "One knob can have several routes at once, and it wears a ring for each of them.",
+      "point": 2
     }
   ],
   "C5.2": [
@@ -339,6 +507,30 @@
       "answer": 0,
       "why": "With one way, the knob's own setting is always one end of the movement, so your note is always heard.",
       "point": 2
+    },
+    {
+      "q": "A square LFO on pitch is set to Both ways. You hold a key. Which notes do you hear?",
+      "options": [
+        "The held key and a note above it",
+        "Notes below and above; never the held key",
+        "The held key and a note below it",
+        "Only the held key, with no movement"
+      ],
+      "answer": 1,
+      "why": "Both ways swings either side of the knob's setting, so the square jumps below and above and skips the held note.",
+      "point": 0
+    },
+    {
+      "q": "Envelope 2 is sent to a knob. How does it move that knob?",
+      "options": [
+        "Both ways: equally above and below the knob",
+        "Both ways, but further upward than downward",
+        "One way: from the knob in one direction",
+        "Neither way until an LFO joins it"
+      ],
+      "answer": 2,
+      "why": "An envelope is always one way: it starts from the knob and pushes in one direction.",
+      "point": 1
     }
   ],
   "C5.3": [
@@ -376,6 +568,30 @@
       ],
       "answer": 3,
       "why": "Velocity on the cutoff makes soft notes dull and hard notes bright, at the same loudness.",
+      "point": 2
+    },
+    {
+      "q": "Velocity is sent to nothing. You strike a key softly, then hard. What do you hear?",
+      "options": [
+        "The hard note is louder",
+        "The hard note is brighter",
+        "The hard note is higher",
+        "No difference at all"
+      ],
+      "answer": 3,
+      "why": "Until Velocity is sent to a knob, nothing is listening to how hard you play.",
+      "point": 2
+    },
+    {
+      "q": "Your bright sound gets piercing on the high keys. Which route helps?",
+      "options": [
+        "Key position to Note level, amount below zero",
+        "Key position to Note level, amount above zero",
+        "Velocity to Note level, amount below zero",
+        "Key position to Filter cutoff, amount above zero"
+      ],
+      "answer": 0,
+      "why": "Key position on Note level with an amount below zero makes high notes quieter than low ones.",
       "point": 2
     }
   ],
@@ -415,6 +631,30 @@
       "answer": 0,
       "why": "Extra rows send one source to several knobs, so they move as one gesture.",
       "point": 2
+    },
+    {
+      "q": "LFO 1 moves the filter and the level. You set the level row's amount to about -50. What do you hear?",
+      "options": [
+        "The sound is loudest when it is brightest",
+        "The sound is quietest when it is brightest",
+        "The level stops moving altogether",
+        "The filter starts moving the other way"
+      ],
+      "answer": 1,
+      "why": "A row with an amount below zero turns that one job upside down, so level falls as the filter opens.",
+      "point": 2
+    },
+    {
+      "q": "LFO 1 has extra rows for pitch and level. You remove the pitch row. What happens?",
+      "options": [
+        "Pitch, filter and level all stop moving",
+        "Pitch is steady and the level row goes too",
+        "Pitch is steady; filter and level still move together",
+        "Nothing changes until you strike a new key"
+      ],
+      "answer": 2,
+      "why": "Each row is one connection, so removing the pitch row leaves the filter and level rows as they were.",
+      "point": 0
     }
   ],
   "C5.5": [
@@ -453,6 +693,30 @@
       "answer": 3,
       "why": "The dot, the source's Amount knob and the matrix row are the same setting.",
       "point": 2
+    },
+    {
+      "q": "The wobble on Cutoff is too shallow. What is the quick fix, right at the knob?",
+      "options": [
+        "Double-click the LFO's dot on Cutoff",
+        "Turn the Cutoff knob itself upward",
+        "Drag the ring around Cutoff wider",
+        "Drag the LFO's dot on Cutoff upward"
+      ],
+      "answer": 3,
+      "why": "The dot is a handle: dragging it up raises that source's amount, and the ring grows as you do.",
+      "point": 1
+    },
+    {
+      "q": "You drag Envelope 2's dot on Cutoff below zero and strike a new key. How does each note behave?",
+      "options": [
+        "It starts darker and opens up",
+        "It starts brighter and settles darker",
+        "It stays dark for the whole note",
+        "It wobbles more deeply than before"
+      ],
+      "answer": 0,
+      "why": "Below zero, the envelope pushes the cutoff down from the knob and then lets go, so notes start dark and open.",
+      "point": 1
     }
   ],
   "C5.6": [
@@ -529,6 +793,30 @@
       "answer": 2,
       "why": "Effects are shared by all notes, so a source on an effect follows the last note played.",
       "point": 2
+    },
+    {
+      "q": "LFO 2 is moving Warp amount. You send LFO 3 to LFO 2 rate. What do you hear?",
+      "options": [
+        "LFO 2's movement gets deeper and shallower",
+        "LFO 2's movement speeds up and slows down",
+        "LFO 2 stops and LFO 3 moves the warp",
+        "Both LFOs settle at the same speed"
+      ],
+      "answer": 1,
+      "why": "A source's own knobs are knobs like any other, so LFO 3 turns LFO 2's rate up and down.",
+      "point": 0
+    },
+    {
+      "q": "Envelope 2 is sent to Distortion drive at a high amount. How does each new note sound?",
+      "options": [
+        "Clean at the start, growing dirtier as it is held",
+        "Dirty for the whole note, at one fixed level",
+        "Dirty at the start, cleaning up as the envelope falls",
+        "Clean throughout, with the drive knob left alone"
+      ],
+      "answer": 2,
+      "why": "The envelope pushes the drive up at the start of the note and lets it fall back, so each note cleans up.",
+      "point": 0
     }
   ],
   "C5.8": [
@@ -567,6 +855,30 @@
       "answer": 3,
       "why": "A macro dropped on a knob takes its next free slot.",
       "point": 2
+    },
+    {
+      "q": "You drag LFO 1's handle onto the Cutoff knob and let go. What do you hear?",
+      "options": [
+        "Nothing until you raise the amount from zero",
+        "A wobble at once, at the full amount",
+        "Nothing until you add a matrix row",
+        "A wobble at once, at a modest amount"
+      ],
+      "answer": 3,
+      "why": "A dropped source is connected with a modest amount, so you hear it straight away.",
+      "point": 0
+    },
+    {
+      "q": "You drop Macro 1 on the Drive knob, then turn Macro 1 up. What happens to the bass?",
+      "options": [
+        "It grows dirtier as the macro rises",
+        "It grows cleaner as the macro rises",
+        "It wobbles faster as the macro rises",
+        "It stays the same until a new note"
+      ],
+      "answer": 0,
+      "why": "The drop connected Macro 1 to Drive through its first free slot, so turning the macro up adds dirt.",
+      "point": 2
     }
   ],
   "C5.9": [
@@ -604,6 +916,30 @@
       ],
       "answer": 3,
       "why": "An envelope as the scaler brings the movement in with time, as a singer adds vibrato to a long note.",
+      "point": 2
+    },
+    {
+      "q": "A vibrato row is scaled by the Mod wheel. You bring the wheel halfway. How deep is the vibrato?",
+      "options": [
+        "As deep as the row's amount",
+        "Half as deep as the row's amount",
+        "Twice as deep as the row's amount",
+        "There is no vibrato at all"
+      ],
+      "answer": 1,
+      "why": "Between its lowest and highest, the scaling source lets a share of the row through: halfway gives half.",
+      "point": 1
+    },
+    {
+      "q": "A vibrato row is scaled by Velocity. You play soft notes, then hard ones. What do you hear?",
+      "options": [
+        "Soft notes wobble; hard notes almost steady",
+        "Every note wobbles the same, hard or soft",
+        "Soft notes almost steady; hard notes wobble",
+        "Soft notes quiet and hard notes loud, none wobbling"
+      ],
+      "answer": 2,
+      "why": "With Velocity as the scaler, how hard you play decides how much of the vibrato gets through.",
       "point": 2
     }
   ],

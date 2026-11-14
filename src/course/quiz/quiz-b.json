@@ -35,6 +35,30 @@
       "answer": 3,
       "why": "The curve shows what gets through at each frequency: flat where sound passes, falling where it is turned down.",
       "point": 2
+    },
+    {
+      "q": "You switch the filter on with its cutoff all the way up. What do you hear?",
+      "options": [
+        "A dull hum, because only the lowest harmonics get through",
+        "A quieter note, because the filter turns the whole sound down",
+        "A thinner note, because the filter takes the lows away first",
+        "No change, because the cutoff is above everything in the sound"
+      ],
+      "answer": 3,
+      "why": "A low-pass filter only turns down what is above the cutoff, and nothing in the sound is above it yet.",
+      "point": 0
+    },
+    {
+      "q": "You grab the dot on the filter curve and sweep it left and right. What do you hear?",
+      "options": [
+        "The note getting louder and quieter, like a slow pulse",
+        "The tone opening and closing, like a mouth saying wow",
+        "The pitch sliding up and down, like a siren",
+        "Nothing, because the dot only changes the picture"
+      ],
+      "answer": 1,
+      "why": "The dot moves the cutoff, so the tone closes as it goes left and opens as it goes right.",
+      "point": 2
     }
   ],
   "C2.2": [
@@ -72,6 +96,30 @@
       ],
       "answer": 1,
       "why": "On this synth the rest of the sound is turned down as the peak grows, so there is less body.",
+      "point": 2
+    },
+    {
+      "q": "You raise Resonance to about half on a rounded tone. What do you hear?",
+      "options": [
+        "A nasal edge on the tone",
+        "A sharp whistle with little body",
+        "A deeper, warmer tone",
+        "No change until you play again"
+      ],
+      "answer": 0,
+      "why": "A medium amount of resonance puts a bump at the cutoff, which gives the tone a nasal edge.",
+      "point": 0
+    },
+    {
+      "q": "Resonance is so high that the whistle has taken over the note. What do you do?",
+      "options": [
+        "Lower the cutoff until the whistle has faded away",
+        "Sweep the cutoff quickly so the whistle is hidden",
+        "Bring Resonance back down until the note is in charge",
+        "Switch Hold off and play the same note again"
+      ],
+      "answer": 2,
+      "why": "Less resonance leaves an edge for character while the note itself stays in charge.",
       "point": 2
     }
   ],
@@ -111,6 +159,30 @@
       "answer": 0,
       "why": "On band-pass and notch, resonance sets how narrow the slice is.",
       "point": 2
+    },
+    {
+      "q": "You switch the filter from Low-pass to High-pass. What does the curve on screen do?",
+      "options": [
+        "It grows a bump at the cutoff",
+        "It narrows to a thin slice",
+        "It keeps its shape and moves left",
+        "It flips the other way round"
+      ],
+      "answer": 3,
+      "why": "High-pass keeps the opposite side to low-pass, so the curve flips.",
+      "point": 0
+    },
+    {
+      "q": "You switch to Notch and sweep the cutoff. What do you hear?",
+      "options": [
+        "A subtle hollow spot moving through the sound",
+        "A loud whistle moving through the sound",
+        "The whole note fading out and back in",
+        "The pitch of the note sliding up and down"
+      ],
+      "answer": 0,
+      "why": "A notch removes one slice and keeps the rest, so sweeping it moves a subtle hollow spot through the sound.",
+      "point": 1
     }
   ],
   "C2.4": [
@@ -149,6 +221,30 @@
       "answer": 3,
       "why": "At the same cutoff a steeper slope turns the upper harmonics down more, so it sounds darker.",
       "point": 2
+    },
+    {
+      "q": "On the steep slope the sound is darker than you want. How do you get the brightness back and stay steep?",
+      "options": [
+        "Lower the cutoff until it is bright enough",
+        "Hold the note longer so the highs return",
+        "Raise the cutoff until it is bright enough",
+        "Switch Hold off and play the note again"
+      ],
+      "answer": 2,
+      "why": "Steep is darker at the same cutoff, so raising the cutoff brings the brightness back, with a cleaner edge.",
+      "point": 2
+    },
+    {
+      "q": "You add resonance and sweep the cutoff on the steep slope. How does it compare with the gentle slope?",
+      "options": [
+        "The sweep is harder to hear",
+        "The sweep sounds just the same",
+        "The sweep is brighter throughout",
+        "The sweep is more dramatic"
+      ],
+      "answer": 3,
+      "why": "The steep slope turns things down faster past the cutoff, so a sweep on it is more dramatic.",
+      "point": 0
     }
   ],
   "C2.5": [
@@ -187,6 +283,30 @@
       "answer": 2,
       "why": "Single notes stay clear under drive, but two notes together turn rough.",
       "point": 2
+    },
+    {
+      "q": "Your driven bass has turned to mush. What do you do?",
+      "options": [
+        "Push Drive all the way up to clear the mush",
+        "Pull Drive back until there is weight and a little grit",
+        "Switch on Osc B so two notes go into the drive",
+        "Set Drive to zero and switch the filter to steep"
+      ],
+      "answer": 1,
+      "why": "A smaller amount of drive squashes the wave less, leaving weight and a little grit without the mush.",
+      "point": 0
+    },
+    {
+      "q": "You add heavy drive. Why is the filter still able to smooth the new grit?",
+      "options": [
+        "The squashing happens after the filter",
+        "Drive lowers the cutoff as it rises",
+        "Drive only touches the lowest harmonics",
+        "The squashing happens before the filter"
+      ],
+      "answer": 3,
+      "why": "Drive works on the sound on its way into the filter, so the filter then shapes the new harmonics.",
+      "point": 1
     }
   ],
   "C2.6": [
@@ -225,6 +345,30 @@
       "answer": 1,
       "why": "At 100% the cutoff moves as far as the pitch does, so every note keeps the same brightness.",
       "point": 2
+    },
+    {
+      "q": "Key track is at about half. You play a low key, then a high key. What do you hear?",
+      "options": [
+        "The high note a little softer than the low one",
+        "The two notes exactly as bright as each other",
+        "The high note much brighter than the low one",
+        "The low note dull and the high note bright"
+      ],
+      "answer": 0,
+      "why": "At about half, the cutoff follows the key only part of the way, so high notes end up a little softer.",
+      "point": 1
+    },
+    {
+      "q": "Key track is at 100%. Which key always gets exactly the cutoff you set?",
+      "options": [
+        "The lowest key",
+        "The highest key",
+        "Middle C",
+        "The key played last"
+      ],
+      "answer": 2,
+      "why": "Key tracking here pivots on middle C, so that key always gets the cutoff you set.",
+      "point": 1
     }
   ],
   "C2.7": [
@@ -262,6 +406,30 @@
       ],
       "answer": 3,
       "why": "With full key tracking the cutoff follows the keys, so the whistle moves in step with them.",
+      "point": 2
+    },
+    {
+      "q": "Only noise goes through the filter, with Resonance at zero. You hold a note. What do you hear?",
+      "options": [
+        "A whistle with a clear pitch",
+        "A tune that follows the keys",
+        "A rounded tone at the note's pitch",
+        "A dull hiss with no pitch"
+      ],
+      "answer": 3,
+      "why": "The filter only rings at high resonance, so with none you hear a dull hiss with no pitch.",
+      "point": 0
+    },
+    {
+      "q": "With Key track at 100%, the whistle moves with the keys but is out of tune with them. What do you set?",
+      "options": [
+        "The resonance to zero, so the filter stops ringing",
+        "The cutoff to about 262 Hz, the pitch of middle C",
+        "Key track back to zero, so the cutoff stays put",
+        "A level right down, so only the noise is left"
+      ],
+      "answer": 1,
+      "why": "With the cutoff at about 262 Hz, the pitch of middle C, the whistle is in tune with the keys.",
       "point": 2
     }
   ],
@@ -339,6 +507,30 @@
       "answer": 0,
       "why": "With no sustain the note falls to silence by itself, which is a pluck.",
       "point": 2
+    },
+    {
+      "q": "You want a note to fade in instead of starting at once. Which control do you raise?",
+      "options": [
+        "Attack",
+        "Decay",
+        "Sustain",
+        "Release"
+      ],
+      "answer": 0,
+      "why": "Attack is how long the note takes to reach full level, so a longer attack makes it fade in.",
+      "point": 0
+    },
+    {
+      "q": "Sustain is at about half. You hold a key for a couple of seconds. What do you hear?",
+      "options": [
+        "A steady note at full level until you let go",
+        "A slow fade in that never reaches full level",
+        "A strong start that drops, then stays lower while you hold",
+        "A note that only starts once you let go"
+      ],
+      "answer": 2,
+      "why": "The note falls to the sustain level and stays there for as long as the key is held.",
+      "point": 1
     }
   ],
   "C3.2": [
@@ -415,6 +607,30 @@
       "answer": 1,
       "why": "A straight fall loses level at an even rate, which sounds mechanical; eased and sharp sound struck or plucked.",
       "point": 2
+    },
+    {
+      "q": "Your pluck needs more weight at the front but must not ring on longer. Which control do you raise?",
+      "options": [
+        "Decay",
+        "Hold",
+        "Release",
+        "Sustain"
+      ],
+      "answer": 1,
+      "why": "Hold keeps the front of the note at full level for a moment without making the whole note longer.",
+      "point": 0
+    },
+    {
+      "q": "You switch Fall to Straight and strike a key. How does the note sound?",
+      "options": [
+        "A hard, snappy front with a thin, quiet tail",
+        "A quick drop at first that then slows down",
+        "It stays at full level and never falls",
+        "Longer and flatter, then it stops rather suddenly"
+      ],
+      "answer": 3,
+      "why": "A straight fall loses level at an even rate, so the note seems longer and flatter and then stops suddenly.",
+      "point": 1
     }
   ],
   "C3.4": [
@@ -453,6 +669,30 @@
       "answer": 2,
       "why": "A negative amount turns the shape upside down, so the cutoff starts low and rises.",
       "point": 2
+    },
+    {
+      "q": "Envelope 2 is sent to the cutoff, but each note's start is not bright enough. What do you change?",
+      "options": [
+        "Amount, raised so the envelope pushes the cutoff further",
+        "Decay, shortened so the change is a tight click",
+        "Cutoff, turned down so the filter is set darker",
+        "Envelope 1, because it shapes the cutoff as well"
+      ],
+      "answer": 0,
+      "why": "Amount sets how far the envelope pushes the cutoff, so more amount gives a brighter start.",
+      "point": 1
+    },
+    {
+      "q": "You send Envelope 2 to the cutoff. What happens to the Cutoff knob itself?",
+      "options": [
+        "It turns by itself each time you strike a key",
+        "It jumps all the way up and stays there",
+        "It stays where you set it and grows a yellow ring",
+        "It switches off, because the envelope takes over"
+      ],
+      "answer": 2,
+      "why": "The knob stays where you set it, and a yellow ring shows the stretch the envelope moves the cutoff across.",
+      "point": 0
     }
   ],
   "C3.5": [

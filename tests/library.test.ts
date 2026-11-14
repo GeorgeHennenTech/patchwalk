@@ -272,7 +272,9 @@ describe("show me where", () => {
       expect((await call()).status).toBe(401);
       const res = await call({ authorization: `Basic ${Buffer.from("me:pw").toString("base64")}` });
       expect(res.status).toBe(503);
-      expect((await res.json()).error).toBe("not-configured");
+      expect((await res.json()).error).toBe("no-database"); // live, with nobody recognisable: closed
+      delete process.env.VERCEL;
+      expect((await (await call({ authorization: `Basic ${Buffer.from("me:pw").toString("base64")}` })).json()).error).toBe("not-configured");
     } finally { process.env = env; }
   });
   it("the browser side reports a failure in plain words, passes marks through, and does not pay twice for the same picture and question", async () => {

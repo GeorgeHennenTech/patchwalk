@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { analyze, type Analysis } from "./flow/build";
 import { guessSoundType } from "./flow/soundtype";
 import { decodePreset, PresetError, type DecodedPreset } from "./format";
@@ -16,7 +16,8 @@ import { LearnView } from "./ui/LearnView";
 import { LessonView } from "./ui/LessonView";
 import { ModulesView } from "./ui/ModulesView";
 import { OpenLesson } from "./ui/Answer";
-import { DatabaseCheck, Players } from "./ui/Players";
+import { AccountBar, DatabaseCheck, SignInGate } from "./ui/Account";
+import { session as readSession, settle, type Session } from "./guide/sync";
 import { PlayView } from "./ui/PlayView";
 import { SelfTest } from "./ui/SelfTest";
 
@@ -74,6 +75,10 @@ export function App() {
   const [wanted, setWanted] = useState<{ id: string; n: number }>();
   const openLesson = (id: string) => { setWanted((w) => ({ id, n: (w?.n ?? 0) + 1 })); setMode("play"); window.scrollTo({ top: 0 }); };
   const [filter, setFilter] = useState("");
+  // who is signed in, as the server sees it; until it answers nothing is shown
+  const [sess, setSess] = useState<Session>();
+  useEffect(() => { void readSession().then((s) => { settle(s); setSess(s); }); }, []);
+  const inside = sess?.state === "signedIn" || sess?.state === "open";
   const [attempt, setAttempt] = useState<{ loaded?: Loaded; name?: string; error?: string }>({});
 
   async function onFile(file: File) {
@@ -105,16 +110,20 @@ export function App() {
       <header className="top">
         <h1>Patchwalk</h1>
         <p>Learn synthesis hands-on, or drop a Serum 2 preset and get a step-by-step walk-through for rebuilding it. Files stay in this browser tab.</p>
-        <div className="modes" role="tablist" aria-label="Mode">
+        {inside && <div className="modes" role="tablist" aria-label="Mode">
           <button role="tab" aria-selected={mode === "rebuild"} className={mode === "rebuild" ? "on" : ""} onClick={() => setMode("rebuild")}>Rebuild a patch</button>
           <button role="tab" aria-selected={mode === "play"} className={mode === "play" ? "on" : ""} onClick={() => setMode("play")}>Lessons</button>
           <button role="tab" aria-selected={mode === "learn"} className={mode === "learn" ? "on" : ""} onClick={() => setMode("learn")}>Serum tasks</button>
           <button role="tab" aria-selected={mode === "ask"} className={mode === "ask" ? "on" : ""} onClick={() => setMode("ask")}>Ask the guide</button>
           <button role="tab" aria-selected={mode === "sound"} className={mode === "sound" ? "on" : ""} onClick={() => setMode("sound")}>Sound systems</button>
           <button role="tab" aria-selected={mode === "check"} className={mode === "check" ? "on" : ""} onClick={() => setMode("check")}>System check</button>
-        </div>
+        </div>}
       </header>
-      <Players />
+      {sess?.state === "signedIn" && <AccountBar session={sess} />}
+      {!sess && <section className="panel"><p className="muted">One moment…</p></section>}
+      {sess?.state === "signedOut" && <SignInGate ownerSet={sess.ownerSet} />}
+      {sess?.state === "down" && <section className="panel error" role="alert"><h2>Accounts are not available</h2><p>{sess.message}</p><p><button className="primary" onClick={() => window.location.reload()}>Try again</button></p></section>}
+      {inside && <>
 
       {mode === "play" && (
         <section className="panel">
@@ -185,6 +194,7 @@ export function App() {
           </section>
         </>
       )}
+      </>}
       <p className="build-stamp">Version {typeof __BUILD__ === "string" ? __BUILD__ : "unknown"}</p>
     </main>
     </OpenLesson.Provider>

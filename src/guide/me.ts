@@ -1,7 +1,8 @@
 // Who is using this browser, and (optionally) their own Claude key. Both are kept in this browser only.
 // The key is sent with requests to the guide so that person's questions are billed to them; the server uses
 // it for that one request and never stores it.
-export interface Me { id: string; name: string }
+/** `account` marks a signed-in account; without it the record is a name from the old "Who's playing?" picker. */
+export interface Me { id: string; name: string; account?: boolean }
 const PLAYER = "patchwalk.player.v1", KEY = "patchwalk.ownkey.v1";
 type Store = Pick<Storage, "getItem" | "setItem" | "removeItem">;
 const local = (): Store | undefined => { try { return globalThis.localStorage; } catch { return undefined; } };

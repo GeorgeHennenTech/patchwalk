@@ -107,6 +107,11 @@ Further standing decisions:
 
 ---
 
+**Accounts and who pays (14 Nov 2026).** Everyone signs in with an email and a password. Only the account
+whose email equals the `OWNER_EMAIL` setting in Vercel may spend the site's Claude key; everyone else must
+add a key of their own, and nobody signed out can call Claude at all. This fails closed and must stay that
+way. Details in `CLAUDE.md` under "Accounts".
+
 ## 5. How it is built
 
 Stack: Vite, React, TypeScript, Zod, Vitest, deployed on Vercel. Claude is called only from server functions.
@@ -285,6 +290,9 @@ owner's set-up (desktop app, cloud session) its side pane was never drawn, so th
 only lived in that session's container.
 
 ## 9. Waiting on the owner
+
+- **Set `OWNER_EMAIL` in Vercel** (Project, Settings, Environment Variables) to the email of their own
+  account, then redeploy. Until then the site's Claude key is off for everyone, the owner included.
 
 Ask about these only when relevant; do not block on them.
 

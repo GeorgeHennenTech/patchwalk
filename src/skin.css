@@ -790,3 +790,10 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 .players .key-ask { border: 2px dashed var(--thread); }
 .players .key-steps { margin: 10px 0; padding-left: 22px; display: grid; gap: 6px; max-width: 70ch; }
 .players .key-steps code { font-weight: 700; }
+
+/* Sign in / make an account, and the owner's list of people. */
+.account-gate { max-width: 460px; }
+.account-gate form { display: grid; gap: 12px; margin: 12px 0; }
+.account-gate label { display: grid; gap: 4px; font-weight: 700; }
+.account-gate input { padding: 9px 12px; border: 2px solid var(--thread); border-radius: 12px; background: var(--panel, #fff); color: inherit; font: inherit; font-weight: 400; }
+.players .people { list-style: none; padding: 0; margin: 8px 0; display: grid; gap: 6px; }

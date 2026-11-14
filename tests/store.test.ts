@@ -1,11 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { GET as storeGet, POST as storePost } from "../api/store";
+import { GET as accountGet, POST as accountPost } from "../api/account";
+import { POST as askPost } from "../api/ask";
+import { POST as lessonPost } from "../api/lesson";
+import { POST as pointPost } from "../api/point";
+import { GET as storeGet } from "../api/store";
 import { saveDone, loadDone } from "../src/course/progress";
 import { loadChats, replaceChats, type SavedChat } from "../src/guide/chats";
 import { currentPlayer, guideHeaders, looksLikeKey, ownKey as browserKey, setCurrentPlayer, setOwnKey } from "../src/guide/me";
-import { merge, playAs, pushNow, storeStatus } from "../src/guide/sync";
+import { merge, pushNow, session, signIn, signOut, signUp } from "../src/guide/sync";
 import { kvFromEnv, kvSettings, memoryKv } from "../src/store/kv";
-import { change, listPlayers, loadPlayer, MAX_PLAYERS } from "../src/store/players";
+import { AccountRequestSchema, accountOf, handle, listAccounts, loadData, MAX_ACCOUNTS, MAX_FAILS, payer, status } from "../src/store/accounts";
 import { answerKey, fingerprint, marksKey, ownKey, recallShared, rememberShared } from "../src/store/shared";
 
 const chat = (id: string, savedAt: string, n = 1): SavedChat => ({ id, title: id, savedAt, turns: Array.from({ length: n }, (_, i) => ({ question: `q${i}` })) });
@@ -36,39 +40,102 @@ describe("the site's database", () => {
   });
 });
 
-describe("who's playing", () => {
-  let n = 0; const id = () => `player${n++}`;
-  it("people are added by name, once each, up to a limit, and removed with everything they saved", async () => {
+describe("accounts", () => {
+  let n = 0;
+  const ctx = (token?: string, ownerEmail = "seth@example.com") => ({ token, ownerEmail, newId: () => `acct${String(n++).padStart(4, "0")}`, newToken: () => String(n++).padStart(64, "a") });
+  const join = async (kv: ReturnType<typeof memoryKv>, name: string, email: string) => (await handle(kv, { op: "signup", name, email, password: "correct horse" }, ctx())).session as string;
+
+  it("an account needs an email and a real password, once each; the password itself is never stored", async () => {
     const kv = memoryKv();
-    const a = await change(kv, { op: "add", name: "Seth" }, id, new Date("2026-11-14T00:00:00Z"));
-    expect(a.status).toBe(200);
-    expect((await change(kv, { op: "add", name: "seth" }, id)).status).toBe(409);
-    const b = await change(kv, { op: "add", name: "Sam" }, id);
-    const [seth, sam] = await listPlayers(kv);
-    expect([seth!.name, sam!.name]).toEqual(["Seth", "Sam"]);
-    expect(b.body.player).toEqual(sam);
-    await change(kv, { op: "save", player: sam!.id, lessons: ["C0.1", "C0.1", "C0.2"], chats: [chat("c1", "2026-11-14T00:00:00Z")] }, id);
-    expect(await loadPlayer(kv, sam!.id)).toEqual({ lessons: ["C0.1", "C0.2"], chats: [chat("c1", "2026-11-14T00:00:00Z")] });
-    expect(await loadPlayer(kv, seth!.id)).toEqual({ lessons: [], chats: [] }); // each person's things are their own
-    expect(await loadPlayer(kv, "nobody00")).toBeUndefined();
-    expect((await change(kv, { op: "save", player: "nobody00", lessons: [], chats: [] }, id)).status).toBe(404);
-    await change(kv, { op: "remove", player: sam!.id }, id);
-    expect((await listPlayers(kv)).map((p) => p.name)).toEqual(["Seth"]);
-    expect(await loadPlayer(kv, sam!.id)).toBeUndefined();
-    for (let i = 0; i < MAX_PLAYERS - 1; i++) await change(kv, { op: "add", name: `friend ${i}` }, id);
-    expect((await change(kv, { op: "add", name: "one too many" }, id)).status).toBe(409);
+    expect(AccountRequestSchema.safeParse({ op: "signup", name: "Seth", email: "not an email", password: "correct horse" }).success).toBe(false);
+    expect(AccountRequestSchema.safeParse({ op: "signup", name: "Seth", email: "seth@example.com", password: "short" }).success).toBe(false);
+    expect(AccountRequestSchema.parse({ op: "signup", name: "Seth", email: " Seth@Example.com ", password: "correct horse" })).toMatchObject({ email: "seth@example.com" });
+    const token = await join(kv, "Seth", "seth@example.com");
+    expect(token).toHaveLength(64);
+    expect((await handle(kv, { op: "signup", name: "Other", email: "seth@example.com", password: "correct horse" }, ctx())).body.error).toBe("email-taken");
+    expect((await handle(kv, { op: "signup", name: "seth", email: "b@example.com", password: "correct horse" }, ctx())).body.error).toBe("name-taken");
+    const stored = [...kv.data.entries()].map(([k, v]) => k + v).join(" ");
+    expect(stored).not.toContain("correct horse");
+    expect(stored).not.toContain(token); // only a hash of the session token is kept
   });
-  it("the endpoint is behind the password, and says plainly when there is no database", async () => {
+  it("signing in needs the right password, and too many wrong ones lock the email for a while", async () => {
+    const kv = memoryKv();
+    await join(kv, "Seth", "seth@example.com");
+    expect((await handle(kv, { op: "signin", email: "seth@example.com", password: "wrong" }, ctx())).status).toBe(401);
+    expect((await handle(kv, { op: "signin", email: "nobody@example.com", password: "correct horse" }, ctx())).status).toBe(401);
+    const good = await handle(kv, { op: "signin", email: "seth@example.com", password: "correct horse" }, ctx());
+    expect(good.status).toBe(200);
+    expect((await accountOf(kv, good.session as string))!.name).toBe("Seth");
+    await handle(kv, { op: "signout" }, ctx(good.session as string));
+    expect(await accountOf(kv, good.session as string)).toBeUndefined();
+    for (let i = 0; i < MAX_FAILS; i++) await handle(kv, { op: "signin", email: "seth@example.com", password: "wrong" }, ctx());
+    expect((await handle(kv, { op: "signin", email: "seth@example.com", password: "correct horse" }, ctx())).status).toBe(429);
+  });
+  it("each person's saved things are their own, and only reachable signed in", async () => {
+    const kv = memoryKv();
+    const seth = await join(kv, "Seth", "seth@example.com"), sam = await join(kv, "Sam", "sam@example.com");
+    expect((await handle(kv, { op: "save", lessons: ["C0.1"], chats: [] }, ctx())).status).toBe(401);
+    await handle(kv, { op: "save", lessons: ["C0.1", "C0.1", "C0.2"], chats: [chat("c1", "2026-11-14T00:00:00Z")] }, ctx(sam));
+    expect((await status(kv, sam, "seth@example.com", { data: true })).data).toEqual({ lessons: ["C0.1", "C0.2"], chats: [chat("c1", "2026-11-14T00:00:00Z")] });
+    expect((await status(kv, seth, "seth@example.com", { data: true })).data).toEqual({ lessons: [], chats: [] });
+    expect(await status(kv, undefined, "seth@example.com", { data: true, people: true })).toEqual({ configured: true });
+  });
+  it("only the owner sees everyone, sets someone's password or removes them; anyone can change their own password or leave", async () => {
+    const kv = memoryKv();
+    const seth = await join(kv, "Seth", "seth@example.com"), sam = await join(kv, "Sam", "sam@example.com");
+    const [a, b] = await listAccounts(kv);
+    expect(((await status(kv, seth, "seth@example.com", { people: true })).people as unknown[]).length).toBe(2);
+    expect((await status(kv, sam, "seth@example.com", { people: true })).people).toBeUndefined();
+    expect((await status(kv, sam, "seth@example.com")).account).toMatchObject({ name: "Sam", owner: false });
+    expect((await status(kv, seth, "seth@example.com")).account).toMatchObject({ owner: true });
+    expect((await status(kv, seth, undefined)).account).toMatchObject({ owner: false }); // no owner set: nobody is the owner
+    expect((await handle(kv, { op: "reset", account: a!.id, next: "hijacked now" }, ctx(sam))).status).toBe(403);
+    expect((await handle(kv, { op: "remove", account: a!.id }, ctx(sam))).status).toBe(403);
+    expect((await handle(kv, { op: "password", old: "wrong", next: "another one!" }, ctx(sam))).status).toBe(401);
+    expect((await handle(kv, { op: "password", old: "correct horse", next: "another one!" }, ctx(sam))).status).toBe(200);
+    expect((await handle(kv, { op: "signin", email: "sam@example.com", password: "another one!" }, ctx())).status).toBe(200);
+    expect((await handle(kv, { op: "reset", account: b!.id, next: "from the owner" }, ctx(seth))).status).toBe(200);
+    expect((await handle(kv, { op: "signin", email: "sam@example.com", password: "from the owner" }, ctx())).status).toBe(200);
+    expect((await handle(kv, { op: "remove", account: b!.id }, ctx(seth))).status).toBe(200);
+    expect((await listAccounts(kv)).map((x) => x.name)).toEqual(["Seth"]);
+    expect(await accountOf(kv, sam)).toBeUndefined(); // a removed person's session is worth nothing
+    for (let i = 0; i < MAX_ACCOUNTS - 1; i++) await join(kv, `friend ${i}`, `f${i}@example.com`);
+    expect((await handle(kv, { op: "signup", name: "one too many", email: "x@example.com", password: "correct horse" }, ctx())).status).toBe(409);
+  });
+  it("the site's Claude key is spent for the owner's account and for nobody else", async () => {
+    const kv = memoryKv();
+    const seth = await join(kv, "Seth", "seth@example.com"), sam = await join(kv, "Sam", "sam@example.com");
+    const env = { VERCEL: "1", OWNER_EMAIL: "Seth@Example.com", ANTHROPIC_API_KEY: "site-key" };
+    const as = (token?: string) => new Headers(token ? { cookie: `other=1; pw_session=${token}` } : {});
+    expect(await payer(kv, as(seth), undefined, env)).toEqual({ ok: true }); // the owner: the site's key
+    expect(await payer(kv, as(sam), undefined, env)).toMatchObject({ ok: false, status: 402, body: { error: "needs-key" } });
+    expect(await payer(kv, as(sam), "sk-ant-own", env)).toEqual({ ok: true, key: "sk-ant-own" }); // a friend with their own key
+    expect(await payer(kv, as(), undefined, env)).toMatchObject({ ok: false, status: 401 });
+    expect(await payer(kv, as(), "sk-ant-own", env)).toMatchObject({ ok: false, status: 401 }); // even a key needs an account
+    expect(await payer(kv, as("f".repeat(64)), undefined, env)).toMatchObject({ ok: false, status: 401 }); // a made-up session
+    expect(await payer(kv, as(seth), undefined, { ...env, OWNER_EMAIL: undefined })).toMatchObject({ ok: false, status: 402 }); // no owner set: nobody
+    expect(await payer(kv, as(seth), undefined, { ...env, OWNER_EMAIL: " " })).toMatchObject({ ok: false, status: 402 });
+    // an account made with the owner's name but another email is not the owner
+    const fake = await join(kv, "Seth 2", "seth@example.org");
+    expect(await payer(kv, as(fake), undefined, env)).toMatchObject({ ok: false, status: 402 });
+    expect(await payer(undefined, as(seth), undefined, env)).toMatchObject({ ok: false, status: 503 }); // live site, no database: closed
+    expect(await payer(undefined, as(), undefined, { ANTHROPIC_API_KEY: "local" })).toEqual({ ok: true }); // a developer's machine
+    const broken = { ...kv, get: async () => { throw new Error("down"); } } as unknown as typeof kv;
+    expect(await payer(broken, as(seth), undefined, env)).toMatchObject({ ok: false, status: 502 }); // cannot recognise anyone: closed
+  });
+  it("the endpoints are behind the site password, and the paid ones refuse a visitor who is not signed in", async () => {
     const env = { ...process.env };
     try {
       for (const k of Object.keys(process.env)) if (/KV_REST|REDIS_REST/.test(k)) delete process.env[k];
-      process.env.VERCEL = "1"; process.env.APP_PASSWORD = "pw";
-      expect((await storeGet(new Request("http://x/api/store"))).status).toBe(401);
+      process.env.VERCEL = "1"; process.env.APP_PASSWORD = "pw"; process.env.ANTHROPIC_API_KEY = "site-key";
+      expect((await accountGet(new Request("http://x/api/account"))).status).toBe(401);
       const auth = { authorization: `Basic ${Buffer.from("me:pw").toString("base64")}` };
-      expect(await (await storeGet(new Request("http://x/api/store", { headers: auth }))).json()).toEqual({ configured: false, players: [] });
-      expect((await storePost(new Request("http://x/api/store", { method: "POST", headers: auth, body: JSON.stringify({ op: "add", name: "Seth" }) }))).status).toBe(503);
+      expect(await (await accountGet(new Request("http://x/api/account", { headers: auth }))).json()).toEqual({ configured: false, deployed: true });
+      expect((await accountPost(new Request("http://x/api/account", { method: "POST", headers: auth, body: JSON.stringify({ op: "signin", email: "a@b.co", password: "x" }) }))).status).toBe(503);
+      expect(await (await storeGet(new Request("http://x/api/store", { headers: auth }))).json()).toEqual({ configured: false });
+      for (const paid of [askPost, pointPost, lessonPost]) expect((await paid(new Request("http://x/api/x", { method: "POST", headers: auth, body: "{}" }))).status).toBe(503);
       delete process.env.APP_PASSWORD;
-      expect((await storeGet(new Request("http://x/api/store", { headers: auth }))).status).toBe(503);
+      expect((await accountGet(new Request("http://x/api/account", { headers: auth }))).status).toBe(503);
     } finally { process.env = env; }
   });
   it("two copies of a person's things are joined: every lesson, and the newest version of each chat", () => {
@@ -79,36 +146,38 @@ describe("who's playing", () => {
 });
 
 describe("keeping a browser and the database in step", () => {
-  /** A stand-in for the browser's storage and for /api/store, backed by a store in memory. */
+  /** A stand-in for the browser's storage, its cookie, and /api/account, backed by a store in memory. */
   function world() {
-    const kv = memoryKv(); let n = 0;
+    const kv = memoryKv(); let n = 0, cookie: string | undefined;
     const local = new Map<string, string>();
     (globalThis as { localStorage?: unknown }).localStorage = { getItem: (k: string) => local.get(k) ?? null, setItem: (k: string, v: string) => { local.set(k, v); }, removeItem: (k: string) => { local.delete(k); } };
     const api = (async (url: string, init?: RequestInit) => {
-      const player = new URL(url, "http://x").searchParams.get("player");
-      if (!init?.method) {
-        const players = await listPlayers(kv);
-        if (!player) return new Response(JSON.stringify({ configured: true, players }));
-        const data = await loadPlayer(kv, player);
-        return data ? new Response(JSON.stringify({ configured: true, players, data })) : new Response(JSON.stringify({ message: "no" }), { status: 404 });
-      }
-      const out = await change(kv, JSON.parse(init.body as string), () => `p${n++}abcde`);
+      const q = new URL(url, "http://x").searchParams;
+      if (!init?.method) return new Response(JSON.stringify({ ...(await status(kv, cookie, "seth@example.com", { data: !!q.get("data"), people: !!q.get("people") })), ownerSet: true }));
+      const out = await handle(kv, AccountRequestSchema.parse(JSON.parse(init.body as string)), { token: cookie, ownerEmail: "seth@example.com", newId: () => `acct${String(n++).padStart(4, "0")}`, newToken: () => String(n++).padStart(64, "b") });
+      if (out.session !== undefined) cookie = out.session ?? undefined;
       return new Response(JSON.stringify(out.body), { status: out.status });
     }) as unknown as typeof fetch;
-    return { kv, api, newBrowser: () => local.clear(), end: () => { delete (globalThis as { localStorage?: unknown }).localStorage; } };
+    return { kv, api, newBrowser: () => { local.clear(); cookie = undefined; }, expire: () => { cookie = undefined; }, end: () => { delete (globalThis as { localStorage?: unknown }).localStorage; } };
   }
-  it("work done before the picker existed is kept under the first name chosen, and follows that person to a new browser", async () => {
+  const saved = async (kv: ReturnType<typeof memoryKv>, name: string) => loadData(kv, (await listAccounts(kv)).find((a) => a.name === name)!.id);
+
+  it("work done before accounts existed is kept under the account made on that browser, and follows the person to a new one", async () => {
     const w = world();
     try {
+      setCurrentPlayer({ id: "oldplayer1", name: "Seth Bot" }); // a name from the old picker
       saveDone(["C0.1", "C0.2"]); replaceChats([chat("old", "2026-11-13T00:00:00Z")]);
-      await change(w.kv, { op: "add", name: "Seth" }, () => "seth000000");
-      expect((await storeStatus(w.api)).players.map((p) => p.name)).toEqual(["Seth"]);
-      expect((await playAs({ id: "seth000000", name: "Seth" }, true, w.api)).ok).toBe(true);
-      expect(currentPlayer()).toEqual({ id: "seth000000", name: "Seth" });
-      expect(await loadPlayer(w.kv, "seth000000")).toMatchObject({ lessons: ["C0.1", "C0.2"] });
+      expect(await session(w.api)).toEqual({ state: "signedOut", ownerSet: true });
+      expect(await pushNow(w.api)).toBe(false); // nothing leaves a browser that is not signed in
+      expect((await signUp("Seth", "seth@example.com", "correct horse", w.api)).ok).toBe(true);
+      expect(currentPlayer()).toMatchObject({ name: "Seth", account: true });
+      expect(await saved(w.kv, "Seth")).toMatchObject({ lessons: ["C0.1", "C0.2"] });
+      expect(await session(w.api)).toMatchObject({ state: "signedIn", account: { name: "Seth", owner: true }, people: [{ name: "Seth" }] });
       w.newBrowser(); // another device
       expect(loadDone()).toEqual([]);
-      await playAs({ id: "seth000000", name: "Seth" }, false, w.api);
+      expect((await signIn("seth@example.com", "nope nope", w.api)).ok).toBe(false);
+      expect(loadDone()).toEqual([]);
+      expect((await signIn("seth@example.com", "correct horse", w.api)).ok).toBe(true);
       expect(loadDone()).toEqual(["C0.1", "C0.2"]);
       expect(loadChats().map((c) => c.id)).toEqual(["old"]);
     } finally { w.end(); }
@@ -116,32 +185,37 @@ describe("keeping a browser and the database in step", () => {
   it("an older copy in one browser never overwrites newer work from another, and a deletion is not undone", async () => {
     const w = world();
     try {
-      await change(w.kv, { op: "add", name: "Seth" }, () => "seth000000");
-      await change(w.kv, { op: "save", player: "seth000000", lessons: ["C0.1", "C0.2", "C0.3"], chats: [chat("a", "2026-11-14T00:00:00Z")] }, () => "");
-      setCurrentPlayer({ id: "seth000000", name: "Seth" }); saveDone(["C0.1", "C1.1"]); // this browser is behind, with one new lesson
+      await signUp("Seth", "seth@example.com", "correct horse", w.api);
+      await w.api("/api/account", { method: "POST", body: JSON.stringify({ op: "save", lessons: ["C0.1", "C0.2", "C0.3"], chats: [chat("a", "2026-11-14T00:00:00Z")] }) });
+      saveDone(["C0.1", "C1.1"]); // this browser is behind, with one new lesson
       expect(await pushNow(w.api)).toBe(true);
-      expect((await loadPlayer(w.kv, "seth000000"))!.lessons.sort()).toEqual(["C0.1", "C0.2", "C0.3", "C1.1"]);
+      expect((await saved(w.kv, "Seth")).lessons.sort()).toEqual(["C0.1", "C0.2", "C0.3", "C1.1"]);
       expect(loadDone().sort()).toEqual(["C0.1", "C0.2", "C0.3", "C1.1"]); // and the newer work arrived here too
       replaceChats([]); // the chat was deleted here
-      await pushNow(w.api, currentPlayer(), true);
-      expect((await loadPlayer(w.kv, "seth000000"))!.chats).toEqual([]);
+      await pushNow(w.api, true);
+      expect((await saved(w.kv, "Seth")).chats).toEqual([]);
     } finally { w.end(); }
   });
-  it("switching to someone else replaces what this browser holds with their things", async () => {
+  it("one person's things never end up under another's account on a shared browser", async () => {
     const w = world();
     try {
-      await change(w.kv, { op: "add", name: "Seth" }, () => "seth000000"); await change(w.kv, { op: "add", name: "Sam" }, () => "sam0000000");
-      await change(w.kv, { op: "save", player: "sam0000000", lessons: ["C2.1"], chats: [] }, () => "");
-      setCurrentPlayer({ id: "seth000000", name: "Seth" }); saveDone(["C0.1"]);
-      await playAs({ id: "sam0000000", name: "Sam" }, false, w.api);
-      expect(loadDone()).toEqual(["C2.1"]);
-      expect((await loadPlayer(w.kv, "seth000000"))!.lessons).toEqual(["C0.1"]); // Seth's were copied up before the switch
-      expect((await playAs({ id: "nobody0000", name: "X" }, false, w.api)).ok).toBe(false);
+      await signUp("Seth", "seth@example.com", "correct horse", w.api); saveDone(["C0.1"]);
+      await signOut(w.api);
+      expect(loadDone()).toEqual([]); // signing out clears the browser, after copying up
+      expect((await saved(w.kv, "Seth")).lessons).toEqual(["C0.1"]);
+      await signUp("Sam", "sam@example.com", "correct horse", w.api); saveDone(["C2.1"]); await pushNow(w.api);
+      w.expire(); // Sam's session ends without signing out: the browser still holds Sam's things
+      expect(await pushNow(w.api)).toBe(false);
+      await signIn("seth@example.com", "correct horse", w.api);
+      expect(loadDone()).toEqual(["C0.1"]); // Sam's lesson was not adopted
+      expect((await saved(w.kv, "Seth")).lessons).toEqual(["C0.1"]);
+      expect((await saved(w.kv, "Sam")).lessons).toEqual(["C2.1"]);
     } finally { w.end(); }
   });
-  it("with no database reachable, nothing is claimed", async () => {
-    expect(await storeStatus((async () => { throw new Error("offline"); }) as unknown as typeof fetch)).toEqual({ configured: false, players: [] });
-    expect(await pushNow((async () => new Response("{}")) as unknown as typeof fetch, undefined)).toBe(false);
+  it("with the site unreachable nothing is claimed, and a site with no database says so", async () => {
+    expect(await session((async () => { throw new Error("offline"); }) as unknown as typeof fetch)).toMatchObject({ state: "down" });
+    expect(await session((async () => new Response(JSON.stringify({ configured: false, deployed: true }))) as unknown as typeof fetch)).toMatchObject({ state: "down" });
+    expect(await session((async () => new Response(JSON.stringify({ configured: false, deployed: false }))) as unknown as typeof fetch)).toEqual({ state: "open" });
   });
 });
 

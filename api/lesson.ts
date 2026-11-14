@@ -4,6 +4,8 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { ownKey } from "../src/store/shared.js";
+import { kvFromEnv } from "../src/store/kv.js";
+import { payer } from "../src/store/accounts.js";
 import { gate } from "../src/lesson/auth.js";
 import { LessonRequestSchema, ModelOutputSchema } from "../src/lesson/contract.js";
 import { SYSTEM_PROMPT, userPrompt } from "../src/lesson/prompt.js";
@@ -22,9 +24,9 @@ export async function POST(request: Request): Promise<Response> {
   if (access === "denied") return json(401, { error: "unauthorized", message: "Password required." });
   // A learner may send their own Claude key with the request; it is used for this call only and never kept.
   const own = ownKey(request.headers);
-  if (!own && !process.env.ANTHROPIC_API_KEY) {
-    return json(503, { error: "not-configured", message: "Explanations are switched off: no ANTHROPIC_API_KEY is set on the server." });
-  }
+  // Only the owner's account may spend the site's key; anyone else must send a key of their own.
+  const pays = await payer(kvFromEnv(), request.headers, own, process.env);
+  if (!pays.ok) return json(pays.status, pays.body);
   const raw = await request.text();
   if (raw.length > MAX_BODY_BYTES) return json(413, { error: "too-large", message: "Request is too large." });
   let body: unknown;
@@ -36,7 +38,7 @@ export async function POST(request: Request): Promise<Response> {
   const parsed = LessonRequestSchema.safeParse(body);
   if (!parsed.success) return json(400, { error: "bad-request", message: "Request does not match the lesson contract." });
 
-  const client = own ? new Anthropic({ apiKey: own }) : new Anthropic();
+  const client = pays.key ? new Anthropic({ apiKey: pays.key }) : new Anthropic();
   const callModel: ModelCall = async ({ difficulty, steps, patchText, feedback }) => {
     const response = await client.messages.parse({
       model: MODEL,

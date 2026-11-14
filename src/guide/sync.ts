@@ -1,37 +1,40 @@
-// Keeps one person's finished lessons and saved chats in step between this browser and the site's database,
-// so they are there on any device. The browser's own storage stays the working copy (the app reads and
-// writes it exactly as before); this module copies it up after a change and down when a person is chosen.
-// Without a database none of this runs and the app behaves as it always did.
+// Accounts in the browser: signing in and out, and keeping the signed-in person's finished lessons and saved
+// chats in step between this browser and the site's database, so they are there on any device. The browser's
+// own storage stays the working copy (the app reads and writes it exactly as before); this module copies it
+// up after a change and down at sign-in. Without a database none of this runs.
 import { loadDone, saveDone } from "../course/progress";
 import { loadChats, replaceChats, type SavedChat } from "./chats";
-import { currentPlayer, setCurrentPlayer, type Me } from "./me";
+import { currentPlayer, setCurrentPlayer } from "./me";
 
-export interface PlayerInfo { id: string; name: string; createdAt: string }
+export interface AccountInfo { id: string; name: string; email: string; createdAt: string; owner: boolean }
 export interface Remote { lessons: string[]; chats: SavedChat[] }
-export type StoreStatus = { configured: boolean; players: PlayerInfo[]; message?: string };
+/**
+ * open: no accounts here (a developer's machine with no database). signedOut / signedIn: as they say.
+ * down: accounts cannot work right now (no database on the live site, or it cannot be reached).
+ */
+export type Session =
+  | { state: "open" }
+  | { state: "signedOut"; ownerSet: boolean }
+  | { state: "signedIn"; account: AccountInfo; ownerSet: boolean; people?: AccountInfo[] }
+  | { state: "down"; message: string };
 
+const post = (body: unknown): RequestInit => ({ method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
 const call = async (fetchImpl: typeof fetch, init?: RequestInit, query = "") => {
-  const res = await fetchImpl(`/api/store${query}`, init);
+  const res = await fetchImpl(`/api/account${query}`, init);
   const body = (await res.json().catch(() => undefined)) as Record<string, unknown> | undefined;
   return { ok: res.ok, status: res.status, body };
 };
+const said = (body: Record<string, unknown> | undefined, fallback: string) => (typeof body?.message === "string" ? body.message : fallback);
 
-/** Whether the site has a database, and who is on its list. Any failure reads as "no database". */
-export async function storeStatus(fetchImpl: typeof fetch = fetch): Promise<StoreStatus> {
+/** Who is signed in on this browser, as the server sees it. */
+export async function session(fetchImpl: typeof fetch = fetch): Promise<Session> {
   try {
-    const { ok, body } = await call(fetchImpl);
-    if (!ok || !body) return { configured: false, players: [], message: typeof body?.message === "string" ? body.message : undefined };
-    return { configured: body.configured === true, players: Array.isArray(body.players) ? (body.players as PlayerInfo[]) : [] };
-  } catch { return { configured: false, players: [] }; }
-}
-export async function addPlayer(name: string, fetchImpl: typeof fetch = fetch): Promise<{ player?: PlayerInfo; message?: string }> {
-  try {
-    const { ok, body } = await call(fetchImpl, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ op: "add", name }) });
-    return ok && body?.player ? { player: body.player as PlayerInfo } : { message: typeof body?.message === "string" ? body.message : "That name could not be added." };
-  } catch { return { message: "Could not reach the site." }; }
-}
-export async function removePlayer(id: string, fetchImpl: typeof fetch = fetch): Promise<boolean> {
-  try { return (await call(fetchImpl, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ op: "remove", player: id }) })).ok; } catch { return false; }
+    const { ok, body } = await call(fetchImpl, undefined, "?people=1");
+    if (!ok || !body) return { state: "down", message: said(body, "The site could not say who is signed in.") };
+    if (body.configured !== true) return body.deployed ? { state: "down", message: "This site has no database connected, so nobody can sign in." } : { state: "open" };
+    const ownerSet = body.ownerSet === true;
+    return body.account ? { state: "signedIn", account: body.account as AccountInfo, ownerSet, ...(Array.isArray(body.people) ? { people: body.people as AccountInfo[] } : {}) } : { state: "signedOut", ownerSet };
+  } catch { return { state: "down", message: "Could not reach the site." }; }
 }
 
 /** Two copies of a person's things brought together: every finished lesson, and each chat's newest version. */
@@ -42,60 +45,85 @@ export function merge(a: Remote, b: Remote): Remote {
 }
 
 const here = (): Remote => ({ lessons: loadDone(), chats: loadChats() });
+const signedInHere = () => currentPlayer()?.account === true;
 /**
- * Copy this browser's lessons and chats up to the database for the person playing. Normally the database's
+ * Copy this browser's lessons and chats up to the database for the signed-in person. Normally the database's
  * copy is read first and the two are joined, so something done on another device is never overwritten by an
  * older copy here (and it is brought into this browser too). `exact` skips that: after a deletion, the
  * database must match this browser.
  */
-export async function pushNow(fetchImpl: typeof fetch = fetch, me: Me | undefined = currentPlayer(), exact = false): Promise<boolean> {
-  if (!me) return false;
+export async function pushNow(fetchImpl: typeof fetch = fetch, exact = false): Promise<boolean> {
+  if (!signedInHere()) return false;
   try {
     let mine = here();
     if (!exact) {
-      const { ok, body } = await call(fetchImpl, undefined, `?player=${encodeURIComponent(me.id)}`);
-      if (!ok || !body?.data) return false;
+      const { ok, body } = await call(fetchImpl, undefined, "?data=1");
+      // someone else's session (or none) must never receive this browser's copy
+      if (!ok || !body?.data || (body.account as AccountInfo | undefined)?.id !== currentPlayer()?.id) return false;
       const joined = merge(body.data as Remote, mine);
       if (joined.lessons.length !== mine.lessons.length) saveDone(joined.lessons);
       if (joined.chats.length !== mine.chats.length) replaceChats(joined.chats);
       mine = joined;
     }
-    return (await call(fetchImpl, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ op: "save", player: me.id, ...mine }) })).ok;
+    return (await call(fetchImpl, post({ op: "save", ...mine }))).ok;
   } catch { return false; }
 }
 let timer: ReturnType<typeof setTimeout> | undefined, exactNext = false;
 /** Called after anything is saved locally: copies it up shortly afterwards (several quick changes make one request). */
 export function schedulePush(exact?: boolean): void {
-  if (typeof window === "undefined" || !currentPlayer()) return;
+  if (typeof window === "undefined" || !signedInHere()) return;
   exactNext ||= exact === true;
   if (timer) clearTimeout(timer);
-  timer = setTimeout(() => { timer = undefined; const e = exactNext; exactNext = false; void pushNow(fetch, currentPlayer(), e); }, 1500);
+  timer = setTimeout(() => { timer = undefined; const e = exactNext; exactNext = false; void pushNow(fetch, e); }, 1500);
 }
 
 /**
- * Start playing as someone. Their saved things come down from the database into this browser. If this
- * browser already held things that belong to nobody yet (it was used before the picker existed) and
- * `adoptLocal` is set, those are kept and joined in, so nothing done so far is lost. Otherwise the browser's
- * copy is replaced, because it belonged to whoever was playing before.
+ * Bring a just-signed-in person's things into this browser. What the browser already holds is kept and
+ * joined in when it is theirs (the same account), or belongs to nobody with an account (it was used before
+ * accounts existed). Otherwise it is replaced: it belonged to whoever was signed in before.
  */
-export async function playAs(me: Me, adoptLocal: boolean, fetchImpl: typeof fetch = fetch): Promise<{ ok: boolean; message?: string }> {
-  try {
-    const before = currentPlayer();
-    if (before && before.id !== me.id) await pushNow(fetchImpl, before);
-    const { ok, body } = await call(fetchImpl, undefined, `?player=${encodeURIComponent(me.id)}`);
-    if (!ok || !body?.data) return { ok: false, message: typeof body?.message === "string" ? body.message : "That person's saved things could not be loaded." };
-    const remote = body.data as Remote;
-    const next = adoptLocal ? merge(remote, here()) : { lessons: remote.lessons ?? [], chats: remote.chats ?? [] };
-    saveDone(next.lessons); replaceChats(next.chats);
-    setCurrentPlayer(me);
-    if (adoptLocal) await pushNow(fetchImpl, me, true);
-    return { ok: true };
-  } catch { return { ok: false, message: "Could not reach the site." }; }
+async function enter(account: AccountInfo, fetchImpl: typeof fetch): Promise<{ ok: boolean; message?: string }> {
+  const before = currentPlayer();
+  const keep = !before || !before.account || before.id === account.id;
+  const { ok, body } = await call(fetchImpl, undefined, "?data=1");
+  if (!ok || !body?.data) return { ok: false, message: said(body, "Your saved things could not be loaded.") };
+  const remote = body.data as Remote;
+  const next = keep ? merge(remote, here()) : { lessons: remote.lessons ?? [], chats: remote.chats ?? [] };
+  saveDone(next.lessons); replaceChats(next.chats);
+  setCurrentPlayer({ id: account.id, name: account.name, account: true });
+  if (keep) await pushNow(fetchImpl, true);
+  return { ok: true };
 }
-/** Stop playing as anyone on this browser, after copying the current person's things up. Local copies are cleared. */
+type Outcome = { ok: boolean; message?: string };
+const begin = async (request: unknown, fallback: string, fetchImpl: typeof fetch): Promise<Outcome> => {
+  try {
+    const { ok, body } = await call(fetchImpl, post(request));
+    if (!ok || !body?.account) return { ok: false, message: said(body, fallback) };
+    return await enter(body.account as AccountInfo, fetchImpl);
+  } catch { return { ok: false, message: "Could not reach the site." }; }
+};
+export const signUp = (name: string, email: string, password: string, fetchImpl: typeof fetch = fetch) => begin({ op: "signup", name, email, password }, "The account could not be made.", fetchImpl);
+export const signIn = (email: string, password: string, fetchImpl: typeof fetch = fetch) => begin({ op: "signin", email, password }, "Could not sign in.", fetchImpl);
+
+/** Line a browser up with the server's session on page load: nothing is copied up for a session that has ended. */
+export function settle(s: Session): void {
+  const me = currentPlayer();
+  if (s.state === "signedIn" && me?.account && me.id === s.account.id) { if (me.name !== s.account.name) setCurrentPlayer({ ...me, name: s.account.name }); return; }
+  if (s.state === "signedIn") { void enter(s.account, fetch).then((r) => { if (r.ok) window.location.reload(); }); }
+}
+
+/** Sign out on this browser, after copying the person's things up. Local copies are cleared. */
 export async function signOut(fetchImpl: typeof fetch = fetch): Promise<void> {
   await pushNow(fetchImpl);
   if (timer) { clearTimeout(timer); timer = undefined; }
+  try { await call(fetchImpl, post({ op: "signout" })); } catch { /* the cookie will simply expire */ }
   setCurrentPlayer(undefined);
   saveDone([]); replaceChats([]);
 }
+const simple = async (request: unknown, fallback: string, fetchImpl: typeof fetch): Promise<Outcome> => {
+  try { const { ok, body } = await call(fetchImpl, post(request)); return ok ? { ok } : { ok, message: said(body, fallback) }; }
+  catch { return { ok: false, message: "Could not reach the site." }; }
+};
+export const changePassword = (old: string, next: string, f: typeof fetch = fetch) => simple({ op: "password", old, next }, "The password was not changed.", f);
+export const resetPassword = (account: string, next: string, f: typeof fetch = fetch) => simple({ op: "reset", account, next }, "The password was not changed.", f);
+export const removeAccount = (account: string, f: typeof fetch = fetch) => simple({ op: "remove", account }, "The account was not removed.", f);

@@ -62,7 +62,12 @@ describe("lesson endpoint", () => {
     expect((await post(basic("x", "wrong"))).status).toBe(401);
   });
   it("passes the gate with the right password (then fails on the empty body, not on auth)", async () => {
-    process.env.VERCEL = "1"; process.env.APP_PASSWORD = "pw"; process.env.ANTHROPIC_API_KEY = "test";
+    delete process.env.VERCEL; process.env.APP_PASSWORD = "pw"; process.env.ANTHROPIC_API_KEY = "test";
     expect((await post(basic("x", "pw"))).status).toBe(400);
+  });
+  it("on the live site the right password is not enough: with nobody recognisable, the paid call stays closed", async () => {
+    process.env.VERCEL = "1"; process.env.APP_PASSWORD = "pw"; process.env.ANTHROPIC_API_KEY = "test";
+    for (const k of Object.keys(process.env)) if (/KV_REST|REDIS_REST/.test(k)) delete process.env[k];
+    expect((await post(basic("x", "pw"))).status).toBe(503);
   });
 });

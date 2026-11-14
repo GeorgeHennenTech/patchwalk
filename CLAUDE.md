@@ -515,17 +515,33 @@ Added after the first eight milestones (owner asked for all four in one go):
   with plain `fetch` (no new dependency), finding the settings under `KV_REST_API_URL`/`_TOKEN`,
   `UPSTASH_REDIS_REST_URL`/`_TOKEN`, or a custom prefix. **Everything works without it**: no store, or one
   that fails, means the app behaves as before. Server files under `src/store/` use `.js` import suffixes.
-  - `api/store.ts` + `src/store/players.ts`: the list of people (`pw:players`, at most 12, names unique) and
-    each person's saved things (`pw:p:<id>`: finished lessons and saved chats). No passwords: the site's one
-    password is the gate; the picker only keeps people's things apart. `?check=1` does a write-and-read for
-    the System check tab (`DatabaseCheck`).
-  - `src/ui/Players.tsx`: the "Who's playing?" panel under the header, shown only when a store is
-    configured: pick a name, add yourself, remove someone, stop playing on this browser. The first name
-    chosen on a browser that already held progress adopts it. `src/guide/sync.ts`: the browser's storage
-    stays the working copy; `playAs` brings a person's things down (then reloads), `schedulePush` copies
-    changes up 1.5 s later, and `pushNow` reads the database's copy first and joins the two (`merge`: every
-    lesson, newest version of each chat) so a stale browser never overwrites newer work; a deletion pushes
-    the exact copy instead. The Serum-tasks progress is not synced.
+  - **Accounts (14 Nov 2026, owner's instruction: "nobody can use my credits whatsoever unless its me under
+    my name", and an email and password for each user). This replaced the "Who's playing?" name picker.**
+    `src/store/accounts.ts` holds the rules, `api/account.ts` the endpoint, `src/guide/sync.ts` the browser
+    side, `src/ui/Account.tsx` the screens (`SignInGate`, `AccountBar`). Everyone signs up with a name, an
+    email and a password (8 or more characters); the page shows nothing but the sign-in screen until then.
+    Passwords are stored only as a salted scrypt hash; a session is a random token in an HttpOnly cookie
+    (`pw_session`, 30 days), and the database holds only a hash of it; eight wrong passwords lock an email
+    for fifteen minutes; at most 12 accounts. Keys: `pw:accounts` (list), `pw:acct:<id>` (hash),
+    `pw:a:<id>` (finished lessons and saved chats), `pw:sess:<hash>`. The old `pw:players` and `pw:p:*`
+    keys are no longer read.
+    **Who pays (`payer`, called by `api/ask.ts`, `api/point.ts` and `api/lesson.ts`): a signed-in person's
+    own key if they sent one; the site's key only for the account whose email equals the `OWNER_EMAIL`
+    environment variable; anyone else is refused (402 `needs-key`), and so is anyone not signed in, even
+    with a key.** It fails closed: `OWNER_EMAIL` unset means nobody is the owner; on Vercel with no
+    database, or with the database unreachable, every paid call is refused. Never weaken this. Off Vercel
+    with no database (local development) there are no accounts and the local key is used.
+    Emails are not verified (the site sends no mail), so the owner must make their own account before or
+    right after setting `OWNER_EMAIL` and check that the Account panel says "owner". No mail also means no
+    "forgot my password": the owner sets a new password for someone from the Account panel (which lists
+    everyone, for the owner only) or removes them; anyone can change their own password or delete their
+    account. Work already in a browser from before accounts is kept under the account made or signed into
+    there; a browser holding one account's things never hands them to another (`enter` in `sync.ts`).
+    A person without a key who is not the owner sees a panel explaining that the guide needs their own
+    key, with the steps (`KeySteps`); lessons and the synth need no key.
+    Checked end to end in a browser against the real endpoints with a stand-in database: signed out, the
+    guide answered 401; a friend's account got 402; the owner's account reached Claude. **Not yet run on
+    the live site: the owner has to set `OWNER_EMAIL` in Vercel.**
   - Shared memory (`src/store/shared.ts`): `api/ask.ts` returns a stored answer for an opening question
     (no history, no lesson context) that anyone has asked before, keyed by a hash of the tidied question and
     a fingerprint of the library, kept 90 days; `api/point.ts` does the same per picture and question.
@@ -533,11 +549,6 @@ Added after the first eight milestones (owner asked for all four in one go):
   - Own key: a person can enter their own Claude key in the picker; it is kept in that browser only
     (`src/guide/me.ts`) and sent as `x-anthropic-key` with guide, picture and lesson requests; the server
     uses it for that request and never stores or logs it.
-  - Asking for a key (14 Nov 2026, owner's question): by default everyone's guide questions bill the owner's
-    key. Once per browser, after a name is chosen, a panel asks "Set up your own Claude key?" with four
-    plain steps (`KeySteps` in `Players.tsx`: account at console.anthropic.com, buy credit, create a key,
-    paste it) and a "Not now" that is remembered (`patchwalk.keyasked.v1`). The same steps are in the
-    picker's settings. It is a request, not a requirement: a friend can still decline and use the owner's key.
   Tested with a store kept in memory and, in a browser, with a stand-in for `/api/store`. **Not yet run
   against the real database** (the build session has no access to it): the System check tab's "Check the
   database" button is the first real test.
@@ -780,8 +791,8 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
 - `UPDATE_BASELINE=1 npx vitest run tests/baseline.test.ts` — regenerate `src/patch/init-baseline.json` from Init.
 
 ## Deploy
-Vercel: import the repo (framework: Vite) and set two Environment Variables: `APP_PASSWORD` and
-`ANTHROPIC_API_KEY`. Without the API key the app still works; "Explain why" reports that explanations are off.
+Vercel: import the repo (framework: Vite) and set three Environment Variables: `APP_PASSWORD`,
+`ANTHROPIC_API_KEY` and `OWNER_EMAIL` (the email of the owner's account: the only one allowed to spend the key). Without the API key the app still works; "Explain why" reports that explanations are off.
 
 ## Access control
 The product is private to the owner. `middleware.ts` (Vercel Routing Middleware) puts HTTP Basic Auth in front

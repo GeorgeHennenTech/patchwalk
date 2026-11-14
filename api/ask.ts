@@ -4,6 +4,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import Anthropic from "@anthropic-ai/sdk";
+import { payer } from "../src/store/accounts.js";
 import { gate } from "../src/lesson/auth.js";
 import { answerQuestion, AskRequestSchema, GUIDE_SYSTEM, type AskResponse, type GuideModel } from "../src/library/answer.js";
 import { kvFromEnv } from "../src/store/kv.js";
@@ -54,9 +55,9 @@ export async function POST(request: Request): Promise<Response> {
   if (access === "locked") return json(503, { error: "locked", message: "This site is locked: APP_PASSWORD is not set on the server." });
   if (access === "denied") return json(401, { error: "unauthorized", message: "Password required." });
   const own = ownKey(request.headers);
-  if (!own && !process.env.ANTHROPIC_API_KEY) {
-    return json(503, { error: "not-configured", message: "The guide is switched off: no ANTHROPIC_API_KEY is set on the server." });
-  }
+  // Only the owner's account may spend the site's key; anyone else must send a key of their own.
+  const pays = await payer(kvFromEnv(), request.headers, own, process.env);
+  if (!pays.ok) return json(pays.status, pays.body);
   const raw = await request.text();
   if (raw.length > 24_000) return json(413, { error: "too-large", message: "Question is too long." });
   let body: unknown;
@@ -89,7 +90,7 @@ export async function POST(request: Request): Promise<Response> {
   const before = parsed.data.history?.at(-1)?.question ?? "";
   const hits = search(index, `${parsed.data.question} ${(parsed.data.context ?? "").split("\n")[0]} ${before}`, 6);
 
-  const client = own ? new Anthropic({ apiKey: own }) : new Anthropic();
+  const client = pays.key ? new Anthropic({ apiKey: pays.key }) : new Anthropic();
   const model: GuideModel = async ({ question, context, passages, history }) => {
     const response = await client.messages.create({
       model: MODEL,

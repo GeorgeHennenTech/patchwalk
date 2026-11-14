@@ -614,6 +614,18 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   part descriptions are general knowledge, not yet from a text in the library: check both against a
   loudspeaker text before it goes into a lesson. Use Blender only for 3D objects with hidden parts
   (drivers, horns, cabinets); labels are always drawn by code, never by an image generator.
+  **Interactive version in the app ("Sound systems" tab, `src/ui/DriverDiagram.tsx`, 14 Nov 2026):**
+  `driver.py -- <dir> 64 --frames` renders the cone at seven positions (6 mm in to 6 mm out; the coil,
+  former, cone and dust cap move, the surround and spider flex, the rest stays) and, for each, a "map" of
+  the same view with every part one flat colour (`src/assets/diagrams/driver/`, 260 KB in all; the maps
+  are palette PNGs). The page reads the map under the pointer to know which part is there (`partAt` in
+  `src/soundsystems/driver.ts`) and tints that part; a list of part buttons does the same for the
+  keyboard. A slider and "Move it" step through the positions. "Name the parts" lights each part in turn
+  and offers four names, with the answer and its job shown at once and a first-try score at the end
+  (the recall rule in `docs/LEARNING_RESEARCH.md`). Checked in a browser: pointing named the cone, magnet,
+  pole piece and surround correctly, and background gave nothing. It is the pattern for further
+  diagrams: render frames plus maps, then let code do the interaction. A live 3D model in the page
+  (turn it, tie the cone to the synth's sound) is the next step up and is not built.
 - **Impact sounds (owner asked 13 Nov 2026):** `docs/IMPACTS.md`, about 50 lessons on hits, striking bass
   notes, weight, making room, impact effects and contrast. The first seven are built (see `lessons/impacts.ts`);
   the rest wait for effects, physical modelling, the mini DAW and library texts on hearing.

@@ -716,3 +716,26 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
     .mod-tabs .mod-tab.on .grip, .macro-cell:not(.idle) .grip { animation: pw-breathe 2.4s ease-in-out infinite; }
   }
 }
+
+/* ---- The interactive loudspeaker cutaway (Sound systems). Content sits on a solid panel. ---- */
+.driver { background: var(--panel, #fffaf0); border: 2px solid var(--thread); border-radius: 14px; padding: 18px 20px; }
+.driver h2 { margin: 0 0 4px; }
+.driver-grid { display: grid; grid-template-columns: minmax(0, 2.4fr) minmax(220px, 1fr); gap: 16px; align-items: start; }
+.driver-stage { position: relative; border-radius: 12px; overflow: hidden; border: 2px solid var(--thread); background: #f2f1ee; touch-action: none; }
+.driver-stage img { display: block; width: 100%; height: auto; user-select: none; }
+.driver-stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; cursor: crosshair; }
+.driver-parts { display: flex; flex-wrap: wrap; gap: 6px; }
+.driver-parts button { border: 2px solid var(--thread); border-radius: 999px; padding: 4px 11px; background: transparent; color: inherit; font: inherit; font-size: 0.9rem; cursor: pointer; }
+.driver-parts button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+.driver-parts button.no { opacity: 0.45; text-decoration: line-through; }
+.driver-info { margin-top: 12px; min-height: 130px; }
+.driver-info h3 { margin: 0 0 4px; color: var(--accent); }
+.driver-info p { margin: 0 0 8px; }
+.driver-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; margin: 14px 0 6px; }
+.driver-slider { display: flex; align-items: center; gap: 10px; flex: 1 1 320px; }
+.driver-slider input { flex: 1; accent-color: var(--accent); }
+.driver-slider output { min-width: 84px; font-family: ui-monospace, monospace; font-size: 0.9rem; }
+.driver-draft { font-size: 0.85rem; }
+@media (max-width: 760px) { .driver-grid { grid-template-columns: 1fr; } }
+.driver-controls button:not(.primary) { border: 2px solid var(--thread); border-radius: 12px; padding: 7px 14px; background: transparent; color: inherit; font: inherit; font-weight: 700; cursor: pointer; }
+.driver-controls button:disabled { opacity: 0.5; cursor: default; }

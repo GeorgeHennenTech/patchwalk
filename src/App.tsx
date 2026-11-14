@@ -6,6 +6,7 @@ import { parseCard, type Card } from "./lesson/cards";
 import { INIT_BASELINE } from "./patch/baseline";
 import { Badge } from "./ui/Badge";
 import { AskView } from "./ui/AskView";
+import { DriverDiagram } from "./ui/DriverDiagram";
 import { CompareView } from "./ui/CompareView";
 import { DisplayTable } from "./ui/DisplayTable";
 import { DropZone } from "./ui/DropZone";
@@ -67,7 +68,7 @@ function SoundType({ analysis }: { analysis: Analysis }) {
 
 export function App() {
   const [state, setState] = useState<State>({ kind: "empty" });
-  const [mode, setMode] = useState<"rebuild" | "play" | "learn" | "ask" | "check">("rebuild");
+  const [mode, setMode] = useState<"rebuild" | "play" | "learn" | "ask" | "sound" | "check">("rebuild");
   const [tab, setTab] = useState<TabId>("lesson");
   // A lesson the guide has pointed to. The counter makes a second click on the same lesson count.
   const [wanted, setWanted] = useState<{ id: string; n: number }>();
@@ -109,6 +110,7 @@ export function App() {
           <button role="tab" aria-selected={mode === "play"} className={mode === "play" ? "on" : ""} onClick={() => setMode("play")}>Lessons</button>
           <button role="tab" aria-selected={mode === "learn"} className={mode === "learn" ? "on" : ""} onClick={() => setMode("learn")}>Serum tasks</button>
           <button role="tab" aria-selected={mode === "ask"} className={mode === "ask" ? "on" : ""} onClick={() => setMode("ask")}>Ask the guide</button>
+          <button role="tab" aria-selected={mode === "sound"} className={mode === "sound" ? "on" : ""} onClick={() => setMode("sound")}>Sound systems</button>
           <button role="tab" aria-selected={mode === "check"} className={mode === "check" ? "on" : ""} onClick={() => setMode("check")}>System check</button>
         </div>
       </header>
@@ -127,6 +129,7 @@ export function App() {
       )}
 
       {mode === "ask" && <AskView />}
+      {mode === "sound" && <DriverDiagram />}
       {mode === "check" && <><SelfTest cards={CARDS} /><DatabaseCheck /></>}
 
       {mode === "rebuild" && <DropZone onFile={onFile} compact={state.kind !== "empty"} />}

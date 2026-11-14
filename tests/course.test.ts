@@ -1201,3 +1201,31 @@ describe("a row scaled by a second source", () => {
     expect(l.steps[4]!.check(snap(row("vel"), { velocity: { min: 40, max: 127 } }))).toBe(true);
   });
 });
+
+import { DRIVER_PARTS, nameChoices, partAt, quizOrder } from "../src/soundsystems/driver";
+describe("the loudspeaker cutaway", () => {
+  const colours = [[255, 0, 0], [0, 255, 0], [0, 0, 255]] as const;
+  it("reads which part a pixel of the map belongs to, and nothing for background or blurred edges", () => {
+    expect(partAt(colours, 255, 0, 0)).toBe(0);
+    expect(partAt(colours, 240, 20, 10)).toBe(0);
+    expect(partAt(colours, 0, 0, 250)).toBe(2);
+    expect(partAt(colours, 0, 0, 0)).toBe(-1);
+    expect(partAt(colours, 128, 128, 0)).toBe(-1); // half way between two parts: an edge, not a part
+  });
+  it("asks every part once, and always offers the right name among four", () => {
+    const names = DRIVER_PARTS.map((p) => p.name);
+    expect([...quizOrder(names.length, 7)].sort((a, b) => a - b)).toEqual(names.map((_, i) => i));
+    expect(quizOrder(names.length, 7)).not.toEqual(quizOrder(names.length, 8));
+    for (let answer = 0; answer < names.length; answer++) {
+      const choices = nameChoices(names, answer, 3);
+      expect(choices).toHaveLength(4);
+      expect(new Set(choices).size).toBe(4);
+      expect(choices).toContain(names[answer]);
+    }
+  });
+  it("every part has a name, a job and says whether it moves", () => {
+    expect(DRIVER_PARTS).toHaveLength(11);
+    for (const p of DRIVER_PARTS) { expect(p.job.length).toBeGreaterThan(20); expect(["with the cone", "flexes", "stays still"]).toContain(p.moves); }
+    expect(DRIVER_PARTS.filter((p) => p.moves === "with the cone").map((p) => p.name)).toEqual(["Former", "Voice coil", "Cone", "Dust cap"]);
+  });
+});

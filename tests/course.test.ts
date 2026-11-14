@@ -626,7 +626,7 @@ import { CHAPTER_5 } from "../src/course/lessons/chapter5";
 describe("chapter 5: routes, direction, and modulating a modulator", () => {
   const st = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
   it("the modulation chapter follows the LFOs and starts from real settings", () => {
-    expect(LESSONS.map((l) => l.id).slice(36, 42)).toEqual(["C5.1", "C5.2", "C5.3", "C5.4", "C5.6", "C5.C"]);
+    expect(LESSONS.map((l) => l.id).slice(36, 44)).toEqual(["C5.1", "C5.2", "C5.3", "C5.4", "C5.5", "C5.6", "C5.7", "C5.C"]);
     for (const l of CHAPTER_5) for (const k of Object.keys(l.initial ?? {})) expect(k in INITIAL, `${l.id}: ${k}`).toBe(true);
   });
   it("an LFO set to one way pushes one side only, like an envelope; both ways is the default", () => {
@@ -975,5 +975,64 @@ describe("the matrix", () => {
     expect(lesson.steps[2]!.check(snap({ matrix: [row("lfo2", "fine", 5)] }))).toBe(false);
     expect(lesson.steps[2]!.remark!(snap({ matrix: [row("lfo1", "fine", 5)] }))).toContain("2 jobs");
     expect(lesson.steps[4]!.check(snap({ matrix: [row("lfo1", "aLevelDb", -50)] }))).toBe(true);
+  });
+});
+
+import { slowModulate, sourceValue, withRouteAmount } from "../src/synth/mod";
+import { FAST_DESTS, isSlowDest, SLOW_DESTS } from "../src/synth/params";
+describe("any knob as a destination", () => {
+  const note = (age: number, extra = {}) => ({ note: 60, velocity: 127, age, held: Infinity, startedAt: 0, ...extra });
+  it("every continuous knob is a destination, except the few that cannot be", () => {
+    for (const id of ["resonance", "warpAmount", "ringAmount", "position", "detune", "envA", "lfo2Rate", "lfo2Amount", "distDrive", "reverbMix", "delayTime", "eqMid"]) { expect(SLOW_DESTS, id).toContain(id); expect(MOD_DESTS).toContain(id); }
+    for (const id of ["volumeDb", "bpm", "freeHz", "randomPhase", "reverbSize", "octave", "voices", "cutoff", "macro1"]) expect(SLOW_DESTS, id).not.toContain(id);
+    for (const id of FAST_DESTS) expect(isSlowDest(id)).toBe(false);
+    expect(new Set(MOD_DESTS).size).toBe(MOD_DESTS.length);
+    expect(PARAMS.lfo1Dest!.choices).toBe(MOD_DESTS);
+  });
+  it("a source at full swing moves a slow knob by amount/200 of its travel, both ways or one way", () => {
+    const s = { ...INITIAL, ringAmount: 50, lfo1Dest: "ringAmount", lfo1Amount: 100, lfo1Shape: "square" as const, lfo1Rate: 1 };
+    expect(slowModulate(s, note(0.25)).ringAmount).toBeCloseTo(100, 6);
+    expect(slowModulate(s, note(0.75)).ringAmount).toBeCloseTo(0, 6);
+    const up = { ...s, ringAmount: 0, lfo1Way: "up" as const };
+    expect(slowModulate(up, note(0.25)).ringAmount).toBeCloseTo(50, 6);
+    expect(slowModulate(up, note(0.75)).ringAmount).toBeCloseTo(0, 6);
+  });
+  it("nothing moves without a note, without a slow connection, or at an amount of zero; the settings object is handed back untouched", () => {
+    const s = { ...INITIAL, lfo1Dest: "ringAmount", lfo1Amount: 100 };
+    expect(slowModulate(s, undefined)).toBe(s);
+    expect(slowModulate(INITIAL, note(1))).toBe(INITIAL);
+    expect(slowModulate({ ...INITIAL, lfo1Dest: "cutoff" }, note(1)).cutoff).toBe(INITIAL.cutoff); // a fast destination is left to the audio
+    const zero = { ...s, lfo1Amount: 0 }; expect(slowModulate(zero, note(1))).toBe(zero);
+  });
+  it("envelope, velocity and key position work as slow sources, and two sources on one knob add", () => {
+    const env = { ...INITIAL, eqMid: 0, env2Dest: "eqMid", env2Amount: 100, env2A: 100, env2D: 100, env2S: 0, env2H: 1000 };
+    expect(slowModulate(env, note(0.5)).eqMid).toBeCloseTo(18, 6); // held at the top: half the travel of a -18..18 knob
+    expect(slowModulate(env, note(0.05)).eqMid).toBeCloseTo(9, 6); // halfway up the attack
+    expect(sourceValue(env, routes({ ...INITIAL, velDest: "resonance" })[0]!, note(0, { velocity: 64 }))).toBeCloseTo(64 / 127, 6);
+    const two = { ...INITIAL, resonance: 0, velDest: "resonance", velAmount: 100, matrix: [{ source: "vel" as const, dest: "resonance", amount: 50, way: "both" as const }] };
+    expect(slowModulate(two, note(0)).resonance).toBeCloseTo(75, 6);
+    expect(slowModulate({ ...INITIAL, resonance: 50, keyDest: "resonance", keyAmount: 100 }, note(0, { note: 36 })).resonance).toBeCloseTo(0, 6);
+  });
+  it("an LFO's rise fades its slow movement in, and a wide-ranging knob moves in octaves", () => {
+    const s = { ...INITIAL, ringAmount: 50, lfo1Dest: "ringAmount", lfo1Amount: 100, lfo1Shape: "square" as const, lfo1Rate: 1, lfo1Rise: 1000 };
+    expect(slowModulate(s, note(0.25)).ringAmount).toBeCloseTo(62.5, 6);
+    const rate = { ...INITIAL, lfo2Rate: 1, lfo3Dest: "lfo2Rate", lfo3Amount: 100, lfo3Shape: "square" as const, lfo3Rate: 1 };
+    const moved = slowModulate(rate, note(0.25)).lfo2Rate;
+    expect(moved).toBeGreaterThan(20); expect(moved).toBeLessThanOrEqual(30);
+  });
+  it("a connection's amount is set the same way from the knob's handle, wherever the connection lives", () => {
+    const s = { ...INITIAL, lfo1Dest: "cutoff", matrix: [{ source: "lfo1" as const, dest: "fine", amount: 5, way: "both" as const }] };
+    expect(withRouteAmount(s, "lfo1", 61.4)).toEqual({ lfo1Amount: 61 });
+    expect(withRouteAmount(s, "lfo1", 400)).toEqual({ lfo1Amount: 100 });
+    expect(withRouteAmount(s, "m0", -30)).toEqual({ matrix: [{ source: "lfo1", dest: "fine", amount: -30, way: "both" }] });
+  });
+  it("the two lessons check the handle and the new destinations", () => {
+    const snap = (id: string, state: Partial<SynthState>, extra: Partial<Snapshot> = {}) => { const l = LESSONS.find((x) => x.id === id)!; return ({ ...snapshot(newTrack(INITIAL), { ...INITIAL, ...l.initial, ...state }, { audioRunning: true, held: [45], holdOn: true, now: 0 }), ...extra }) as Snapshot; };
+    const depth = LESSONS.find((l) => l.id === "C5.5")!, any = LESSONS.find((l) => l.id === "C5.7")!;
+    expect(depth.steps[1]!.check(snap("C5.5", { lfo1Amount: 60 }))).toBe(false); // must come from the handle
+    expect(depth.steps[1]!.check(snap("C5.5", { lfo1Amount: 60 }, { flags: { depth: true } }))).toBe(true);
+    expect(any.steps[1]!.check(snap("C5.7", { lfo1Dest: "resonance", lfo1Amount: 100 }))).toBe(true);
+    expect(any.steps[3]!.check(snap("C5.7", { lfo3Dest: "lfo2Rate", lfo3Amount: 60 }))).toBe(true);
+    expect(any.steps[3]!.check(snap("C5.7", { lfo3Dest: "lfo1Rate", lfo3Amount: 60 }))).toBe(false);
   });
 });

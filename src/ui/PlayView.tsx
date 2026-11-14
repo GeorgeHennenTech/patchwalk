@@ -6,7 +6,7 @@ import type { MatchRound, Panel, PlayableLesson } from "../course/types";
 import type { Card } from "../lesson/cards";
 import { macroSlots } from "../synth/macros";
 import { routes } from "../synth/mod";
-import { beatHz, DEST_NAMES, INITIAL, noteToHz, PARAMS, SHAPES, type Shape, type SynthState } from "../synth/params";
+import { beatHz, destName, INITIAL, noteToHz, PARAMS, SHAPES, type Shape, type SynthState } from "../synth/params";
 import { useSynth, type Synth } from "../synth/useSynth";
 import { AskBox } from "./Answer";
 import { Badge } from "./Badge";
@@ -27,7 +27,7 @@ const describe = (s: SynthState) => [
   s.filterOn ? `filter on (${PARAMS.filterType!.names![s.filterType]}, cutoff ${s.cutoff} Hz, resonance ${s.resonance}%, slope ${s.slope} dB per octave, drive ${s.drive}%, key tracking ${s.keyTrack}%)` : "filter off",
   `envelope 1 (level): attack ${s.envA} ms, decay ${s.envD} ms, sustain ${s.envS}%, release ${s.envR} ms`,
   ...macroSlots(s).map((m) => `macro "${m.name}" (at ${m.value}%) moves ${PARAMS[m.dest]!.label.toLowerCase()} by up to ${m.amount}% of its travel`),
-  ...routes(s).map((r) => `${r.source.name} sent to ${DEST_NAMES[r.dest].toLowerCase()} at ${r.amount}%${r.source.kind === "lfo" ? ` (${s[`${r.source.id as "lfo1"}Shape`]}, ${s[`${r.source.id as "lfo1"}Rate`]} Hz)` : ""}`),
+  ...routes(s).map((r) => `${r.source.name} sent to ${destName(r.dest).toLowerCase()} at ${r.amount}%${r.source.kind === "lfo" ? ` (${s[`${r.source.id as "lfo1"}Shape`]}, ${s[`${r.source.id as "lfo1"}Rate`]} Hz)` : ""}`),
 ].join("; ");
 
 /** Views of the sound the learner can switch on at any time, whatever the current step shows. */

@@ -167,7 +167,9 @@ Added after the first eight milestones (owner asked for all four in one go):
     C5.4, "The matrix: one source, several places", was added to chapter 5 once the matrix could be edited.
     Eight more macro recipes (C5M.9 to C5M.16, `MORE_RECIPES`, listed after "Two macros on one sound") use the
     effects, warp, FM and the wide pitch destination: Space, Throw, Heat, Tear, Growl, Squash, Shimmer, Knock.
-    **Seventy-nine playable lessons.**
+    C5.5 ("Setting depth on the knob itself") and C5.7 ("Any knob can be a destination") were added to chapter 5
+    with the depth handles and the wider destination list.
+    **Eighty-one playable lessons.**
   - `src/ui/PlayView.tsx` ("Lessons" tab) and `src/ui/synth/` — spotlighted controls per step, live targets,
     scope, spectrum, meter, on-screen keyboard, Hold, blind ear checks, recap, guide remarks and suggestion.
   - "Hear it first" demos (`demo` on a lesson), match-by-ear rounds (`rounds`, compared by `src/course/match.ts`:
@@ -317,7 +319,29 @@ Added after the first eight milestones (owner asked for all four in one go):
     Measured: a square LFO with its own route on level and a matrix row on pitch moved both together
     (883/215 Hz with the level swing); halving the row's amount in place halved the pitch swing; removing
     the row left the level route alone. Its labels start "Matrix:" so they do not clash with the knobs'.
-  - Not built yet: MIDI input, a mod wheel. **Owner's order (13 Nov 2026), after
+  - **Any knob as a destination, and depth handles (14 Nov 2026, owner's request after a friend tried the
+    LFOs).** Two kinds of destination now. `FAST_DESTS` (the original list) are moved inside the audio, per
+    note, smooth at any speed. `SLOW_DESTS` is every other continuous knob (not number boxes, main volume,
+    tempo, random phase or reverb size): `slowModulate` in `mod.ts` works out each source's value for the
+    most recently played note (`sourceValue`: shape, start phase, rise, one way, envelope, velocity, key) and
+    pushes the knob by amount/200 of its travel, the same stretch the ring shows. The engine keeps `base`
+    (after macros) and `state` (what is playing) and a 20 ms timer (`tick`) re-renders when a slow
+    connection is in use; with no note held everything returns to the knobs. Auditioned patches are kept
+    moving the same way (`auditions`). The per-note update was split out as `applyVoice`. `MOD_DESTS` is now
+    a plain string list (`Dest` is `string`), menus are grouped (`DestOptions`: "Smoothest" first, then by
+    panel), and `spectrumA` caches many warp amounts so a moving warp does not recompute.
+    **Depth handles:** every knob wears a small dot per connection that targets it (`DepthHandle` in
+    `Controls.tsx`), in the source's colour; drag it or use the arrow keys to set that connection's amount
+    (`withRouteAmount`, which also handles matrix rows), double-click for zero; the readout under the knob
+    shows the amount while a handle has focus; using one sets the `depth` flag. A handle stays when its amount
+    is zero (so it can be dragged through zero) although the ring goes.
+    Measured: a square LFO on ring amount alternated sidebands-only and note-only; on warp (sync) it
+    alternated 440 and 1760 Hz, one way 440 and a 2.5-times read; Envelope 2 on EQ mid gave +18 dB at the
+    start and 0 later; an LFO on another LFO's amount switched a trill on and off; an auditioned patch moved
+    the same and the learner's own settings came back afterwards.
+    Limits to keep in mind: slow destinations follow one note (the last played), step every 20 ms (grainy
+    with very fast LFOs), and a source's rate being moved by another source is not followed by the slow path.
+  - Not built yet: MIDI input, a mod wheel, drag-a-source-onto-a-knob. **Owner's order (13 Nov 2026), after
     warp/FM/ring which is done: the first impact lessons (they need nothing new); then physical modelling
     and bioacoustics.**
   - The old ten Serum-task lessons are now the "Serum tasks" tab.

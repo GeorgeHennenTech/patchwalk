@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { effectiveCutoff, filterResponseDb } from "../../synth/filter";
 import { macroSlots, slotPush } from "../../synth/macros";
 import { adsr, ENV1_COLOR, fallShape, SOURCES } from "../../synth/mod";
-import { DEST_NAMES, MATRIX_MAX, MOD_DESTS, PARAMS, type MatrixRow, type SynthState } from "../../synth/params";
+import { MATRIX_MAX, PARAMS, type MatrixRow, type SynthState } from "../../synth/params";
 import type { Synth } from "../../synth/useSynth";
-import { fromTravel, toTravel } from "./Controls";
+import { DestOptions, fromTravel, toTravel } from "./Controls";
 
 function useFrame(draw: () => void, active: boolean) {
   useEffect(() => {
@@ -293,7 +293,7 @@ export function Matrix({ synth }: { synth: Synth }) {
                 <td><i style={{ background: info.color }} />
                   {r.own ? info.name : <select value={r.source} aria-label={`Matrix: row ${r.index + 1} source`} onChange={(e) => setRow(r.index, { source: e.target.value as MatrixRow["source"] })}>{SOURCES.map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}</select>}
                 </td>
-                <td><select value={r.dest} aria-label={`Matrix: ${name} moves`} onChange={(e) => (r.own ? set({ [`${r.source}Dest`]: e.target.value } as Partial<SynthState>) : setRow(r.index, { dest: e.target.value as MatrixRow["dest"] }))}>{MOD_DESTS.map((d) => <option key={d} value={d}>{DEST_NAMES[d]}</option>)}</select></td>
+                <td><select value={r.dest} aria-label={`Matrix: ${name} moves`} onChange={(e) => (r.own ? set({ [`${r.source}Dest`]: e.target.value } as Partial<SynthState>) : setRow(r.index, { dest: e.target.value as MatrixRow["dest"] }))}><DestOptions /></select></td>
                 <td><input type="number" min={-100} max={100} step={1} value={r.amount} aria-label={`Matrix: ${name} amount`} onChange={(e) => { const v = Math.max(-100, Math.min(100, Math.round(Number(e.target.value) || 0))); if (r.own) set({ [`${r.source}Amount`]: v } as Partial<SynthState>); else setRow(r.index, { amount: v }); }} /> %</td>
                 <td>{r.way === undefined ? (info.kind === "note" && info.id === "key" ? "both ways" : "one way")
                   : <select value={r.way} aria-label={`Matrix: ${name} direction`} onChange={(e) => (r.own ? set({ [`${r.source}Way`]: e.target.value } as Partial<SynthState>) : setRow(r.index, { way: e.target.value as MatrixRow["way"] }))}><option value="both">Both ways</option><option value="up">One way</option></select>}</td>

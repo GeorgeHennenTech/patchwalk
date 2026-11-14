@@ -1,7 +1,7 @@
-import { useEffect, useRef } from "react";
-import { BOX_IDS, fromTravel, INITIAL, PARAMS, toTravel, type ParamSpec, type SynthState } from "../../synth/params";
+import { useEffect, useRef, useState } from "react";
+import { BOX_IDS, DEST_NAMES, FAST_DESTS, fromTravel, INITIAL, MOD_DESTS, PARAMS, SLOW_DESTS, toTravel, type ParamSpec, type SynthState } from "../../synth/params";
 import { slotPush, slotsTo } from "../../synth/macros";
-import { routesTo } from "../../synth/mod";
+import { routes, routesTo, withRouteAmount, type Route } from "../../synth/mod";
 import { clickVelocity, KEY_MAP, type Synth } from "../../synth/useSynth";
 
 const fmt = (id: string, v: number) => {
@@ -47,6 +47,48 @@ const arc = (from: number, to: number, r: number) => {
 };
 
 /**
+ * The destination menu, grouped: first the ones moved inside the sound itself, then every other knob by the
+ * panel it lives on. Used by each source's "sends to" menu and by the matrix.
+ */
+export function DestOptions() {
+  const groups: Record<string, string[]> = {};
+  for (const id of SLOW_DESTS) (groups[PARAMS[id]!.group] ??= []).push(id);
+  return (
+    <>
+      <option value="none">{DEST_NAMES.none}</option>
+      <optgroup label="Smoothest (moved inside the sound)">{FAST_DESTS.filter((d) => d !== "none").map((d) => <option key={d} value={d}>{DEST_NAMES[d]}</option>)}</optgroup>
+      {Object.entries(groups).map(([group, ids]) => <optgroup key={group} label={group}>{ids.map((d) => <option key={d} value={d}>{DEST_NAMES[d]}</option>)}</optgroup>)}
+    </>
+  );
+}
+
+/**
+ * The small coloured handle a knob wears for each source that moves it. Drag it up or down (or click it and
+ * use the arrow keys) to set how far that source moves this knob, without going to the source's panel.
+ * Double-click sets it to zero.
+ */
+function DepthHandle({ route, label, synth, onShow }: { route: Route; label: string; synth: Synth; onShow: (text: string | null) => void }) {
+  const drag = useRef<{ y: number; amount: number } | null>(null);
+  const text = (amount: number) => `${route.source.name} ${amount > 0 ? "+" : ""}${amount}%`;
+  const set = (amount: number) => { const v = Math.max(-100, Math.min(100, Math.round(amount))); synth.flag("depth"); synth.setState(withRouteAmount(synth.state, route.key, v)); onShow(text(v)); };
+  return (
+    <i className="depth" role="slider" tabIndex={0} style={{ background: route.source.color, color: route.source.color }}
+      aria-label={`${route.source.name} amount on ${label}`} aria-orientation="vertical" aria-valuemin={-100} aria-valuemax={100} aria-valuenow={route.amount} aria-valuetext={text(route.amount)}
+      title={`${text(route.amount)}: drag up or down to set how far ${route.source.name} moves ${label}. Double-click for zero.`}
+      onPointerDown={(e) => { e.stopPropagation(); e.currentTarget.setPointerCapture(e.pointerId); e.currentTarget.focus(); drag.current = { y: e.clientY, amount: route.amount }; onShow(text(route.amount)); }}
+      onPointerMove={(e) => { if (!drag.current) return; e.stopPropagation(); set(drag.current.amount + (drag.current.y - e.clientY) / (e.shiftKey ? 6 : 1.2)); }}
+      onPointerUp={(e) => { e.stopPropagation(); drag.current = null; }} onPointerCancel={() => { drag.current = null; }}
+      onDoubleClick={(e) => { e.stopPropagation(); set(0); }}
+      onFocus={() => onShow(text(route.amount))} onBlur={() => onShow(null)}
+      onKeyDown={(e) => {
+        const step = e.shiftKey ? 10 : 1, by = e.key === "ArrowUp" || e.key === "ArrowRight" ? step : e.key === "ArrowDown" || e.key === "ArrowLeft" ? -step : e.key === "PageUp" ? 10 : e.key === "PageDown" ? -10 : 0;
+        if (e.key.startsWith("Arrow") || e.key.startsWith("Page") || e.key === "Home" || e.key === "End") { e.stopPropagation(); e.preventDefault(); }
+        if (by) set(route.amount + by); else if (e.key === "Home") set(-100); else if (e.key === "End") set(100);
+      }} />
+  );
+}
+
+/**
  * A knob (or, for a few whole-step settings, a number box). Drag up and down to turn it freely; hold Shift
  * while dragging for fine movement. Click it and use the arrow keys for exact steps (Shift or Page Up/Down
  * for bigger ones, Home/End for the ends). Double-click returns it to its starting value.
@@ -56,6 +98,7 @@ function Knob({ id, synth, spot }: { id: keyof SynthState; synth: Synth; spot: b
   const value = (synth.state[id] ?? spec.min!) as number;
   const box = isBox(id);
   const drag = useRef<{ y: number; travel: number } | null>(null);
+  const [depthText, setDepthText] = useState<string | null>(null);
   const set = (v: number) => { if (v !== synth.state[id]) synth.setState({ [id]: v } as Partial<SynthState>); };
   const steps = (spec.max! - spec.min!) / (spec.step ?? 1);
   const pixels = box ? Math.max(60, steps * 14) : 170; // drag distance for the whole travel
@@ -73,6 +116,8 @@ function Knob({ id, synth, spot }: { id: keyof SynthState; synth: Synth; spot: b
   const t = toTravel(spec, value);
   const angle = -SWEEP / 2 + t * SWEEP;
   const mods = routesTo(synth.state, id);
+  // handles are kept for connections at zero too, so one can be dragged through zero and brought back
+  const handles = routes(synth.state).filter((r) => r.dest === id);
   const slots = slotsTo(synth.state, id);
   const lit = mods.length + slots.length > 0;
   // where the macros have actually put this knob, when that differs from where it was left
@@ -113,8 +158,10 @@ function Knob({ id, synth, spot }: { id: keyof SynthState; synth: Synth; spot: b
           {played !== t && <circle className="knob-played" cx={point(degrees(played), 20).split(" ")[0]} cy={point(degrees(played), 20).split(" ")[1]} r="2.6"><title>Where the macros have put it</title></circle>}
         </svg>
       )}
+      {/* every source moving this knob gets a handle here: its depth can be set without leaving the knob */}
+      {handles.length > 0 && <span className="depths">{handles.map((m) => <DepthHandle key={m.key} route={m} label={spec.label} synth={synth} onShow={setDepthText} />)}</span>}
       <span className="knob-name">{shortLabel(spec.label)}</span>
-      <output>{fmt(id, value)}</output>
+      <output>{depthText ?? fmt(id, value)}</output>
     </div>
   );
 }
@@ -136,7 +183,7 @@ export function Control({ id, synth, spot, only }: { id: keyof SynthState; synth
         <span className="knob-name">{shortLabel(spec.label)}</span>
         {/* blur after choosing so the letter keys go back to playing notes */}
         <select value={String(synth.state[id])} aria-label={spec.label} onChange={(e) => { synth.setState({ [id]: e.target.value } as Partial<SynthState>); e.target.blur(); }}>
-          {spec.choices!.map((c) => <option key={c} value={c}>{spec.names?.[c] ?? c}</option>)}
+          {spec.choices === MOD_DESTS ? <DestOptions /> : spec.choices!.map((c) => <option key={c} value={c}>{spec.names?.[c] ?? c}</option>)}
         </select>
       </label>
     );

@@ -1,6 +1,6 @@
 // Envelopes and LFOs as modulation sources: what they are called, their colours, where they can be sent, and
 // how far a given amount moves a destination. Pure data and maths; the engine and the knob rings share it.
-import type { Dest, SynthState } from "./params";
+import { fromTravelSmooth, isSlowDest, PARAMS, toTravel, type Dest, type SynthState } from "./params";
 
 export type ModSource = "env2" | "lfo1" | "lfo2" | "lfo3" | "vel" | "key";
 /** "note" sources are fixed while a note sounds: how hard it was struck, and which key it was. */
@@ -27,7 +27,7 @@ export type ModDest = Dest;
 export interface Route {
   /** Which connection this is: the source's id for the one set on its own panel, "m0", "m1"... for matrix rows. */
   key: string;
-  source: SourceInfo; dest: Exclude<ModDest, "none">; amount: number;
+  source: SourceInfo; dest: string; amount: number;
   /** True when the source only pushes one way from the knob: every envelope, and an LFO set to "one way". */
   oneWay: boolean;
 }
@@ -175,4 +175,43 @@ export function lfoCoefficients(shape: SynthState["lfo1Shape"], steps: number[] 
       : n % 2 ? ((((n - 1) / 2) % 2 ? -1 : 1) * 8) / (Math.PI * Math.PI * n * n) : 0;
   }
   return { sin, cos, mean };
+}
+
+/** The settings change that sets one connection's amount: on the source's panel, or in its matrix row. */
+export function withRouteAmount(s: SynthState, key: string, amount: number): Partial<SynthState> {
+  const v = Math.max(-100, Math.min(100, Math.round(amount)));
+  if (/^m\d+$/.test(key)) { const i = Number(key.slice(1)); return { matrix: s.matrix.map((r, k) => (k === i ? { ...r, amount: v } : r)) }; }
+  return { [`${key}Amount`]: v } as Partial<SynthState>;
+}
+
+/** What the control-rate modulation needs to know about the note it follows. Times are in seconds. */
+export interface NoteNow { note: number; velocity: number; /** since the note started */ age: number; /** how long it was held, or Infinity while it still is */ held: number; /** audio-clock time it started, for "free" LFOs */ startedAt: number }
+
+/**
+ * A source's value for a note at this moment: -1..1 for a source that pushes both ways, 0..1 for one that
+ * pushes one way. Mirrors what the audio does for the fast destinations (shape, start phase, rise, one way).
+ */
+export function sourceValue(s: SynthState, r: Route, n: NoteNow): number {
+  if (n.age < 0) return 0;
+  if (r.source.kind === "env") return envLevel(adsr(s, 2), n.age, n.held);
+  if (r.source.id === "vel") return velocityValue(n.velocity);
+  if (r.source.id === "key") return keyValue(n.note);
+  const id = r.source.id as LfoId, rise = s[`${id}Rise`] / 1000;
+  const v = lfoValue(s[`${id}Shape`], lfoStartPhase(s, id, n.startedAt) + n.age * lfoHz(s, id), s[`${id}Steps`]);
+  return (r.oneWay ? (v + 1) / 2 : v) * (rise > 0 ? Math.min(1, n.age / rise) : 1);
+}
+
+/**
+ * The settings with every "slow" connection applied for this moment. A source at full swing moves a knob by
+ * amount/200 of its travel, the same stretch its ring shows. With no note sounding, nothing is moved.
+ */
+export function slowModulate(s: SynthState, n: NoteNow | undefined): SynthState {
+  const list = routes(s).filter((r) => isSlowDest(r.dest) && r.amount !== 0);
+  if (!list.length || !n) return s;
+  const out = { ...s } as SynthState & Record<string, unknown>;
+  // every source reads the settings as left, so two sources on one knob add and the order does not matter
+  const push: Record<string, number> = {};
+  for (const r of list) push[r.dest] = (push[r.dest] ?? 0) + sourceValue(s, r, n) * (r.amount / 200);
+  for (const [dest, by] of Object.entries(push)) { const spec = PARAMS[dest]!; out[dest] = fromTravelSmooth(spec, toTravel(spec, s[dest as keyof SynthState] as number) + by); }
+  return out;
 }

@@ -2,7 +2,7 @@
 // versus both ways, and modulating a modulator. Waiting for synth controls: velocity and key position as
 // sources (C5.3), macros (C5.4), and scaling a route with a second source such as the mod wheel (C5.5).
 import { PITCH_SEMITONES, RATE_OCTAVES, routes } from "../../synth/mod";
-import { DEST_NAMES } from "../../synth/params";
+import { destName } from "../../synth/params";
 import type { DemoTone, PlayableLesson, Snapshot } from "../types";
 
 const between = (v: number, lo: number, hi: number) => v >= lo && v <= hi;
@@ -29,7 +29,7 @@ export const CHAPTER_5: PlayableLesson[] = [
       { do: "Turn the Cutoff knob up and down while it wobbles.", show: [...K, "cutoff", "curve"], hear: "The same movement, shifted brighter or darker. The knob is the centre; the route adds to it.", target: "Cutoff moved across at least an octave", check: (s) => sweptOctaves(s) >= 1 },
       { do: "Send LFO 3 to Filter cutoff as well.", show: [...K, "lfo3Dest", "lfo3Amount", "lfo3Rate", "cutoff", "curve"], hear: "The fast wobble now riding up and down on a slow sweep. Cutoff wears two rings: cyan and orange.", target: "LFO 1 and LFO 3 both sent to Filter cutoff", check: (s) => s.state.lfo1Dest === "cutoff" && s.state.lfo3Dest === "cutoff" },
       { do: "Send Envelope 2 to Filter cutoff too, then strike a new key.", show: [...K, "env2Dest", "env2Amount", "cutoff", "curve"], hear: "Each new note also starts bright and settles. Three movements, one knob.", target: "Envelope 2, LFO 1 and LFO 3 all sent to Filter cutoff, a note played", check: (s) => s.state.env2Dest === "cutoff" && s.state.lfo1Dest === "cutoff" && s.state.lfo3Dest === "cutoff" && struck(s) >= 1,
-        remark: (s) => `Your routes: ${routes(s.state).map((r) => `${r.source.name} to ${DEST_NAMES[r.dest].toLowerCase()} at ${r.amount}%`).join("; ")}. Listed like that, it is what Serum calls the mod matrix.` },
+        remark: (s) => `Your routes: ${routes(s.state).map((r) => `${r.source.name} to ${destName(r.dest).toLowerCase()} at ${r.amount}%`).join("; ")}. Listed like that, it is what Serum calls the mod matrix.` },
     ],
     recap: ["A route is a source, a destination and an amount.", "The knob sets the centre; routes add movement to it.", "Several routes on one knob add together."],
     inSerum: "Serum lists every route on its MATRIX tab: source, destination and amount in one row each. Dragging a source onto a knob adds a row there. Lessons on the matrix itself come later.",
@@ -92,13 +92,32 @@ export const CHAPTER_5: PlayableLesson[] = [
       { do: "Switch on Hold and play a low note. LFO 1 is wobbling the filter. Find its row in the matrix.", show: [...K, "matrix", "cutoff"], hear: "A gentle wobble.", target: "A note held", check: (s) => s.held.length >= 1 },
       { do: "In the matrix, change LFO 1’s amount to about 50.", show: [...K, "matrix", "lfo1Amount", "cutoff"], hear: "A deeper wobble. The Amount knob on the LFO 1 panel has moved too: it is the same setting.", target: "LFO 1 amount between 40% and 60%, changed in the matrix", check: (s) => between(s.state.lfo1Amount, 40, 60) && !!s.flags.matrix },
       { do: "Click Add a row. Leave its source as LFO 1, set it to move Osc A pitch, with an amount of about 5.", show: [...K, "matrix", "cutoff", "fine"], hear: "The pitch now dips and rises in step with the filter: one movement, felt in two places. Fine wears a cyan ring as well.", target: "A row sending LFO 1 to Osc A pitch at 2% to 10%", check: (s) => s.state.matrix.some((r) => r.source === "lfo1" && r.dest === "fine" && between(r.amount, 2, 10)),
-        remark: (s) => `LFO 1 is now doing ${routes(s.state).filter((r) => r.source.id === "lfo1").length} jobs: ${routes(s.state).filter((r) => r.source.id === "lfo1").map((r) => `${DEST_NAMES[r.dest].toLowerCase()} at ${r.amount}%`).join(" and ")}.` },
+        remark: (s) => `LFO 1 is now doing ${routes(s.state).filter((r) => r.source.id === "lfo1").length} jobs: ${routes(s.state).filter((r) => r.source.id === "lfo1").map((r) => `${destName(r.dest).toLowerCase()} at ${r.amount}%`).join(" and ")}.` },
       { do: "Add another row: LFO 1 to Osc A level, amount about 50.", show: [...K, "matrix", "cutoff", "fine", "aLevelDb"], hear: "Brighter, higher and louder together, then darker, lower and quieter. The sound seems to breathe.", target: "Rows sending LFO 1 to Osc A pitch and to Osc A level (30% to 70%)", check: (s) => s.state.matrix.some((r) => r.source === "lfo1" && r.dest === "fine" && r.amount !== 0) && s.state.matrix.some((r) => r.source === "lfo1" && r.dest === "aLevelDb" && between(r.amount, 30, 70)) },
       { do: "Turn the level row upside down: make its amount about -50.", show: [...K, "matrix", "aLevelDb"], hear: "Now the sound is quietest when it is brightest. Same source, opposite direction on one of its jobs.", target: "The LFO 1 to Osc A level row between -70% and -30%", check: (s) => s.state.matrix.some((r) => r.source === "lfo1" && r.dest === "aLevelDb" && between(r.amount, -70, -30)) },
       { do: "Remove the pitch row.", show: [...K, "matrix", "fine"], hear: "The pitch is steady again; the filter and level still move together.", target: "No row sends LFO 1 to Osc A pitch; the level row remains", check: (s) => !s.state.matrix.some((r) => r.dest === "fine") && s.state.matrix.some((r) => r.dest === "aLevelDb") && (s.changes.matrix ?? 0) >= 1 },
     ],
     recap: ["The matrix lists every connection: source, destination, amount, direction.", "A row in the matrix and the control on the panel are the same setting.", "Extra rows send one source to several knobs, so they move as one gesture."],
     inSerum: "Serum’s MATRIX tab works the same way: one row per connection, and a source can appear in as many rows as you like. Its column names and how amounts read are not confirmed here, so nothing is checked.",
+  },
+  {
+    id: "C5.5", title: "Setting depth on the knob itself", buildsOn: ["C5.1"], minutes: 6, cardIds: ["mod-routing"], initial: { ...WOBBLE, lfo1Amount: 20, env2Dest: "cutoff", env2Amount: 20, env2D: 500 },
+    outcome: "Change how far a source moves a knob from the knob itself, using the small coloured handle it wears.",
+    demo: { caption: "The same wobble at three depths, as set from the handle on the Cutoff knob.", tones: patches([{ ...WOBBLE, lfo1Amount: 15 }, { ...WOBBLE, lfo1Amount: 45 }, { ...WOBBLE, lfo1Amount: 80 }], 2.2) },
+    idea: [
+      "A knob that a source is moving wears a ring showing the stretch it sweeps. It also wears a small dot in that source’s colour, at its top right. The dot is a handle: drag it up or down and you change that source’s amount for this knob, watching the ring grow or shrink as you do.",
+      "This is the quick way to work. You hear a wobble that is too shallow, and you fix it where you are looking, without finding the LFO’s panel. With two sources on one knob there are two dots, one each. The amount it sets is the same amount as on the source’s panel and in the matrix.",
+    ],
+    steps: [
+      { do: "Switch on Hold and play a low note. Cutoff wears two dots: cyan for LFO 1 and yellow for Envelope 2.", show: [...K, "cutoff", "curve"], hear: "A shallow wobble.", target: "A note held", check: (s) => s.held.length >= 1 },
+      { do: "Drag the cyan dot upward until LFO 1’s amount is about 60%. The readout under the knob shows it as you drag.", show: [...K, "cutoff", "curve"], hear: "The wobble deepening as the cyan ring grows.", target: "LFO 1 amount between 50% and 70%, set from the handle", check: (s) => between(s.state.lfo1Amount, 50, 70) && !!s.flags.depth,
+        remark: (s) => `LFO 1 now swings the cutoff ${((s.state.lfo1Amount / 100) * 5).toFixed(1)} octaves each way. You set that without touching the LFO’s panel.` },
+      { do: "Now drag the yellow dot downward, below zero, to about -40%, and strike a new key.", show: [...K, "cutoff", "curve"], hear: "Each new note now starts darker and opens up, because the envelope pushes the cutoff down from the knob and then lets go.", target: "Envelope 2 amount between -50% and -30%, a note played", check: (s) => between(s.state.env2Amount, -50, -30) && struck(s) >= 1 },
+      { do: "Double-click the cyan dot.", show: [...K, "cutoff", "curve"], hear: "The wobble stops: a double-click sets that source’s amount to zero. The ring has gone but the dot stays, because the connection is still there, doing nothing.", target: "LFO 1 amount at 0, still sent to Filter cutoff", check: (s) => s.state.lfo1Amount === 0 && s.state.lfo1Dest === "cutoff" },
+      { do: "Look at the LFO 1 panel. Bring the amount back up to about 30% from there.", show: [...K, "cutoff", "lfo1Amount", "curve"], hear: "The wobble returns, and the cyan ring is back on Cutoff. The dot and the panel’s knob are one setting.", target: "LFO 1 amount between 20% and 40%", check: (s) => between(s.state.lfo1Amount, 20, 40) && (s.changes.lfo1Amount ?? 0) >= 1 },
+    ],
+    recap: ["A knob wears a dot for each source that moves it.", "Drag the dot to set that source’s amount; double-click for zero.", "The dot, the source’s Amount knob and the matrix row are the same setting."],
+    inSerum: "In Serum, a knob with a source assigned shows a small arc beside it; dragging that arc sets the amount. Its exact appearance and behaviour are not confirmed here, so nothing is checked.",
   },
   {
     id: "C5.6", title: "Modulating a modulator", buildsOn: ["C5.1"], minutes: 7, cardIds: ["mod-of-mod"], initial: { ...WOBBLE },
@@ -119,6 +138,25 @@ export const CHAPTER_5: PlayableLesson[] = [
     ],
     recap: ["A source’s own settings can be destinations.", "A slow LFO on a fast LFO’s rate makes the movement itself move.", "An envelope there gives every note its own change of speed."],
     inSerum: "In Serum you can drag one LFO onto another LFO’s RATE knob, or onto a route’s amount. The app’s rebuilt-patch view reports these as “modulated modulators” when it finds them in a preset.",
+  },
+  {
+    id: "C5.7", title: "Any knob can be a destination", buildsOn: ["C5.1", "C5.6"], minutes: 9, cardIds: ["mod-routing", "mod-of-mod"], initial: { ...BASS, shape: "saw", warp: "sync", warpAmount: 30, distOn: true, distType: "soft", distDrive: 0 },
+    outcome: "Send a source to any knob on the synth, including another source’s knobs and the effects.",
+    demo: { caption: "A bass whose resonance pulses, then whose sync tears open and shut by itself, then both with the tearing speeding up and slowing down.", tones: patches([{ ...BASS, resonance: 30, lfo1Dest: "resonance", lfo1Amount: 100, lfo1Rate: 2 }, { ...BASS, warp: "sync", warpAmount: 40, lfo2Dest: "warpAmount", lfo2Amount: 80, lfo2Rate: 1 }, { ...BASS, warp: "sync", warpAmount: 40, lfo2Dest: "warpAmount", lfo2Amount: 80, lfo2Rate: 1, lfo3Dest: "lfo2Rate", lfo3Amount: 60, lfo3Rate: 0.4, lfo3Shape: "sine" }], 2.2) },
+    idea: [
+      "Every source’s “sends to” menu lists every knob on the synth, grouped by the panel it lives on: oscillator settings such as warp, filter settings such as resonance, the envelopes’ times, the other sources’ rates and amounts, and the effects. If it is a knob, something can move it.",
+      "One difference is worth knowing. The destinations at the top of the menu, marked Smoothest, are moved inside the sound itself, separately for every note, and stay perfectly smooth at any speed. The rest are moved about fifty times a second and follow the note you played last. That is ample for slow and medium movement, but a very fast LFO on one of them will sound grainy.",
+    ],
+    steps: [
+      { do: "Switch on Hold and play a low note.", show: [...K, "curve", "spectrum"], hear: "A steady bass with a little sync edge.", target: "A note held", check: (s) => s.held.length >= 1 },
+      { do: "Send LFO 1 to Resonance (under Filter in the menu) and set its amount to about 100%.", show: [...K, "lfo1Dest", "lfo1Amount", "lfo1Rate", "resonance", "curve"], hear: "The peak at the cutoff rising and falling: an edge that pulses. Resonance wears a cyan ring and dot.", target: "LFO 1 sent to Resonance, amount 80% or more", check: (s) => s.state.lfo1Dest === "resonance" && s.state.lfo1Amount >= 80 },
+      { do: "Send LFO 2 to Warp amount (under Oscillator A), amount about 80%, and slow its rate to about 1 Hz.", show: [...K, "lfo2Dest", "lfo2Amount", "lfo2Rate", "warpAmount", "scope", "spectrum"], hear: "The sync sweep now plays itself, tearing open and closing once a second.", target: "LFO 2 sent to Warp amount, amount 60% or more, rate between 0.5 and 2 Hz", check: (s) => s.state.lfo2Dest === "warpAmount" && s.state.lfo2Amount >= 60 && between(s.state.lfo2Rate, 0.5, 2) },
+      { do: "Now move a source’s own knob. Send LFO 3 to LFO 2 rate (under LFO 2), amount about 60%.", show: [...K, "lfo3Dest", "lfo3Amount", "lfo3Rate", "lfo2Rate", "scope"], hear: "The tearing speeds up and slows down. LFO 2’s Rate knob wears an orange ring: a source’s knobs are knobs like any other.", target: "LFO 3 sent to LFO 2 rate, amount 40% or more", check: (s) => s.state.lfo3Dest === "lfo2Rate" && s.state.lfo3Amount >= 40,
+        remark: (s) => `Your routes: ${routes(s.state).map((r) => `${r.source.name} to ${destName(r.dest).toLowerCase()} at ${r.amount}%`).join("; ")}.` },
+      { do: "Last, an effect. Send Envelope 2 to Distortion drive (under Distortion), amount about 100%, then strike a new key.", show: [...K, "env2Dest", "env2Amount", "env2D", "distDrive"], hear: "Each note starts dirty and cleans up as the envelope falls. The effect is shared by all notes, so it follows the last note you played.", target: "Envelope 2 sent to Distortion drive, amount 80% or more, a note played", check: (s) => s.state.env2Dest === "distDrive" && s.state.env2Amount >= 80 && struck(s) >= 1 },
+    ],
+    recap: ["Any knob can be a destination: oscillator, filter, envelopes, other sources, effects.", "Destinations marked Smoothest are moved inside the sound; the rest about fifty times a second.", "Effects are shared by all notes, so a source on an effect follows the last note played."],
+    inSerum: "In Serum, nearly every knob can be a destination: drag a source’s tile onto the knob, or pick the destination on the MATRIX tab. Details of each are not confirmed here, so nothing is checked.",
   },
   {
     id: "C5.C", title: "Checkpoint: routes by ear", buildsOn: ["C5.2", "C5.6"], minutes: 9, cardIds: [],

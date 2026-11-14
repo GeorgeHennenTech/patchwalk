@@ -18,11 +18,13 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 - [ ] Effects: reordering, ducking (sidechain), multiband, and effects as modulation destinations
 - [x] Editable matrix: change any connection in one table, add rows so one source moves several things; a lesson on it
 - [x] Eight more macro recipes using effects, warp, FM and the kick (16 recipes and lessons in the macro chapter now)
+- [x] Any knob can be a destination for any source; a handle on each knob sets a source's depth there; two lessons
+- [ ] Drag a source onto a knob to connect it (the menu and matrix are the only ways today)
 - [ ] More macro recipes (the owner wants many; each is a few lines of data in the macro lesson file)
 - [ ] Scaling a route with a second source (mod wheel) and its lesson
 - [ ] Blind ear checks for the filter, envelope, LFO and modulation lessons
 - [ ] Pulse-width lesson in the oscillator chapter
-- [ ] Remaining synthesis chapters from the course plan (79 lessons built)
+- [ ] Remaining synthesis chapters from the course plan (81 lessons built)
 
 ## Synth
 - [x] Filter with a draggable curve

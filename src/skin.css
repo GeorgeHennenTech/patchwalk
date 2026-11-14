@@ -382,6 +382,12 @@ label.mod-head { cursor: pointer; }
 .pick.menu { flex-wrap: nowrap; }
 .pick select { flex: 1; min-width: 0; padding: 4px 6px; border-radius: 8px; border: 2px solid var(--line); background: var(--panel); color: var(--text); font: inherit; font-size: 13px; }
 .rack.mods .mod { flex: 1 1 190px; }
+/* depth handles: one small dot per source moving a knob, at the knob's top right */
+.knob, .nbox { position: relative; }
+.knob .depths { position: absolute; top: 0; right: 0; display: flex; flex-direction: column; gap: 3px; }
+.knob .depth { display: block; width: 13px; height: 13px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 6px currentColor; cursor: ns-resize; touch-action: none; }
+.knob .depth:hover, .knob .depth:focus-visible { transform: scale(1.3); outline: none; }
+.rack:not(.full) .knob .depth { width: 16px; height: 16px; }
 /* the compressor's "turning down by" meter: a small strip, and room for the delay's menu */
 .mod .ctl.reduction { flex: 0 0 auto; flex-wrap: wrap; gap: 4px 8px; padding: 6px 8px; font-size: 12px; }
 .mod .ctl.reduction .ctl-name { min-width: 0; flex: 1 1 100%; font-weight: 600; }

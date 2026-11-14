@@ -2,7 +2,7 @@
 // Built around a shared AudioContext clock and a per-instrument voice list so more instruments and a
 // tempo clock (for the later mini DAW) can be added without rewriting it.
 import { applyMacros } from "./macros";
-import { adsr, fallConstant, isLevel, keyValue, lfoCoefficients, lfoHz, lfoStartPhase, modDepth, noteLevelBase, routeLayout, routes, velocityValue, type Adsr, type Route } from "./mod";
+import { adsr, fallConstant, isLevel, keyValue, lfoCoefficients, lfoHz, lfoStartPhase, modDepth, noteLevelBase, routeLayout, routes, slowModulate, velocityValue, type Adsr, type Route } from "./mod";
 import { FxChain } from "./fx";
 import { DRIVE_RANGE, driveCurve, filterStages, resonanceTrim, type Stage } from "./filter";
 import { dbToGain, fmIndex, FM_MAX_INDEX, harmonic, spectrumA, HARMONICS, playedHz, playedHzB, subHz, unisonOffsets, unisonPans, type Shape, type SynthState } from "./params";
@@ -16,6 +16,8 @@ interface Voice {
   phaseA: number;
   /** How hard the note was struck, 1 to 127. */
   velocity: number;
+  /** Audio-clock times the note started and (once let go) was released: what control-rate modulation follows. */
+  startedAt: number; releasedAt?: number;
   /** The whole note's level, after the envelope: where "Note level" routes land. */
   out: GainNode;
   a: { osc: OscillatorNode; gain: GainNode; pan: StereoPannerNode }[];
@@ -47,7 +49,13 @@ export class Engine {
   readonly fx: FxChain;
   private fxRestore: ReturnType<typeof setTimeout> | undefined;
   private voices: Voice[] = [];
+  /** The settings being played right now: after macros and after control-rate modulation. */
   private state: SynthState;
+  /** The settings after macros, before control-rate modulation: what `state` is worked out from. */
+  private base: SynthState;
+  private slowTimer: ReturnType<typeof setInterval> | undefined;
+  /** A sound being auditioned (a demo or a target), with its own settings, kept moving like a held note. */
+  private auditions: { voice: Voice; base: SynthState; played: SynthState; until: number }[] = [];
   private noiseBuffers: Partial<Record<"white" | "pink", AudioBuffer>> = {};
   private lfoCache: ({ shape: SynthState["lfo1Shape"]; steps: number[] } & ReturnType<typeof lfoCoefficients>) | undefined;
   private clickTimer: ReturnType<typeof setInterval> | undefined;
@@ -58,7 +66,8 @@ export class Engine {
 
   constructor(state: SynthState, ctx: AudioContext = new AudioContext()) {
     this.ctx = ctx;
-    this.state = applyMacros(state);
+    this.base = applyMacros(state);
+    this.state = this.base;
     this.clickBus = ctx.createGain();
     this.clickBus.gain.value = 0.25;
     this.clickBus.connect(ctx.destination);
@@ -81,6 +90,8 @@ export class Engine {
   async start(): Promise<void> {
     if (this.ctx.state !== "running") await this.ctx.resume();
     this.syncClick(this.state);
+    // Control-rate modulation: about fifty times a second, knobs that sources move by code are brought up to date.
+    this.slowTimer ??= setInterval(() => this.tick(), 20);
   }
   get running(): boolean {
     return this.ctx.state === "running";
@@ -203,6 +214,7 @@ export class Engine {
       case "noiseLevelDb": return v.noise ? [v.noise.gain.gain] : [];
       // an LFO's speed, moved in octaves through its detune setting
       case "noteLevel": return [v.out.gain];
+      default: return []; // every other knob is moved at control rate (see slowModulate), not here
       case "lfo1Rate": return v.mods.flatMap((m) => (m.route.source.id === "lfo1" && m.src instanceof OscillatorNode ? [m.src.detune] : []));
     }
   }
@@ -280,6 +292,7 @@ export class Engine {
 
   /** Let a note go at time `t`: envelope 1's release fades it, then everything stops. */
   private releaseAt(v: Voice, s: SynthState, t: number): void {
+    v.releasedAt = t;
     const stopAt = this.scheduleRelease(v.amp.gain, adsr(s, 1), t);
     for (const m of v.mods) if (m.route.source.kind === "env" && m.src instanceof ConstantSourceNode) this.scheduleRelease(m.src.offset, adsr(s, 2), t);
     for (const x of v.a) x.osc.stop(stopAt);
@@ -339,7 +352,7 @@ export class Engine {
       return { osc, gain, pan };
     });
 
-    const voice: Voice = { note, phaseA, velocity, out, a, modB, mods: [], filter, amp };
+    const voice: Voice = { note, phaseA, velocity, startedAt: t, out, a, modB, mods: [], filter, amp };
     this.applyFilter(voice, s, true, t);
     if (s.bOn) {
       const osc = this.ctx.createOscillator();
@@ -379,9 +392,34 @@ export class Engine {
     this.releaseAt(v, this.state, this.ctx.currentTime);
   }
 
+  /** What the control-rate modulation follows: the most recently played note that is still held. */
+  private noteNow(v: Voice | undefined): { note: number; velocity: number; age: number; held: number; startedAt: number } | undefined {
+    if (!v) return undefined;
+    const now = this.ctx.currentTime;
+    return { note: v.note, velocity: v.velocity, age: now - v.startedAt, held: v.releasedAt === undefined ? Infinity : v.releasedAt - v.startedAt, startedAt: v.startedAt };
+  }
+  /** Bring the knobs that sources move by code up to date. Runs about fifty times a second while audio is on. */
+  private tick(): void {
+    const now = this.ctx.currentTime;
+    this.auditions = this.auditions.filter((a) => a.until > now);
+    for (const a of this.auditions) {
+      if (now < a.voice.startedAt) continue;
+      const next = slowModulate(a.base, this.noteNow(a.voice));
+      if (next === a.played) continue;
+      this.applyVoice(a.voice, next, a.played);
+      this.fx.apply(next);
+      a.played = next;
+    }
+    const next = slowModulate(this.base, this.noteNow(this.voices[this.voices.length - 1]));
+    if (next !== this.state) this.render(next);
+  }
+
   /** Apply new settings to everything that is sounding. */
   update(next: SynthState): void {
-    next = applyMacros(next);
+    this.base = applyMacros(next);
+    this.render(slowModulate(this.base, this.noteNow(this.voices[this.voices.length - 1])));
+  }
+  private render(next: SynthState): void {
     const t = this.ctx.currentTime, prev = this.state;
     this.state = next;
     if (next.clickOn !== prev.clickOn || next.bpm !== prev.bpm) this.syncClick(next);
@@ -394,50 +432,54 @@ export class Engine {
       this.voices = notes.map(([n, velocity]) => this.build(n, this.startPhase(), undefined, velocity));
       return;
     }
+    for (const v of this.voices) this.applyVoice(v, next, prev);
+  }
+
+  /** Make one sounding note match new settings, changing only what differs from the settings it had. */
+  private applyVoice(v: Voice, next: SynthState, prev: SynthState): void {
+    const t = this.ctx.currentTime;
     const waveA = next.shape !== prev.shape || next.table !== prev.table || next.position !== prev.position || next.phase !== prev.phase || next.warp !== prev.warp || next.warpAmount !== prev.warpAmount;
     const hA = waveA ? spectrumA(next) : undefined;
     const offsets = unisonOffsets(next.voices, next.detune), pans = unisonPans(next.voices, next.spread);
-    for (const v of this.voices) {
-      this.applyFilter(v, next, false);
-      v.out.gain.setTargetAtTime(noteLevelBase(next), t, RAMP);
-      for (const m of v.mods) {
-        // amounts and LFO settings follow the controls; a changed destination rebuilds the note (see STRUCTURAL)
-        const route = routes(next).find((r) => r.key === m.route.key);
-        if (!route) continue;
-        m.route = route;
-        const [swing, lift] = this.swingAndLift(next, route, v.note);
-        m.depth.gain.setTargetAtTime(swing, t, RAMP);
-        m.bias.offset.setTargetAtTime(lift, t, RAMP);
-        if (m.src instanceof OscillatorNode) {
-          const id = route.source.id as "lfo1" | "lfo2" | "lfo3";
-          if (next[`${id}Shape`] !== prev[`${id}Shape`] || next[`${id}Steps`] !== prev[`${id}Steps`]) this.setLfoShape(m.src, next, id, m.phase);
-          m.src.frequency.setTargetAtTime(lfoHz(next, id), t, RAMP);
-        }
+    this.applyFilter(v, next, false);
+    v.out.gain.setTargetAtTime(noteLevelBase(next), t, RAMP);
+    for (const m of v.mods) {
+      // amounts and LFO settings follow the controls; a changed destination rebuilds the note (see STRUCTURAL)
+      const route = routes(next).find((r) => r.key === m.route.key);
+      if (!route) continue;
+      m.route = route;
+      const [swing, lift] = this.swingAndLift(next, route, v.note);
+      m.depth.gain.setTargetAtTime(swing, t, RAMP);
+      m.bias.offset.setTargetAtTime(lift, t, RAMP);
+      if (m.src instanceof OscillatorNode) {
+        const id = route.source.id as "lfo1" | "lfo2" | "lfo3";
+        if (next[`${id}Shape`] !== prev[`${id}Shape`] || next[`${id}Steps`] !== prev[`${id}Steps`]) this.setLfoShape(m.src, next, id, m.phase);
+        m.src.frequency.setTargetAtTime(lfoHz(next, id), t, RAMP);
       }
-      if (next.phase !== prev.phase) v.phaseA += (next.phase - prev.phase) / 360;
-      const base = playedHz(next, v.note);
-      v.a.forEach((x, i) => {
-        if (hA) x.osc.setPeriodicWave(this.wave(hA.sin, v.phaseA + (next.voices > 1 ? i / next.voices : 0), hA.cos));
-        x.osc.frequency.setTargetAtTime(base * 2 ** (offsets[i]! / 1200), t, RAMP);
-        x.pan.pan.setTargetAtTime(pans[i]!, t, RAMP);
-        if (next.aLevelDb !== prev.aLevelDb) x.gain.gain.setTargetAtTime((OSC_GAIN / Math.sqrt(next.voices)) * dbToGain(next.aLevelDb), t, RAMP);
-      });
-      if (next.bShape !== prev.bShape || next.bPhase !== prev.bPhase) v.modB.osc.setPeriodicWave(this.wave(this.shapeHarmonics(next.bShape), next.bPhase / 360));
-      v.modB.osc.frequency.setTargetAtTime(playedHzB(next, v.note), t, RAMP);
-      v.modB.fm.gain.setTargetAtTime(fmIndex(next.fmAmount) * playedHzB(next, v.note), t, RAMP);
-      v.modB.dry.gain.setTargetAtTime(1 - next.ringAmount / 100, t, RAMP);
-      v.modB.wet.gain.setTargetAtTime(next.ringAmount / 100, t, RAMP);
-      if (v.b) {
-        if (next.bShape !== prev.bShape || next.bPhase !== prev.bPhase) v.b.osc.setPeriodicWave(this.wave(this.shapeHarmonics(next.bShape), next.bPhase / 360));
-        v.b.osc.frequency.setTargetAtTime(playedHzB(next, v.note), t, RAMP);
-        v.b.gain.gain.setTargetAtTime(OSC_GAIN * dbToGain(next.bLevelDb), t, RAMP);
-      }
-      if (v.sub) {
-        v.sub.osc.frequency.setTargetAtTime(subHz(next, v.note), t, RAMP);
-        v.sub.gain.gain.setTargetAtTime(OSC_GAIN * dbToGain(next.subLevelDb), t, RAMP);
-      }
-      if (v.noise) v.noise.gain.gain.setTargetAtTime(dbToGain(next.noiseLevelDb), t, RAMP);
     }
+    if (next.phase !== prev.phase) v.phaseA += (next.phase - prev.phase) / 360;
+    const base = playedHz(next, v.note);
+    v.a.forEach((x, i) => {
+      if (hA) x.osc.setPeriodicWave(this.wave(hA.sin, v.phaseA + (next.voices > 1 ? i / next.voices : 0), hA.cos));
+      x.osc.frequency.setTargetAtTime(base * 2 ** (offsets[i]! / 1200), t, RAMP);
+      x.pan.pan.setTargetAtTime(pans[i]!, t, RAMP);
+      if (next.aLevelDb !== prev.aLevelDb) x.gain.gain.setTargetAtTime((OSC_GAIN / Math.sqrt(next.voices)) * dbToGain(next.aLevelDb), t, RAMP);
+    });
+    if (next.bShape !== prev.bShape || next.bPhase !== prev.bPhase) v.modB.osc.setPeriodicWave(this.wave(this.shapeHarmonics(next.bShape), next.bPhase / 360));
+    v.modB.osc.frequency.setTargetAtTime(playedHzB(next, v.note), t, RAMP);
+    v.modB.fm.gain.setTargetAtTime(fmIndex(next.fmAmount) * playedHzB(next, v.note), t, RAMP);
+    v.modB.dry.gain.setTargetAtTime(1 - next.ringAmount / 100, t, RAMP);
+    v.modB.wet.gain.setTargetAtTime(next.ringAmount / 100, t, RAMP);
+    if (v.b) {
+      if (next.bShape !== prev.bShape || next.bPhase !== prev.bPhase) v.b.osc.setPeriodicWave(this.wave(this.shapeHarmonics(next.bShape), next.bPhase / 360));
+      v.b.osc.frequency.setTargetAtTime(playedHzB(next, v.note), t, RAMP);
+      v.b.gain.gain.setTargetAtTime(OSC_GAIN * dbToGain(next.bLevelDb), t, RAMP);
+    }
+    if (v.sub) {
+      v.sub.osc.frequency.setTargetAtTime(subHz(next, v.note), t, RAMP);
+      v.sub.gain.gain.setTargetAtTime(OSC_GAIN * dbToGain(next.subLevelDb), t, RAMP);
+    }
+    if (v.noise) v.noise.gain.gain.setTargetAtTime(dbToGain(next.noiseLevelDb), t, RAMP);
   }
 
   private startPhase(): number {
@@ -485,6 +527,7 @@ export class Engine {
     const v = this.build(note, patch.phase / 360, at, velocity);
     this.state = keep;
     this.releaseAt(v, patch, at + seconds - 0.08);
+    this.auditions.push({ voice: v, base: patch, played: patch, until: at + seconds + 0.5 });
     // The effects are shared by every note, so for the length of this sound they are set to the patch's own,
     // then handed back to the learner's settings a moment after it ends (long enough for a short tail).
     setTimeout(() => this.fx.apply(patch), Math.max(0, when * 1000 - 20));
@@ -520,6 +563,8 @@ export class Engine {
     this.clickTimer = undefined;
     if (this.fxRestore) clearTimeout(this.fxRestore);
     this.fxRestore = undefined;
+    if (this.slowTimer) clearInterval(this.slowTimer);
+    this.slowTimer = undefined;
     this.allNotesOff();
   }
 

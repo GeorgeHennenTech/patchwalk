@@ -11,7 +11,14 @@ export const NOISES = ["white", "pink"] as const;
 const FILTER_TYPES = ["low", "high", "band", "notch"] as const;
 const SLOPES = ["12", "24"] as const;
 /** Settings an envelope or LFO can move. "none" means it is not connected. */
-export const MOD_DESTS = ["none", "cutoff", "fine", "bFine", "aLevelDb", "bLevelDb", "subLevelDb", "noiseLevelDb", "lfo1Rate", "noteLevel", "fmAmount", "aPitchWide"] as const;
+/**
+ * Two kinds of destination. The ones listed here are moved inside the audio itself, smoothly and separately
+ * for every note. Every other knob can be a destination too (see SLOW_DESTS further down): those are moved
+ * by code about fifty times a second, following the most recent note.
+ */
+export const FAST_DESTS = ["none", "cutoff", "fine", "bFine", "aLevelDb", "bLevelDb", "subLevelDb", "noiseLevelDb", "lfo1Rate", "noteLevel", "fmAmount", "aPitchWide"] as const;
+/** Every destination, fast ones first. Filled in below, once the knobs themselves are defined. */
+export const MOD_DESTS: string[] = [...FAST_DESTS];
 /** Ways of reshaping oscillator A's wave by reading it at an uneven speed. "none" leaves it alone. */
 export const WARPS = ["none", "bend", "mirror", "sync", "pd"] as const;
 export type Warp = (typeof WARPS)[number];
@@ -28,8 +35,8 @@ export const DIST_TYPES = ["soft", "hard", "fold", "crush"] as const;
 const DELAY_SYNCS = ["ms", "beat"] as const;
 const TRIGS = ["retrig", "free"] as const;
 export const BENDS = ["straight", "eased", "sharp"] as const;
-export type Dest = (typeof MOD_DESTS)[number];
-export const DEST_NAMES: Record<Dest, string> = { none: "Nothing", cutoff: "Filter cutoff", fine: "Osc A pitch", bFine: "Osc B pitch", aLevelDb: "Osc A level", bLevelDb: "Osc B level", subLevelDb: "Sub level", noiseLevelDb: "Noise level", lfo1Rate: "LFO 1 rate", noteLevel: "Note level", fmAmount: "FM from B", aPitchWide: "Osc A pitch, wide" };
+export type Dest = string;
+export const DEST_NAMES: Record<string, string> = { none: "Nothing", cutoff: "Filter cutoff", fine: "Osc A pitch", bFine: "Osc B pitch", aLevelDb: "Osc A level", bLevelDb: "Osc B level", subLevelDb: "Sub level", noiseLevelDb: "Noise level", lfo1Rate: "LFO 1 rate", noteLevel: "Note level", fmAmount: "FM from B", aPitchWide: "Osc A pitch, wide" };
 
 /** One extra connection made in the matrix: a source, what it moves, how far, and (for an LFO) which way. */
 export interface MatrixRow { source: "env2" | "lfo1" | "lfo2" | "lfo3" | "vel" | "key"; dest: Dest; amount: number; way: "both" | "up" }
@@ -284,10 +291,21 @@ const BASE_PARAMS: Record<string, ParamSpec> = {
   reverbMix: { id: "reverbMix", label: "Reverb mix", group: "Reverb", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
 };
 
+/**
+ * Knobs that cannot be destinations: the main volume and tempo; random phase and reverb size, because
+ * changing them rebuilds something too heavy to do fifty times a second.
+ */
+const NOT_DESTS = ["volumeDb", "bpm", "freeHz", "randomPhase", "reverbSize"];
 /** Whole-step settings shown as number boxes. A macro cannot move these. */
 export const BOX_IDS = ["octave", "semitone", "bOctave", "bSemitone", "voices", "subOctave"] as const;
 /** Every knob a macro can be sent to: all the continuous settings. "none" means the slot is empty. */
 export const MACRO_DESTS: string[] = ["none", ...Object.values(BASE_PARAMS).filter((p) => p.kind === "range" && !(BOX_IDS as readonly string[]).includes(p.id) && p.id !== "freeHz").map((p) => p.id as string)];
+/** Destinations moved at control rate: every continuous knob that is not already a fast destination. */
+export const SLOW_DESTS: string[] = Object.values(BASE_PARAMS).filter((p) => p.kind === "range" && !(BOX_IDS as readonly string[]).includes(p.id) && !NOT_DESTS.includes(p.id) && !(FAST_DESTS as readonly string[]).includes(p.id)).map((p) => p.id as string);
+for (const id of SLOW_DESTS) { MOD_DESTS.push(id); DEST_NAMES[id] = BASE_PARAMS[id]!.label; }
+/** A destination's name as the learner sees it. */
+export const destName = (dest: string) => DEST_NAMES[dest] ?? dest;
+export const isSlowDest = (dest: string) => SLOW_DESTS.includes(dest);
 export const MACROS = [1, 2, 3, 4] as const;
 export const MACRO_SLOTS = [1, 2, 3] as const;
 function macro(n: number): Record<string, ParamSpec> {
@@ -307,6 +325,10 @@ const tidy = (v: number) => Number(v.toFixed(4));
 /** A setting's value as a position from 0 to 1 along its knob's travel, and back. Wide-ranging ones travel in octaves. */
 export function toTravel(spec: ParamSpec, v: number): number {
   return clamp01(spec.log ? Math.log(v / spec.min!) / Math.log(spec.max! / spec.min!) : (v - spec.min!) / (spec.max! - spec.min!));
+}
+/** As fromTravel, but without snapping to the knob's steps: for values a source is moving smoothly. */
+export function fromTravelSmooth(spec: ParamSpec, t: number): number {
+  return spec.log ? spec.min! * (spec.max! / spec.min!) ** clamp01(t) : spec.min! + clamp01(t) * (spec.max! - spec.min!);
 }
 export function fromTravel(spec: ParamSpec, t: number): number {
   const raw = spec.log ? spec.min! * (spec.max! / spec.min!) ** clamp01(t) : spec.min! + clamp01(t) * (spec.max! - spec.min!);
@@ -451,7 +473,7 @@ export function warpPhase(mode: Warp, amount: number, p: number): number {
 /** A wave as harmonics with both parts: `sin` alone describes the unwarped shapes; warping adds `cos`. */
 export interface Spectrum { sin: Float32Array; cos: Float32Array }
 const CYCLE = 2048;
-let warpCache: { key: string; value: Spectrum } | undefined;
+const warpCache = new Map<string, Spectrum>();
 /**
  * Oscillator A's harmonics after warp. The unwarped wave is drawn out as one cycle, read through
  * `warpPhase`, and measured again as harmonics (the first HARMONICS of them, so nothing folds back).
@@ -459,13 +481,16 @@ let warpCache: { key: string; value: Spectrum } | undefined;
 export function spectrumA(state: Pick<SynthState, "shape" | "table" | "position" | "warp" | "warpAmount">): Spectrum {
   const h = harmonicsA(state);
   if (state.warp === "none" || state.warpAmount <= 0) return { sin: h, cos: new Float32Array(h.length) };
-  const key = `${state.shape}|${state.table}|${state.position}|${state.warp}|${state.warpAmount}`;
-  if (warpCache?.key === key) return warpCache.value;
+  // rounded, so a source sweeping the amount lands on values that have been worked out before
+  const amount = Math.round(state.warpAmount * 2) / 2, position = Math.round(state.position);
+  const key = `${state.shape}|${state.table}|${position}|${state.warp}|${amount}`;
+  const known = warpCache.get(key);
+  if (known) return known;
   const base = new Float32Array(CYCLE + 1);
   for (let i = 0; i <= CYCLE; i++) { let y = 0; for (let n = 1; n < h.length; n++) if (h[n]) y += h[n]! * Math.sin((2 * Math.PI * n * i) / CYCLE); base[i] = y; }
   const warped = new Float32Array(CYCLE);
   for (let i = 0; i < CYCLE; i++) {
-    const at = Math.min(1, Math.max(0, warpPhase(state.warp, state.warpAmount, i / CYCLE))) * CYCLE, k = Math.min(CYCLE - 1, Math.floor(at));
+    const at = Math.min(1, Math.max(0, warpPhase(state.warp, amount, i / CYCLE))) * CYCLE, k = Math.min(CYCLE - 1, Math.floor(at));
     warped[i] = base[k]! + (base[k + 1]! - base[k]!) * (at - k);
   }
   const sin = new Float32Array(h.length), cos = new Float32Array(h.length);
@@ -474,6 +499,7 @@ export function spectrumA(state: Pick<SynthState, "shape" | "table" | "position"
     for (let i = 0; i < CYCLE; i++) { const x = (2 * Math.PI * n * i) / CYCLE; s += warped[i]! * Math.sin(x); c += warped[i]! * Math.cos(x); }
     sin[n] = (2 * s) / CYCLE; cos[n] = (2 * c) / CYCLE;
   }
-  warpCache = { key, value: { sin, cos } };
-  return warpCache.value;
+  if (warpCache.size > 600) warpCache.clear();
+  warpCache.set(key, { sin, cos });
+  return { sin, cos };
 }

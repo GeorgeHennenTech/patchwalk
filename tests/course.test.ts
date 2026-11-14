@@ -1229,3 +1229,23 @@ describe("the loudspeaker cutaway", () => {
     expect(DRIVER_PARTS.filter((p) => p.moves === "with the cone").map((p) => p.name)).toEqual(["Former", "Voice coil", "Cone", "Dust cap"]);
   });
 });
+
+import { ARENA_ARRAY, reach, tilts, VERO } from "../src/soundsystems/vero";
+describe("the Vero array", () => {
+  it("is the guide's twelve-cabinet arena array, top to bottom", () => {
+    expect(ARENA_ARRAY.map((c) => c.kind).join(" ")).toBe("V60 V60 V60 V60 V315 V315 V315 V90 V90 V315 V90 V90");
+    expect(ARENA_ARRAY.filter((c) => c.kind === "V315")).toHaveLength(4); // one mid-bass for every two mid-highs
+  });
+  it("tips each cabinet by the angles above it added up, the top one level", () => {
+    expect(tilts(ARENA_ARRAY)).toEqual([0, 2, 4, 7, 7, 7, 7, 8, 10, 11, 12, 17]);
+  });
+  it("a beam tipped further down lands nearer, and a level one never lands", () => {
+    expect(reach(10, 0)).toBe(Infinity);
+    expect(reach(10, 45)).toBeCloseTo(10, 5);
+    expect(reach(10, 17)).toBeLessThan(reach(10, 7));
+  });
+  it("the three flown cabinets are the same size, and only the mid-highs have a beam of their own", () => {
+    expect(VERO.V60.size).toEqual(VERO.V90.size); expect(VERO.V90.size).toEqual(VERO.V315.size);
+    expect(VERO.V60.beam).toEqual({ across: 60, upDown: 6 }); expect(VERO.V90.beam!.across).toBe(90); expect(VERO.V315.beam).toBeUndefined();
+  });
+});

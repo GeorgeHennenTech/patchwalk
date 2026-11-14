@@ -20,20 +20,38 @@ export function Answer({ outcome, question }: { outcome: AskOutcome; question?: 
   if (!a.covered) return <p><Badge kind="unknown">not in the library</Badge> The library does not cover this yet, so the guide will not guess. Adding a text on the subject would let it answer.</p>;
   return (
     <>
-      {/* one block per paragraph; a side note is boxed and labelled so it is not read as one of the steps */}
-      {toParagraphs(a.segments).map((p, k) => (
-        <div key={k} className="answer-block">
-        {p.heading && <h5 className="answer-heading">{p.heading}</h5>}
-        {p.parts.length > 0 && <p className={`answer${p.aside ? " aside" : ""}`}>
-          {p.aside && <strong className="aside-label">Side note</strong>}
-          {p.parts.map((s, j) => (
-            <span key={j} className={s.sources.length ? "" : "uncited"} title={s.sources.length ? undefined : "This part was not drawn from a library passage."}>
-              {plain(s.text)}{s.sources.map((n) => <sup key={n}>[{n}]</sup>)}
-            </span>
-          ))}
-        </p>}
-        </div>
-      ))}
+      {/* The steps go in the main column. A side note is not one of the steps, so it sits apart: a patch
+          stitched on in the free space to the right (underneath on a narrow screen). */}
+      {(() => {
+        const paragraphs = toParagraphs(a.segments);
+        const text = (p: (typeof paragraphs)[number]) => p.parts.map((s, j) => (
+          <span key={j} className={s.sources.length ? "" : "uncited"} title={s.sources.length ? undefined : "This part was not drawn from a library passage."}>
+            {plain(s.text)}{s.sources.map((n) => <sup key={n}>[{n}]</sup>)}
+          </span>
+        ));
+        const notes = paragraphs.filter((p) => p.aside && p.parts.length > 0);
+        return (
+          <div className={`answer-body${notes.length ? " with-notes" : ""}`}>
+            <div className="answer-main">
+              {paragraphs.filter((p) => !p.aside).map((p, k) => (
+                <div key={k} className="answer-block">
+                  {p.heading && <h5 className="answer-heading">{p.heading}</h5>}
+                  {p.parts.length > 0 && <p className="answer">{text(p)}</p>}
+                </div>
+              ))}
+            </div>
+            {notes.length > 0 && (
+              <div className="answer-notes">
+                {notes.map((p, k) => (
+                  <aside key={k} className="side-note" aria-label="Side note">
+                    <div className="side-note-inner"><span className="side-note-tag">Side note</span><p>{text(p)}</p></div>
+                  </aside>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })()}
       {a.segments.some((s) => !s.sources.length && s.text.trim().length > 40) && <p className="note">Greyed text is the guide’s own wording without a source passage. Treat it with more care than the cited parts.</p>}
       <ol className="sources">
         {a.sources.map((s) => (

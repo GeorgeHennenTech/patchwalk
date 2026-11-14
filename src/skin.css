@@ -159,8 +159,7 @@ button.primary:not(:disabled):hover { transform: translate(-1px, -1px); }
 .examples { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin-bottom: 8px; }
 .turn { margin-top: 12px; }
 .answer { white-space: pre-wrap; margin: 6px 0 10px; max-width: 70ch; }
-.answer.aside { padding: 8px 12px; border: 2px dashed var(--line); border-radius: 10px; background: var(--accent-soft); font-size: 14px; }
-.answer.aside .aside-label { display: block; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+
 .saved-chats { margin: 0 0 12px; padding: 8px 12px; border: 2px solid var(--line); border-radius: 12px; background: var(--panel); }
 .saved-chats summary { cursor: pointer; font-weight: 700; }
 .saved-chats ul { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
@@ -759,3 +758,23 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 .builds-on-list button:hover, .builds-on-list button:focus-visible { background: var(--accent); border-color: var(--accent); color: #fff; }
 .builds-on-list button.had { border-style: dashed; opacity: 0.8; }
 .builds-on p { margin: 10px 0 0; font-size: 0.9rem; }
+
+/* ---- Side notes in the guide's answers: a fabric patch stitched on beside the steps. The words sit on a
+   solid panel inside the fabric so they stay easy to read. ---- */
+.answer-body.with-notes { display: grid; grid-template-columns: minmax(0, 70ch) minmax(220px, 300px); gap: 8px 34px; align-items: start; }
+.answer-notes { display: grid; gap: 26px; padding-top: 22px; position: sticky; top: 12px; }
+.side-note { position: relative; padding: 11px; border-radius: 18px; background: url("./assets/skin/quilt.webp") center / 260px; transform: rotate(1.6deg);
+  box-shadow: 4px 5px 0 rgba(20, 8, 26, 0.4), inset 0 0 0 2px rgba(20, 8, 26, 0.55); }
+.side-note:nth-child(even) { transform: rotate(-1.4deg); background-image: url("./assets/skin/mohair.webp"); }
+.side-note-inner { position: relative; padding: 22px 16px 14px; border-radius: 11px; background: var(--panel); color: var(--text); outline: 2px dashed var(--accent); outline-offset: -6px; }
+.side-note-inner::before, .side-note-inner::after { content: "✕ ✕"; position: absolute; left: -9px; right: -9px; display: block; text-align: justify; text-align-last: justify; line-height: 1; font-size: 12px; font-weight: 900; color: #fff; text-shadow: 0 0 2px #000, 0 0 2px #000; pointer-events: none; }
+.side-note-inner::before { top: -10px; }
+.side-note-inner::after { bottom: -10px; }
+.side-note-tag { position: absolute; top: -17px; left: 14px; padding: 3px 13px; border-radius: 999px; background: var(--accent); color: #fff; font-family: var(--display); font-size: 0.95rem; transform: rotate(-3deg); box-shadow: 2px 2px 0 rgba(20, 8, 26, 0.45); }
+.side-note p { margin: 0; font-family: "Patrick Hand", "Comic Sans MS", "Segoe Print", cursive; font-size: 1.22rem; line-height: 1.35; white-space: pre-wrap; }
+.side-note sup { font-family: system-ui, sans-serif; font-size: 0.6em; color: var(--accent); font-weight: 700; }
+.side-note .uncited { color: var(--muted); }
+@media (max-width: 900px) { .answer-body.with-notes { grid-template-columns: 1fr; } .answer-notes { position: static; padding-top: 14px; max-width: 420px; } }
+/* inside a lesson the answer box is narrow, so the note goes underneath there too */
+.askbox .answer-body.with-notes, .lesson-ask .answer-body.with-notes { grid-template-columns: 1fr; }
+.vero-key button { border-width: 3px; font-size: 0.8rem; padding: 3px 9px; }

@@ -13,19 +13,22 @@ const NAMES = DRIVER_PARTS.map((p) => p.name);
 
 // the 3D view brings a large drawing library with it, so it is only fetched when asked for
 const Driver3D = lazy(() => import("./Driver3D"));
+const VeroScene = lazy(() => import("./VeroScene"));
 
 /** The page: the live 3D model, or the rendered picture with the naming exercise. */
 export function DriverPage() {
-  const [view, setView] = useState<"3d" | "picture">("3d");
+  const [view, setView] = useState<"vero" | "3d" | "picture">("vero");
+  const TITLES = { vero: "A Funktion-One Vero array", "3d": "Inside a cone loudspeaker driver", picture: "Inside a cone loudspeaker driver" };
   return (
     <section className="driver">
-      <h2>Inside a cone loudspeaker driver</h2>
+      <h2>{TITLES[view]}</h2>
       <div className="seg driver-views" role="tablist" aria-label="Ways to look at the driver">
-        <button role="tab" aria-selected={view === "3d"} className={view === "3d" ? "on" : ""} onClick={() => setView("3d")}>Live 3D model</button>
-        <button role="tab" aria-selected={view === "picture"} className={view === "picture" ? "on" : ""} onClick={() => setView("picture")}>Picture and naming practice</button>
+        <button role="tab" aria-selected={view === "vero"} className={view === "vero" ? "on" : ""} onClick={() => setView("vero")}>Vero array</button>
+        <button role="tab" aria-selected={view === "3d"} className={view === "3d" ? "on" : ""} onClick={() => setView("3d")}>Inside a driver</button>
+        <button role="tab" aria-selected={view === "picture"} className={view === "picture" ? "on" : ""} onClick={() => setView("picture")}>Driver naming practice</button>
       </div>
-      {view === "3d" ? <Suspense fallback={<p className="muted">Loading the model…</p>}><Driver3D /></Suspense> : <DriverDiagram />}
-      <p className="muted driver-draft">Draft. The proportions are illustrative and the wording has not yet been checked against a loudspeaker text in the library.</p>
+      {view === "picture" ? <DriverDiagram /> : <Suspense fallback={<p className="muted">Loading the model…</p>}>{view === "vero" ? <VeroScene /> : <Driver3D />}</Suspense>}
+      {view !== "vero" && <p className="muted driver-draft">Draft. The proportions are illustrative and the wording has not yet been checked against a loudspeaker text in the library.</p>}
     </section>
   );
 }

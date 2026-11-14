@@ -721,6 +721,23 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   four bass drawings are also kept as PDFs in `library/cad/funktion-one/`. The user guide is about
   setting up and flying the system; it does not describe the horns' insides. **The sound-systems models
   should be of Vero first** (V90 or V60, V315, and the F221 and F124 bass), not the Resolution range.
+- **Vero array in 3D (14 Nov 2026, owner's go-ahead).** `src/ui/VeroScene.tsx`, the first view of the
+  "Sound systems" tab, drawn with `three` from `src/soundsystems/vero.ts`: the Vero user guide's "typical
+  12-cabinet arena array" (page 67: four V60, three V315, two V90, one V315, two V90, from the top) hung
+  to scale with the inter-cabinet angles of the guide's worked example (page 62), each cabinet tipped by
+  the angles above it added up (`tilts`); V60 cabinets carry a 60 by 6 degree beam and V90 a 90 by 12.5
+  degree one; six V221 bass cabinets stand on the ground. Colours follow the real cabinets' index dials
+  (V60 blue, V90 yellow, V315 red). Clicking a cabinet gives its job, drivers, band, coverage, weight, how
+  far it is tipped and where the middle of its beam meets the ground (`reach`), with the guide's page.
+  Three camera views and a beams switch. The page says what is from the guide and what is drawn for
+  illustration (column height, beam length, number of subs, stage, cabinet outline). `src/ui/three/stage.ts`
+  is the shared 3D set-up (renderer, camera, lights, pointing) for new views. Not built: the patented
+  horn as a cutaway, V315 and bass coverage, changing the array yourself.
+- **Side notes in answers (owner's request, 14 Nov 2026).** A side note now sits in the free space to the
+  right of the steps (`.answer-body.with-notes` is a two-column grid; underneath on narrow screens and
+  inside lessons) as a fabric patch: a textured frame from the skin's artwork, a solid panel inside for
+  the words, dashed stitching, corner cross-stitches and a "Side note" tag. Its text is set in Patrick
+  Hand (OFL, self-hosted through `@fontsource/patrick-hand`), larger than body text so it stays legible.
 - **`scripts/ingest_pdf.py`** is the standard way to take in any PDF book, text and pictures together, from one
   or more parts numbered straight through (`--skip-pages` for contents pages, `--append <last page>` to add
   later parts). A test checks every book's text and picture index agree.

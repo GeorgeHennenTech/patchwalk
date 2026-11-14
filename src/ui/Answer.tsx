@@ -80,7 +80,7 @@ function SourceImage({ im, from, question, answer }: { im: { book: string; file:
           {done.marks.length > 0
             ? <ol className="mark-list" type="A">{done.marks.map((m) => <li key={m.n}>{m.label}</li>)}</ol>
             : <p className="note">The guide marked nothing in this picture for your question.</p>}
-          <p className="note">This is the guide’s own reading of the picture, not part of the manual, and its boxes can be slightly off. {done.remembered && "Shown from this device’s memory, with no new call. "}<button className="link" onClick={() => void go(true)}>Look again</button></p>
+          <p className="note">The blue boxes and letters are the guide’s; anything in red is the manual’s own. The guide’s reading is not part of the manual, and its boxes can be slightly off. {done.remembered && "Shown from this device’s memory, with no new call. "}<button className="link" onClick={() => void go(true)}>Look again</button></p>
         </div>
       )}
     </figure>

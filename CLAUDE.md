@@ -397,7 +397,8 @@ Added after the first eight milestones (owner asked for all four in one go):
   its own line (and numbered steps); `withHeading` in `answer.ts` lifts a heading, or a bold lead-in, out of a
   paragraph and `Answer.tsx` shows it as a heading. (2) "Show me where" is now a visible button under each
   picture; the reply also carries `about` (what the picture shows, and what the manual's own printed numbers
-  mean, from the page text); marks are lettered A, B, C because manuals print numbers on pictures; the
+  mean, from the page text); marks are lettered A, B, C because manuals print numbers on pictures, and drawn in cyan because
+  manuals (Serum's at least) draw their own boxes and numbers in red; the
   answer's text is sent along so marks can follow its steps ("Step 2: ..."). The owner found a cited
   picture with the manual's 1-5 callouts confusing because nothing explained it: `about` is the fix, at the
   cost of a click. (3) Memory on the device (`src/guide/cache.ts`, localStorage, 30 days, 200 entries): the
@@ -405,7 +406,8 @@ Added after the first eight milestones (owner asked for all four in one go):
   anew), and a picture already marked for the same question is shown again ("Look again"). Follow-ups are
   never served from memory. This is per browser; sharing it between people needs a database. (4) A version
   stamp at the bottom of every page (`__BUILD__`, commit and build time) so the owner can tell which build
-  is live. Still only checked with stand-in replies, not the real API.
+  is live. **The owner ran "Show me where" live on 14 Nov 2026**: asked how to assign an LFO, it boxed the
+  LFO 2 tab on the guide's page-188 picture, which is the right control. One sample; aim elsewhere is untested.
   **Open with the owner:** a database (shared answer and picture memory, logins or a "who's playing" picker,
   per-person keys), and a search upgrade once more books are in (plan given: split pages into passages,
   widen the keyword search, then have a small model pick the best passages).

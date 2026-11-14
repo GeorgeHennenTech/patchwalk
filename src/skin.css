@@ -490,9 +490,11 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 .source-image { margin: 8px 0 4px; }
 .source-image img { display: block; max-width: 100%; height: auto; max-height: 360px; width: auto; border: 2px solid var(--thread); border-radius: 10px; background: #fff; }
 .source-image .marked { position: relative; display: inline-block; max-width: 100%; }
-.source-image .mark { position: absolute; box-sizing: border-box; border: 3px solid #ff2e93; border-radius: 8px; box-shadow: 0 0 0 2px #fff, 0 0 10px 2px rgba(255, 46, 147, 0.7); pointer-events: none; }
-.source-image .mark b { position: absolute; left: -12px; top: -12px; width: 22px; height: 22px; border-radius: 50%; background: #ff2e93; color: #fff; font: 700 13px/22px system-ui, sans-serif; text-align: center; box-shadow: 0 0 0 2px #fff; }
+/* The guide's marks are cyan with a dark edge: manuals draw their own callouts in red, and these must not be mistaken for them. */
+.source-image .mark { position: absolute; box-sizing: border-box; border: 3px solid #19e0ff; border-radius: 8px; box-shadow: 0 0 0 2px #06222b, 0 0 10px 2px rgba(25, 224, 255, 0.75); pointer-events: none; }
+.source-image .mark b { position: absolute; left: -12px; top: -12px; width: 22px; height: 22px; border-radius: 50%; background: #19e0ff; color: #06222b; font: 800 13px/22px system-ui, sans-serif; text-align: center; box-shadow: 0 0 0 2px #06222b; }
 .source-image .mark-list { margin: 4px 0 2px 22px; padding: 0; font-size: 13px; }
+.source-image .mark-list li::marker { color: #0aa6c2; font-weight: 800; }
 .source-image .point-row { margin: 6px 0 2px; font-size: 13px; }
 .source-image .point-button { font: inherit; font-size: 13px; font-weight: 700; padding: 5px 14px; border-radius: 999px; border: 2px solid var(--thread); background: var(--accent); color: #fff; cursor: pointer; margin-right: 6px; }
 .source-image .point-button:disabled { opacity: 0.6; cursor: default; }

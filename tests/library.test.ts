@@ -381,3 +381,30 @@ describe("headings, and what the guide remembers on this device", () => {
     expect(cleanAbout("x".repeat(900))).toHaveLength(600);
   });
 });
+
+import { layoutMarks, type Mark } from "../src/library/point";
+describe("placing the letters on a marked picture", () => {
+  const mark = (n: number, x: number, y: number, w: number, h: number): Mark => ({ n, letter: "ABCDE"[n - 1]!, label: "", x, y, w, h });
+  const apart = (placed: ReturnType<typeof layoutMarks>, width: number, height: number) => {
+    const shownW = Math.min(width, 900), shownH = (shownW * height) / width;
+    let nearest = Infinity;
+    for (let i = 0; i < placed.length; i++) for (let j = i + 1; j < placed.length; j++) nearest = Math.min(nearest, Math.hypot((placed[i]!.bx - placed[j]!.bx) * shownW, (placed[i]!.by - placed[j]!.by) * shownH));
+    return nearest;
+  };
+  it("keeps every letter clear of the others, even when boxes share a corner or sit on top of one another", () => {
+    // the owner's case: a wide strip, a thin strip starting where a tiny marker is, and a big box below
+    const marks = [mark(1, 0, 0.28, 1, 0.33), mark(2, 0.2, 0.25, 0.6, 0.02), mark(3, 0.2, 0.25, 0.02, 0.03), mark(4, 0, 0.0, 1, 0.06)];
+    const placed = layoutMarks(marks, 1140, 345);
+    expect(apart(placed, 1140, 345)).toBeGreaterThanOrEqual(30);
+    const same = layoutMarks([mark(1, 0.4, 0.4, 0.2, 0.2), mark(2, 0.4, 0.4, 0.2, 0.2), mark(3, 0.4, 0.4, 0.2, 0.2)], 800, 600);
+    expect(apart(same, 800, 600)).toBeGreaterThanOrEqual(30);
+  });
+  it("puts a letter on its box when there is room, and beside a small box with an arrow back to it", () => {
+    const [big, tiny] = layoutMarks([mark(1, 0.1, 0.1, 0.4, 0.4), mark(2, 0.7, 0.6, 0.02, 0.03)], 800, 600) as [ReturnType<typeof layoutMarks>[0], ReturnType<typeof layoutMarks>[0]];
+    expect(big.arrow).toBeUndefined();
+    expect([big.bx, big.by]).toEqual([0.1, 0.1]);
+    expect(tiny.arrow).toBeDefined();
+    expect(tiny.arrow!.x).toBeGreaterThanOrEqual(0.7); expect(tiny.arrow!.x).toBeLessThanOrEqual(0.72);
+    for (const p of [big, tiny]) { expect(p.bx).toBeGreaterThanOrEqual(0); expect(p.bx).toBeLessThanOrEqual(1); expect(p.by).toBeGreaterThanOrEqual(0); expect(p.by).toBeLessThanOrEqual(1); }
+  });
+});

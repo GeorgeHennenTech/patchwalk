@@ -68,5 +68,47 @@ Then mark the places in the picture that the learner should look at: the control
 - Return at most ${MAX_MARKS} marks. If the answer gives steps, mark where each step happens, in the order of the steps, and begin that label with "Step" and its number. Otherwise put the most important first. Fewer is better.
 - Each mark is a box in the picture's own pixel coordinates: left and top of the box's corner, then its width and height. Draw the box tightly around the thing itself.
 - Each label is a few plain words saying what the thing is and, if it helps, what to do with it. Use the name printed in the picture or on the manual page when there is one. Do not state settings or behaviour that the page text does not state.
+- Give each mark its own place: do not draw two boxes round the same thing, and do not let one box cover most of another. If two steps happen at the same spot, use one mark and name both steps in its label.
 - Only mark things you can actually see in the picture. If nothing in the picture is relevant, or you cannot make it out, return no marks. No marks is a good answer; a guess is not.
 - No Markdown.`;
+
+
+/** Where one mark's letter goes, and where its arrow points when the letter had to move away from its box. Fractions of the picture. */
+export interface PlacedMark { n: number; letter: string; bx: number; by: number; arrow?: { x: number; y: number } }
+/** The size a letter's disc is taken to be on screen, and the width the picture is taken to be shown at, in pixels. */
+const BADGE = 13, SHOWN = 900;
+
+/**
+ * Decide where each mark's letter sits so that no two letters overlap. A letter prefers a corner of its
+ * own box. If the box is too small to carry one, or every corner is taken, the letter moves out beside the
+ * box and an arrow points back to it. Done by code, so the picture reads the same every time.
+ */
+export function layoutMarks(marks: readonly Mark[], width: number, height: number): PlacedMark[] {
+  const shownW = Math.min(width, SHOWN), shownH = (shownW * height) / width;
+  const rx = BADGE / shownW, ry = BADGE / shownH;                       // the disc's radius as a fraction of the picture
+  const px = (ax: number, ay: number, bx: number, by: number) => Math.hypot((ax - bx) * shownW, (ay - by) * shownH);
+  const inside = (x: number, y: number) => x >= rx && x <= 1 - rx && y >= ry && y <= 1 - ry;
+  const placed: PlacedMark[] = [];
+  const free = (x: number, y: number) => placed.every((p) => px(x, y, p.bx, p.by) >= BADGE * 2 + 4);
+  // a letter must not sit on top of another mark's small box either: that would hide the thing being pointed at
+  const small = (m: Mark) => m.w * shownW < 44 || m.h * shownH < 30;
+  const clear = (x: number, y: number, self: Mark) => marks.every((m) => m === self || !small(m) || px(x, y, m.x + m.w / 2, m.y + m.h / 2) >= BADGE + 10);
+  for (const m of marks) {
+    const cx = m.x + m.w / 2, cy = m.y + m.h / 2;
+    const corners: [number, number][] = small(m) ? [] : [[m.x, m.y], [m.x + m.w, m.y], [m.x, m.y + m.h], [m.x + m.w, m.y + m.h], [cx, m.y], [cx, m.y + m.h]];
+    // places beside the box, nearest first: above, below, left, right, then the diagonals, then further out
+    const beside: [number, number][] = [];
+    for (const far of [1, 2, 3.2]) {
+      const dx = m.w / 2 + rx * (1.6 * far), dy = m.h / 2 + ry * (1.6 * far);
+      beside.push([cx, cy - dy], [cx, cy + dy], [cx - dx, cy], [cx + dx, cy], [cx - dx, cy - dy], [cx + dx, cy - dy], [cx - dx, cy + dy], [cx + dx, cy + dy]);
+    }
+    const clampIn = ([x, y]: [number, number]): [number, number] => [Math.min(1 - rx, Math.max(rx, x)), Math.min(1 - ry, Math.max(ry, y))];
+    const onBox = corners.map(clampIn).find(([x, y]) => free(x, y) && clear(x, y, m));
+    const off = onBox ? undefined : beside.filter(([x, y]) => inside(x, y)).find(([x, y]) => free(x, y) && clear(x, y, m)) ?? beside.map(clampIn).find(([x, y]) => free(x, y));
+    const [bx, by] = onBox ?? off ?? clampIn([m.x, m.y]);
+    // the arrow ends on the nearest point of the box
+    const arrow = onBox ? undefined : { x: Math.min(m.x + m.w, Math.max(m.x, bx)), y: Math.min(m.y + m.h, Math.max(m.y, by)) };
+    placed.push({ n: m.n, letter: m.letter, bx, by, arrow });
+  }
+  return placed;
+}

@@ -3,6 +3,7 @@ import { LESSONS, placeOf } from "../course/lessons";
 import { relatedLessons } from "../course/related";
 import { askGuide, type AskOutcome } from "../guide/ask";
 import { pointAt, type PointOutcome } from "../guide/point";
+import { layoutMarks } from "../library/point";
 import { answerText, toParagraphs } from "../library/answer";
 import { Badge } from "./Badge";
 
@@ -90,7 +91,20 @@ function SourceImage({ im, from, question, answer }: { im: { book: string; file:
     <figure className="source-image">
       <div className="marked">
         <a href={src} target="_blank" rel="noreferrer"><img src={src} width={im.width} height={im.height} loading="lazy" alt={`Picture from ${from}`} onError={() => setGone(true)} /></a>
-        {done?.marks.map((m) => <span key={m.n} className="mark" style={{ left: `${m.x * 100}%`, top: `${m.y * 100}%`, width: `${m.w * 100}%`, height: `${m.h * 100}%` }} aria-hidden="true"><b>{m.letter}</b></span>)}
+        {done?.marks.map((m) => <span key={m.n} className="mark" style={{ left: `${m.x * 100}%`, top: `${m.y * 100}%`, width: `${m.w * 100}%`, height: `${m.h * 100}%` }} aria-hidden="true" />)}
+        {/* the letters are placed by code so that none covers another; one that had to move away from its box gets an arrow back to it */}
+        {done && (() => {
+          const placed = layoutMarks(done.marks, im.width, im.height);
+          return (
+            <>
+              <svg className="mark-arrows" viewBox={`0 0 ${im.width} ${im.height}`} preserveAspectRatio="none" aria-hidden="true">
+                <defs><marker id={`tip-${im.file}`} viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#19e0ff" stroke="#06222b" strokeWidth="1" /></marker></defs>
+                {placed.filter((p) => p.arrow).map((p) => <g key={p.n}><line className="under" x1={p.bx * im.width} y1={p.by * im.height} x2={p.arrow!.x * im.width} y2={p.arrow!.y * im.height} /><line x1={p.bx * im.width} y1={p.by * im.height} x2={p.arrow!.x * im.width} y2={p.arrow!.y * im.height} markerEnd={`url(#tip-${im.file})`} /></g>)}
+              </svg>
+              {placed.map((p) => <b key={p.n} className="mark-letter" style={{ left: `${p.bx * 100}%`, top: `${p.by * 100}%` }} aria-hidden="true">{p.letter}</b>)}
+            </>
+          );
+        })()}
       </div>
       <figcaption>From {from}. Click the picture to enlarge it.</figcaption>
       {question && !done && <p className="point-row"><button className="point-button" disabled={state === "busy"} onClick={() => void go()}>{state === "busy" ? "Looking at the picture…" : "Show me where"}</button> <span className="muted">The guide explains this picture and marks what to look at. One paid call.</span></p>}

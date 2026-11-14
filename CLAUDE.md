@@ -739,6 +739,13 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   constriction, widens slowly in the throat and quickly in the horn, as the patent's words say; a test
   holds the shapes to that. The page says it is the patent's device and not the inside of a Vero or any
   cabinet. Not built: V315 and bass coverage, changing the array yourself, sound moving through the horn.
+- **Letters on marked pictures never overlap (owner's report, 14 Nov 2026).** The owner sent a "Show me
+  where" result where two letters sat on top of each other. `layoutMarks` in `src/library/point.ts` (code,
+  not the model) now places every letter: on a corner of its own box when there is room, otherwise beside
+  the box with an arrow back to it (always so for a box too small to carry a letter), never within a
+  letter's width of another letter and never on top of another mark's small box. `SourceImage` draws the
+  boxes, an SVG layer of arrows and the letters as three layers. The model is also told not to box the
+  same thing twice. Checked in a browser on the owner's own case (the Ableton page-180 picture).
 - **Side notes in answers (owner's request, 14 Nov 2026).** A side note now sits in the free space to the
   right of the steps (`.answer-body.with-notes` is a two-column grid; underneath on narrow screens and
   inside lessons) as a fabric patch: a textured frame from the skin's artwork, a solid panel inside for

@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { loadDone, onProgressChanged } from "../course/progress";
 import { loadChats, onChatsChanged } from "../guide/chats";
-import { currentPlayer, looksLikeKey, ownKey, setOwnKey } from "../guide/me";
+import { currentPlayer, keyPromptSeen, looksLikeKey, markKeyPromptSeen, ownKey, setOwnKey } from "../guide/me";
 import { addPlayer, playAs, removePlayer, schedulePush, signOut, storeStatus, type PlayerInfo } from "../guide/sync";
 
 // Anything saved in this browser is copied up for the person playing.
@@ -19,6 +19,7 @@ export function Players() {
   const [key, setKey] = useState("");
   const [hasKey, setHasKey] = useState(() => !!ownKey());
   const [note, setNote] = useState<string>();
+  const [asked, setAsked] = useState(() => keyPromptSeen());
   const [busy, setBusy] = useState(false);
 
   useEffect(() => { void storeStatus().then(setStatus); }, []);
@@ -53,10 +54,26 @@ export function Players() {
     setHasKey(!!ownKey()); setKey("");
   };
 
+  const keyForm = hasKey
+    ? <p><button className="link" onClick={() => { setOwnKey(undefined); setHasKey(false); setNote("Your key was removed from this browser."); }}>Remove my key from this browser</button></p>
+    : <form className="who-add" onSubmit={(e) => { e.preventDefault(); saveKey(); }}><input type="password" value={key} onChange={(e) => setKey(e.target.value)} placeholder="Paste your key here (sk-ant-…)" aria-label="Your Claude API key" autoComplete="off" /> <button className="primary" disabled={!key.trim()}>Save key</button></form>;
+
   const showPicker = open || !me;
+  // Asked once per browser, after a name is chosen: nobody is pushed, and "Not now" is remembered.
+  const askKey = !!me && !showPicker && !hasKey && !asked;
   return (
     <section className={`players${showPicker ? " open" : ""}`} aria-label="Who is playing">
       {me && !showPicker && <p className="playing">Playing as <strong>{me.name}</strong> <button className="link" onClick={() => setOpen(true)}>Switch or settings</button></p>}
+      {askKey && (
+        <div className="panel who key-ask">
+          <h2>Set up your own Claude key, {me.name}?</h2>
+          <p>The lessons and the synth are free. Asking the guide, “Show me where” and “Explain why” each cost a little, and right now they are paid for by the site’s owner. With a key of your own they are billed to you instead.</p>
+          <KeySteps />
+          {keyForm}
+          {note && <p className="note" role="status">{note}</p>}
+          <p><button className="link" onClick={() => { markKeyPromptSeen(); setAsked(true); setNote(undefined); }}>Not now</button> <span className="muted">You can do this later under “Switch or settings”.</span></p>
+        </div>
+      )}
       {showPicker && (
         <div className="panel who">
           <h2>Who’s playing?</h2>
@@ -76,15 +93,26 @@ export function Players() {
           <details className="who-key">
             <summary>Use my own Claude key (optional){hasKey ? ": on" : ""}</summary>
             <p className="muted">With a key of your own, your questions to the guide are billed to you, not to the site’s owner. It is kept in this browser only and sent with each question; the site never stores it.</p>
-            {hasKey
-              ? <p><button className="link" onClick={() => { setOwnKey(undefined); setHasKey(false); setNote("Your key was removed from this browser."); }}>Remove my key from this browser</button></p>
-              : <form onSubmit={(e) => { e.preventDefault(); saveKey(); }}><input type="password" value={key} onChange={(e) => setKey(e.target.value)} placeholder="sk-ant-…" aria-label="Your Claude API key" autoComplete="off" /> <button disabled={!key.trim()}>Save key</button></form>}
+            {!hasKey && <KeySteps />}
+            {keyForm}
           </details>
           {note && <p className="note" role="status">{note}</p>}
           {me && <p><button className="link" disabled={busy} onClick={() => setOpen(false)}>Close</button> <button className="link" disabled={busy} onClick={async () => { setBusy(true); await signOut(); setMe(undefined); window.location.reload(); }}>Stop playing as {me.name} on this browser</button></p>}
         </div>
       )}
     </section>
+  );
+}
+
+/** How to get a key, in plain steps. The links open Anthropic's own site in a new tab. */
+function KeySteps() {
+  return (
+    <ol className="key-steps">
+      <li>Open <a href="https://console.anthropic.com/" target="_blank" rel="noreferrer noopener">console.anthropic.com</a> and make an account. This is separate from a Claude chat subscription: a Pro or Max plan does not include a key.</li>
+      <li>Under <strong>Billing</strong>, add a payment card and buy some credit. Five dollars is the smallest amount and goes a long way here: a question to the guide usually costs a few cents.</li>
+      <li>Under <strong>API keys</strong>, choose <strong>Create key</strong>, give it any name, and copy it. It starts with <code>sk-ant-</code> and is shown only once.</li>
+      <li>Paste it below and save. It stays in this browser only; the site never stores it. On another device, paste it there too.</li>
+    </ol>
   );
 }
 

@@ -533,6 +533,11 @@ Added after the first eight milestones (owner asked for all four in one go):
   - Own key: a person can enter their own Claude key in the picker; it is kept in that browser only
     (`src/guide/me.ts`) and sent as `x-anthropic-key` with guide, picture and lesson requests; the server
     uses it for that request and never stores or logs it.
+  - Asking for a key (14 Nov 2026, owner's question): by default everyone's guide questions bill the owner's
+    key. Once per browser, after a name is chosen, a panel asks "Set up your own Claude key?" with four
+    plain steps (`KeySteps` in `Players.tsx`: account at console.anthropic.com, buy credit, create a key,
+    paste it) and a "Not now" that is remembered (`patchwalk.keyasked.v1`). The same steps are in the
+    picker's settings. It is a request, not a requirement: a friend can still decline and use the owner's key.
   Tested with a store kept in memory and, in a browser, with a stand-in for `/api/store`. **Not yet run
   against the real database** (the build session has no access to it): the System check tab's "Check the
   database" button is the first real test.

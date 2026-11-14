@@ -28,6 +28,14 @@ export function setOwnKey(key: string | undefined, storage: Store | undefined = 
     return !!storage;
   } catch { return false; }
 }
+/** Whether this browser has already been asked about using a key of one's own (asked once, never nagged). */
+const ASKED = "patchwalk.keyasked.v1";
+export const keyPromptSeen = (storage: Pick<Storage, "getItem"> | undefined = local()): boolean => {
+  try { return storage?.getItem(ASKED) === "1"; } catch { return false; }
+};
+export function markKeyPromptSeen(storage: Store | undefined = local()): void {
+  try { storage?.setItem(ASKED, "1"); } catch { /* asked again next time */ }
+}
 /** Headers for a request to the guide: JSON, plus this person's own key when they have set one. */
 export function guideHeaders(storage: Pick<Storage, "getItem"> | undefined = local()): Record<string, string> {
   const key = ownKey(storage);

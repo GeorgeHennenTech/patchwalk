@@ -785,3 +785,8 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 .horn-room-bar { flex: 1; max-width: 520px; height: 14px; border: 2px solid var(--thread); border-radius: 999px; overflow: hidden; background: var(--panel); }
 .horn-room-bar i { display: block; height: 100%; background: var(--accent); transition: width 0.12s linear; }
 .horn-room strong { min-width: 110px; }
+
+/* The once-only question about using a key of one's own, and the steps for getting one. */
+.players .key-ask { border: 2px dashed var(--thread); }
+.players .key-steps { margin: 10px 0; padding-left: 22px; display: grid; gap: 6px; max-width: 70ch; }
+.players .key-steps code { font-weight: 700; }

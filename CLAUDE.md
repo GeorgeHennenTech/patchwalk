@@ -375,6 +375,22 @@ Added after the first eight milestones (owner asked for all four in one go):
   screenshots, follow-up questions, saved chats. Still to do for that: marks drawn automatically on a
   walkthrough's pictures (today "Show me where" is a click per picture), and search that copes with many
   books (BM25 over pages may need chunking or reranking once the library grows).
+- **Guide polish after the owner's review (14 Nov 2026).** (1) Headings: the model may write "## Heading" on
+  its own line (and numbered steps); `withHeading` in `answer.ts` lifts a heading, or a bold lead-in, out of a
+  paragraph and `Answer.tsx` shows it as a heading. (2) "Show me where" is now a visible button under each
+  picture; the reply also carries `about` (what the picture shows, and what the manual's own printed numbers
+  mean, from the page text); marks are lettered A, B, C because manuals print numbers on pictures; the
+  answer's text is sent along so marks can follow its steps ("Step 2: ..."). The owner found a cited
+  picture with the manual's 1-5 callouts confusing because nothing explained it: `about` is the fix, at the
+  cost of a click. (3) Memory on the device (`src/guide/cache.ts`, localStorage, 30 days, 200 entries): the
+  first question of a chat that was answered before is shown again with no call ("Ask again fresh" asks
+  anew), and a picture already marked for the same question is shown again ("Look again"). Follow-ups are
+  never served from memory. This is per browser; sharing it between people needs a database. (4) A version
+  stamp at the bottom of every page (`__BUILD__`, commit and build time) so the owner can tell which build
+  is live. Still only checked with stand-in replies, not the real API.
+  **Open with the owner:** a database (shared answer and picture memory, logins or a "who's playing" picker,
+  per-person keys), and a search upgrade once more books are in (plan given: split pages into passages,
+  widen the keyword search, then have a small model pick the best passages).
 - **Guide in context** — `src/ui/Answer.tsx` (`AskBox`): an ask box inside each practice lesson (sends lesson,
   step, current synth settings and finished lessons) and at the top of a rebuilt patch (sends only the
   code-written instructions, per rule 5; never the preset). The first line of the context is the retrieval

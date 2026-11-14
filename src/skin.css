@@ -415,6 +415,15 @@ label.mod-head { cursor: pointer; }
 .source-image .mark { position: absolute; box-sizing: border-box; border: 3px solid #ff2e93; border-radius: 8px; box-shadow: 0 0 0 2px #fff, 0 0 10px 2px rgba(255, 46, 147, 0.7); pointer-events: none; }
 .source-image .mark b { position: absolute; left: -12px; top: -12px; width: 22px; height: 22px; border-radius: 50%; background: #ff2e93; color: #fff; font: 700 13px/22px system-ui, sans-serif; text-align: center; box-shadow: 0 0 0 2px #fff; }
 .source-image .mark-list { margin: 4px 0 2px 22px; padding: 0; font-size: 13px; }
+.source-image .point-row { margin: 6px 0 2px; font-size: 13px; }
+.source-image .point-button { font: inherit; font-size: 13px; font-weight: 700; padding: 5px 14px; border-radius: 999px; border: 2px solid var(--thread); background: var(--accent); color: #fff; cursor: pointer; margin-right: 6px; }
+.source-image .point-button:disabled { opacity: 0.6; cursor: default; }
+.source-image .pointed { margin-top: 6px; padding: 8px 12px; border: 2px solid var(--line); border-radius: 10px; background: var(--panel); color: var(--text); max-width: 70ch; }
+.source-image .pointed .about { margin: 0 0 4px; }
+.build-stamp { margin: 18px 4px 0; font-size: 11px; color: var(--muted); text-align: right; opacity: 0.85; background: var(--panel); display: inline-block; float: right; padding: 2px 8px; border-radius: 8px; }
+.answer-block { max-width: 70ch; }
+.answer-heading { margin: 14px 0 2px; font-size: 15px; font-weight: 800; }
+.answer-block:first-child .answer-heading { margin-top: 6px; }
 .source-image figcaption { font-size: 12px; color: var(--muted); margin-top: 3px; }
 .related { margin: 10px 0 0; padding: 8px 12px; border: 2px dashed var(--accent); border-radius: 10px; background: var(--accent-soft); }
 

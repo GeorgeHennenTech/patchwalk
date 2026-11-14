@@ -6,7 +6,7 @@ import { join } from "node:path";
 import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { gate } from "../src/lesson/auth.js";
-import { cleanMarks, PointModelSchema, PointRequestSchema, POINT_SYSTEM } from "../src/library/point.js";
+import { cleanAbout, cleanMarks, PointModelSchema, PointRequestSchema, POINT_SYSTEM } from "../src/library/point.js";
 
 const MODEL = "claude-opus-5-5";
 
@@ -19,12 +19,12 @@ export async function POST(request: Request): Promise<Response> {
   if (access === "denied") return json(401, { error: "unauthorized", message: "Password required." });
   if (!process.env.ANTHROPIC_API_KEY) return json(503, { error: "not-configured", message: "The guide is switched off: no ANTHROPIC_API_KEY is set on the server." });
   const raw = await request.text();
-  if (raw.length > 4000) return json(413, { error: "too-large", message: "Request is too long." });
+  if (raw.length > 12_000) return json(413, { error: "too-large", message: "Request is too long." });
   let body: unknown;
   try { body = JSON.parse(raw); } catch { return json(400, { error: "bad-json", message: "Request body is not JSON." }); }
   const parsed = PointRequestSchema.safeParse(body);
   if (!parsed.success) return json(400, { error: "bad-request", message: "Name a library picture and ask a question." });
-  const { book, file, question } = parsed.data;
+  const { book, file, question, answer } = parsed.data;
 
   // The picture, its size (from the book's picture index), and the text of the page it came from.
   const dir = join(process.cwd(), "library");
@@ -54,13 +54,13 @@ export async function POST(request: Request): Promise<Response> {
         role: "user",
         content: [
           { type: "image", source: { type: "base64", media_type: "image/webp", data: data.toString("base64") } },
-          { type: "text", text: `The picture is ${size.width} pixels wide and ${size.height} pixels high. It comes from ${title}, page ${size.page}.\n\nText of that page:\n${pageText || "(no text on this page)"}\n\nThe learner's question: ${question}` },
+          { type: "text", text: `The picture is ${size.width} pixels wide and ${size.height} pixels high. It comes from ${title}, page ${size.page}.\n\nText of that page:\n${pageText || "(no text on this page)"}\n\nThe learner's question: ${question}${answer ? `\n\nThe answer the learner was given:\n${answer}` : ""}` },
         ],
       }],
     });
     if (response.stop_reason === "refusal") return json(502, { error: "upstream", message: "The guide declined to mark this picture." });
     if (!response.parsed_output) return json(502, { error: "upstream", message: "The guide's reply could not be read. Try again." });
-    return json(200, { marks: cleanMarks(response.parsed_output, size.width, size.height) });
+    return json(200, { about: cleanAbout(response.parsed_output.about), marks: cleanMarks(response.parsed_output, size.width, size.height) });
   } catch (e) {
     if (e instanceof Anthropic.AuthenticationError) return json(503, { error: "not-configured", message: "The server's API key was rejected." });
     if (e instanceof Anthropic.RateLimitError) return json(429, { error: "rate-limited", message: "The guide is busy. Try again shortly." });

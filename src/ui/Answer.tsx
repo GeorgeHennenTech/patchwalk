@@ -3,7 +3,7 @@ import { LESSONS, placeOf } from "../course/lessons";
 import { relatedLessons } from "../course/related";
 import { askGuide, type AskOutcome } from "../guide/ask";
 import { pointAt, type PointOutcome } from "../guide/point";
-import { toParagraphs } from "../library/answer";
+import { answerText, toParagraphs } from "../library/answer";
 import { Badge } from "./Badge";
 
 /** The answer is shown as plain text, so any Markdown marks the model slips in are removed. */
@@ -22,14 +22,17 @@ export function Answer({ outcome, question }: { outcome: AskOutcome; question?: 
     <>
       {/* one block per paragraph; a side note is boxed and labelled so it is not read as one of the steps */}
       {toParagraphs(a.segments).map((p, k) => (
-        <p key={k} className={`answer${p.aside ? " aside" : ""}`}>
+        <div key={k} className="answer-block">
+        {p.heading && <h5 className="answer-heading">{p.heading}</h5>}
+        {p.parts.length > 0 && <p className={`answer${p.aside ? " aside" : ""}`}>
           {p.aside && <strong className="aside-label">Side note</strong>}
           {p.parts.map((s, j) => (
             <span key={j} className={s.sources.length ? "" : "uncited"} title={s.sources.length ? undefined : "This part was not drawn from a library passage."}>
               {plain(s.text)}{s.sources.map((n) => <sup key={n}>[{n}]</sup>)}
             </span>
           ))}
-        </p>
+        </p>}
+        </div>
       ))}
       {a.segments.some((s) => !s.sources.length && s.text.trim().length > 40) && <p className="note">Greyed text is the guide’s own wording without a source passage. Treat it with more care than the cited parts.</p>}
       <ol className="sources">
@@ -37,7 +40,7 @@ export function Answer({ outcome, question }: { outcome: AskOutcome; question?: 
           <li key={s.n}><strong>{s.source}</strong>{s.page ? `, page ${s.page}` : ""} · {s.section}
             {s.quotes.slice(0, 2).map((q) => <blockquote key={q}>{q.length > 260 ? q.slice(0, 260) + "…" : q}</blockquote>)}
             {/* Every cited page that has pictures shows them: code decides this, not the model. */}
-            {s.images?.map((im) => <SourceImage key={im.file} im={im} from={`${s.source}${s.page ? `, page ${s.page}` : ""}`} question={question} />)}
+            {s.images?.map((im) => <SourceImage key={im.file} im={im} from={`${s.source}${s.page ? `, page ${s.page}` : ""}`} question={question} answer={answerText(a)} />)}
           </li>
         ))}
       </ol>
@@ -51,27 +54,35 @@ export function Answer({ outcome, question }: { outcome: AskOutcome; question?: 
 }
 
 /**
- * One picture from a cited page. "Show me where" asks the guide to mark the places in it that matter for the
- * question (one paid call). The marks are the guide's pointing, not the manual's, and are labelled as such.
+ * One picture from a cited page. "Show me where" asks the guide what the picture shows and to mark the
+ * places in it that matter for the question (one paid call, remembered on this device afterwards). Marks
+ * are lettered, because manuals often print numbers of their own on a picture. They are the guide's
+ * pointing, not the manual's, and are labelled as such.
  */
-function SourceImage({ im, from, question }: { im: { book: string; file: string; width: number; height: number }; from: string; question?: string }) {
+function SourceImage({ im, from, question, answer }: { im: { book: string; file: string; width: number; height: number }; from: string; question?: string; answer?: string }) {
   const [state, setState] = useState<PointOutcome | "busy">();
   const src = `/api/image?book=${im.book}&file=${im.file}`;
-  const marks = state && state !== "busy" && state.kind === "ok" ? state.marks : [];
+  const done = state && state !== "busy" && state.kind === "ok" ? state : undefined;
+  const failed = state && state !== "busy" && state.kind === "unavailable" ? state : undefined;
+  const go = async (fresh = false) => { if (!question) return; setState("busy"); setState(await pointAt(im.book, im.file, question, answer, fresh)); };
   return (
     <figure className="source-image">
       <div className="marked">
         <a href={src} target="_blank" rel="noreferrer"><img src={src} width={im.width} height={im.height} loading="lazy" alt={`Picture from ${from}`} /></a>
-        {marks.map((m) => <span key={m.n} className="mark" style={{ left: `${m.x * 100}%`, top: `${m.y * 100}%`, width: `${m.w * 100}%`, height: `${m.h * 100}%` }} aria-hidden="true"><b>{m.n}</b></span>)}
+        {done?.marks.map((m) => <span key={m.n} className="mark" style={{ left: `${m.x * 100}%`, top: `${m.y * 100}%`, width: `${m.w * 100}%`, height: `${m.h * 100}%` }} aria-hidden="true"><b>{m.letter}</b></span>)}
       </div>
-      <figcaption>From {from}. Click to enlarge.{" "}
-        {question && (!state || (state !== "busy" && state.kind === "unavailable")) && <button className="link" onClick={async () => { setState("busy"); setState(await pointAt(im.book, im.file, question)); }}>Show me where</button>}
-        {state === "busy" && <span>Looking at the picture…</span>}
-      </figcaption>
-      {state && state !== "busy" && state.kind === "unavailable" && <p className="note">{state.message}</p>}
-      {state && state !== "busy" && state.kind === "ok" && (marks.length
-        ? <><ol className="mark-list">{marks.map((m) => <li key={m.n}>{m.label}</li>)}</ol><p className="note">The numbered boxes are the guide’s own pointing, not part of the manual. They can be slightly off: check them against the page text.</p></>
-        : <p className="note">The guide found nothing in this picture that bears on your question.</p>)}
+      <figcaption>From {from}. Click the picture to enlarge it.</figcaption>
+      {question && !done && <p className="point-row"><button className="point-button" disabled={state === "busy"} onClick={() => void go()}>{state === "busy" ? "Looking at the picture…" : "Show me where"}</button> <span className="muted">The guide explains this picture and marks what to look at. One paid call.</span></p>}
+      {failed && <p className="note">{failed.message}</p>}
+      {done && (
+        <div className="pointed">
+          {done.about && <p className="about">{done.about}</p>}
+          {done.marks.length > 0
+            ? <ol className="mark-list" type="A">{done.marks.map((m) => <li key={m.n}>{m.label}</li>)}</ol>
+            : <p className="note">The guide marked nothing in this picture for your question.</p>}
+          <p className="note">This is the guide’s own reading of the picture, not part of the manual, and its boxes can be slightly off. {done.remembered && "Shown from this device’s memory, with no new call. "}<button className="link" onClick={() => void go(true)}>Look again</button></p>
+        </div>
+      )}
     </figure>
   );
 }

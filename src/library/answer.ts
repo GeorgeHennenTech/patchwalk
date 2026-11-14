@@ -60,7 +60,7 @@ Answer the learner's question using only the documents supplied with it. They ar
 - Use the control names exactly as the documents print them.
 - Do not add numbers, settings, menu items or behaviour that the documents do not state. If the documents only partly answer the question, answer that part and say what is missing.
 - If the documents do not answer the question at all, reply with exactly ${NOT_COVERED} and nothing else. Do not answer from memory.
-- Plain sentences. No headings, no bullet lists unless you are giving steps in order. No Markdown at all: no asterisks for bold, no pound signs.
+- Plain sentences. When you give steps in order, number them 1., 2., 3., each on a line of its own. If an answer has more than one part, you may give each part a short heading on a line of its own, written as "## " followed by the heading. Use no other Markdown: no asterisks for bold, no bullet symbols, no tables.
 - The question may come with a note on what the learner is looking at: a lesson step, the current settings of the practice synth, or instructions for a patch. Those are facts supplied by the app. You may refer to them to make the answer fit, but do not add to them or guess at settings they do not mention.
 - If something is worth knowing but is not part of doing what was asked (a related limit, a note, a tip), put it last, in a paragraph of its own that begins with the words "Side note:". Keep it out of the steps. Most answers need none.
 - The question may be a follow-up in a conversation; earlier questions and answers are then included. Use them only to understand what the learner means. They are not a source: everything you say must still come from the documents supplied with this question.
@@ -99,7 +99,7 @@ export async function answerQuestion(req: AskRequest, hits: Hit[], model: GuideM
 }
 
 /** One paragraph of an answer, ready to show: its pieces in order, and whether it is a side note. */
-export interface AnswerParagraph { aside: boolean; parts: AnswerSegment[] }
+export interface AnswerParagraph { aside: boolean; /** A heading that introduces this paragraph, if the model gave one. */ heading?: string; parts: AnswerSegment[] }
 const ASIDE = /^\s*side note:\s*/i;
 /**
  * The answer as paragraphs. The model's text arrives in pieces (each with its own sources) and a blank line
@@ -116,7 +116,8 @@ export function toParagraphs(segments: AnswerSegment[]): AnswerParagraph[] {
       if (chunk.trim()) out[out.length - 1]!.parts.push({ text: chunk, sources: i === chunks.length - 1 ? seg.sources : [] });
     });
   }
-  return out.filter((p) => p.parts.length).map((p) => {
+  return out.filter((p) => p.parts.length).map(withHeading).filter((p) => p.heading || p.parts.length).map((p) => {
+    if (!p.parts.length) return p;
     const first = p.parts[0]!;
     if (!ASIDE.test(first.text)) return { ...p, parts: p.parts.map((x, i) => (i === 0 ? { ...x, text: x.text.replace(/^\s+/, "") } : x)) };
     const rest = first.text.replace(ASIDE, "");
@@ -124,6 +125,17 @@ export function toParagraphs(segments: AnswerSegment[]): AnswerParagraph[] {
     const parts = [{ ...first, text: rest }, ...p.parts.slice(1)].filter((x) => x.text.trim());
     return { aside: true, parts: parts.map((x, i) => (i === 0 ? { ...x, text: x.text.charAt(0).toUpperCase() + x.text.slice(1) } : x)) };
   });
+}
+/**
+ * A heading at the start of a paragraph is lifted out: a line written "## Heading", or a bold lead-in
+ * ("**Effect order matters.**"), which is how the model tends to write one when it forgets the rule.
+ */
+function withHeading(p: AnswerParagraph): AnswerParagraph {
+  const first = p.parts[0]!;
+  const m = /^\s*#{1,6}\s+([^\n]+?)\s*(?:\n|$)/.exec(first.text) ?? /^\s*\*\*([^*\n]{2,80}?)\*\*[ \t]*\n?/.exec(first.text);
+  if (!m) return p;
+  const rest = first.text.slice(m[0].length);
+  return { ...p, heading: m[1]!.replace(/[.:]$/, "").trim(), parts: [{ ...first, text: rest }, ...p.parts.slice(1)].filter((x) => x.text.trim()) };
 }
 /** An answer as plain text, for sending back as conversation history. */
 export const answerText = (a: AskResponse) => (a.covered ? a.segments.map((s) => s.text).join("").trim() : "The library did not cover this.");

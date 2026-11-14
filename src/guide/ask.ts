@@ -3,7 +3,7 @@ import { answerText, MAX_HISTORY_ANSWER, MAX_HISTORY_TURNS, type AskResponse } f
 
 export type AskOutcome = { kind: "ok"; answer: AskResponse } | { kind: "unavailable"; message: string };
 
-export interface Turn { question: string; outcome?: AskOutcome }
+export interface Turn { question: string; outcome?: AskOutcome; /** Shown from this device's memory, not asked again. */ remembered?: boolean }
 /** The last few finished turns, as the plain text sent back with a follow-up question. */
 export const historyOf = (turns: Turn[]) => turns.filter((t) => t.outcome?.kind === "ok").slice(-MAX_HISTORY_TURNS)
   .map((t) => ({ question: t.question, answer: answerText((t.outcome as { answer: AskResponse }).answer).slice(0, MAX_HISTORY_ANSWER) }));

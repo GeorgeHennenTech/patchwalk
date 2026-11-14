@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { askGuide, historyOf, type Turn } from "../guide/ask";
+import { ANSWERS, recall, remember, sameQuestionKey } from "../guide/cache";
 import { deleteChat, loadChats, saveChat, type SavedChat } from "../guide/chats";
+import type { AskResponse } from "../library/answer";
 import { Answer } from "./Answer";
 
 const EXAMPLES = ["What does the FAT knob do on the filter?", "How do I assign an LFO to a knob?", "What is the difference between FREE and RETRIG?", "Why do detuned oscillators sound like they are moving?", "How do I warp an audio clip in Live?"];
@@ -18,14 +20,23 @@ export function AskView() {
   const [note, setNote] = useState<string>();
   const busy = turns.some((t) => !t.outcome);
 
-  async function ask(q: string) {
+  /**
+   * Ask a question. The first question of a chat that has been answered before on this device is shown from
+   * memory with no new call (a follow-up depends on the conversation, so it is always asked). `again` is the
+   * position of a turn to ask afresh.
+   */
+  async function ask(q: string, again?: number) {
     const text = q.trim();
     if (text.length < 3 || busy) return;
     setQuestion(""); setNote(undefined);
-    const history = historyOf(turns);
-    setTurns((t) => [...t, { question: text }]);
+    const before = again === undefined ? turns : turns.slice(0, again);
+    const history = historyOf(before), key = sameQuestionKey(text);
+    const known = again === undefined && history.length === 0 ? recall<AskResponse>(ANSWERS, key) : undefined;
+    if (known) { setTurns([...before, { question: text, outcome: { kind: "ok", answer: known }, remembered: true }]); return; }
+    setTurns([...before, { question: text }]);
     const outcome = await askGuide(text, undefined, fetch, history);
-    setTurns((t) => t.map((turn, i) => (i === t.length - 1 && !turn.outcome ? { ...turn, outcome } : turn)));
+    if (outcome.kind === "ok" && outcome.answer.covered && history.length === 0) remember(ANSWERS, key, outcome.answer);
+    setTurns((t) => t.map((turn, i) => (i === before.length && !turn.outcome ? { ...turn, outcome } : turn)));
   }
   function save() {
     const done = saveChat({ id: chatId, turns });
@@ -65,6 +76,7 @@ export function AskView() {
         <article key={i} className="step turn">
           <h4>{t.question}</h4>
           {!t.outcome && <p className="muted">Looking through the library…</p>}
+          {t.remembered && <p className="note">You asked this before on this device, so this is the answer from then and no new call was made. <button className="link" disabled={busy} onClick={() => void ask(t.question, i)}>Ask again fresh</button></p>}
           {t.outcome && <Answer outcome={t.outcome} question={t.question} />}
         </article>
       ))}

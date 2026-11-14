@@ -244,7 +244,7 @@ import { pointAt } from "../src/guide/point";
 describe("show me where", () => {
   it("marks are kept inside the picture, as fractions of it, numbered in order", () => {
     const marks = cleanMarks({ marks: [{ label: "  DRIVE   knob ", left: 100, top: 50, width: 200, height: 100 }, { label: "Menu", left: 900, top: 400, width: 300, height: 300 }] }, 1000, 500);
-    expect(marks.map((m) => [m.n, m.label])).toEqual([[1, "DRIVE knob"], [2, "Menu"]]);
+    expect(marks.map((m) => [m.n, m.letter, m.label])).toEqual([[1, "A", "DRIVE knob"], [2, "B", "Menu"]]);
     const near = (m: (typeof marks)[number]) => [m.x, m.y, m.w, m.h].map((v) => Number(v.toFixed(6)));
     expect(near(marks[0]!)).toEqual([0.1, 0.1, 0.2, 0.2]);
     expect(near(marks[1]!)).toEqual([0.9, 0.8, 0.1, 0.2]); // cut off at the picture's edge
@@ -275,11 +275,23 @@ describe("show me where", () => {
       expect((await res.json()).error).toBe("not-configured");
     } finally { process.env = env; }
   });
-  it("the browser side reports a failure in plain words and passes marks through", async () => {
-    const ok = await pointAt("b", "p001-1.webp", "q", async () => new Response(JSON.stringify({ marks: [{ n: 1, label: "x", x: 0, y: 0, w: 0.1, h: 0.1 }] }), { status: 200 }));
-    expect(ok).toEqual({ kind: "ok", marks: [{ n: 1, label: "x", x: 0, y: 0, w: 0.1, h: 0.1 }] });
-    expect(await pointAt("b", "p001-1.webp", "q", async () => new Response(JSON.stringify({ message: "The guide is busy. Try again shortly." }), { status: 429 }))).toEqual({ kind: "unavailable", message: "The guide is busy. Try again shortly." });
-    expect((await pointAt("b", "p001-1.webp", "q", async () => { throw new Error("offline"); })).kind).toBe("unavailable");
+  it("the browser side reports a failure in plain words, passes marks through, and does not pay twice for the same picture and question", async () => {
+    const m = new Map<string, string>();
+    (globalThis as { localStorage?: unknown }).localStorage = { getItem: (k: string) => m.get(k) ?? null, setItem: (k: string, v: string) => { m.set(k, v); } };
+    try {
+      let calls = 0;
+      const reply = async () => { calls++; return new Response(JSON.stringify({ about: "The LFO area.", marks: [{ n: 1, letter: "A", label: "x", x: 0, y: 0, w: 0.1, h: 0.1 }] }), { status: 200 }); };
+      const ok = await pointAt("b", "p001-1.webp", "Where is the rate?", "Turn RATE.", false, reply);
+      expect(ok).toEqual({ kind: "ok", about: "The LFO area.", marks: [{ n: 1, letter: "A", label: "x", x: 0, y: 0, w: 0.1, h: 0.1 }] });
+      const again = await pointAt("b", "p001-1.webp", "where is the RATE", undefined, false, reply);
+      expect(again).toMatchObject({ kind: "ok", remembered: true, about: "The LFO area." });
+      expect(calls).toBe(1);
+      await pointAt("b", "p001-1.webp", "where is the rate", undefined, true, reply); // "look again" asks afresh
+      await pointAt("b", "p002-1.webp", "where is the rate", undefined, false, reply); // another picture is another call
+      expect(calls).toBe(3);
+      expect(await pointAt("b", "p009-1.webp", "q", undefined, false, async () => new Response(JSON.stringify({ message: "The guide is busy. Try again shortly." }), { status: 429 }))).toEqual({ kind: "unavailable", message: "The guide is busy. Try again shortly." });
+      expect((await pointAt("b", "p008-1.webp", "q", undefined, false, async () => { throw new Error("offline"); })).kind).toBe("unavailable");
+    } finally { delete (globalThis as { localStorage?: unknown }).localStorage; }
   });
 });
 
@@ -332,5 +344,40 @@ describe("conversations with the guide", () => {
     expect(loadChats({ getItem: () => JSON.stringify([{ nonsense: true }, again.chats[0]]) })).toHaveLength(1);
     expect(saveChat({ turns: [{ question: "q", outcome: ok("a") }] }, new Date(), undefined)).toBeNull(); // no storage at all
     expect(MAX_CHATS).toBeGreaterThanOrEqual(20);
+  });
+});
+
+import { CACHE_DAYS, CACHE_MAX, recall, remember, sameQuestionKey } from "../src/guide/cache";
+import { cleanAbout } from "../src/library/point";
+describe("headings, and what the guide remembers on this device", () => {
+  const memory = () => { const m = new Map<string, string>(); return { getItem: (k: string) => m.get(k) ?? null, setItem: (k: string, v: string) => { m.set(k, v); } }; };
+  it("a heading line, or a bold lead-in, becomes a heading and leaves the rest of the paragraph", () => {
+    const ps = toParagraphs([{ text: "## Effect order\nEffects run top to bottom.", sources: [1] }, { text: "\n\n**Keeping the low end clean.** A splitter divides the sound.", sources: [] }, { text: "\n\n## Finding settings\n\nClick RANDOMIZE.", sources: [2] }]);
+    expect(ps.map((p) => p.heading)).toEqual(["Effect order", "Keeping the low end clean", "Finding settings", undefined]);
+    expect(ps[0]!.parts).toEqual([{ text: "Effects run top to bottom.", sources: [1] }]);
+    expect(ps[1]!.parts[0]!.text).toBe("A splitter divides the sound.");
+    expect(ps[2]!.parts).toEqual([]); // a heading on its own, followed by its paragraph
+    expect(ps[3]!.parts[0]!.text).toBe("Click RANDOMIZE.");
+    expect(toParagraphs([{ text: "Set it to 2 * 3 and press # to finish.", sources: [] }])[0]!.heading).toBeUndefined();
+  });
+  it("two wordings of a question that differ only in capitals and punctuation are the same question", () => {
+    expect(sameQuestionKey("How do I assign an LFO, in Serum?")).toBe(sameQuestionKey("  how do i assign an lfo in serum"));
+    expect(sameQuestionKey("how do I assign an LFO")).not.toBe(sameQuestionKey("how do I assign an envelope"));
+  });
+  it("things are remembered for a month, newest kept when full, and a browser that stores nothing remembers nothing", () => {
+    const store = memory();
+    remember("x", "a", { v: 1 }, 1000, store);
+    expect(recall("x", "a", 2000, store)).toEqual({ v: 1 });
+    expect(recall("x", "a", 1000 + CACHE_DAYS * 86_400_000 + 1, store)).toBeUndefined();
+    expect(recall("x", "missing", 2000, store)).toBeUndefined();
+    for (let i = 0; i < CACHE_MAX + 5; i++) remember("y", `k${i}`, i, i, store);
+    expect(recall("y", "k0", CACHE_MAX, store)).toBeUndefined();
+    expect(recall("y", `k${CACHE_MAX + 4}`, CACHE_MAX + 5, store)).toBe(CACHE_MAX + 4);
+    expect(() => remember("z", "a", 1, 0, undefined)).not.toThrow();
+    expect(recall("z", "a", 0, { getItem: () => "broken" })).toBeUndefined();
+  });
+  it("the sentence about a picture is tidied and kept short", () => {
+    expect(cleanAbout("**The LFO area.**\n  Number 1 is the tab.")).toBe("The LFO area. Number 1 is the tab.");
+    expect(cleanAbout("x".repeat(900))).toHaveLength(600);
   });
 });

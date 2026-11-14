@@ -180,6 +180,7 @@ export function App() {
           </section>
         </>
       )}
+      <p className="build-stamp">Version {typeof __BUILD__ === "string" ? __BUILD__ : "unknown"}</p>
     </main>
     </OpenLesson.Provider>
   );

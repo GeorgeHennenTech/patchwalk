@@ -33,7 +33,11 @@ function devApi(): Plugin {
   };
 }
 
+/** Which build this is, shown at the bottom of the page so it is easy to tell whether a new version has arrived. */
+const BUILD = `${(process.env.VERCEL_GIT_COMMIT_SHA ?? "local").slice(0, 7)} · ${new Date().toISOString().slice(0, 16).replace("T", " ")} UTC`;
+
 export default defineConfig({
+  define: { __BUILD__: JSON.stringify(BUILD) },
   plugins: [react(), devApi()],
   test: { include: ["tests/**/*.test.ts"] },
 });

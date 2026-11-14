@@ -117,10 +117,10 @@
     {
       "q": "Where do a pitched sound's harmonics sit?",
       "options": [
-        "All of them at the pitch you hear",
+        "All of them stacked exactly at the pitch you hear",
         "One at the pitch you hear, others at whole multiples",
-        "All of them below the pitch you hear",
-        "Scattered evenly with no pattern at all"
+        "All of them somewhere below the pitch you hear",
+        "Scattered up and down with no pattern at all"
       ],
       "answer": 1,
       "why": "A pitched sound is a stack of harmonics: one at the pitch you hear and others at whole multiples of it.",

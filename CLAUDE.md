@@ -772,6 +772,22 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   hoists under a truss tower, one column each side of a stage with a roof, bass cabinets in a row in
   front, on grass under a sky; beams fade with distance. Horn: plywood housing, paper cone, steel motor.
   Driver: shadows on a table. No artwork was added and no logos are drawn. Checked with software 3D only.
+- **"Who covers where" on the Vero field (14 Nov 2026; the owner asked how to make it obvious which
+  parts of the sound hit which parts of the field, and to pick the best of several ideas).** Chosen: paint
+  the ground by the mid-high cabinet pointed most nearly at a listener standing there, plus a listener you
+  move with a "Stand" slider. `aimedAt` and `zones` in `vero.ts` (tested) give, for a distance, the cabinet
+  whose aim is closest to the line to the listener's ears (1.7 m) and whether that is inside its stated
+  angle; the scene paints each stretch in that cabinet's colour with its number (grey = outside every
+  beam, as right under the column), draws a pink figure with a line from that cabinet, and runs white
+  ripples out along the ground 30 times slower than sound. A panel under the picture says in words what
+  reaches the listener: which cabinet for mids and highs, the V315s for mid-bass, the ground cabinets for
+  bass (neither drawn as a patch: the guide gives no vertical angle for V315s, and bass spreads widely),
+  and the travel time at 343 m/s. On by default; the old beam wedges are now off by default. Left column
+  only; real cabinets overlap and blend, which the page says. Considered and not built: a loudness
+  heat map (we have no level data, so it would be invented) and a music visualiser (pretty, teaches little).
+- **Res 2 colours (same day, owner's request):** deep purple cabinet and a pale grey moulded panel
+  holding the mid and high horns, after the maker's photograph (`p537-1.webp`), with a dark piece in the
+  mid horn and a purple bass horn.
 - **Measurements on the Vero field (14 Nov 2026, owner's request).** A "Measurements" switch (on by
   default): signs every 20 m along the field (faint lines every 10 m), a height scale up the near tower,
   and for the cabinet pointed at or picked, a line down the middle of its beam, a patch on the ground

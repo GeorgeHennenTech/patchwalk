@@ -10,7 +10,7 @@ import { makeStage, type Stage } from "./three/stage";
 const { front: W, back: WB, height: H, depth: D } = RES2;
 const BASE = 0.9;          // the cabinet stands on a plinth this high (illustrative)
 const T = 0.018;           // panel thickness (illustrative)
-const GLOW = "#ff2e93";
+const GLOW = "#ff2e93", GREY = "#b4b7bd";
 const toHz = (v: number) => 20 * Math.pow(1000, v), toV = (hz: number) => Math.log(hz / 20) / Math.log(1000);
 const hzText = (hz: number) => (hz >= 1000 ? `${(hz / 1000).toFixed(hz >= 10000 ? 0 : 1)} kHz` : `${Math.round(hz)} Hz`);
 /** A point on the front, from metres across and down the drawing, to model space (x right, y up, z towards the listener). */
@@ -56,7 +56,7 @@ export default function Res2View() {
     stage.current = st;
     studio(st.scene, 0, 6);
     const add = (id: string, mesh: THREE.Object3D, mats: THREE.MeshStandardMaterial[], parent: THREE.Object3D = st.scene) => { mesh.userData.id = id; parent.add(mesh); if (parent === st.scene) st.pickable.push(mesh); (groups[id] ??= []).push(...mats); for (const m of mats) m.emissive.set(GLOW); return mesh; };
-    const skin = () => { const m = paint("#17161c"); walls.push(m); return m; };
+    const skin = () => { const m = paint("#242040"); walls.push(m); return m; }; // the deep blue-purple of the maker's photograph
     // the body: a lid, a floor, two sides that close in towards the back, and a back; hollow, so the horns can be seen into
     const outline = new THREE.Shape([new THREE.Vector2(-W / 2, 0), new THREE.Vector2(W / 2, 0), new THREE.Vector2(WB / 2, D), new THREE.Vector2(-WB / 2, D)]);
     for (const y of [BASE + H - T, BASE]) { const m = skin(), lid = new THREE.Mesh(new THREE.ExtrudeGeometry(outline, { depth: T, bevelEnabled: false }), m); lid.rotation.x = -Math.PI / 2; lid.position.y = y; add("body", lid, [m]); }
@@ -68,14 +68,19 @@ export default function Res2View() {
     for (const o of Object.values(OPENINGS)) face.holes.push(new THREE.Path([new THREE.Vector2(px(o.x0), py(o.y0)), new THREE.Vector2(px(o.x0), py(o.y1)), new THREE.Vector2(px(o.x1), py(o.y1)), new THREE.Vector2(px(o.x1), py(o.y0))]));
     { const m = skin(), panel = new THREE.Mesh(new THREE.ExtrudeGeometry(face, { depth: T, bevelEnabled: false }), m); panel.position.z = -T; add("body", panel, [m]); }
     // the horns: walls running back from each opening to a smaller throat (throat sizes after the drawing; depths illustrative)
-    const lining = () => { const m = paint("#0c0b10", { roughness: 0.85, side: THREE.DoubleSide }); walls.push(m); return m; };
+    // the bass horn is the cabinet's own purple inside; the mid and high horns are one pale grey moulding
+    const lining = (color = "#1b1832") => { const m = paint(color, { roughness: color === GREY ? 0.55 : 0.85, side: THREE.DoubleSide }); walls.push(m); return m; };
+    { // the grey panel the two upper horns sit in: square at the top, cut in at the bottom corners (outline after the drawing)
+      const panel = new THREE.Shape([[0.03, 0.015], [0.492, 0.015], [0.492, 0.315], [0.35, 0.462], [0.172, 0.462], [0.03, 0.315]].map(([x, y]) => new THREE.Vector2(px(x!), py(y!))));
+      for (const o of [OPENINGS.mid, OPENINGS.high]) panel.holes.push(new THREE.Path([new THREE.Vector2(px(o.x0), py(o.y0)), new THREE.Vector2(px(o.x0), py(o.y1)), new THREE.Vector2(px(o.x1), py(o.y1)), new THREE.Vector2(px(o.x1), py(o.y0))]));
+      const m = lining(GREY), mesh = new THREE.Mesh(new THREE.ExtrudeGeometry(panel, { depth: 0.006, bevelEnabled: false }), m); mesh.position.z = 0.0005; add("body", mesh, [m]); }
     const centre = (o: { x0: number; x1: number; y0: number; y1: number }, w: number, h: number) => ({ x0: (o.x0 + o.x1) / 2 - w / 2, x1: (o.x0 + o.x1) / 2 + w / 2, y0: (o.y0 + o.y1) / 2 - h / 2, y1: (o.y0 + o.y1) / 2 + h / 2 });
     { const m = lining(); add("bassHorn", new THREE.Mesh(hornGeometry(OPENINGS.bass, { x0: 0.12, x1: 0.402, y0: 0.658, y1: 0.812 }, 0.27), m), [m]);
       const d = lining(), divider = new THREE.Mesh(new THREE.BoxGeometry(T, OPENINGS.bass.y1 - 0.658, 0.27), d); divider.position.set(0, py((0.658 + OPENINGS.bass.y1) / 2), -0.135); add("bassHorn", divider, [d]); }
-    { const m = lining(); add("midHorn", new THREE.Mesh(hornGeometry(OPENINGS.mid, centre(OPENINGS.mid, 0.2, 0.13), 0.15), m), [m]); }
-    { const m = lining(); add("highHorn", new THREE.Mesh(hornGeometry(OPENINGS.high, centre(OPENINGS.high, 0.03, 0.03), 0.08), m), [m]); }
+    { const m = lining(GREY); add("midHorn", new THREE.Mesh(hornGeometry(OPENINGS.mid, centre(OPENINGS.mid, 0.2, 0.13), 0.15), m), [m]); }
+    { const m = lining(GREY); add("highHorn", new THREE.Mesh(hornGeometry(OPENINGS.high, centre(OPENINGS.high, 0.03, 0.03), 0.08), m), [m]); }
     // the shaped piece the drawing shows in the mouth of the mid horn: wide, flat-fronted, pointed to left and right
-    { const m = paint("#22212a", { roughness: 0.5 }), g = new THREE.LatheGeometry([[0, 0.05], [0.035, 0.045], [0.068, 0], [0.035, -0.07], [0, -0.09]].map(([r, z]) => new THREE.Vector2(r!, z!)), 6);
+    { const m = paint("#0d0c11", { roughness: 0.45 }), g = new THREE.LatheGeometry([[0, 0.05], [0.035, 0.045], [0.068, 0], [0.035, -0.07], [0, -0.09]].map(([r, z]) => new THREE.Vector2(r!, z!)), 6);
       g.rotateX(Math.PI / 2); g.scale(1.85, 1, 1); const plug = new THREE.Mesh(g, m); plug.position.set(0, py((OPENINGS.mid.y0 + OPENINGS.mid.y1) / 2), -0.055); add("plug", plug, [m]); }
     // flypoints up each side, and the connector plate on the back
     for (const side of [-1, 1]) for (const y of [BASE + H / 2 - RES2.flypointsApart / 2, BASE + H / 2 + RES2.flypointsApart / 2]) { const m = steel("#c9ccd1", 0.3) as THREE.MeshStandardMaterial, p = new THREE.Mesh(new THREE.CylinderGeometry(0.013, 0.013, 0.012, 16), m); p.rotation.z = Math.PI / 2; p.position.set(side * ((W + WB) / 4 + 0.012), y, -D / 2); p.rotation.y = side * lean; add("fly", p, [m]); }
@@ -191,7 +196,7 @@ export default function Res2View() {
           <p>So treat the outside, the sizes and the numbers as the maker’s, and everything behind the front panel as a sketch.</p>
         </div>
       </aside>
-      <p className="muted driver-draft">From the maker’s drawing: the cabinet’s sizes, its 28° taper, and where the three openings are on the front. From the maker’s spec sheet (Funktion-One documents, page {RES2.page}): the three drivers, 60 Hz to 18 kHz, the 250 Hz crossover, 50° by 25° coverage, 48 kg, two NL4 connectors, M10 flypoints. Drawn for illustration: how deep each horn goes and its shape inside, the drivers’ positions, the plinth, and panel thickness. The landmark sounds are rough conventions, not measurements. Your own speakers or headphones are what you hear the tone through, so very low and very high tones may be faint or silent on them.</p>
+      <p className="muted driver-draft">From the maker’s drawing: the cabinet’s sizes, its 28° taper, and where the three openings are on the front. From the maker’s spec sheet (Funktion-One documents, page {RES2.page}): the three drivers, 60 Hz to 18 kHz, the 250 Hz crossover, 50° by 25° coverage, 48 kg, two NL4 connectors, M10 flypoints. Colours follow the maker’s photograph by eye: a deep purple cabinet with a pale grey moulding for the two upper horns. Drawn for illustration: how deep each horn goes and its shape inside, the drivers’ positions, the plinth, and panel thickness. The landmark sounds are rough conventions, not measurements. Your own speakers or headphones are what you hear the tone through, so very low and very high tones may be faint or silent on them.</p>
     </>
   );
 }

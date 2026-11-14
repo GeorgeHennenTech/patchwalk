@@ -818,3 +818,11 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 .res2-missing p, .res2-missing li { font-size: 1.12rem; white-space: normal; }
 .res2-missing ul { margin: 8px 0; padding-left: 22px; display: grid; gap: 7px; font-family: "Patrick Hand", "Comic Sans MS", "Segoe Print", cursive; line-height: 1.35; }
 .res2-missing strong { font-weight: 400; color: var(--accent); }
+
+/* Vero: where the listener stands, and what reaches them. */
+.vero-stand { margin: 12px 0 6px; display: grid; gap: 8px; }
+.vero-hears { border: 2px dashed var(--thread); border-radius: 14px; padding: 10px 14px; }
+.vero-hears p { margin: 0 0 6px; }
+.vero-hears ul { list-style: none; margin: 0 0 6px; padding: 0; display: grid; gap: 6px; }
+.vero-hears li { display: grid; grid-template-columns: 16px 1fr; gap: 9px; align-items: start; }
+.vero-hears li b { width: 14px; height: 14px; margin-top: 4px; border-radius: 4px; border: 1px solid #0006; }

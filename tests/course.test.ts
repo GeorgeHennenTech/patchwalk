@@ -1230,7 +1230,7 @@ describe("the loudspeaker cutaway", () => {
   });
 });
 
-import { ARENA_ARRAY, footprint, hang, reach, tilts, VERO } from "../src/soundsystems/vero";
+import { aimedAt, ARENA_ARRAY, footprint, hang, reach, tilts, travelTime, VERO, zones } from "../src/soundsystems/vero";
 describe("the Vero array", () => {
   it("is the guide's twelve-cabinet arena array, top to bottom", () => {
     expect(ARENA_ARRAY.map((c) => c.kind).join(" ")).toBe("V60 V60 V60 V60 V315 V315 V315 V90 V90 V315 V90 V90");
@@ -1254,6 +1254,16 @@ describe("the Vero array", () => {
     expect(f.far).toBeCloseTo(10 / Math.tan((7 * Math.PI) / 180), 5);
     expect(f.near).toBeLessThan(reach(10, 10)); expect(f.far).toBeGreaterThan(reach(10, 10));
     expect(footprint(10, 2, 6).far).toBe(Infinity);
+    // who is pointed at a listener: narrow V60s far out, wide V90s nearer, never a V315; the nearer you stand, the lower the cabinet
+    const far = aimedAt(ARENA_ARRAY, 11, 100)!, mid = aimedAt(ARENA_ARRAY, 11, 35)!, near = aimedAt(ARENA_ARRAY, 11, 20)!;
+    expect(ARENA_ARRAY[far.index]!.kind).toBe("V60"); expect(ARENA_ARRAY[mid.index]!.kind).toBe("V90");
+    expect(far.index).toBeLessThan(mid.index); expect(mid.index).toBeLessThanOrEqual(near.index);
+    expect(far.inside).toBe(true); expect(aimedAt(ARENA_ARRAY, 11, 3)!.inside).toBe(false); // right under the column: outside every beam
+    const z = zones(ARENA_ARRAY, 11);
+    expect(z[0]!.from).toBe(2); expect(z[z.length - 1]!.to).toBeCloseTo(120, 5);
+    for (let i = 1; i < z.length; i++) { expect(z[i]!.from).toBeCloseTo(z[i - 1]!.to, 5); expect(z[i]!.index).toBeLessThanOrEqual(z[i - 1]!.index); }
+    for (const q of z) expect(VERO[ARENA_ARRAY[q.index]!.kind].beam).toBeDefined();
+    expect(travelTime(343)).toBeCloseTo(1, 6);
   });
   it("the three flown cabinets are the same size, and only the mid-highs have a beam of their own", () => {
     expect(VERO.V60.size).toEqual(VERO.V90.size); expect(VERO.V90.size).toEqual(VERO.V315.size);

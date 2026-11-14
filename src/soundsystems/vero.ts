@@ -59,3 +59,33 @@ export function hang(array: readonly { kind: VeroKind; angleBelow: number }[], t
 export function footprint(height: number, tiltDeg: number, upDown: number): { near: number; far: number } {
   return { near: reach(height, tiltDeg + upDown / 2), far: reach(height, tiltDeg - upDown / 2) };
 }
+
+/** A standing listener's ears above the ground, metres. */
+export const EAR = 1.7;
+type Hung = readonly { kind: VeroKind; angleBelow: number }[];
+/**
+ * The mid-high cabinet pointed most nearly at a listener standing `distance` metres out from the top cabinet's
+ * front: the one whose aim is closest to the line from it to the listener's ears. `inside` says whether the
+ * listener is within that cabinet's stated up-and-down coverage. Straight-line geometry only.
+ */
+export function aimedAt(array: Hung, top: number, distance: number): { index: number; inside: boolean; off: number } | undefined {
+  let best: { index: number; inside: boolean; off: number } | undefined;
+  hang(array, top).forEach((at, index) => {
+    const beam = VERO[array[index]!.kind].beam; if (!beam) return;
+    const down = (Math.atan2(at.height - EAR, distance + at.back) * 180) / Math.PI, off = Math.abs(down - at.tilt);
+    if (!best || off < best.off) best = { index, off, inside: off <= beam.upDown / 2 };
+  });
+  return best;
+}
+/** The field cut into stretches by which mid-high cabinet is pointed at each: from `from` to `to` metres out. */
+export function zones(array: Hung, top: number, from = 2, to = 120, step = 0.5): { index: number; inside: boolean; from: number; to: number }[] {
+  const out: { index: number; inside: boolean; from: number; to: number }[] = [];
+  for (let d = from; d < to; d += step) {
+    const a = aimedAt(array, top, d + step / 2); if (!a) continue;
+    const last = out[out.length - 1];
+    if (last && last.index === a.index && last.inside === a.inside) last.to = d + step; else out.push({ index: a.index, inside: a.inside, from: d, to: d + step });
+  }
+  return out;
+}
+/** Seconds for sound to travel a distance in air at about 20 °C. */
+export const travelTime = (metres: number) => metres / 343;

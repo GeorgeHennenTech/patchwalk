@@ -2,7 +2,7 @@
 // beams of the mid-high cabinets and bass cabinets on the ground. Figures are from the Vero user guide.
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { ARENA_ARRAY, footprint, hang, reach, tilts, VERO, type VeroKind } from "../soundsystems/vero";
+import { aimedAt, ARENA_ARRAY, EAR, footprint, hang, reach, tilts, travelTime, VERO, zones, type VeroKind } from "../soundsystems/vero";
 import { grass, grille, paint, paper, plywood, shadowed, sign, sky, steel, truss } from "./three/look";
 import { makeStage, type Stage } from "./three/stage";
 
@@ -13,9 +13,11 @@ const VIEWS: Record<string, { label: string; from: [number, number, number]; to:
   column: { label: "The column", from: [-4.6, 9.4, 7.6], to: [0, 8.9, -0.2] },
   stage: { label: "The stage", from: [-6, 5, 34], to: [STAGE_X, 5.5, -2] },
   side: { label: "From the side", from: [-46, 9, 24], to: [0, 4, 24] },
-  field: { label: "The whole field", from: [-52, 46, 104], to: [STAGE_X, 0, 34] },
+  field: { label: "The whole field", from: [-62, 74, 78], to: [6, 0, 52] },
 };
 const HANG = hang(ARENA_ARRAY, TOP);
+const ZONES = zones(ARENA_ARRAY, TOP);
+const SLOWED = 30;        // the ripples on the ground travel this many times slower than sound
 const FAR = 125;          // the furthest a landing mark is drawn, metres
 const metres = (d: number) => `${d < 10 ? d.toFixed(1) : Math.round(d)} m`;
 const BODY = "#16151a", HORN = "#1d1b2b";
@@ -100,15 +102,16 @@ function beam(across: number, upDown: number, length: number): THREE.BufferGeome
 export default function VeroScene() {
   const mount = useRef<HTMLDivElement>(null), stage = useRef<Stage | undefined>(undefined);
   const [picked, setPicked] = useState<string>(), [hover, setHover] = useState<string>();
-  const [beams, setBeams] = useState(true), [measures, setMeasures] = useState(true), [failed, setFailed] = useState(false);
-  const live = useRef({ lit: undefined as string | undefined, beams: true, measures: true });
-  live.current.lit = hover ?? picked; live.current.beams = beams; live.current.measures = measures;
+  const [beams, setBeams] = useState(false), [measures, setMeasures] = useState(true), [failed, setFailed] = useState(false);
+  const [map, setMap] = useState(true), [stand, setStand] = useState(40);
+  const live = useRef({ lit: undefined as string | undefined, beams: false, measures: true, map: true, stand: 40 });
+  live.current.lit = hover ?? picked; live.current.beams = beams; live.current.measures = measures; live.current.map = map; live.current.stand = stand;
   const angles = tilts(ARENA_ARRAY);
 
   useEffect(() => {
     const cabinets: { id: string; lit: THREE.MeshStandardMaterial[]; glow: THREE.Color; beam?: THREE.Mesh }[] = [];
     // measurements: `rule` is always there (distances along the field, heights up the tower); `landing` is for the cabinet pointed at
-    const rule = new THREE.Group(), landing = new THREE.Group(); let shown: string | undefined;
+    const rule = new THREE.Group(), landing = new THREE.Group(), cover = new THREE.Group(); let shown: string | undefined;
     const flat = (pts: [number, number][], color: string, opacity: number) => { // a patch lying on the ground, corners as (x, z)
       const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pts.flatMap(([x, z]) => [x, 0.06, z]), 3)); g.setIndex([0, 1, 2, 0, 2, 3]);
       const m = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color, transparent: true, opacity, side: THREE.DoubleSide, depthWrite: false, fog: false })); m.raycast = () => {}; return m;
@@ -129,14 +132,38 @@ export default function VeroScene() {
     };
     const st = makeStage(mount.current!, { camera: VIEWS.column!.from, target: VIEWS.column!.to, far: 1400, min: 2.5, max: 240, sun: [-55, 60, 50], shadow: 46, exposure: 0.95,
       onHover: setHover, onPick: setPicked,
-      onFrame: () => { rule.visible = live.current.measures; landing.visible = live.current.measures; if (shown !== live.current.lit) { shown = live.current.lit; land(shown); } for (const c of cabinets) { const on = c.id === live.current.lit; for (const m of c.lit) { m.emissive.copy(c.glow); m.emissiveIntensity = on ? 0.55 : 0; } if (c.beam) { c.beam.visible = live.current.beams; (c.beam.material as THREE.MeshBasicMaterial).opacity = on ? 0.5 : 0.075; } } } });
+      onFrame: (t) => { cover.visible = live.current.map; if (cover.visible) coverFrame(t); rule.visible = live.current.measures; landing.visible = live.current.measures; if (shown !== live.current.lit) { shown = live.current.lit; land(shown); } for (const c of cabinets) { const on = c.id === live.current.lit; for (const m of c.lit) { m.emissive.copy(c.glow); m.emissiveIntensity = on ? 0.55 : 0; } if (c.beam) { c.beam.visible = live.current.beams; (c.beam.material as THREE.MeshBasicMaterial).opacity = on ? 0.5 : 0.075; } } } });
     if (!st) { setFailed(true); return; }
     stage.current = st;
     const { scene } = st, built = new THREE.Group(); scene.add(built);
     sky(scene, 520);
     // the field, with marks every 20 metres so distances can be read
     const ground = new THREE.Mesh(new THREE.PlaneGeometry(1100, 1100), grass(260)); ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
-    scene.add(rule, landing);
+    scene.add(rule, landing, cover);
+    // who covers where: the ground painted by the cabinet pointed at each stretch, ripples running out along it, and a listener
+    const halfAt = (index: number) => Math.tan(((VERO[ARENA_ARRAY[index]!.kind].beam!.across / 2) * Math.PI) / 180);
+    ZONES.forEach((z, k) => {
+      const kind = VERO[ARENA_ARRAY[z.index]!.kind], h = halfAt(z.index);
+      cover.add(flat([[-z.from * h, z.from], [z.from * h, z.from], [z.to * h, z.to], [-z.to * h, z.to]], z.inside ? kind.color : "#8a8791", z.inside ? (kind.kind === "V60" ? 0.62 : 0.5) - (k % 2 ? 0 : 0.14) : 0.22));
+      if (z.to - z.from >= 5) { const s = sign(z.inside ? `cabinet ${z.index + 1} · ${kind.kind}` : "between beams", 1.3 + z.from * 0.035, z.inside ? { fill: kind.color, ink: "#16121c" } : {}); s.position.set(((z.from + z.to) / 2) * h * 0.55, 1.6, (z.from + z.to) / 2); cover.add(s); }
+    });
+    const ripples = Array.from({ length: 10 }, () => { const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 0.5), new THREE.MeshBasicMaterial({ color: "#fff", transparent: true, opacity: 0.85, depthWrite: false, fog: false })); m.rotation.x = -Math.PI / 2; m.position.y = 0.09; m.raycast = () => {}; cover.add(m); return m; });
+    const person = new THREE.Group(), pink = new THREE.MeshStandardMaterial({ color: "#ff2e93", emissive: new THREE.Color("#ff2e93"), emissiveIntensity: 0.4 });
+    const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.16, 1.4, 12), pink); torso.position.y = 0.7; const head = new THREE.Mesh(new THREE.SphereGeometry(0.2, 16, 12), pink); head.position.y = EAR;
+    const ring = new THREE.Mesh(new THREE.RingGeometry(1.1, 1.5, 40), new THREE.MeshBasicMaterial({ color: "#ff2e93", side: THREE.DoubleSide, fog: false })); ring.rotation.x = -Math.PI / 2; ring.position.y = 0.11;
+    person.add(torso, head, ring); person.traverse((o) => { o.raycast = () => {}; }); cover.add(person);
+    const ray = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]), new THREE.LineBasicMaterial({ color: "#ff2e93", fog: false })); ray.raycast = () => {}; ray.frustumCulled = false; cover.add(ray);
+    const coverFrame = (t: number) => {
+      const span = 116, speed = 343 / SLOWED;
+      ripples.forEach((m, k) => {
+        const d = 4 + ((t * speed + (k * span) / ripples.length) % span), z = ZONES.find((q) => d >= q.from && d < q.to);
+        m.visible = !!z?.inside; if (!z?.inside) return;
+        m.position.z = d; m.scale.x = 2 * d * halfAt(z.index); (m.material as THREE.MeshBasicMaterial).color.set("#ffffff").lerp(new THREE.Color(VERO[ARENA_ARRAY[z.index]!.kind].color), 0.35);
+      });
+      const d = live.current.stand, a = aimedAt(ARENA_ARRAY, TOP, d);
+      person.position.z = d;
+      if (a) { const from = HANG[a.index]!, pos = ray.geometry.attributes.position as THREE.BufferAttribute; pos.setXYZ(0, 0, from.height, -from.back); pos.setXYZ(1, 0, EAR, d); pos.needsUpdate = true; }
+    };
     for (let m = 10; m <= 120; m += 10) {
       if (m % 20) { const tick = new THREE.Mesh(new THREE.PlaneGeometry(70, 0.08), new THREE.MeshBasicMaterial({ color: "#f3f1e6", transparent: true, opacity: 0.4 })); tick.rotation.x = -Math.PI / 2; tick.position.set(STAGE_X, 0.03, m); rule.add(tick); continue; }
       for (const x of [STAGE_X - 37, STAGE_X + 37]) { const s = sign(`${m} m`, 2.4); s.position.set(x, 1.5, m); rule.add(s); }
@@ -205,6 +232,7 @@ export default function VeroScene() {
         <div className="driver-side">
           <div className="driver-parts" role="group" aria-label="Views">
             {Object.entries(VIEWS).map(([k, v]) => <button key={k} onClick={() => stage.current?.lookFrom(v.from, v.to)}>{v.label}</button>)}
+            <button aria-pressed={map} className={map ? "on" : ""} onClick={() => setMap((m) => !m)}>Who covers where</button>
             <button aria-pressed={beams} className={beams ? "on" : ""} onClick={() => setBeams((b) => !b)}>Beams</button>
             <button aria-pressed={measures} className={measures ? "on" : ""} onClick={() => setMeasures((m) => !m)}>Measurements</button>
           </div>
@@ -226,7 +254,24 @@ export default function VeroScene() {
           </div>
         </div>
       </div>
-      <p className="muted driver-draft">From the guide: the cabinets' sizes, which kinds hang where, the angles between them (pages 62, 67, 108 to 111), and each kind's coverage. The cabinets' look (curved grille, open horn mouths, steel end plates, coloured dials) follows the guide's photographs by eye. Drawn for illustration: the height of the columns, the towers and flying frame, the length of the beams, the number of bass cabinets, the stage, and the cabinets' exact outline and insides. Bold lines on the ground are 20 m apart, faint ones 10 m, measured from the front of the top cabinet. The "starts" and "ends" marks are straight-line geometry from each cabinet's height, tilt and coverage angle; real sound fades past an edge, it does not stop there, and with the columns' height being illustrative so are these distances.</p>
+      {map && (() => {
+        const a = aimedAt(ARENA_ARRAY, TOP, stand), c = a ? ARENA_ARRAY[a.index]! : undefined, far = a ? Math.hypot(stand + HANG[a.index]!.back, HANG[a.index]!.height - EAR) : stand;
+        return (
+          <div className="vero-stand">
+            <label className="driver-slider"><span>Stand</span><input type="range" min={3} max={118} step={1} value={stand} onChange={(e) => setStand(Number(e.target.value))} aria-valuetext={`${stand} metres from the column`} /><output>{stand} m out</output></label>
+            <div className="vero-hears" role="status">
+              <p><strong>Standing {stand} m out, on the pink ring.</strong></p>
+              <ul>
+                <li><b style={{ background: c ? VERO[c.kind].color : "#8a8791" }} /> <span><strong>Mids and highs (200 Hz up):</strong> {a && c ? (a.inside ? `cabinet ${a.index + 1}, a ${c.kind}, is the one pointed at you (the pink line). You are ${a.off.toFixed(1)}° off the middle of its beam.` : `you are between beams here: the nearest aim is cabinet ${a.index + 1} (${c.kind}), and you are ${a.off.toFixed(1)}° off it, outside its stated ${VERO[c.kind].beam!.upDown}°. ${stand < 15 ? "This close you are under the column; rigs put small fill speakers along the stage for the front rows." : ""}`) : ""}</span></li>
+                <li><b style={{ background: VERO.V315.color }} /> <span><strong>Mid-bass (50 to 250 Hz):</strong> the four red V315s in the column. The guide gives them 70° across; how tall their beam is depends on how many hang together, so no patch is drawn for them.</span></li>
+                <li><b style={{ background: VERO.V221.color }} /> <span><strong>Bass (40 to 150 Hz):</strong> the cabinets on the ground. Bass this low spreads widely, so it is not drawn as a beam.</span></li>
+              </ul>
+              <p className="muted">The sound from that cabinet takes about {(travelTime(far) * 1000).toFixed(0)} ms to reach you ({far.toFixed(0)} m at 343 m a second). The white ripples show it travelling, {SLOWED} times slower than real.</p>
+            </div>
+          </div>
+        );
+      })()}
+      <p className="muted driver-draft">From the guide: the cabinets' sizes, which kinds hang where, the angles between them (pages 62, 67, 108 to 111), and each kind's coverage. The cabinets' look (curved grille, open horn mouths, steel end plates, coloured dials) follows the guide's photographs by eye. Drawn for illustration: the height of the columns, the towers and flying frame, the length of the beams, the number of bass cabinets, the stage, and the cabinets' exact outline and insides. Bold lines on the ground are 20 m apart, faint ones 10 m, measured from the front of the top cabinet. "Who covers where" paints each stretch of ground in the colour of the mid-high cabinet pointed most nearly at a listener standing there (ears 1.7 m up), from the left-hand column only; grey means outside every cabinet's stated angle. In life the cabinets overlap and blend rather than hand over at a line. The "starts" and "ends" marks are straight-line geometry from each cabinet's height, tilt and coverage angle; real sound fades past an edge, it does not stop there, and with the columns' height being illustrative so are these distances.</p>
     </>
   );
 }

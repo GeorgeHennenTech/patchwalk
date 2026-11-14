@@ -1230,7 +1230,7 @@ describe("the loudspeaker cutaway", () => {
   });
 });
 
-import { ARENA_ARRAY, reach, tilts, VERO } from "../src/soundsystems/vero";
+import { ARENA_ARRAY, footprint, hang, reach, tilts, VERO } from "../src/soundsystems/vero";
 describe("the Vero array", () => {
   it("is the guide's twelve-cabinet arena array, top to bottom", () => {
     expect(ARENA_ARRAY.map((c) => c.kind).join(" ")).toBe("V60 V60 V60 V60 V315 V315 V315 V90 V90 V315 V90 V90");
@@ -1243,6 +1243,17 @@ describe("the Vero array", () => {
     expect(reach(10, 0)).toBe(Infinity);
     expect(reach(10, 45)).toBeCloseTo(10, 5);
     expect(reach(10, 17)).toBeLessThan(reach(10, 7));
+    // where the cabinets hang: each lower than the last, the column 12 cabinets tall, and curling back as it tips
+    const at = hang(ARENA_ARRAY, 11);
+    expect(at[0]!.height).toBeCloseTo(11 - 0.215, 3);
+    for (let i = 1; i < at.length; i++) { expect(at[i]!.height).toBeLessThan(at[i - 1]!.height); expect(at[i]!.back).toBeGreaterThanOrEqual(at[i - 1]!.back); }
+    expect(at[11]!.height).toBeGreaterThan(11 - 12 * 0.43);
+    // a beam's patch of ground: nearer edge from its lower side, further from its upper; a level top edge never lands
+    const f = footprint(10, 10, 6);
+    expect(f.near).toBeCloseTo(10 / Math.tan((13 * Math.PI) / 180), 5);
+    expect(f.far).toBeCloseTo(10 / Math.tan((7 * Math.PI) / 180), 5);
+    expect(f.near).toBeLessThan(reach(10, 10)); expect(f.far).toBeGreaterThan(reach(10, 10));
+    expect(footprint(10, 2, 6).far).toBe(Infinity);
   });
   it("the three flown cabinets are the same size, and only the mid-highs have a beam of their own", () => {
     expect(VERO.V60.size).toEqual(VERO.V90.size); expect(VERO.V90.size).toEqual(VERO.V315.size);

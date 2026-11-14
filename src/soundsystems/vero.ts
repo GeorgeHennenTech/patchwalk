@@ -41,3 +41,21 @@ export function tilts(array: readonly { angleBelow: number }[]): number[] {
 
 /** How far a beam tipped down by `tiltDeg` from a height of `height` metres travels before its centre reaches the ground. Level or upward: never. */
 export const reach = (height: number, tiltDeg: number) => (tiltDeg <= 0 ? Infinity : height / Math.tan((tiltDeg * Math.PI) / 180));
+
+/** Where each cabinet of a column hangs: the height of the middle of its front above the ground, how far back from the top cabinet's front it sits, and its tilt. `top` is the height of the top of the column. */
+export function hang(array: readonly { kind: VeroKind; angleBelow: number }[], top: number): { height: number; back: number; tilt: number }[] {
+  const t = tilts(array); let y = top, z = 0;
+  return array.map((c, i) => {
+    const h = VERO[c.kind].size[1], a = (t[i]! * Math.PI) / 180;
+    const at = { height: y - (h / 2) * Math.cos(a), back: z + (h / 2) * Math.sin(a), tilt: t[i]! };
+    y -= h * Math.cos(a); z += h * Math.sin(a);
+    return at;
+  });
+}
+/**
+ * The stretch of ground a beam covers: its lower edge lands at `near`, its upper edge at `far` (never, if that
+ * edge is level or points up). Straight-line geometry from the coverage angle only: real sound does not stop at an edge.
+ */
+export function footprint(height: number, tiltDeg: number, upDown: number): { near: number; far: number } {
+  return { near: reach(height, tiltDeg + upDown / 2), far: reach(height, tiltDeg - upDown / 2) };
+}

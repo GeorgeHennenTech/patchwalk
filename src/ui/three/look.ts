@@ -97,3 +97,15 @@ export function truss(from: THREE.Vector3, to: THREE.Vector3, size = 0.4, materi
   mesh.instanceMatrix.needsUpdate = true; mesh.raycast = () => {};
   return mesh;
 }
+
+/** A small sign that always faces the viewer: `text` on a pill, `size` metres tall. Drawn by code. */
+export function sign(text: string, size: number, o: { ink?: string; fill?: string } = {}): THREE.Sprite {
+  const canvas = document.createElement("canvas"), c = canvas.getContext("2d")!, font = "600 44px system-ui, sans-serif";
+  c.font = font; const w = Math.ceil(c.measureText(text).width) + 44; canvas.width = w; canvas.height = 72;
+  c.fillStyle = o.fill ?? "rgba(24,20,32,0.86)"; c.beginPath(); c.roundRect(0, 0, w, 72, 22); c.fill();
+  c.font = font; c.fillStyle = o.ink ?? "#fff"; c.textBaseline = "middle"; c.textAlign = "center"; c.fillText(text, w / 2, 38);
+  const t = new THREE.CanvasTexture(canvas); t.colorSpace = THREE.SRGBColorSpace;
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, depthTest: false, fog: false, transparent: true }));
+  sprite.scale.set((size * w) / 72, size, 1); sprite.renderOrder = 5; sprite.raycast = () => {};
+  return sprite;
+}

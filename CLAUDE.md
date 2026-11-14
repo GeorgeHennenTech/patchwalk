@@ -752,6 +752,13 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   hoists under a truss tower, one column each side of a stage with a roof, bass cabinets in a row in
   front, on grass under a sky; beams fade with distance. Horn: plywood housing, paper cone, steel motor.
   Driver: shadows on a table. No artwork was added and no logos are drawn. Checked with software 3D only.
+- **Measurements on the Vero field (14 Nov 2026, owner's request).** A "Measurements" switch (on by
+  default): signs every 20 m along the field (faint lines every 10 m), a height scale up the near tower,
+  and for the cabinet pointed at or picked, a line down the middle of its beam, a patch on the ground
+  where its beam lands with "starts" and "ends" distances, and its height and tilt beside it. `hang` and
+  `footprint` in `src/soundsystems/vero.ts` are the maths (tested); `sign` in `look.ts` draws the labels
+  (by code). The info panel gives the same figures in words. These are straight-line geometry from
+  height, tilt and coverage angle, and the column height is illustrative: the page says both.
 - **Vero array in 3D (14 Nov 2026, owner's go-ahead).** `src/ui/VeroScene.tsx`, the first view of the
   "Sound systems" tab, drawn with `three` from `src/soundsystems/vero.ts`: the Vero user guide's "typical
   12-cabinet arena array" (page 67: four V60, three V315, two V90, one V315, two V90, from the top) hung

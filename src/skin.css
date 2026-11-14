@@ -846,3 +846,14 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 .builds-on.you-were-here, .builds-on.stop-here { transform: rotate(0.5deg); }
 .builds-on.stop-here { margin-top: 18px; }
 .learn-nav[hidden] { display: none; }
+
+/* End-of-lesson recall. */
+.recall textarea { width: 100%; box-sizing: border-box; padding: 9px 12px; border: 2px solid var(--thread); border-radius: 12px; background: var(--panel); color: var(--text); font: inherit; resize: vertical; }
+.recall-mine { margin: 0 0 12px; padding: 8px 12px; border-left: 4px solid var(--accent); background: color-mix(in srgb, var(--accent) 8%, transparent); border-radius: 0 10px 10px 0; white-space: pre-wrap; }
+.recall-points { list-style: none; padding: 0; margin: 0 0 10px; display: grid; gap: 8px; }
+.recall-points li { display: flex; gap: 12px; align-items: center; justify-content: space-between; padding: 8px 12px; border: 2px solid color-mix(in srgb, var(--thread) 30%, transparent); border-radius: 12px; }
+.recall-points li.had { border-color: #2e9b5f; } .recall-points li.missed { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 7%, transparent); }
+.recall-marks { display: flex; gap: 6px; flex: none; }
+.recall-marks button { padding: 3px 10px; border: 2px solid var(--thread); border-radius: 999px; background: transparent; color: inherit; font: inherit; font-size: 0.8rem; font-weight: 700; cursor: pointer; box-shadow: none; }
+.recall-marks button[aria-pressed="true"] { background: var(--text); color: var(--panel); }
+@media (max-width: 620px) { .recall-points li { flex-direction: column; align-items: flex-start; } }

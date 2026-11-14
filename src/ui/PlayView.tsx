@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { CHAPTER_ORDER, CHAPTERS, chapterOf, LESSONS, placeOf } from "../course/lessons";
 import { allMatch, compareToTarget, type MatchVerdict } from "../course/match";
 import { ago, focusOn, loadPlace, minutesLeft, savePlace, setFocus, stopNote, unitsIn, type Place } from "../course/focus";
+import { RecallCard } from "./Recall";
 import { guideContext, loadDone, saveDone, suggestNext } from "../course/progress";
 import type { MatchRound, Panel, PlayableLesson } from "../course/types";
 import type { Card } from "../lesson/cards";
@@ -423,13 +424,12 @@ export function PlayView({ cards, wanted }: { cards: Card[]; wanted?: { id: stri
         {finishedSteps && lesson.rounds && <MatchRounds key={`match-${lesson.id}`} rounds={lesson.rounds} synth={synth} lesson={lesson} onPass={() => setRoundsPassed(true)} plain={plain} />}
         {finishedSteps && lesson.earCheck && <EarCheck kind={lesson.earCheck} synth={synth} onPass={() => setEarPassed(true)} />}
         {finishedSteps && !inRounds && (
-          <section className="card">
-            <h3>Recap {complete && <Badge kind="ok">lesson done</Badge>}</h3>
-            <ul>{lesson.recap.map((r) => <li key={r}>{r}</li>)}</ul>
+          <RecallCard key={`recall-${lesson.id}`} lessonId={lesson.id} outcome={lesson.outcome} recap={lesson.recap}>
+            {complete && <p><Badge kind="ok">lesson done</Badge></p>}
             {lesson.inSerum && <p><strong>Now in Serum (optional).</strong> {lesson.inSerum}</p>}
             {complete && suggestion && <p><strong>Guide:</strong> Next I’d take <button className="link" onClick={() => setLessonId(suggestion.id)}>{suggestion.title}</button>{suggestion.buildsOn.includes(lesson.id) ? ", which builds directly on this one." : "."}</p>}
             {complete && !suggestion && <p><strong>Guide:</strong> That is every lesson built so far.</p>}
-          </section>
+          </RecallCard>
         )}
 
         {focus && complete && (() => { const n = stopNote(sitting.current); return (

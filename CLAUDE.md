@@ -640,6 +640,15 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   counted down, a saved place in the filter lesson came back on step 3 with the cutoff where it was and
   the step already passing, and with Focus off none of it showed. In development React runs a lesson's
   start-up twice, so that code must give the same result both times (it once wiped the saved place).
+- **End-of-lesson recall (14 Nov 2026; second item of the queue).** The recap is no longer simply shown.
+  `RecallCard` (`src/ui/Recall.tsx`) first asks the learner to bring the lesson's main points back from
+  memory (out loud, or typed into a box that is never saved), with the lesson's outcome as a nudge; "Show
+  me the recap" then shows the recap as the answer, with the learner's own words above it and "Had it" /
+  "Missed it" on each point. What was missed is kept per lesson in the browser (`patchwalk.recall.v1`,
+  `src/course/recall.ts`; not yet stored with the account) for the spaced return that is item 6 of the
+  queue: the card's wording promises missed points "will come round again", which is true only once
+  that is built. No per-lesson questions were written: the recap lines are the answers, so every lesson
+  has it. `recallNote` words the result kindly and gives no figure until every point is marked.
 - **Blender for 3D teaching pictures (owner asked 14 Nov 2026; first test made).** Blender runs in the build
   session without a screen as a Python module (`pip install bpy` in a virtual environment, Python 3.13;
   Cycles on the processor, about a minute for a 2700 by 1400 picture at 96 samples). `scripts/blender/driver.py`

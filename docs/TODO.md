@@ -10,7 +10,7 @@ it, and reports in a few lines. None of these needs the owner or spends credits.
 `docs/LEARNING_RESEARCH.md`.
 
 - [x] 1. Focus mode (a switch, remembered per person): steps and minutes left always in view, a "good place to stop" marker after each lesson, and "you were here" when coming back
-- [ ] 2. End-of-lesson recall: two or three questions answered from memory in place of the recap being read, with the answer shown at once
+- [x] 2. End-of-lesson recall: two or three questions answered from memory in place of the recap being read, with the answer shown at once
 - [ ] 3. Guide answers, new layout: the one-line answer first, quiet citations, "go deeper" follow-up buttons, one check question
 - [ ] 4. Small fixes: pointing at the Res 2's upper horns with the mouse; the eye button on the Account panel's password boxes; the Res 2 standing on a bass cabinet, since it needs one below 60 Hz
 - [ ] 5. "Why this matters" line on every lesson, tying it to music the learner wants to make

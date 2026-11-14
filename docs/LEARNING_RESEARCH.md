@@ -64,7 +64,7 @@ first"; by-ear checkpoints; lessons in any order.
 To build, in suggested order:
 1. **Focus mode** (built 14 Nov 2026, `src/course/focus.ts`; per browser, not yet per account; the optional reading noise is not in it) (a switch, per person): time and steps left always visible, a "good place to stop" marker
    after each lesson, "you were here" on return, reading comfort setting, movement-break suggestion.
-2. **End-of-lesson recall** in place of the recap being read: two or three questions answered from memory,
+2. **End-of-lesson recall** (built 14 Nov 2026 as free recall then the recap with "Had it / Missed it" on each point; `src/course/recall.ts`) in place of the recap being read: two or three questions answered from memory,
    then the recap shown as feedback. One go, at the end.
 3. **Coming back**: recall questions resurface after days, then weeks.
 4. **Mixed by-ear checkpoints**: a checkpoint that mixes kinds from earlier chapters (filter, envelope, LFO)

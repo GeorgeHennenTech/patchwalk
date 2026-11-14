@@ -1350,3 +1350,27 @@ describe("focus mode", () => {
     for (const n of [1, 2, 5]) expect(stopNote(n).text).not.toMatch(/streak|fail|behind/i); // nothing here punishes
   });
 });
+
+import { loadRecall, missed, recallNote, saveRecall } from "../src/course/recall";
+describe("end-of-lesson recall", () => {
+  it("every lesson has a recap to recall against, and an outcome to nudge with", () => {
+    for (const l of LESSONS) { expect(l.recap.length, l.id).toBeGreaterThan(0); expect(l.outcome.length, l.id).toBeGreaterThan(10); expect(new Set(l.recap).size, l.id).toBe(l.recap.length); }
+  });
+  it("keeps what was missed, per lesson, and survives a broken store", () => {
+    const m = new Map<string, string>(), s = { getItem: (k: string) => m.get(k) ?? null, setItem: (k: string, v: string) => { m.set(k, v); } };
+    expect(loadRecall(s)).toEqual({});
+    saveRecall("C2.1", { at: 5, had: [true, false, undefined] }, s); saveRecall("C3.1", { at: 6, had: [false] }, s);
+    expect(Object.keys(loadRecall(s))).toEqual(["C2.1", "C3.1"]);
+    expect(missed(loadRecall(s)["C2.1"], ["a", "b", "c"])).toEqual(["b"]);
+    expect(missed(undefined, ["a"])).toEqual([]);
+    m.set("patchwalk.recall.v1", "nonsense"); expect(loadRecall(s)).toEqual({});
+  });
+  it("speaks kindly about how it went, and never gives a mark before every point is marked", () => {
+    expect(recallNote([undefined, undefined])).toMatch(/if you like/);
+    expect(recallNote([true, undefined, undefined])).toBe("1 of the 1 marked so far came back to you.");
+    expect(recallNote([true, true])).toMatch(/All of it/);
+    expect(recallNote([false, false])).toMatch(/normal/);
+    expect(recallNote([true, false, true])).toMatch(/^2 of 3 .* one you missed is/);
+    for (const h of [[false], [true, false], [false, false, false]]) expect(recallNote(h)).not.toMatch(/wrong|fail|only|score/i);
+  });
+});

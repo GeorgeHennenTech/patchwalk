@@ -49,3 +49,21 @@ maker or author gives away; copies from piracy sites are not taken in.
 | Senior, *Mixing Secrets for the Small Studio* | Mixing |
 | Izhaki, *Mixing Audio* | Mixing |
 | Katz, *Mastering Audio* | Mastering |
+
+## Sound systems: the owner is looking for these (14 Nov 2026)
+Named from memory; editions and availability not checked. The owner's interests: Funktion-One (the classic
+Resolution or Dance Stack systems, and Vero, which is Funktion-One's own large touring system), high-fidelity
+home systems, and high-end in-ear monitors. Start with Toole, McCarthy and the Funktion-One documents.
+
+| Text | For |
+|---|---|
+| Funktion-One manuals, spec sheets and technical papers (free from the maker), and published interviews with Tony Andrews | Funktion-One, classic and Vero |
+| Kolbrek and Dunker, *High-Quality Horn Loudspeaker Systems*; Kolbrek's shorter horn-theory articles (believed free) | How horn loudspeakers work |
+| McCarthy, *Sound Systems: Design and Optimization* | Large systems: arrays, subs, tuning a room |
+| Davis, Patronis and Brown, *Sound System Engineering* | Large systems |
+| Toole, *Sound Reproduction: The Acoustics and Psychoacoustics of Loudspeakers and Rooms* | High-fidelity home systems |
+| Dickason, *Loudspeaker Design Cookbook* | Every part of a loudspeaker |
+| Borwick (ed.), *Loudspeaker and Headphone Handbook* | Loudspeaker parts; headphones and in-ears |
+| Harman research papers on in-ear listening targets (Olive and colleagues) | In-ear monitors |
+| Application notes from Knowles and Sonion (free from the makers) | The drivers inside in-ear monitors |
+

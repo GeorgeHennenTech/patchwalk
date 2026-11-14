@@ -30,6 +30,8 @@ The working list for the owner and the assistant. Tick a box when a thing is don
 - [ ] Processing chains track (owner, 14 Nov 2026): after the synth material and our own effect courses, lessons on stacking stock plugins after the synth. Needs a reorderable effects rack with a bypass per effect first.
 - [ ] Sound systems track with high-definition diagrams (owner, 14 Nov 2026): needs a source text on loudspeakers; labelled diagrams drawn by code.
 - [ ] A spoken intro clip at the top of every lesson (owner, 14 Nov 2026): test one with Higgsfield first; it spends credits.
+- [ ] Music theory lessons that use the MIDI keyboard (owner, 14 Nov 2026): track I of the curriculum.
+- [ ] Source texts on sound systems for the owner to find: see `docs/LITERATURE.md`.
 - [ ] Remaining synthesis chapters from the course plan (87 lessons built)
 
 ## Synth

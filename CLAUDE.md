@@ -590,9 +590,13 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   voiced once with Higgsfield and stored (it spends the owner's credits, so one lesson is to be tested and
   approved first). **One test clip exists (14 Nov 2026):** `src/assets/intros/C2.1.mp3` (Filters, lesson 1;
   50 s; Higgsfield `seed_audio`, preset voice "Arthur"; 4.4 credits). `PlayView.tsx` shows an audio player
-  at the top of any lesson that has a file named by its id in `src/assets/intros/`. Awaiting the owner's
-  verdict on the voice before more are made; all 87 would cost about 380 credits, more than the owner's
+  at the top of any lesson that has a file named by its id in `src/assets/intros/`. **The owner approved it on 14 Nov 2026: keep the voice "Arthur" for everything from now on, and keep
+  this length and level of detail. No other voices are to be tried.** No further clips have been made; all 87 would cost about 380 credits, more than the owner's
   balance of about 220 at the time.
+- **Music theory (owner, 14 Nov 2026).** With a MIDI keyboard now working, the owner wants music theory
+  built in eventually. Track I of `docs/CURRICULUM.md` ("Theory and keyboard for producers", 18 lessons)
+  is the plan; nothing is built. Lessons can check what is played from the keyboard (notes, intervals,
+  chords, scales) the way synth lessons check knobs.
 - **Impact sounds (owner asked 13 Nov 2026):** `docs/IMPACTS.md`, about 50 lessons on hits, striking bass
   notes, weight, making room, impact effects and contrast. The first seven are built (see `lessons/impacts.ts`);
   the rest wait for effects, physical modelling, the mini DAW and library texts on hearing.

@@ -169,7 +169,8 @@ Added after the first eight milestones (owner asked for all four in one go):
     effects, warp, FM and the wide pitch destination: Space, Throw, Heat, Tear, Growl, Squash, Shimmer, Knock.
     C5.5 ("Setting depth on the knob itself") and C5.7 ("Any knob can be a destination") were added to chapter 5
     with the depth handles and the wider destination list.
-    **Eighty-one playable lessons.**
+    C5.8 ("Drag a source onto a knob") was added with drag-and-drop.
+    **Eighty-two playable lessons.**
   - `src/ui/PlayView.tsx` ("Lessons" tab) and `src/ui/synth/` — spotlighted controls per step, live targets,
     scope, spectrum, meter, on-screen keyboard, Hold, blind ear checks, recap, guide remarks and suggestion.
   - "Hear it first" demos (`demo` on a lesson), match-by-ear rounds (`rounds`, compared by `src/course/match.ts`:
@@ -341,7 +342,24 @@ Added after the first eight milestones (owner asked for all four in one go):
     the same and the learner's own settings came back afterwards.
     Limits to keep in mind: slow destinations follow one note (the last played), step every 20 ms (grainy
     with very fast LFOs), and a source's rate being moved by another source is not followed by the slow path.
-  - Not built yet: MIDI input, a mod wheel, drag-a-source-onto-a-knob. **Owner's order (13 Nov 2026), after
+  - **Compact whole synth, pages, Serum-style macros, drag-and-drop (14 Nov 2026, owner's request).** The
+    whole-synth view (`all` in `Rack`, class `whole` on `.synth`) went from about 3,800 px tall to about
+    1,000. It has three pages chosen by tabs at the top, as Serum has: **Synth** (sources row, then a row
+    of a small **Macros** block at the bottom left, an Envelopes panel with Env 1 / Env 2 tabs, an LFOs
+    panel with LFO 1-3 tabs, and a "from the keys" panel with Vel / Key tabs), **FX** (the effects row) and
+    **Matrix**. Views (scope, spectrum, spectrogram, matrix) no longer all open by themselves in the whole
+    synth: they open from the Show row. `MacroGrid` is a 2 by 2 block of small knobs, each with its name
+    (click it to open that macro's name and slots underneath) and a drag handle. Lesson steps are unchanged:
+    they still show only the panels a step needs, large, with the old `MacroPanel`.
+    **Drag-and-drop:** every source has a `Grip` (the ✥ handle: on its panel header in a step, on its tab in
+    the whole synth, on each macro). Dropping it on a knob calls `connect` in `src/synth/connect.ts`: a
+    source's own connection is used first, later drops add matrix rows, a macro takes its next free slot;
+    knobs that cannot be destinations, a knob already connected, a full matrix or a full macro refuse, and
+    the knob says why while the source is over it (green outline for yes, red for no). A drop sets the
+    `dropped` flag. The tabs holding grips are `div role="tab"`, not buttons: browsers will not start a drag
+    from inside a button. HTML drag-and-drop does not work on touch screens. In automated tests, move the
+    mouse in steps with short waits and keep both ends on screen; Playwright's `dragTo` was unreliable here.
+  - Not built yet: MIDI input, a mod wheel, drag-and-drop on touch screens, reordering effects. **Owner's order (13 Nov 2026), after
     warp/FM/ring which is done: the first impact lessons (they need nothing new); then physical modelling
     and bioacoustics.**
   - The old ten Serum-task lessons are now the "Serum tasks" tab.

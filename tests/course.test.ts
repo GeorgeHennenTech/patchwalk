@@ -626,7 +626,7 @@ import { CHAPTER_5 } from "../src/course/lessons/chapter5";
 describe("chapter 5: routes, direction, and modulating a modulator", () => {
   const st = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
   it("the modulation chapter follows the LFOs and starts from real settings", () => {
-    expect(LESSONS.map((l) => l.id).slice(36, 44)).toEqual(["C5.1", "C5.2", "C5.3", "C5.4", "C5.5", "C5.6", "C5.7", "C5.C"]);
+    expect(LESSONS.map((l) => l.id).slice(36, 45)).toEqual(["C5.1", "C5.2", "C5.3", "C5.4", "C5.5", "C5.6", "C5.7", "C5.8", "C5.C"]);
     for (const l of CHAPTER_5) for (const k of Object.keys(l.initial ?? {})) expect(k in INITIAL, `${l.id}: ${k}`).toBe(true);
   });
   it("an LFO set to one way pushes one side only, like an envelope; both ways is the default", () => {
@@ -1034,5 +1034,42 @@ describe("any knob as a destination", () => {
     expect(any.steps[1]!.check(snap("C5.7", { lfo1Dest: "resonance", lfo1Amount: 100 }))).toBe(true);
     expect(any.steps[3]!.check(snap("C5.7", { lfo3Dest: "lfo2Rate", lfo3Amount: 60 }))).toBe(true);
     expect(any.steps[3]!.check(snap("C5.7", { lfo3Dest: "lfo1Rate", lfo3Amount: 60 }))).toBe(false);
+  });
+});
+
+import { connect, DRAGGABLE, DROP_AMOUNT } from "../src/synth/connect";
+describe("dropping a source on a knob", () => {
+  it("the first drop is the source's own connection, later drops add matrix rows, and the same knob twice is refused", () => {
+    const first = connect(INITIAL, "lfo1", "cutoff");
+    expect(first).toMatchObject({ ok: true, change: { lfo1Dest: "cutoff", lfo1Amount: 30 } });
+    const s1 = { ...INITIAL, ...(first as { change: Partial<SynthState> }).change };
+    expect(connect(s1, "lfo1", "cutoff")).toMatchObject({ ok: false });
+    const second = connect(s1, "lfo1", "resonance");
+    expect(second).toMatchObject({ ok: true, change: { matrix: [{ source: "lfo1", dest: "resonance", amount: DROP_AMOUNT, way: "both" }] } });
+    const s2 = { ...s1, ...(second as { change: Partial<SynthState> }).change };
+    expect(connect(s2, "lfo1", "resonance")).toMatchObject({ ok: false });
+    expect(routes(s2).map((r) => [r.source.id, r.dest])).toEqual([["lfo1", "cutoff"], ["lfo1", "resonance"]]);
+  });
+  it("a source with an amount of zero is given one, a one-way LFO keeps its direction in a new row, and a full matrix refuses", () => {
+    expect(connect({ ...INITIAL, env2Amount: 0 }, "env2", "distDrive")).toMatchObject({ ok: true, change: { env2Dest: "distDrive", env2Amount: DROP_AMOUNT } });
+    const up = connect({ ...INITIAL, lfo2Dest: "cutoff", lfo2Way: "up" }, "lfo2", "fine") as { ok: true; change: Partial<SynthState> };
+    expect(up.change.matrix![0]!.way).toBe("up");
+    const full = { ...INITIAL, lfo1Dest: "cutoff", matrix: Array.from({ length: 8 }, () => ({ source: "lfo2" as const, dest: "fine", amount: 1, way: "both" as const })) };
+    expect(connect(full, "lfo1", "resonance")).toMatchObject({ ok: false });
+  });
+  it("knobs that are not destinations refuse, for sources and for macros", () => {
+    for (const knob of ["volumeDb", "bpm", "octave", "voices", "randomPhase", "reverbSize", "nonsense"]) expect(connect(INITIAL, "lfo1", knob).ok, knob).toBe(false);
+    expect(connect(INITIAL, "macro1", "octave").ok).toBe(false);
+    expect(connect(INITIAL, "ghost", "cutoff").ok).toBe(false);
+  });
+  it("a macro takes its next free slot, refuses a knob it already moves, and refuses when its slots are used up", () => {
+    const a = connect(INITIAL, "macro2", "cutoff") as { ok: true; change: Record<string, unknown> };
+    expect(a.change).toEqual({ macro2Dest1: "cutoff", macro2Amt1: 50 });
+    const s1 = { ...INITIAL, ...a.change } as SynthState;
+    expect(connect(s1, "macro2", "cutoff").ok).toBe(false);
+    expect((connect(s1, "macro2", "reverbMix") as { change: Record<string, unknown> }).change).toMatchObject({ macro2Dest2: "reverbMix" });
+    const used = { ...INITIAL, macro1Dest1: "cutoff", macro1Dest2: "drive", macro1Dest3: "resonance" } as SynthState;
+    expect(connect(used, "macro1", "detune").ok).toBe(false);
+    expect(DRAGGABLE).toEqual(["env2", "lfo1", "lfo2", "lfo3", "vel", "key", "macro1", "macro2", "macro3", "macro4"]);
   });
 });

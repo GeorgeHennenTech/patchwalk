@@ -42,18 +42,20 @@ function loadViews(): Panel[] {
 
 function SynthPanel({ synth, show, lesson, all, lastNote, extra = [], onExtra, plain, onSkin }: { synth: Synth; show: Panel[]; lesson: PlayableLesson; all: boolean; lastNote?: number | null; extra?: Panel[]; onExtra?: (p: Panel) => void; plain?: boolean; onSkin?: () => void }) {
   const on = (p: Panel) => all || show.includes(p) || extra.includes(p);
+  // Views are opened by the step or from the Show row; the whole synth does not open them all by itself.
+  const view = (p: Panel) => show.includes(p) || extra.includes(p);
   const note = synth.held.at(-1) ?? lastNote ?? null;
   const beat = beatHz(synth.state, note ?? 57);
   return (
-    <div className={`synth${plain ? " plain" : ""}`}>
+    <div className={`synth${plain ? " plain" : ""}${all ? " whole" : ""}`}>
       <div className="synth-top">
         {!synth.running && onExtra && <button className="primary big" onClick={() => void synth.start()}>Start audio</button>}
         {onExtra && (
           <div className="view-toggles" role="group" aria-label="Views of the sound">
             <span>Show:</span>
             {VIEWS.map((v) => {
-              const fixed = all || show.includes(v.id);
-              return <button key={v.id} aria-pressed={on(v.id)} disabled={fixed} title={fixed ? "This step is using it" : undefined} onClick={() => onExtra(v.id)}>{v.label}</button>;
+              const fixed = show.includes(v.id);
+              return <button key={v.id} aria-pressed={view(v.id)} disabled={fixed} title={fixed ? "This step is using it" : undefined} onClick={() => onExtra(v.id)}>{v.label}</button>;
             })}
             {onSkin && <button className="skin-toggle" aria-pressed={!plain} onClick={onSkin} title="Switch the synth's velvet-and-neon look on or off">Skin: {plain ? "off" : "on"}</button>}
           </div>
@@ -62,7 +64,7 @@ function SynthPanel({ synth, show, lesson, all, lastNote, extra = [], onExtra, p
           <div className="synth-main">
             {on("clickOn") && <Control id="clickOn" synth={synth} spot={show.includes("clickOn")} />}
             {on("bpm") && <Control id="bpm" synth={synth} spot={show.includes("bpm")} />}
-            {on("meter") && <Meter synth={synth} />}
+            {(all || view("meter")) && <Meter synth={synth} />}
             {on("volumeDb") && <Control id="volumeDb" synth={synth} spot={show.includes("volumeDb")} />}
           </div>
         )}
@@ -70,16 +72,16 @@ function SynthPanel({ synth, show, lesson, all, lastNote, extra = [], onExtra, p
       <Rack synth={synth} show={show} all={all} lesson={lesson} note={note} />
       {/* In the whole synth the filter's curve lives in the filter panel; as an extra view it goes with the others. */}
       <div className="synth-views">
-        {on("scope") && <Scope synth={synth} />}
-        {on("spectrum") && <Spectrum synth={synth} />}
+        {view("scope") && <Scope synth={synth} />}
+        {view("spectrum") && <Spectrum synth={synth} />}
         {show.includes("envelope") && <EnvCurve synth={synth} which={1} spot />}
         {show.includes("envelope2") && <EnvCurve synth={synth} which={2} spot />}
-        {on("spectrogram") && <Spectrogram synth={synth} />}
-        {on("matrix") && <Matrix synth={synth} />}
+        {view("spectrogram") && <Spectrogram synth={synth} />}
+        {view("matrix") && <Matrix synth={synth} />}
         {!all && !show.includes("curve") && extra.includes("curve") && <FilterCurve synth={synth} note={note} />}
       </div>
       <div className="synth-ctls">
-        {on("beat") && (
+        {view("beat") && (
           <div className={`ctl${show.includes("beat") ? " spot" : ""}`}><span className="ctl-name">Beat rate</span><output className="wide">{synth.state.bOn ? `${beat.toFixed(1)} per second on this key` : "Osc B is off"}</output></div>
         )}
         {on("hold") && (

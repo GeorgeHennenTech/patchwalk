@@ -159,6 +159,25 @@ export const CHAPTER_5: PlayableLesson[] = [
     inSerum: "In Serum, nearly every knob can be a destination: drag a source’s tile onto the knob, or pick the destination on the MATRIX tab. Details of each are not confirmed here, so nothing is checked.",
   },
   {
+    id: "C5.8", title: "Drag a source onto a knob", buildsOn: ["C5.5", "C5.4"], minutes: 6, cardIds: ["mod-routing"], initial: { ...BASS },
+    outcome: "Connect an LFO, an envelope or a macro to any knob by dragging it there.",
+    demo: { caption: "A plain bass, then with an LFO dropped on the cutoff, then with the same LFO dropped on the resonance too.", tones: patches([{ ...BASS }, { ...BASS, lfo1Dest: "cutoff", lfo1Amount: 45, lfo1Rate: 3 }, { ...BASS, lfo1Dest: "cutoff", lfo1Amount: 45, lfo1Rate: 3, matrix: [{ source: "lfo1", dest: "resonance", amount: 60, way: "both" }] }], 2.2) },
+    idea: [
+      "Every source has a small handle marked ✥ beside its name. Drag that handle onto a knob and let go: the source is now connected to that knob, with a modest amount so you hear it straight away. While you drag, a knob that can take the source lights up green as you pass over it.",
+      "The first knob you drop a source on becomes its own connection, the one shown on its panel. Drop the same source on another knob and a row is added to the matrix for you. A macro dropped on a knob takes its next free slot. Nothing new is created by dragging: it is a faster way of making the connections you already know.",
+    ],
+    steps: [
+      { do: "Switch on Hold and play a low note.", show: [...K, "lfo1Rate", "cutoff", "resonance", "curve"], hear: "A steady bass.", target: "A note held", check: (s) => s.held.length >= 1 },
+      { do: "Drag the ✥ handle on the LFO 1 panel onto the Cutoff knob, and let go.", show: [...K, "lfo1Rate", "cutoff", "resonance", "curve"], hear: "A wobble starts at once. Cutoff now wears a cyan ring and dot.", target: "LFO 1 connected to Filter cutoff by dropping it there", check: (s) => s.state.lfo1Dest === "cutoff" && !!s.flags.dropped },
+      { do: "Use the cyan dot on Cutoff to set the depth to about 50%.", show: [...K, "lfo1Rate", "cutoff", "resonance", "curve"], hear: "A deeper wobble.", target: "LFO 1 amount between 40% and 60%", check: (s) => s.state.lfo1Dest === "cutoff" && between(s.state.lfo1Amount, 40, 60) },
+      { do: "Drag the same handle onto Resonance as well.", show: [...K, "lfo1Rate", "cutoff", "resonance", "curve", "matrix"], hear: "The edge now pulses with the wobble. In the matrix a new row has appeared: LFO 1 to Resonance.", target: "A matrix row sending LFO 1 to Resonance", check: (s) => s.state.lfo1Dest === "cutoff" && s.state.matrix.some((r) => r.source === "lfo1" && r.dest === "resonance"),
+        remark: (s) => `Your routes: ${routes(s.state).map((r) => `${r.source.name} to ${destName(r.dest).toLowerCase()} at ${r.amount}%`).join("; ")}. Two drops, two connections.` },
+      { do: "Now a macro. Drag the ✥ handle on Macro 1 onto the Drive knob, then turn Macro 1 up past 60%.", show: [...K, "macro1", "drive", "cutoff", "curve"], hear: "The bass growing dirtier as the macro rises. The drop used the macro’s first free slot.", target: "Macro 1 connected to Drive; macro at 60% or more", check: (s) => [1, 2, 3].some((k) => (s.state as unknown as Record<string, string>)[`macro1Dest${k}`] === "drive") && s.state.macro1 >= 60 },
+    ],
+    recap: ["Drag a source’s ✥ handle onto a knob to connect it.", "The first drop is the source’s own connection; later drops add matrix rows.", "A macro dropped on a knob takes its next free slot."],
+    inSerum: "Serum works the same way: its guide describes clicking and dragging from an LFO’s tab to a knob, with a + sign on the pointer over a valid knob (page 194). Nothing is checked.",
+  },
+  {
     id: "C5.C", title: "Checkpoint: routes by ear", buildsOn: ["C5.2", "C5.6"], minutes: 9, cardIds: [],
     outcome: "Work out by ear how a moving sound is wired: what is sent where, and which way it pushes.",
     idea: [

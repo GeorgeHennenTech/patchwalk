@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { BOX_IDS, DEST_NAMES, FAST_DESTS, fromTravel, INITIAL, MOD_DESTS, PARAMS, SLOW_DESTS, toTravel, type ParamSpec, type SynthState } from "../../synth/params";
 import { slotPush, slotsTo } from "../../synth/macros";
+import { connect, currentDrag, dragName, endDrag } from "../../synth/connect";
 import { routes, routesTo, withRouteAmount, type Route } from "../../synth/mod";
 import { clickVelocity, KEY_MAP, type Synth } from "../../synth/useSynth";
 
@@ -99,6 +100,9 @@ function Knob({ id, synth, spot }: { id: keyof SynthState; synth: Synth; spot: b
   const box = isBox(id);
   const drag = useRef<{ y: number; travel: number } | null>(null);
   const [depthText, setDepthText] = useState<string | null>(null);
+  /** While a source is being dragged over this knob: whether it can be dropped here, and what to say. */
+  const [over, setOver] = useState<{ ok: boolean; text: string } | null>(null);
+  const offer = () => { const d = currentDrag(); return d ? connect(synth.state, d, id as string) : null; };
   const set = (v: number) => { if (v !== synth.state[id]) synth.setState({ [id]: v } as Partial<SynthState>); };
   const steps = (spec.max! - spec.min!) / (spec.step ?? 1);
   const pixels = box ? Math.max(60, steps * 14) : 170; // drag distance for the whole travel
@@ -124,7 +128,11 @@ function Knob({ id, synth, spot }: { id: keyof SynthState; synth: Synth; spot: b
   const played = slots.length ? toTravel(spec, synth.effective[id] as number) : t;
   const zero = spec.min! < 0 && spec.max! > 0 ? -SWEEP / 2 + toTravel(spec, 0) * SWEEP : -SWEEP / 2;
   return (
-    <div className={`${box ? "nbox" : "knob"}${spot ? " spot" : ""}${lit ? " moved" : ""}`} style={lit ? ({ "--glow": mods[0]?.source.color ?? slots[0]!.color } as React.CSSProperties) : undefined} role="slider" tabIndex={0} aria-label={spec.label} aria-orientation="vertical"
+    <div className={`${box ? "nbox" : "knob"}${spot ? " spot" : ""}${lit ? " moved" : ""}${over ? (over.ok ? " drop-yes" : " drop-no") : ""}`}
+      onDragEnter={() => { const c = offer(); if (c) setOver(c.ok ? { ok: true, text: `Drop to connect ${dragName(currentDrag()!)}` } : { ok: false, text: c.why }); }}
+      onDragOver={(e) => { const c = offer(); if (c?.ok) { e.preventDefault(); e.dataTransfer.dropEffect = "link"; } }}
+      onDragLeave={() => setOver(null)}
+      onDrop={(e) => { e.preventDefault(); const c = offer(); setOver(null); endDrag(); if (c?.ok) { synth.flag("dropped"); synth.setState(c.change); } }} style={lit ? ({ "--glow": mods[0]?.source.color ?? slots[0]!.color } as React.CSSProperties) : undefined} role="slider" tabIndex={0} aria-label={spec.label} aria-orientation="vertical"
       aria-valuemin={spec.min} aria-valuemax={spec.max} aria-valuenow={value} aria-valuetext={fmt(id, value)}
       title={`${spec.label}: drag up or down, or click and use the arrow keys. Double-click to reset.${lit ? ` Moved by ${[...mods.map((m) => m.source.name), ...slots.map((m) => m.name)].join(" and ")}.` : ""}`}
       onKeyDown={onKey} onDoubleClick={reset}
@@ -161,7 +169,7 @@ function Knob({ id, synth, spot }: { id: keyof SynthState; synth: Synth; spot: b
       {/* every source moving this knob gets a handle here: its depth can be set without leaving the knob */}
       {handles.length > 0 && <span className="depths">{handles.map((m) => <DepthHandle key={m.key} route={m} label={spec.label} synth={synth} onShow={setDepthText} />)}</span>}
       <span className="knob-name">{shortLabel(spec.label)}</span>
-      <output>{depthText ?? fmt(id, value)}</output>
+      <output>{over?.text ?? depthText ?? fmt(id, value)}</output>
     </div>
   );
 }

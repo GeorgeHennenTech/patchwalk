@@ -1,15 +1,16 @@
 // The practice synth drawn as a rack of module panels, in the order the sound flows and the order most
 // wavetable synths (Serum included) lay them out: sub, oscillator A, oscillator B, noise, filter. Each panel
 // has its on/off switch and name on top, a picture of what it is doing, and its controls underneath.
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { Panel, PlayableLesson } from "../../course/types";
+import { dragColor, dragName, endDrag, startDrag, type Draggable } from "../../synth/connect";
 import { MACRO_COLORS } from "../../synth/macros";
 import { FX_NAMES, FX_ORDER } from "../../synth/fx";
-import { adsr, ENV1_COLOR, envLevel, lfoValue, SOURCES, type Adsr, type ModSource } from "../../synth/mod";
+import { adsr, ENV1_COLOR, envLevel, lfoValue, routes, SOURCES, type Adsr, type ModSource } from "../../synth/mod";
 import { harmonic, spectrumA, HARMONICS, LFO_STEPS, MACRO_SLOTS, MACROS, PARAMS, type Group, type SynthState } from "../../synth/params";
 import type { Synth } from "../../synth/useSynth";
 import { Control, isBox } from "./Controls";
-import { FilterCurve, Reduction } from "./Views";
+import { FilterCurve, Matrix, Reduction } from "./Views";
 
 export interface Module { id: string; name: string; groups: Group[]; toggle?: keyof SynthState; color?: string; source?: ModSource }
 export const MODULES: Module[] = [
@@ -78,54 +79,143 @@ function Display({ module, synth, note }: { module: Module; synth: Synth; note: 
   return <svg className="mod-wave" viewBox="0 0 200 64" preserveAspectRatio="none" role="img" aria-label={`${module.name} wave`}>{module.source?.startsWith("lfo") && <line className="mod-mid" x1="0" x2="200" y1="32" y2="32" />}<path d={d} /></svg>;
 }
 
+/**
+ * The handle a source is dragged by. Drop it on any knob to connect the source to that knob; what happens
+ * then is decided by `connect` (the source's own connection first, then a matrix row; a macro's next free slot).
+ */
+export function Grip({ id }: { id: Draggable }) {
+  return (
+    <span className="grip" draggable role="img" aria-label={`Drag ${dragName(id)} onto a knob to connect it`} title={`Drag ${dragName(id)} onto any knob to connect it`} style={{ color: dragColor(id) }}
+      onClick={(e) => e.preventDefault()}
+      onDragStart={(e) => { e.dataTransfer.setData("text/plain", id); e.dataTransfer.effectAllowed = "link"; startDrag(id); }} onDragEnd={endDrag}>✥</span>
+  );
+}
+
 export function Rack({ synth, show, all, lesson, note }: { synth: Synth; show: Panel[]; all: boolean; lesson: PlayableLesson; note: number | null }) {
   const on = (p: Panel) => all || show.includes(p);
   const s = synth.state;
-  const row = (modules: Module[], cls: string) => {
-  const panels = modules.map((m) => {
-    const ids = (Object.keys(PARAMS) as (keyof SynthState)[]).filter((id) => m.groups.includes(PARAMS[id]!.group) && id !== m.toggle && on(id) && (id !== "freeHz" || s.freeHz !== null));
-    const toggle = m.toggle && on(m.toggle) ? m.toggle : undefined;
-    const curve = m.id === "filter" && !all && show.includes("curve");
-    return { m, ids, toggle, curve };
-  }).filter((x) => all || x.ids.length || x.toggle || x.curve);
-  if (!panels.length) return null;
-  return (
-    <div className={`rack ${cls}${all ? " full" : ""}`}>
-      {panels.map(({ m, ids, toggle, curve }) => {
-        const off = !!m.toggle && !s[m.toggle];
-        const kind = (k: string) => ids.filter((id) => (k === "box" ? PARAMS[id]!.kind === "range" && isBox(id) : k === "knob" ? PARAMS[id]!.kind === "range" && !isBox(id) : PARAMS[id]!.kind === k));
-        return (
-          <section key={m.id} className={`mod mod-${m.id}${off && all ? " off" : ""}${m.color ? " neon" : ""}${idle(m) ? " idle" : ""}`} style={m.color ? ({ "--glow": m.color } as React.CSSProperties) : undefined} aria-label={m.name}>
-            {toggle ? (
-              <label className={`mod-head${show.includes(toggle) ? " spot" : ""}`}>
-                <input type="checkbox" checked={!!s[toggle]} aria-label={PARAMS[toggle]!.label} onChange={(e) => synth.setState({ [toggle]: e.target.checked } as Partial<SynthState>)} />
-                <span>{m.name}</span><em>{s[toggle] ? "on" : "off"}</em>
-              </label>
-            ) : <div className="mod-head"><span>{m.name}</span></div>}
-            <div className="mod-body">
-              {/* an LFO's shape is shown whenever its controls are, so a lesson can point at it */}
-              {(all || m.source?.startsWith("lfo")) && <Display module={m} synth={synth} note={note} />}
-              {curve && <FilterCurve synth={synth} note={note} spot />}
-              {m.id === "fx-comp" && <Reduction synth={synth} />}
-              {kind("menu").map((id) => <Control key={id} id={id} synth={synth} spot={show.includes(id)} />)}
-              {kind("choice").map((id) => <Control key={id} id={id} synth={synth} spot={show.includes(id)} only={!all && id === "shape" ? lesson.shapes : undefined} />)}
-              {kind("box").length > 0 && <div className="mod-row">{kind("box").map((id) => <Control key={id} id={id} synth={synth} spot={show.includes(id)} />)}</div>}
-              {kind("knob").length > 0 && <div className="mod-row">{kind("knob").map((id) => <Control key={id} id={id} synth={synth} spot={show.includes(id)} />)}</div>}
-            </div>
-          </section>
-        );
-      })}
-    </div>
-  );
-  };
+  const [page, setPage] = useState<"synth" | "fx" | "matrix">("synth");
+  const [tabs, setTabs] = useState<Record<string, string>>({ env: "env1", lfo: "lfo1", note: "vel" });
   /** A source that is not sent anywhere yet. */
   const idle = (m: Module) => !!m.source && s[`${m.source}Dest`] === "none";
+  const idsOf = (m: Module) => (Object.keys(PARAMS) as (keyof SynthState)[]).filter((id) => m.groups.includes(PARAMS[id]!.group) && id !== m.toggle && on(id) && (id !== "freeHz" || s.freeHz !== null));
+  /** A module's picture and controls: menus, choices, number boxes, then knobs. */
+  const body = (m: Module, ids: (keyof SynthState)[], curve: boolean) => {
+    const kind = (k: string) => ids.filter((id) => (k === "box" ? PARAMS[id]!.kind === "range" && isBox(id) : k === "knob" ? PARAMS[id]!.kind === "range" && !isBox(id) : PARAMS[id]!.kind === k));
+    return (
+      <div className="mod-body">
+        {/* an LFO's shape is shown whenever its controls are, so a lesson can point at it */}
+        {(all || m.source?.startsWith("lfo")) && <Display module={m} synth={synth} note={note} />}
+        {curve && <FilterCurve synth={synth} note={note} spot />}
+        {m.id === "fx-comp" && <Reduction synth={synth} />}
+        {kind("menu").map((id) => <Control key={id} id={id} synth={synth} spot={show.includes(id)} />)}
+        {kind("choice").map((id) => <Control key={id} id={id} synth={synth} spot={show.includes(id)} only={!all && id === "shape" ? lesson.shapes : undefined} />)}
+        {kind("box").length > 0 && <div className="mod-row">{kind("box").map((id) => <Control key={id} id={id} synth={synth} spot={show.includes(id)} />)}</div>}
+        {kind("knob").length > 0 && <div className="mod-row">{kind("knob").map((id) => <Control key={id} id={id} synth={synth} spot={show.includes(id)} />)}</div>}
+      </div>
+    );
+  };
+  const row = (modules: Module[], cls: string) => {
+    const panels = modules.map((m) => ({ m, ids: idsOf(m), toggle: m.toggle && on(m.toggle) ? m.toggle : undefined, curve: m.id === "filter" && !all && show.includes("curve") }))
+      .filter((x) => all || x.ids.length || x.toggle || x.curve);
+    if (!panels.length) return null;
+    return (
+      <div className={`rack ${cls}${all ? " full" : ""}`}>
+        {panels.map(({ m, ids, toggle, curve }) => {
+          const off = !!m.toggle && !s[m.toggle];
+          return (
+            <section key={m.id} className={`mod mod-${m.id}${off && all ? " off" : ""}${m.color ? " neon" : ""}${idle(m) ? " idle" : ""}`} style={m.color ? ({ "--glow": m.color } as React.CSSProperties) : undefined} aria-label={m.name}>
+              {toggle ? (
+                <label className={`mod-head${show.includes(toggle) ? " spot" : ""}`}>
+                  <input type="checkbox" checked={!!s[toggle]} aria-label={PARAMS[toggle]!.label} onChange={(e) => synth.setState({ [toggle]: e.target.checked } as Partial<SynthState>)} />
+                  <span>{m.name}</span><em>{s[toggle] ? "on" : "off"}</em>
+                </label>
+              ) : <div className="mod-head">{m.source && <Grip id={m.source} />}<span>{m.name}</span></div>}
+              {body(m, ids, curve)}
+            </section>
+          );
+        })}
+      </div>
+    );
+  };
   const macros = MACRO_MODULES.filter((m, i) => all || (Object.keys(PARAMS) as Panel[]).some((id) => PARAMS[id as string]!.group === m.groups[0] && show.includes(id)) || show.includes(`macro${i + 1}Name` as Panel));
-  return (
+
+  // In a lesson step: only the panels that step needs, large.
+  if (!all) return (
     <>
       {row(MODULES, "sources")}{row(MOD_MODULES, "mods")}{row(FX_MODULES, "fx")}
-      {macros.length > 0 && <div className={`rack macros${all ? " full" : ""}`}>{macros.map((m) => <MacroPanel key={m.id} n={Number(m.id.slice(5))} color={m.color!} synth={synth} show={show} all={all} />)}</div>}
+      {macros.length > 0 && <div className="rack macros">{macros.map((m) => <MacroPanel key={m.id} n={Number(m.id.slice(5))} color={m.color!} synth={synth} show={show} all={false} />)}</div>}
     </>
+  );
+
+  // The whole synth: three pages, as Serum has. Sources of movement share tabbed panels so it fits one screen.
+  const group = (key: string, label: string, modules: Module[]) => {
+    const m = modules.find((x) => x.id === tabs[key]) ?? modules[0]!;
+    const count = (x: Module) => (x.source ? routes(s).filter((r) => r.source.id === x.source && r.amount !== 0).length : 0);
+    return (
+      <section className={`mod neon tabbed group-${key}${idle(m) ? " idle" : ""}`} style={{ "--glow": m.color } as React.CSSProperties} aria-label={label}>
+        <div className="mod-tabs" role="tablist" aria-label={label}>
+          {modules.map((x) => (
+            // not a <button>: browsers will not start a drag from inside one, and the handle lives in here
+            <div key={x.id} role="tab" tabIndex={0} aria-selected={x.id === m.id} className={`mod-tab${x.id === m.id ? " on" : ""}`} style={{ "--glow": x.color } as React.CSSProperties}
+              onClick={() => setTabs((t) => ({ ...t, [key]: x.id }))} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setTabs((t) => ({ ...t, [key]: x.id })); } }}>
+              {x.source && <Grip id={x.source} />}{({ env1: "Env 1", vel: "Vel", key: "Key" } as Record<string, string>)[x.id] ?? x.name}{count(x) > 0 && <b title={`${count(x)} connection${count(x) === 1 ? "" : "s"}`}>{count(x)}</b>}
+            </div>
+          ))}
+        </div>
+        {body(m, idsOf(m), false)}
+      </section>
+    );
+  };
+  const mod = (id: string) => MOD_MODULES.find((m) => m.id === id)!;
+  return (
+    <>
+      <div className="synth-tabs" role="tablist" aria-label="Synth pages">
+        {([["synth", "Synth"], ["fx", "FX"], ["matrix", "Matrix"]] as const).map(([id, label]) => <button key={id} role="tab" aria-selected={page === id} className={page === id ? "on" : ""} onClick={() => setPage(id)}>{label}{id === "fx" && FX_ORDER.some((f) => s[`${f}On`]) && <b>{FX_ORDER.filter((f) => s[`${f}On`]).length}</b>}</button>)}
+      </div>
+      {page === "synth" && (
+        <>
+          {row(MODULES, "sources")}
+          <div className="rack full modrow">
+            <MacroGrid synth={synth} />
+            {group("env", "Envelopes", [mod("env1"), mod("env2")])}
+            {group("lfo", "LFOs", [mod("lfo1"), mod("lfo2"), mod("lfo3")])}
+            {group("note", "From the keys", [mod("vel"), mod("key")])}
+          </div>
+        </>
+      )}
+      {page === "fx" && row(FX_MODULES, "fx")}
+      {page === "matrix" && <Matrix synth={synth} />}
+    </>
+  );
+}
+
+/**
+ * The macros as Serum places them: a small block at the bottom left, one compact knob each with its name
+ * underneath and a handle to drag onto a knob. Clicking a name opens that macro's slots for editing.
+ */
+function MacroGrid({ synth }: { synth: Synth }) {
+  const [editing, setEditing] = useState<number | null>(null);
+  const s = synth.state as unknown as Record<string, string | number>;
+  return (
+    <section className="mod mod-macros" aria-label="Macros">
+      <div className="mod-head"><span>Macros</span></div>
+      <div className="mod-body">
+        <div className="macro-grid">
+          {MACROS.map((n) => {
+            const used = MACRO_SLOTS.filter((k) => s[`macro${n}Dest${k}`] !== "none").length;
+            return (
+              <div key={n} className={`macro-cell${used ? "" : " idle"}`} style={{ "--glow": MACRO_COLORS[n - 1] } as React.CSSProperties}>
+                <Grip id={`macro${n}`} />
+                <Control id={`macro${n}` as keyof SynthState} synth={synth} spot={false} />
+                <button className="macro-label" aria-expanded={editing === n} title="Name this macro and choose what it moves" onClick={() => setEditing(editing === n ? null : n)}>{(s[`macro${n}Name`] as string) || `Macro ${n}`}{used > 0 && <b>{used}</b>}</button>
+              </div>
+            );
+          })}
+        </div>
+        {editing !== null && <MacroPanel n={editing} color={MACRO_COLORS[editing - 1]!} synth={synth} show={[]} all bare />}
+      </div>
+    </section>
   );
 }
 
@@ -133,14 +223,14 @@ export function Rack({ synth, show, all, lesson, note }: { synth: Synth; show: P
  * One macro: its name, its knob, and three slots. Each slot is "send to this knob, by this much". The slots
  * are laid out as pairs so it is plain which amount belongs to which destination.
  */
-function MacroPanel({ n, color, synth, show, all }: { n: number; color: string; synth: Synth; show: Panel[]; all: boolean }) {
+function MacroPanel({ n, color, synth, show, all, bare }: { n: number; color: string; synth: Synth; show: Panel[]; all: boolean; bare?: boolean }) {
   const on = (id: string) => all || show.includes(id as Panel);
   const s = synth.state as unknown as Record<string, string | number>;
   const name = s[`macro${n}Name`] as string;
   const used = MACRO_SLOTS.some((k) => s[`macro${n}Dest${k}`] !== "none");
   return (
-    <section className={`mod mod-macro neon${used ? "" : " idle"}`} style={{ "--glow": color } as React.CSSProperties} aria-label={`Macro ${n}`}>
-      <div className="mod-head"><span>{name || `Macro ${n}`}</span></div>
+    <section className={`mod mod-macro neon${used ? "" : " idle"}${bare ? " bare" : ""}`} style={{ "--glow": color } as React.CSSProperties} aria-label={`Macro ${n}`}>
+      {!bare && <div className="mod-head"><Grip id={`macro${n}`} /><span>{name || `Macro ${n}`}</span></div>}
       <div className="mod-body">
         {on(`macro${n}Name`) && (
           <label className={`pick menu${show.includes(`macro${n}Name` as Panel) ? " spot" : ""}`}>
@@ -148,7 +238,7 @@ function MacroPanel({ n, color, synth, show, all }: { n: number; color: string; 
             <input className="macro-name" type="text" maxLength={18} value={name} aria-label={`Macro ${n} name`} onChange={(e) => synth.setState({ [`macro${n}Name`]: e.target.value } as Partial<SynthState>)} />
           </label>
         )}
-        {on(`macro${n}`) && <div className="mod-row"><Control id={`macro${n}` as keyof SynthState} synth={synth} spot={show.includes(`macro${n}` as Panel)} /></div>}
+        {on(`macro${n}`) && !bare && <div className="mod-row"><Control id={`macro${n}` as keyof SynthState} synth={synth} spot={show.includes(`macro${n}` as Panel)} /></div>}
         {MACRO_SLOTS.filter((k) => on(`macro${n}Dest${k}`) || on(`macro${n}Amt${k}`)).map((k) => (
           <div key={k} className="macro-slot">
             {on(`macro${n}Dest${k}`) && <Control id={`macro${n}Dest${k}` as keyof SynthState} synth={synth} spot={show.includes(`macro${n}Dest${k}` as Panel)} />}

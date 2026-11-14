@@ -389,6 +389,84 @@ label.mod-head { cursor: pointer; }
 .pick.menu { flex-wrap: nowrap; }
 .pick select { flex: 1; min-width: 0; padding: 4px 6px; border-radius: 8px; border: 2px solid var(--line); background: var(--panel); color: var(--text); font: inherit; font-size: 13px; }
 .rack.mods .mod { flex: 1 1 190px; }
+/* ---- drag a source onto a knob ---- */
+.grip { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid currentColor; font-size: 12px; line-height: 1; cursor: grab; user-select: none; -webkit-user-select: none; flex: 0 0 auto; background: rgba(0, 0, 0, 0.35); }
+.grip:active { cursor: grabbing; }
+.mod-head .grip { background: #1b0d24; padding: 0; border-radius: 6px; }
+body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2px; }
+.knob.drop-yes { outline: 3px solid #7dff5c !important; background: rgba(125, 255, 92, 0.16); }
+.knob.drop-no, .nbox.drop-no { outline: 3px solid #ff5a5a !important; }
+.knob.drop-yes output, .knob.drop-no output, .nbox.drop-no output { white-space: normal; text-align: center; max-width: 110px; font-size: 10px; }
+
+/* ---- the whole synth, compact: pages along the top, tabbed sources, a small macro block ---- */
+.synth-tabs { display: flex; gap: 6px; margin: 8px 0 6px; }
+.synth-tabs button { font: inherit; font-weight: 800; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 18px; border-radius: 10px 10px 0 0; border: 2px solid var(--line); border-bottom-width: 4px; background: var(--panel); color: var(--muted); cursor: pointer; }
+.synth-tabs button.on { color: var(--text); border-color: var(--accent); }
+.synth-tabs button b, .mod-tabs .mod-tab b, .macro-label b { display: inline-block; margin-left: 6px; min-width: 16px; padding: 0 4px; border-radius: 999px; background: var(--accent); color: #fff; font-size: 10px; line-height: 16px; text-align: center; }
+.rack.full { gap: 6px; margin-bottom: 6px; }
+.rack.full .mod-head { padding: 3px 6px; font-size: 11px; }
+.rack.full .mod-body { padding: 5px; gap: 4px; }
+.rack.full .mod-wave, .rack.full .view.curve.compact canvas { height: 40px; }
+.rack.full .lfo-draw { height: 56px; }
+.rack.full .mod-row { gap: 2px; }
+.rack.full .knob, .rack.full .nbox { padding: 2px 1px; min-width: 50px; border-width: 1px; }
+.rack.full .knob svg { width: 34px; height: 34px; }
+.rack.full .knob-name { font-size: 9px; letter-spacing: 0.03em; }
+.rack.full .knob output, .rack.full .nbox output { font-size: 10px; }
+.rack.full .nbox { padding: 2px 5px; gap: 0 5px; }
+.rack.full .pick { padding: 1px; gap: 2px 6px; }
+.rack.full .pick .seg button { padding: 1px 7px; font-size: 11px; }
+.rack.full .pick select { padding: 2px 4px; font-size: 11px; }
+.rack.full .knob .depth { width: 10px; height: 10px; border-width: 1.5px; }
+.rack.full .ctl.reduction { padding: 3px 6px; font-size: 10px; }
+.rack.full.sources .mod-sub, .rack.full.sources .mod-noise { flex: 0.8 1 84px; }
+.rack.full.sources .mod-a { flex: 3.4 1 300px; }
+.rack.full.sources .mod-b { flex: 2 1 170px; }
+.rack.full.sources .mod-filter { flex: 2.4 1 210px; }
+.rack.full.modrow .mod-macros { flex: 0 0 176px; }
+.rack.full.modrow .group-env { flex: 2 1 230px; }
+.rack.full.modrow .group-lfo { flex: 3.2 1 330px; }
+.rack.full.modrow .group-note { flex: 1 1 150px; }
+.rack.full.fx .mod { flex: 1 1 150px; }
+.rack.full .mod-body { flex-direction: row; flex-wrap: wrap; align-items: flex-start; align-content: flex-start; }
+.rack.full .mod-body > .mod-wave, .rack.full .mod-body > .view, .rack.full .mod-body > .lfo-draw, .rack.full .mod-body > .mod-row, .rack.full .mod-body > .ctl { flex: 1 1 100%; }
+.rack.full .mod-body > .pick { flex: 0 1 auto; }
+.rack.full .mod-body > .pick.menu { flex: 1 1 130px; }
+.rack.full .mod-row { justify-content: flex-start; }
+.synth.whole .synth-top { gap: 6px 10px; }
+.synth.whole .synth-main { padding: 0 8px; gap: 6px; }
+.synth.whole .synth-main .knob { padding: 0 2px; min-width: 50px; }
+.synth.whole .synth-main .knob svg { width: 30px; height: 30px; }
+.synth.whole .synth-main .knob-name { font-size: 9px; }
+.synth.whole .synth-main .knob output { font-size: 10px; }
+.synth.whole .synth-main .ctl { padding: 2px 6px; flex: 0 1 auto; border: 0; background: none; }
+.synth.whole .synth-main .ctl.meter { flex: 0 1 190px; min-width: 150px; }
+.synth.whole .synth-tabs { margin: 4px 0 6px; }
+.synth.whole .synth-top .primary.big { padding: 6px 14px; font-size: 14px; }
+.synth.whole .view-toggles { gap: 4px; font-size: 12px; }
+.synth.whole .view-toggles button { padding: 2px 8px; font-size: 12px; }
+.synth.whole .synth-main .ctl.meter { flex: 0 1 150px; min-width: 120px; }
+.synth.whole .synth-main .ctl.meter .ctl-name { display: none; }
+.synth.whole .synth-main .ctl.meter output { min-width: 56px; font-size: 11px; }
+.rack.full .mod-body > .pick.menu { min-width: 0; max-width: 100%; }
+.rack.full .pick.menu select { width: 100%; min-width: 56px; }
+.synth.whole .synth-ctls { margin: 4px 0; }
+.synth.whole .keys { height: 74px; }
+/* on a wide screen the page tabs sit on the same line as the tempo, meter and volume */
+@media (min-width: 1100px) { .synth.whole .synth-tabs { margin-top: -40px; width: max-content; } }
+.synth.whole .synth-ctls .ctl { padding: 3px 10px; flex: 0 1 auto; }
+.mod-tabs { display: flex; gap: 2px; padding: 3px 3px 0; border-bottom: 2px solid var(--glow, var(--line)); }
+.mod-tabs .mod-tab { display: inline-flex; align-items: center; gap: 4px; font: inherit; font-size: 11px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; padding: 3px 7px; border-radius: 8px 8px 0 0; border: 1.5px solid var(--line); border-bottom: 0; background: transparent; color: var(--muted); cursor: pointer; white-space: nowrap; }
+.mod-tabs .mod-tab.on { color: var(--glow); border-color: var(--glow); background: rgba(255, 255, 255, 0.06); }
+.mod-tabs .grip { width: 16px; height: 16px; font-size: 10px; }
+.macro-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.macro-cell { position: relative; display: flex; flex-direction: column; align-items: center; padding: 2px; border: 1.5px solid var(--glow); border-radius: 10px; }
+.macro-cell.idle { border-color: var(--line); }
+.macro-cell .grip { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; font-size: 10px; z-index: 2; }
+.macro-cell .knob { padding-left: 14px; }
+.macro-cell .knob-name { display: none; }
+.macro-label { font: inherit; font-size: 10px; font-weight: 700; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 1px 4px; border: 0; background: none; color: var(--glow); cursor: pointer; }
+.mod-macros .mod-macro.bare { border: 0; border-top: 2px dashed var(--line); border-radius: 0; margin-top: 4px; box-shadow: none; background: none; }
 /* depth handles: one small dot per source moving a knob, at the knob's top right */
 .knob, .nbox { position: relative; }
 .knob .depths { position: absolute; top: 0; right: 0; display: flex; flex-direction: column; gap: 3px; }

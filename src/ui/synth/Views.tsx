@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { effectiveCutoff, filterResponseDb } from "../../synth/filter";
 import { macroSlots, slotPush } from "../../synth/macros";
-import { adsr, ENV1_COLOR, fallShape, SOURCES } from "../../synth/mod";
+import { adsr, ENV1_COLOR, fallShape, routes, SOURCES } from "../../synth/mod";
 import { MATRIX_MAX, PARAMS, type MatrixRow, type SynthState } from "../../synth/params";
 import type { Synth } from "../../synth/useSynth";
 import { DestOptions, fromTravel, toTravel } from "./Controls";
@@ -284,6 +284,7 @@ export function Matrix({ synth }: { synth: Synth }) {
   const slots = macroSlots(s);
   return (
     <figure className="view matrix">
+      <div className="matrix-head"><span>Matrix</span><em>{routes(s).length + slots.length} connection{routes(s).length + slots.length === 1 ? "" : "s"}</em></div>
       <table>
         <thead><tr><th>Source</th><th>Moves</th><th>Amount</th><th>Direction</th><th /></tr></thead>
         <tbody>

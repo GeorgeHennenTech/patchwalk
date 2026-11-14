@@ -36,6 +36,7 @@ const VIEWS: { id: Panel; label: string }[] = [
 ];
 const VIEWS_KEY = "patchwalk.play.views";
 const SKIN_KEY = "patchwalk.play.skin";
+const MOTION_KEY = "patchwalk.play.motion";
 function loadViews(): Panel[] {
   try { const v = JSON.parse(localStorage.getItem(VIEWS_KEY) ?? "[]"); return Array.isArray(v) ? VIEWS.map((x) => x.id).filter((id) => v.includes(id)) : []; } catch { return []; }
 }
@@ -44,10 +45,37 @@ function SynthPanel({ synth, show, lesson, all, lastNote, extra = [], onExtra, p
   const on = (p: Panel) => all || show.includes(p) || extra.includes(p);
   // Views are opened by the step or from the Show row; the whole synth does not open them all by itself.
   const view = (p: Panel) => show.includes(p) || extra.includes(p);
+  // The skin moves: its glow breathes with how loud the sound is, and its fabric drifts. "Motion" switches that off.
+  const [still, setStill] = useState(() => { try { return localStorage.getItem(MOTION_KEY) === "off"; } catch { return false; } });
+  const root = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (plain || still) { root.current?.style.removeProperty("--level"); return; }
+    const buf = new Float32Array(2048);
+    let frame = 0, n = 0, level = 0;
+    const loop = () => {
+      // every third frame is plenty, and keeps this cheap
+      if (n++ % 3 === 0) {
+        const db = synth.engine.current?.running ? synth.engine.current.peakDb(buf) : -Infinity;
+        const now = Number.isFinite(db) ? Math.min(1, Math.max(0, (db + 48) / 40)) : 0;
+        level = now > level ? now : level * 0.88 + now * 0.12; // up at once, down gently
+        root.current?.style.setProperty("--level", level.toFixed(3));
+      }
+      frame = requestAnimationFrame(loop);
+    };
+    frame = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(frame);
+  }, [plain, still, synth.engine]);
   const note = synth.held.at(-1) ?? lastNote ?? null;
   const beat = beatHz(synth.state, note ?? 57);
   return (
-    <div className={`synth${plain ? " plain" : ""}${all ? " whole" : ""}`}>
+    <div ref={root} className={`synth${plain ? " plain" : ""}${all ? " whole" : ""}${still ? " still" : ""}`}>
+      {/* shading shared by every knob: a domed cap and a metal rim */}
+      <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true" focusable="false">
+        <defs>
+          <radialGradient id="knob-cap-fill" cx="38%" cy="30%" r="80%"><stop offset="0%" stopColor="#4a2b5c" /><stop offset="55%" stopColor="#1d0e27" /><stop offset="100%" stopColor="#090410" /></radialGradient>
+          <linearGradient id="knob-rim-fill" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#fff3e2" /><stop offset="45%" stopColor="#8d6fa3" /><stop offset="100%" stopColor="#2a1533" /></linearGradient>
+        </defs>
+      </svg>
       <div className="synth-top">
         {!synth.running && onExtra && <button className="primary big" onClick={() => void synth.start()}>Start audio</button>}
         {onExtra && (
@@ -58,6 +86,7 @@ function SynthPanel({ synth, show, lesson, all, lastNote, extra = [], onExtra, p
               return <button key={v.id} aria-pressed={view(v.id)} disabled={fixed} title={fixed ? "This step is using it" : undefined} onClick={() => onExtra(v.id)}>{v.label}</button>;
             })}
             {onSkin && <button className="skin-toggle" aria-pressed={!plain} onClick={onSkin} title="Switch the synth's velvet-and-neon look on or off">Skin: {plain ? "off" : "on"}</button>}
+            {onSkin && !plain && <button className="skin-toggle" aria-pressed={!still} onClick={() => setStill((v) => { try { localStorage.setItem(MOTION_KEY, v ? "on" : "off"); } catch { /* not remembered */ } return !v; })} title="Switch the skin's movement on or off: the glow that follows the sound, and the drifting fabric">Motion: {still ? "off" : "on"}</button>}
           </div>
         )}
         {(on("volumeDb") || on("meter") || on("bpm") || on("clickOn")) && (

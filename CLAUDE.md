@@ -382,6 +382,17 @@ Added after the first eight milestones (owner asked for all four in one go):
     Drawn shape, which already existed). In the one fixed-frequency lesson the Osc A panel now says its
     pitch is pinned and offers "Follow the keys instead": the owner had reported that B's pitch controls
     worked and A's did not, which is exactly that lesson's whole-synth view.
+  - **Second pass on the skin, and motion (14 Nov 2026, owner's request).** A second block at the end of
+    `skin.css` (still under `.synth:not(.plain)`): knobs gained a metal rim, a domed cap and a highlight
+    (two gradients defined once in a hidden `<svg>` in `SynthPanel`, plus `knob-rim` and `knob-shine` in
+    each knob); panels are bevelled; the wave pictures sit on a faint grid; the page tabs, the six effects
+    and the Matrix page wear the same fabric name patches as the oscillators (`matrix-head`); an effect
+    that is switched on has a lit edge; the keyboard has depth. **Motion**: `SynthPanel` sets `--level` (0
+    to 1, from the output's peak, up at once and down gently) on the synth about twenty times a second, and
+    the CSS uses it for a glow that follows the sound; the fabric drifts slowly, the stitched outline
+    breathes, a sheen crosses an effect that is on, a page arrives with a small lift. A "Motion: on/off"
+    button sits beside "Skin" (class `still`, remembered in the browser); all motion is also off when the
+    system asks for reduced motion, and with the skin off. CSS and two gradients only; no new artwork.
   - Not built yet: MIDI input, a mod wheel, drag-and-drop on touch screens, reordering effects. **Owner's order (13 Nov 2026), after
     warp/FM/ring which is done: the first impact lessons (they need nothing new); then physical modelling
     and bioacoustics.**

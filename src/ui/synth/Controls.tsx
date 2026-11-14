@@ -190,7 +190,9 @@ function Knob({ id, synth, spot }: { id: keyof SynthState; synth: Synth; spot: b
           })}
           <path className="knob-track" d={arc(-SWEEP / 2, SWEEP / 2, 20)} />
           {angle !== zero && <path className="knob-value" d={arc(zero, angle, 20)} />}
+          <circle className="knob-rim" cx="24" cy="24" r="15.4" />
           <circle className="knob-cap" cx="24" cy="24" r="14" />
+          <ellipse className="knob-shine" cx="20.5" cy="18.5" rx="7" ry="4.2" transform="rotate(-28 20.5 18.5)" />
           <path className="knob-mark" d={`M ${point(angle, 5)} L ${point(angle, 13)}`} />
           {mods.length > 0 && <LivePointer id={id} spec={spec} synth={synth} color={mods[0]!.source.color} />}
           {played !== t && <circle className="knob-played" cx={point(degrees(played), 20).split(" ")[0]} cy={point(degrees(played), 20).split(" ")[1]} r="2.6"><title>Where the macros have put it</title></circle>}

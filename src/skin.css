@@ -568,3 +568,103 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 .lfo-bar { fill: var(--accent); }
 .synth:not(.plain) .mod.neon .lfo-bar { fill: var(--glow); filter: drop-shadow(0 0 2px var(--glow)); }
 .synth-main .ctl.toggle { border: 0; padding: 0; background: none; }
+
+/* ---- Second pass on the synth's look (14 Nov 2026): every page skinned alike, finer knobs, and motion ---- */
+.knob-rim, .knob-shine { fill: none; pointer-events: none; }
+.matrix-head { display: none; }
+.synth:not(.plain) {
+  /* knobs: a metal rim, a domed cap with a highlight, a firmer pointer */
+  .knob-rim { fill: url(#knob-rim-fill); }
+  .knob-cap { fill: url(#knob-cap-fill); stroke: none; }
+  .knob-shine { fill: rgba(255, 255, 255, 0.13); }
+  .knob-mark { stroke-width: 2.6; filter: drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.6)); }
+  .knob-track { stroke: #2f1b3d; }
+  .knob svg { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.55)); transition: transform 0.12s ease-out; }
+  .knob:hover svg, .knob:focus-visible svg { transform: scale(1.06); }
+  .knob:hover .knob-cap, .knob:focus-visible .knob-cap { fill: url(#knob-cap-fill); }
+  .knob:hover .knob-rim, .knob:focus-visible .knob-rim { filter: drop-shadow(0 0 3px var(--accent)); }
+  .knob.moved .knob-cap { stroke: none; filter: none; }
+  .knob.moved .knob-rim { filter: drop-shadow(0 0 4px var(--glow)); }
+  .knob output, .nbox output { color: #e9d8f2; }
+
+  /* panels: a bevelled face, a soft inner shadow, and screens that look like screens */
+  .mod { background: linear-gradient(180deg, #2a1436 0%, #1a0c23 38%, #140919 100%); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -10px 18px -12px rgba(0, 0, 0, 0.8), 0 4px 0 rgba(0, 0, 0, 0.5), 0 10px 18px -10px rgba(0, 0, 0, 0.9); }
+  .mod-head span { box-shadow: 0 1px 0 rgba(0, 0, 0, 0.6); }
+  .mod-wave, .view.curve.compact canvas { border-radius: 9px; background-color: #07030b; background-image: linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px); background-size: 100% 25%, 12.5% 100%; box-shadow: inset 0 0 0 1px #4d3160, inset 0 6px 14px rgba(0, 0, 0, 0.9), 0 1px 0 rgba(255, 255, 255, 0.06); }
+  .view canvas { border-radius: 10px; box-shadow: inset 0 6px 14px rgba(0, 0, 0, 0.9); }
+  .seg { border-radius: 9px; box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.7); }
+  .seg button { transition: background 0.12s, color 0.12s; }
+  .pick select { box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.7); }
+  .nbox { border-radius: 9px; box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.7); }
+  .mod.off { filter: saturate(0.55); }
+  .mod.off .mod-head { opacity: 0.8; }
+
+  /* page tabs: stitched fabric tags */
+  .synth-tabs button { background: #1b0d24 center / 200px; color: #cbb5d8; border-color: #5a3a6e; border-bottom-style: dashed; text-shadow: 0 1px 0 #000; }
+  .synth-tabs button:nth-child(1) { background-image: linear-gradient(rgba(20, 8, 26, 0.62), rgba(20, 8, 26, 0.62)), url("./assets/skin/tiger.webp"); }
+  .synth-tabs button:nth-child(2) { background-image: linear-gradient(rgba(20, 8, 26, 0.62), rgba(20, 8, 26, 0.62)), url("./assets/skin/shag.webp"); }
+  .synth-tabs button:nth-child(3) { background-image: linear-gradient(rgba(20, 8, 26, 0.62), rgba(20, 8, 26, 0.62)), url("./assets/skin/mohair.webp"); }
+  .synth-tabs button.on { color: #fff; border-color: var(--accent); box-shadow: 0 0 12px rgba(255, 79, 168, 0.75), inset 0 0 0 1px rgba(255, 255, 255, 0.25); }
+
+  /* the FX page: the same fabric name patches as the oscillators, and a lit edge on whatever is switched on */
+  .mod[class*="mod-fx-"] .mod-head { background-size: 240px; }
+  .mod-fx-dist .mod-head { background-image: url("./assets/skin/tiger.webp"); }
+  .mod-fx-eq .mod-head { background-image: url("./assets/skin/quilt.webp"); background-size: 180px; }
+  .mod-fx-comp .mod-head { background-image: url("./assets/skin/leopard.webp"); }
+  .mod-fx-chorus .mod-head { background-image: url("./assets/skin/shag.webp"); }
+  .mod-fx-delay .mod-head { background-image: url("./assets/skin/mohair.webp"); }
+  .mod-fx-reverb .mod-head { background-image: url("./assets/skin/leopard.webp"); background-size: 320px; background-position: 70% 30%; }
+  .mod[class*="mod-fx-"]:not(.off) { border-color: var(--accent); box-shadow: 0 0 12px -2px var(--accent), inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 4px 0 rgba(0, 0, 0, 0.5); }
+  .ctl.reduction { background: #07030b; box-shadow: inset 0 0 0 1px #4d3160, inset 0 4px 10px rgba(0, 0, 0, 0.9); }
+  .meter-bar { background: #07030b; box-shadow: inset 0 0 0 1px #4d3160; }
+  .meter-bar div { background: linear-gradient(90deg, #7dff5c, #ffe14a 70%, #ff4fa8); box-shadow: 0 0 8px rgba(255, 79, 168, 0.6); }
+
+  /* the Matrix page: one panel with a fabric name patch, like the others */
+  .view.matrix { background: linear-gradient(180deg, #2a1436 0%, #1a0c23 38%, #140919 100%); border: 2px solid #5a3a6e; border-radius: 14px; overflow: hidden; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 4px 0 rgba(0, 0, 0, 0.5); padding-bottom: 8px; }
+  .matrix-head { display: flex; align-items: center; gap: 8px; padding: 6px 8px; background: #2a1533 url("./assets/skin/quilt.webp") center / 520px; border-bottom: 2px dashed rgba(251, 238, 222, 0.55); font-weight: 800; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .matrix-head span, .matrix-head em { background: #1b0d24; padding: 2px 9px; border-radius: 999px; border: 1.5px solid #fbeede; font-style: normal; }
+  .matrix-head em { margin-left: auto; font-size: 11px; font-weight: 600; border: 0; }
+  .view.matrix table { background: transparent; border: 0; border-radius: 0; }
+  .view.matrix th { background: rgba(0, 0, 0, 0.35); color: #cbb5d8; }
+  .view.matrix td, .view.matrix th { border-bottom-color: #3a2148; }
+  .view.matrix tbody tr:hover td { background: rgba(255, 79, 168, 0.08); }
+  .view.matrix select, .view.matrix input { background: #07030b; border-color: #4d3160; color: #fbeede; box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.7); }
+  .view.matrix td i { box-shadow: 0 0 7px currentColor, 0 0 0 1.5px rgba(255, 255, 255, 0.5); }
+  .view.matrix .matrix-add, .view.matrix figcaption { padding: 0 10px; }
+
+  /* the keyboard: keys with some depth, and a glow where a note is down */
+  .keys { border-color: #fbeede; box-shadow: 0 4px 0 rgba(0, 0, 0, 0.5), 0 0 0 2px #2a1533; background: #1a0b22; }
+  .key.white { background: linear-gradient(180deg, #fffaf0 0%, #fbeede 70%, #e2cdb6 100%); box-shadow: inset 0 -6px 6px -4px rgba(0, 0, 0, 0.35); }
+  .key.black { background: linear-gradient(180deg, #3a2148 0%, #160a1d 85%); box-shadow: inset 0 -5px 4px -2px rgba(255, 255, 255, 0.14), 0 3px 4px rgba(0, 0, 0, 0.6); }
+  .key.down { background: linear-gradient(180deg, #ff86c4, #ff2e93); box-shadow: 0 0 16px 2px rgba(255, 79, 168, 0.9), inset 0 0 8px rgba(255, 255, 255, 0.5); color: #fff; }
+
+  /* a line of light along the top edge of the whole instrument */
+  &::before { content: ""; position: absolute; left: 22px; right: 22px; top: 4px; height: 2px; border-radius: 2px; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent); pointer-events: none; }
+  & { position: relative; }
+}
+
+/* ---- Motion. All of it stops with the Motion button, with the skin off, or when the system asks for less movement. ---- */
+@keyframes pw-drift { from { background-position: 0 50%; } to { background-position: 440px 50%; } }
+@keyframes pw-stitch { 0%, 100% { outline-color: #ff4fa8; } 50% { outline-color: #ffc2e0; } }
+@keyframes pw-rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes pw-sheen { 0% { transform: translateX(-120%) skewX(-18deg); } 60%, 100% { transform: translateX(320%) skewX(-18deg); } }
+@keyframes pw-breathe { 0%, 100% { opacity: 0.75; } 50% { opacity: 1; } }
+@media (prefers-reduced-motion: no-preference) {
+  .synth:not(.plain):not(.still) {
+    /* the glow follows the sound: --level runs from 0 (silence) to 1 (loud), set by the synth as it plays */
+    & { animation: pw-stitch 5s ease-in-out infinite; box-shadow: 0 0 0 3px #2a1533, 7px 8px 0 rgba(20, 8, 26, 0.55), inset 0 0 calc(40px + 70px * var(--level, 0)) rgba(255, 79, 168, calc(0.12 + 0.3 * var(--level, 0))), 0 0 calc(34px * var(--level, 0)) rgba(255, 79, 168, calc(0.55 * var(--level, 0))); }
+    .mod-wave path, .lfo-bar { filter: drop-shadow(0 0 calc(3px + 7px * var(--level, 0)) currentColor); }
+    .mod-wave path { color: var(--glow, var(--accent)); }
+    .keys { box-shadow: 0 4px 0 rgba(0, 0, 0, 0.5), 0 0 0 2px #2a1533, 0 0 calc(26px * var(--level, 0)) rgba(255, 79, 168, calc(0.6 * var(--level, 0))); }
+    /* fabric that drifts very slowly behind the name patches */
+    .mod-head, .matrix-head { animation: pw-drift 70s linear infinite; }
+    .mod.neon .mod-head { animation: none; }
+    /* a sheen crossing whichever effect is switched on, now and then */
+    .mod[class*="mod-fx-"]:not(.off) .mod-head { position: relative; overflow: hidden; }
+    .mod[class*="mod-fx-"]:not(.off) .mod-head::after { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 35%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent); animation: pw-sheen 6s ease-in-out infinite; pointer-events: none; }
+    /* a page arrives with a small lift */
+    .rack.full, .view.matrix { animation: pw-rise 0.22s ease-out; }
+    /* the handle of a source that is connected breathes */
+    .mod-tabs .mod-tab.on .grip, .macro-cell:not(.idle) .grip { animation: pw-breathe 2.4s ease-in-out infinite; }
+  }
+}

@@ -579,6 +579,16 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   library; "stock plugins" is assumed to mean Ableton Live's. Needs first: a reorderable rack with a bypass
   per effect (`docs/SERUM_GAPS.md`, effects), and the effect courses. Order of work: synth gaps, effect
   courses, then chains.
+- **Sound systems track and spoken lesson intros (owner asked 14 Nov 2026), planned and not built.**
+  (1) Full sections on sound systems (loudspeakers and how each part works, and the system around them),
+  with high-definition diagrams. Proposed to the owner, awaiting a reply: every labelled, technical diagram
+  is drawn by code (the standing rule: diagrams are never left to an image generator, which garbles labels
+  and invents parts), with Higgsfield or Blender used for unlabelled hero pictures that code then labels;
+  the facts must come from a text in the library, and none on loudspeakers is in yet. (2) A playable audio
+  clip at the top of every lesson saying what the learner will learn. Today there is only the browser's
+  "Read aloud". Proposed: a short intro script per lesson written from the lesson's own outcome and idea,
+  voiced once with Higgsfield and stored (it spends the owner's credits, so one lesson is to be tested and
+  approved first).
 - **Impact sounds (owner asked 13 Nov 2026):** `docs/IMPACTS.md`, about 50 lessons on hits, striking bass
   notes, weight, making room, impact effects and contrast. The first seven are built (see `lessons/impacts.ts`);
   the rest wait for effects, physical modelling, the mini DAW and library texts on hearing.

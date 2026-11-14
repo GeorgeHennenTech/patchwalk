@@ -1164,6 +1164,7 @@ describe("the wheels and a MIDI keyboard", () => {
 });
 
 import { auxValue } from "../src/synth/mod";
+import type { MatrixRow } from "../src/synth/params";
 describe("a row scaled by a second source", () => {
   const note = (over: Partial<{ velocity: number; note: number; age: number }> = {}) => ({ note: 60, velocity: 127, age: 1, held: Infinity, startedAt: 0, ...over });
   const withRow = (aux: MatrixRow["aux"], extra: Partial<SynthState> = {}): SynthState => ({ ...INITIAL, ...extra, matrix: [{ source: "vel", dest: "ringAmount", amount: 100, way: "both", aux }] });

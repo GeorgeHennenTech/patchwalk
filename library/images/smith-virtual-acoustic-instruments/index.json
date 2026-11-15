@@ -1,0 +1,22 @@
+{
+ "source": "Virtual Acoustic Musical Instruments: Review and Update (Julius O. Smith, 2004, revised 2010)",
+ "note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text.",
+ "images": [
+  {
+   "file": "p003-1.webp",
+   "page": 3,
+   "chapter": "Virtual acoustic instruments",
+   "width": 445,
+   "height": 290,
+   "captions_on_page": []
+  },
+  {
+   "file": "p004-1.webp",
+   "page": 4,
+   "chapter": "Virtual acoustic instruments",
+   "width": 237,
+   "height": 342,
+   "captions_on_page": []
+  }
+ ]
+}

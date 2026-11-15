@@ -1,0 +1,888 @@
+{
+ "source": "Physical Modeling, Algorithms, and Sound Synthesis: The NESS Project (Bilbao and others, Computer Music Journal 2019, author's copy)",
+ "note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text.",
+ "images": [
+  {
+   "file": "p001-1.webp",
+   "page": 1,
+   "chapter": "The NESS project",
+   "width": 510,
+   "height": 184,
+   "captions_on_page": []
+  },
+  {
+   "file": "p001-2.webp",
+   "page": 1,
+   "chapter": "The NESS project",
+   "width": 1379,
+   "height": 221,
+   "captions_on_page": []
+  },
+  {
+   "file": "p009-1.webp",
+   "page": 9,
+   "chapter": "The NESS project",
+   "width": 1400,
+   "height": 219,
+   "captions_on_page": []
+  },
+  {
+   "file": "p011-1.webp",
+   "page": 11,
+   "chapter": "The NESS project",
+   "width": 1400,
+   "height": 1400,
+   "captions_on_page": [
+    "The bow is then pushed across the string to set it into motion."
+   ]
+  },
+  {
+   "file": "p011-2.webp",
+   "page": 11,
+   "chapter": "The NESS project",
+   "width": 1400,
+   "height": 1400,
+   "captions_on_page": [
+    "The bow is then pushed across the string to set it into motion."
+   ]
+  },
+  {
+   "file": "p011-3.webp",
+   "page": 11,
+   "chapter": "The NESS project",
+   "width": 1400,
+   "height": 1400,
+   "captions_on_page": [
+    "The bow is then pushed across the string to set it into motion."
+   ]
+  },
+  {
+   "file": "p012-1.webp",
+   "page": 12,
+   "chapter": "The NESS project",
+   "width": 865,
+   "height": 918,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-2.webp",
+   "page": 12,
+   "chapter": "The NESS project",
+   "width": 865,
+   "height": 918,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-3.webp",
+   "page": 12,
+   "chapter": "The NESS project",
+   "width": 865,
+   "height": 918,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-4.webp",
+   "page": 12,
+   "chapter": "The NESS project",
+   "width": 865,
+   "height": 918,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-5.webp",
+   "page": 12,
+   "chapter": "The NESS project",
+   "width": 865,
+   "height": 918,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-6.webp",
+   "page": 12,
+   "chapter": "The NESS project",
+   "width": 865,
+   "height": 918,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-7.webp",
+   "page": 12,
+   "chapter": "The NESS project",
+   "width": 865,
+   "height": 918,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-8.webp",
+   "page": 12,
+   "chapter": "The NESS project",
+   "width": 865,
+   "height": 918,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-9.webp",
+   "page": 12,
+   "chapter": "The NESS project",
+   "width": 865,
+   "height": 918,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-10.webp",
+   "page": 12,
+   "chapter": "The NESS project",
+   "width": 865,
+   "height": 918,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-11.webp",
+   "page": 12,
+   "chapter": "The NESS project",
+   "width": 865,
+   "height": 918,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-12.webp",
+   "page": 12,
+   "chapter": "The NESS project",
+   "width": 865,
+   "height": 918,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-13.webp",
+   "page": 12,
+   "chapter": "The NESS project",
+   "width": 865,
+   "height": 918,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-14.webp",
+   "page": 12,
+   "chapter": "The NESS project",
+   "width": 865,
+   "height": 918,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-15.webp",
+   "page": 12,
+   "chapter": "The NESS project",
+   "width": 865,
+   "height": 918,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-16.webp",
+   "page": 12,
+   "chapter": "The NESS project",
+   "width": 865,
+   "height": 918,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-17.webp",
+   "page": 12,
+   "chapter": "The NESS project",
+   "width": 865,
+   "height": 918,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-18.webp",
+   "page": 12,
+   "chapter": "The NESS project",
+   "width": 865,
+   "height": 918,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-19.webp",
+   "page": 12,
+   "chapter": "The NESS project",
+   "width": 865,
+   "height": 918,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-20.webp",
+   "page": 12,
+   "chapter": "The NESS project",
+   "width": 865,
+   "height": 918,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-21.webp",
+   "page": 12,
+   "chapter": "The NESS project",
+   "width": 865,
+   "height": 918,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-22.webp",
+   "page": 12,
+   "chapter": "The NESS project",
+   "width": 865,
+   "height": 918,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-23.webp",
+   "page": 12,
+   "chapter": "The NESS project",
+   "width": 865,
+   "height": 918,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-24.webp",
+   "page": 12,
+   "chapter": "The NESS project",
+   "width": 865,
+   "height": 918,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-25.webp",
+   "page": 12,
+   "chapter": "The NESS project",
+   "width": 865,
+   "height": 918,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-26.webp",
+   "page": 12,
+   "chapter": "The NESS project",
+   "width": 865,
+   "height": 918,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-27.webp",
+   "page": 12,
+   "chapter": "The NESS project",
+   "width": 865,
+   "height": 918,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-28.webp",
+   "page": 12,
+   "chapter": "The NESS project",
+   "width": 865,
+   "height": 918,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-29.webp",
+   "page": 12,
+   "chapter": "The NESS project",
+   "width": 865,
+   "height": 918,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-30.webp",
+   "page": 12,
+   "chapter": "The NESS project",
+   "width": 865,
+   "height": 918,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-31.webp",
+   "page": 12,
+   "chapter": "The NESS project",
+   "width": 865,
+   "height": 918,
+   "captions_on_page": []
+  },
+  {
+   "file": "p014-1.webp",
+   "page": 14,
+   "chapter": "The NESS project",
+   "width": 1400,
+   "height": 59,
+   "captions_on_page": []
+  },
+  {
+   "file": "p014-2.webp",
+   "page": 14,
+   "chapter": "The NESS project",
+   "width": 1400,
+   "height": 59,
+   "captions_on_page": []
+  },
+  {
+   "file": "p014-3.webp",
+   "page": 14,
+   "chapter": "The NESS project",
+   "width": 1400,
+   "height": 59,
+   "captions_on_page": []
+  },
+  {
+   "file": "p014-4.webp",
+   "page": 14,
+   "chapter": "The NESS project",
+   "width": 1400,
+   "height": 59,
+   "captions_on_page": []
+  },
+  {
+   "file": "p014-5.webp",
+   "page": 14,
+   "chapter": "The NESS project",
+   "width": 1400,
+   "height": 59,
+   "captions_on_page": []
+  },
+  {
+   "file": "p014-6.webp",
+   "page": 14,
+   "chapter": "The NESS project",
+   "width": 1400,
+   "height": 59,
+   "captions_on_page": []
+  },
+  {
+   "file": "p014-7.webp",
+   "page": 14,
+   "chapter": "The NESS project",
+   "width": 1400,
+   "height": 59,
+   "captions_on_page": []
+  },
+  {
+   "file": "p014-8.webp",
+   "page": 14,
+   "chapter": "The NESS project",
+   "width": 1400,
+   "height": 59,
+   "captions_on_page": []
+  },
+  {
+   "file": "p014-9.webp",
+   "page": 14,
+   "chapter": "The NESS project",
+   "width": 1400,
+   "height": 59,
+   "captions_on_page": []
+  },
+  {
+   "file": "p014-10.webp",
+   "page": 14,
+   "chapter": "The NESS project",
+   "width": 1400,
+   "height": 59,
+   "captions_on_page": []
+  },
+  {
+   "file": "p014-11.webp",
+   "page": 14,
+   "chapter": "The NESS project",
+   "width": 1400,
+   "height": 59,
+   "captions_on_page": []
+  },
+  {
+   "file": "p014-12.webp",
+   "page": 14,
+   "chapter": "The NESS project",
+   "width": 1400,
+   "height": 59,
+   "captions_on_page": []
+  },
+  {
+   "file": "p014-13.webp",
+   "page": 14,
+   "chapter": "The NESS project",
+   "width": 1400,
+   "height": 37,
+   "captions_on_page": []
+  },
+  {
+   "file": "p014-14.webp",
+   "page": 14,
+   "chapter": "The NESS project",
+   "width": 1217,
+   "height": 716,
+   "captions_on_page": []
+  },
+  {
+   "file": "p014-15.webp",
+   "page": 14,
+   "chapter": "The NESS project",
+   "width": 1217,
+   "height": 859,
+   "captions_on_page": []
+  },
+  {
+   "file": "p014-16.webp",
+   "page": 14,
+   "chapter": "The NESS project",
+   "width": 1217,
+   "height": 716,
+   "captions_on_page": []
+  },
+  {
+   "file": "p014-17.webp",
+   "page": 14,
+   "chapter": "The NESS project",
+   "width": 1217,
+   "height": 859,
+   "captions_on_page": []
+  },
+  {
+   "file": "p014-18.webp",
+   "page": 14,
+   "chapter": "The NESS project",
+   "width": 1217,
+   "height": 716,
+   "captions_on_page": []
+  },
+  {
+   "file": "p014-19.webp",
+   "page": 14,
+   "chapter": "The NESS project",
+   "width": 1217,
+   "height": 859,
+   "captions_on_page": []
+  },
+  {
+   "file": "p014-20.webp",
+   "page": 14,
+   "chapter": "The NESS project",
+   "width": 1217,
+   "height": 716,
+   "captions_on_page": []
+  },
+  {
+   "file": "p015-1.webp",
+   "page": 15,
+   "chapter": "The NESS project",
+   "width": 1400,
+   "height": 47,
+   "captions_on_page": [
+    "The time-stepping model used here is similar to that employed by Rhaouti et al."
+   ]
+  },
+  {
+   "file": "p015-2.webp",
+   "page": 15,
+   "chapter": "The NESS project",
+   "width": 1400,
+   "height": 47,
+   "captions_on_page": [
+    "The time-stepping model used here is similar to that employed by Rhaouti et al."
+   ]
+  },
+  {
+   "file": "p015-3.webp",
+   "page": 15,
+   "chapter": "The NESS project",
+   "width": 1400,
+   "height": 47,
+   "captions_on_page": [
+    "The time-stepping model used here is similar to that employed by Rhaouti et al."
+   ]
+  },
+  {
+   "file": "p015-4.webp",
+   "page": 15,
+   "chapter": "The NESS project",
+   "width": 1400,
+   "height": 47,
+   "captions_on_page": [
+    "The time-stepping model used here is similar to that employed by Rhaouti et al."
+   ]
+  },
+  {
+   "file": "p015-5.webp",
+   "page": 15,
+   "chapter": "The NESS project",
+   "width": 1400,
+   "height": 47,
+   "captions_on_page": [
+    "The time-stepping model used here is similar to that employed by Rhaouti et al."
+   ]
+  },
+  {
+   "file": "p015-6.webp",
+   "page": 15,
+   "chapter": "The NESS project",
+   "width": 1400,
+   "height": 47,
+   "captions_on_page": [
+    "The time-stepping model used here is similar to that employed by Rhaouti et al."
+   ]
+  },
+  {
+   "file": "p015-7.webp",
+   "page": 15,
+   "chapter": "The NESS project",
+   "width": 1400,
+   "height": 47,
+   "captions_on_page": [
+    "The time-stepping model used here is similar to that employed by Rhaouti et al."
+   ]
+  },
+  {
+   "file": "p015-8.webp",
+   "page": 15,
+   "chapter": "The NESS project",
+   "width": 1400,
+   "height": 47,
+   "captions_on_page": [
+    "The time-stepping model used here is similar to that employed by Rhaouti et al."
+   ]
+  },
+  {
+   "file": "p015-9.webp",
+   "page": 15,
+   "chapter": "The NESS project",
+   "width": 1400,
+   "height": 47,
+   "captions_on_page": [
+    "The time-stepping model used here is similar to that employed by Rhaouti et al."
+   ]
+  },
+  {
+   "file": "p015-10.webp",
+   "page": 15,
+   "chapter": "The NESS project",
+   "width": 1400,
+   "height": 47,
+   "captions_on_page": [
+    "The time-stepping model used here is similar to that employed by Rhaouti et al."
+   ]
+  },
+  {
+   "file": "p017-1.webp",
+   "page": 17,
+   "chapter": "The NESS project",
+   "width": 876,
+   "height": 738,
+   "captions_on_page": []
+  },
+  {
+   "file": "p017-2.webp",
+   "page": 17,
+   "chapter": "The NESS project",
+   "width": 879,
+   "height": 738,
+   "captions_on_page": []
+  },
+  {
+   "file": "p017-3.webp",
+   "page": 17,
+   "chapter": "The NESS project",
+   "width": 878,
+   "height": 738,
+   "captions_on_page": []
+  },
+  {
+   "file": "p017-4.webp",
+   "page": 17,
+   "chapter": "The NESS project",
+   "width": 879,
+   "height": 738,
+   "captions_on_page": []
+  },
+  {
+   "file": "p017-5.webp",
+   "page": 17,
+   "chapter": "The NESS project",
+   "width": 878,
+   "height": 738,
+   "captions_on_page": []
+  },
+  {
+   "file": "p017-6.webp",
+   "page": 17,
+   "chapter": "The NESS project",
+   "width": 294,
+   "height": 982,
+   "captions_on_page": []
+  },
+  {
+   "file": "p017-7.webp",
+   "page": 17,
+   "chapter": "The NESS project",
+   "width": 1400,
+   "height": 108,
+   "captions_on_page": []
+  },
+  {
+   "file": "p017-8.webp",
+   "page": 17,
+   "chapter": "The NESS project",
+   "width": 1170,
+   "height": 247,
+   "captions_on_page": []
+  },
+  {
+   "file": "p017-9.webp",
+   "page": 17,
+   "chapter": "The NESS project",
+   "width": 876,
+   "height": 843,
+   "captions_on_page": []
+  },
+  {
+   "file": "p017-10.webp",
+   "page": 17,
+   "chapter": "The NESS project",
+   "width": 879,
+   "height": 843,
+   "captions_on_page": []
+  },
+  {
+   "file": "p017-11.webp",
+   "page": 17,
+   "chapter": "The NESS project",
+   "width": 878,
+   "height": 843,
+   "captions_on_page": []
+  },
+  {
+   "file": "p017-12.webp",
+   "page": 17,
+   "chapter": "The NESS project",
+   "width": 879,
+   "height": 843,
+   "captions_on_page": []
+  },
+  {
+   "file": "p017-13.webp",
+   "page": 17,
+   "chapter": "The NESS project",
+   "width": 878,
+   "height": 843,
+   "captions_on_page": []
+  },
+  {
+   "file": "p017-14.webp",
+   "page": 17,
+   "chapter": "The NESS project",
+   "width": 294,
+   "height": 1122,
+   "captions_on_page": []
+  },
+  {
+   "file": "p017-15.webp",
+   "page": 17,
+   "chapter": "The NESS project",
+   "width": 1400,
+   "height": 135,
+   "captions_on_page": []
+  },
+  {
+   "file": "p017-16.webp",
+   "page": 17,
+   "chapter": "The NESS project",
+   "width": 1400,
+   "height": 270,
+   "captions_on_page": []
+  },
+  {
+   "file": "p019-1.webp",
+   "page": 19,
+   "chapter": "The NESS project",
+   "width": 561,
+   "height": 233,
+   "captions_on_page": []
+  },
+  {
+   "file": "p019-2.webp",
+   "page": 19,
+   "chapter": "The NESS project",
+   "width": 560,
+   "height": 234,
+   "captions_on_page": []
+  },
+  {
+   "file": "p019-3.webp",
+   "page": 19,
+   "chapter": "The NESS project",
+   "width": 561,
+   "height": 233,
+   "captions_on_page": []
+  },
+  {
+   "file": "p019-4.webp",
+   "page": 19,
+   "chapter": "The NESS project",
+   "width": 561,
+   "height": 233,
+   "captions_on_page": []
+  },
+  {
+   "file": "p019-5.webp",
+   "page": 19,
+   "chapter": "The NESS project",
+   "width": 560,
+   "height": 234,
+   "captions_on_page": []
+  },
+  {
+   "file": "p019-6.webp",
+   "page": 19,
+   "chapter": "The NESS project",
+   "width": 561,
+   "height": 233,
+   "captions_on_page": []
+  },
+  {
+   "file": "p019-7.webp",
+   "page": 19,
+   "chapter": "The NESS project",
+   "width": 561,
+   "height": 189,
+   "captions_on_page": []
+  },
+  {
+   "file": "p019-8.webp",
+   "page": 19,
+   "chapter": "The NESS project",
+   "width": 561,
+   "height": 233,
+   "captions_on_page": []
+  },
+  {
+   "file": "p019-9.webp",
+   "page": 19,
+   "chapter": "The NESS project",
+   "width": 561,
+   "height": 189,
+   "captions_on_page": []
+  },
+  {
+   "file": "p019-10.webp",
+   "page": 19,
+   "chapter": "The NESS project",
+   "width": 560,
+   "height": 234,
+   "captions_on_page": []
+  },
+  {
+   "file": "p019-11.webp",
+   "page": 19,
+   "chapter": "The NESS project",
+   "width": 560,
+   "height": 188,
+   "captions_on_page": []
+  },
+  {
+   "file": "p019-12.webp",
+   "page": 19,
+   "chapter": "The NESS project",
+   "width": 561,
+   "height": 233,
+   "captions_on_page": []
+  },
+  {
+   "file": "p019-13.webp",
+   "page": 19,
+   "chapter": "The NESS project",
+   "width": 561,
+   "height": 189,
+   "captions_on_page": []
+  },
+  {
+   "file": "p019-14.webp",
+   "page": 19,
+   "chapter": "The NESS project",
+   "width": 561,
+   "height": 233,
+   "captions_on_page": []
+  },
+  {
+   "file": "p019-15.webp",
+   "page": 19,
+   "chapter": "The NESS project",
+   "width": 561,
+   "height": 189,
+   "captions_on_page": []
+  },
+  {
+   "file": "p019-16.webp",
+   "page": 19,
+   "chapter": "The NESS project",
+   "width": 560,
+   "height": 234,
+   "captions_on_page": []
+  },
+  {
+   "file": "p019-17.webp",
+   "page": 19,
+   "chapter": "The NESS project",
+   "width": 560,
+   "height": 188,
+   "captions_on_page": []
+  },
+  {
+   "file": "p019-18.webp",
+   "page": 19,
+   "chapter": "The NESS project",
+   "width": 561,
+   "height": 233,
+   "captions_on_page": []
+  },
+  {
+   "file": "p019-19.webp",
+   "page": 19,
+   "chapter": "The NESS project",
+   "width": 561,
+   "height": 189,
+   "captions_on_page": []
+  },
+  {
+   "file": "p019-20.webp",
+   "page": 19,
+   "chapter": "The NESS project",
+   "width": 561,
+   "height": 233,
+   "captions_on_page": []
+  },
+  {
+   "file": "p019-21.webp",
+   "page": 19,
+   "chapter": "The NESS project",
+   "width": 561,
+   "height": 189,
+   "captions_on_page": []
+  },
+  {
+   "file": "p019-22.webp",
+   "page": 19,
+   "chapter": "The NESS project",
+   "width": 560,
+   "height": 188,
+   "captions_on_page": []
+  },
+  {
+   "file": "p019-23.webp",
+   "page": 19,
+   "chapter": "The NESS project",
+   "width": 561,
+   "height": 233,
+   "captions_on_page": []
+  },
+  {
+   "file": "p019-24.webp",
+   "page": 19,
+   "chapter": "The NESS project",
+   "width": 560,
+   "height": 234,
+   "captions_on_page": []
+  }
+ ]
+}

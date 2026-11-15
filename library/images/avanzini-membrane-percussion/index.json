@@ -1,0 +1,64 @@
+{
+ "source": "A Modular Physically Based Approach to the Sound Synthesis of Membrane Percussion Instruments (Avanzini, Marogna, IEEE TASLP 2010, author's copy)",
+ "note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text.",
+ "images": [
+  {
+   "file": "p003-1.webp",
+   "page": 3,
+   "chapter": "Membrane percussion",
+   "width": 1050,
+   "height": 838,
+   "captions_on_page": [
+    "This point is discussed further in Section III-C."
+   ]
+  },
+  {
+   "file": "p006-1.webp",
+   "page": 6,
+   "chapter": "Membrane percussion",
+   "width": 491,
+   "height": 552,
+   "captions_on_page": []
+  },
+  {
+   "file": "p007-1.webp",
+   "page": 7,
+   "chapter": "Membrane percussion",
+   "width": 1328,
+   "height": 1043,
+   "captions_on_page": []
+  },
+  {
+   "file": "p009-1.webp",
+   "page": 9,
+   "chapter": "Membrane percussion",
+   "width": 1053,
+   "height": 823,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-1.webp",
+   "page": 12,
+   "chapter": "Membrane percussion",
+   "width": 300,
+   "height": 375,
+   "captions_on_page": [
+    "New York: Springer-Verlag, 1995.",
+    "Padova, Italy, in 2005.",
+    "University of Padova, within an EU-funded project."
+   ]
+  },
+  {
+   "file": "p012-2.webp",
+   "page": 12,
+   "chapter": "Membrane percussion",
+   "width": 300,
+   "height": 375,
+   "captions_on_page": [
+    "New York: Springer-Verlag, 1995.",
+    "Padova, Italy, in 2005.",
+    "University of Padova, within an EU-funded project."
+   ]
+  }
+ ]
+}

@@ -1,0 +1,138 @@
+{
+ "source": "Four Decades of Digital Waveguides (Tablas de Paula, Smith, Välimäki, Reiss, draft, arXiv 2604.12878)",
+ "note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text.",
+ "images": [
+  {
+   "file": "p003-1.webp",
+   "page": 3,
+   "chapter": "Four decades of digital waveguides",
+   "width": 1400,
+   "height": 448,
+   "captions_on_page": []
+  },
+  {
+   "file": "p004-1.webp",
+   "page": 4,
+   "chapter": "Four decades of digital waveguides",
+   "width": 1400,
+   "height": 396,
+   "captions_on_page": [
+    "TABLAS DE PAULA ET AL."
+   ]
+  },
+  {
+   "file": "p005-1.webp",
+   "page": 5,
+   "chapter": "Four decades of digital waveguides",
+   "width": 1001,
+   "height": 435,
+   "captions_on_page": [
+    "R2 = R1 , we get v1− = 0 and v2+ = v1+ (no scattering)."
+   ]
+  },
+  {
+   "file": "p006-1.webp",
+   "page": 6,
+   "chapter": "Four decades of digital waveguides",
+   "width": 1213,
+   "height": 333,
+   "captions_on_page": [
+    "TABLAS DE PAULA ET AL."
+   ]
+  },
+  {
+   "file": "p006-2.webp",
+   "page": 6,
+   "chapter": "Four decades of digital waveguides",
+   "width": 1095,
+   "height": 471,
+   "captions_on_page": [
+    "TABLAS DE PAULA ET AL."
+   ]
+  },
+  {
+   "file": "p007-1.webp",
+   "page": 7,
+   "chapter": "Four decades of digital waveguides",
+   "width": 1400,
+   "height": 1382,
+   "captions_on_page": []
+  },
+  {
+   "file": "p007-2.webp",
+   "page": 7,
+   "chapter": "Four decades of digital waveguides",
+   "width": 860,
+   "height": 598,
+   "captions_on_page": []
+  },
+  {
+   "file": "p008-1.webp",
+   "page": 8,
+   "chapter": "Four decades of digital waveguides",
+   "width": 915,
+   "height": 602,
+   "captions_on_page": [
+    "TABLAS DE PAULA ET AL."
+   ]
+  },
+  {
+   "file": "p009-1.webp",
+   "page": 9,
+   "chapter": "Four decades of digital waveguides",
+   "width": 1400,
+   "height": 995,
+   "captions_on_page": []
+  },
+  {
+   "file": "p009-2.webp",
+   "page": 9,
+   "chapter": "Four decades of digital waveguides",
+   "width": 1295,
+   "height": 1400,
+   "captions_on_page": []
+  },
+  {
+   "file": "p010-1.webp",
+   "page": 10,
+   "chapter": "Four decades of digital waveguides",
+   "width": 1400,
+   "height": 1155,
+   "captions_on_page": [
+    "TABLAS DE PAULA ET AL."
+   ]
+  },
+  {
+   "file": "p021-1.webp",
+   "page": 21,
+   "chapter": "Four decades of digital waveguides",
+   "width": 1135,
+   "height": 1400,
+   "captions_on_page": []
+  },
+  {
+   "file": "p021-2.webp",
+   "page": 21,
+   "chapter": "Four decades of digital waveguides",
+   "width": 187,
+   "height": 257,
+   "captions_on_page": []
+  },
+  {
+   "file": "p021-3.webp",
+   "page": 21,
+   "chapter": "Four decades of digital waveguides",
+   "width": 1056,
+   "height": 1255,
+   "captions_on_page": []
+  },
+  {
+   "file": "p021-4.webp",
+   "page": 21,
+   "chapter": "Four decades of digital waveguides",
+   "width": 512,
+   "height": 512,
+   "captions_on_page": []
+  }
+ ]
+}

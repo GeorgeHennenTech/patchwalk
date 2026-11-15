@@ -1,0 +1,26 @@
+{
+ "source": "Flexible Software Framework for Modal Synthesis (arXiv cs/0103006)",
+ "note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text.",
+ "images": [
+  {
+   "file": "p004-1.webp",
+   "page": 4,
+   "chapter": "Modal synthesis",
+   "width": 540,
+   "height": 249,
+   "captions_on_page": [
+    "A general framework for modal synthesis has been presented."
+   ]
+  },
+  {
+   "file": "p004-2.webp",
+   "page": 4,
+   "chapter": "Modal synthesis",
+   "width": 254,
+   "height": 301,
+   "captions_on_page": [
+    "A general framework for modal synthesis has been presented."
+   ]
+  }
+ ]
+}

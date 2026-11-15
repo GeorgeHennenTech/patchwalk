@@ -1435,3 +1435,19 @@ describe("the Res 2's measured directivity", () => {
     expect(levelColour(0)).toEqual([215, 25, 28]); expect(levelColour(-50)).toEqual([37, 52, 148]); expect(levelColour(-1)).toEqual(levelColour(0));
   });
 });
+
+import { WHY } from "../src/course/why";
+describe("why this matters", () => {
+  it("every lesson has one short line about what it lets you do, with no hype, names or codes", () => {
+    expect(Object.keys(WHY).sort()).toEqual(LESSONS.map((l) => l.id).sort());
+    const starts = new Set<string>();
+    for (const l of LESSONS) {
+      const line = WHY[l.id]!, words = line.split(/\s+/);
+      expect(words.length, line).toBeGreaterThanOrEqual(12); expect(words.length, line).toBeLessThanOrEqual(28);
+      expect(line.endsWith("."), line).toBe(true);
+      expect(line, line).not.toMatch(/[—–]|\bC\d+M?\.\w|\bCT\.\w|serum|ableton|tipper|amazing|incredible|game-changing|secret|\bpro\b|professional|next level|unlock|brain/i);
+      starts.add(words.slice(0, 3).join(" ").toLowerCase());
+    }
+    expect(starts.size).toBeGreaterThan(LESSONS.length - 6); // the openings vary
+  });
+});

@@ -3,6 +3,7 @@ import { CHAPTER_ORDER, CHAPTERS, chapterOf, LESSONS, placeOf } from "../course/
 import { allMatch, compareToTarget, type MatchVerdict } from "../course/match";
 import { ago, focusOn, loadPlace, minutesLeft, savePlace, setFocus, stopNote, unitsIn, type Place } from "../course/focus";
 import { RecallCard } from "./Recall";
+import { WHY } from "../course/why";
 import { guideContext, loadDone, saveDone, suggestNext } from "../course/progress";
 import type { MatchRound, Panel, PlayableLesson } from "../course/types";
 import type { Card } from "../lesson/cards";
@@ -388,6 +389,7 @@ export function PlayView({ cards, wanted }: { cards: Card[]; wanted?: { id: stri
         {INTRO_CLIPS[lesson.id] && (
           <p className="intro-clip"><span className="muted">Hear what this lesson covers:</span> <audio key={lesson.id} controls preload="none" src={INTRO_CLIPS[lesson.id]} aria-label="Spoken introduction to this lesson" /></p>
         )}
+        {WHY[lesson.id] && <p className="why-matters"><strong>Why this matters:</strong> {WHY[lesson.id]}</p>}
         <p><strong>You will be able to:</strong> {lesson.outcome}</p>
         {lesson.demo && (
           <p className="hear-first"><button className="primary" onClick={() => void playDemo()}>Hear it first</button> <span className="muted">{lesson.demo.caption}</span></p>

@@ -322,6 +322,43 @@ const MORE_RECIPES: Recipe[] = [
     sweep: "A soft sine growing bright, hollow and bell-like, without ever turning to hiss.",
     recap: ["Folding adds harmonics to a plain wave.", "The harmonics shift unevenly as the fold grows, which sounds metallic.", "A filter slot moving the other way keeps the top under control."],
   },
+  // ---- added with the flanger and the phaser
+  {
+    id: "C5M.22", title: "Jet", minutes: 7, name: "Jet", buildsOn: ["C5M.1", "C7.8"], cardIds: ["macro-fx"], views: ["spectrum"],
+    initial: { shape: "saw", octave: -1, flangerOn: true, flangerMix: 0, flangerFeedback: 0, flangerRate: 0.25, flangerDepth: 90 },
+    outcome: "Bring a flanger in from nothing to a full metallic sweep with one knob.",
+    idea: [
+      "A flanger left on all the time soon tires the ear. It works best as a gesture: absent, then sweeping in, then gone. Two of its controls make that gesture together: how much of the delayed copy is mixed in, and how much is fed back.",
+      "The macro raises both. At zero the sound is untouched. Half way there is a gentle whoosh. Fully up, the feedback turns it into a ringing, metallic jet.",
+    ],
+    slots: [{ to: "flangerMix", amount: 90, hear: "" }, { to: "flangerFeedback", amount: 80, hear: "" }],
+    sweep: "A plain saw, then a soft whoosh, then a sharp metallic sweep with a whistle in it.",
+    recap: ["An effect that starts at zero mix can be brought in as a gesture.", "Flanger mix and feedback rise together: more of the copy, and a sharper edge.", "Fully up, feedback turns the whoosh metallic."],
+  },
+  {
+    id: "C5M.23", title: "Swirl", minutes: 7, name: "Swirl", buildsOn: ["C5M.3", "C7.8"], cardIds: ["macro-fx"], views: ["spectrum"],
+    initial: { shape: "saw", voices: 3, detune: 12, phaserOn: true, phaserMix: 0, phaserDepth: 20, phaserRate: 0.15 },
+    outcome: "Make a still pad start to turn, slowly at first and then faster, from one control.",
+    idea: [
+      "Movement in a phaser has three parts: how much of the effect is heard, how far its notches travel, and how fast they travel. Raising only the amount gives a hollow tone that barely moves. Raising only the speed gives a nervous flutter.",
+      "The macro raises all three, so the sound goes from still, to turning slowly, to spinning. One knob then stands for “how much motion”, which is what you actually want to play.",
+    ],
+    slots: [{ to: "phaserMix", amount: 85, hear: "" }, { to: "phaserDepth", amount: 60, hear: "" }, { to: "phaserRate", amount: 45, hear: "" }],
+    sweep: "A still pad that begins to turn, then swirls faster and wider.",
+    recap: ["A phaser's motion has three parts: amount, distance and speed.", "Raising all three together reads as one thing: more motion.", "A macro can stand for a musical idea, not a single setting."],
+  },
+  {
+    id: "C5M.24", title: "Going under", minutes: 7, name: "Under", buildsOn: ["C5M.2", "C7.8", "C7.6"], cardIds: ["macro-multi", "macro-fx"], views: ["curve"],
+    initial: { shape: "saw", filterOn: true, cutoff: 20000, phaserOn: true, phaserMix: 0, phaserCentre: 1500, phaserRate: 0.3, reverbOn: true, reverbMix: 0, reverbSize: 2.5 },
+    outcome: "Sink a sound as if under water: darker, swirling and further away, all at once.",
+    idea: [
+      "Some changes are really three changes heard as one. A sound going under water gets duller, because the highs are lost; it wavers, because the surface moves; and it seems further off. Each has a control: the filter, a phaser, a reverb.",
+      "The macro closes the filter while it brings in the phaser and the reverb. Two slots go up and one comes down, and the ear hears a single event.",
+    ],
+    slots: [{ to: "cutoff", amount: -55, hear: "" }, { to: "phaserMix", amount: 80, hear: "" }, { to: "reverbMix", amount: 45, hear: "" }],
+    sweep: "A bright saw sinking: dulling, beginning to waver, and drifting away.",
+    recap: ["Several changes made together can be heard as one event.", "Slots can move in opposite directions inside one macro.", "Filter, phaser and reverb together give darker, wavering and further away."],
+  },
 ];
 
 const BITE = wired(RECIPES[0]!, 0), MORPH = wired(RECIPES[1]!, 0), WOBBLE = wired(RECIPES[4]!, 0), DIRT = wired(RECIPES[6]!, 0);

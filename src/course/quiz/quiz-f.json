@@ -1810,5 +1810,119 @@
    "why": "A phaser turns frequencies round instead of delaying them, which gives a few uneven notches.",
    "point": 2
   }
+ ],
+ "C5M.22": [
+  {
+   "q": "Why start the flanger at zero mix?",
+   "options": [
+    "So it can be brought in as a gesture",
+    "To save effort",
+    "Because it is broken at other settings",
+    "To change the pitch"
+   ],
+   "answer": 0,
+   "why": "An effect that begins silent can be swept in and taken away again.",
+   "point": 0
+  },
+  {
+   "q": "Which two flanger settings does the Jet macro raise?",
+   "options": [
+    "Rate and depth",
+    "Mix and feedback",
+    "Volume and pan",
+    "Cutoff and resonance"
+   ],
+   "answer": 1,
+   "why": "More of the delayed copy, and more of it fed back for a sharper edge.",
+   "point": 1
+  },
+  {
+   "q": "What does the sound become with the macro fully up?",
+   "options": [
+    "Silent",
+    "A soft pad",
+    "A sharp, metallic sweep",
+    "A pure sine"
+   ],
+   "answer": 2,
+   "why": "High feedback turns the gentle whoosh metallic.",
+   "point": 2
+  }
+ ],
+ "C5M.23": [
+  {
+   "q": "What are the three parts of a phaser's motion?",
+   "options": [
+    "Pitch, pan and volume",
+    "Amount, distance and speed",
+    "Attack, decay and release",
+    "Bass, middle and top"
+   ],
+   "answer": 1,
+   "why": "How much is heard, how far the notches travel, and how fast.",
+   "point": 0
+  },
+  {
+   "q": "Why raise all three together?",
+   "options": [
+    "It is heard as one thing: more motion",
+    "It makes the sound louder",
+    "It removes the effect",
+    "It tunes the note"
+   ],
+   "answer": 0,
+   "why": "Together they go from still, to turning, to spinning.",
+   "point": 1
+  },
+  {
+   "q": "What does the Swirl macro show a macro can stand for?",
+   "options": [
+    "A single setting",
+    "A musical idea",
+    "A wavetable",
+    "A note"
+   ],
+   "answer": 1,
+   "why": "The knob means how much motion, not any one control.",
+   "point": 2
+  }
+ ],
+ "C5M.24": [
+  {
+   "q": "What three changes make a sound seem to go under water here?",
+   "options": [
+    "Louder, brighter, closer",
+    "Duller, wavering, further away",
+    "Higher, shorter, drier",
+    "Wider, faster, thinner"
+   ],
+   "answer": 1,
+   "why": "The filter dulls it, the phaser makes it waver and the reverb sets it back.",
+   "point": 2
+  },
+  {
+   "q": "How do the three slots move?",
+   "options": [
+    "All up",
+    "All down",
+    "Two up and one down",
+    "None of them move"
+   ],
+   "answer": 2,
+   "why": "The filter comes down while the phaser and the reverb come up.",
+   "point": 1
+  },
+  {
+   "q": "Why does the ear hear it as a single event?",
+   "options": [
+    "The changes happen together from one knob",
+    "Only one setting changes",
+    "The sound stops",
+    "The pitch changes"
+   ],
+   "answer": 0,
+   "why": "Several changes made at the same moment fuse into one.",
+   "point": 0
+  }
  ]
 }

@@ -70,7 +70,7 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [x] Whole synth made compact: Synth / FX / Matrix pages, tabbed envelopes and LFOs, a small macro block as in Serum
 - [x] List of every Serum 2 feature the practice synth is missing (docs/SERUM_GAPS.md, about 550 rows, with a suggested order)
 - [ ] Close more Serum gaps (done so far: mono, legato and glide; wheels and MIDI; the matrix's "aux source"; Osc B's wavetable, pan, warp and unison; a second filter with routing; peak and shelf; Flip, Steps and Fold warps; reorderable effects; a smooth drawn LFO). Next in `docs/SERUM_GAPS.md`: per-source routing to each filter, an Osc C, more filter types, a second warp slot.
-- [ ] More macro recipes (21 so far; the owner wants many; each is a few lines of data in the macro lesson file)
+- [ ] More macro recipes (24 so far; the owner wants many; each is a few lines of data in the macro lesson file)
 - [x] Scaling a route with a second source (mod wheel) and its lesson (done 14 Nov: the matrix's "Scaled by" column and its lesson)
 - [x] Blind ear checks for the filter, envelope, LFO and modulation lessons (done 15 Nov for filter, envelope and LFO lessons: five kinds; none yet for modulation)
 - [x] Pulse-width lesson in the oscillator chapter (covered by "Squeeze: pulse width and beyond" in Reshaping the wave)
@@ -80,7 +80,7 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [ ] Music theory lessons that use the MIDI keyboard (owner, 14 Nov 2026): track I of the curriculum. First eight built 15 Nov ("Notes and chords": semitones and octaves, intervals, major and minor chords, scales, chords from a scale, inversions, a four-chord progression, sevenths); ten more planned.
 - [ ] Source texts on sound systems for the owner to find: see `docs/LITERATURE.md`.
 - [ ] Build from `docs/LEARNING_RESEARCH.md` (owner, 14 Nov 2026): Focus mode for ADHD, end-of-lesson recall, spaced return, mixed by-ear checkpoints, "why this matters" lines, fading guidance, optional noise, the new answer layout.
-- [ ] Remaining synthesis chapters from the course plan (114 lessons built)
+- [ ] Remaining synthesis chapters from the course plan (117 lessons built)
 
 ## Synth
 - [x] Filter with a draggable curve

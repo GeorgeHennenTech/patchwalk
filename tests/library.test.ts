@@ -29,6 +29,18 @@ describe("retrieval", () => {
     expect(search(index, "detune voices")[0]!.passage.id).toBe("card:x");
     expect(search(index, "quantum chromodynamics")).toEqual([]);
   });
+  it("everyday words reach texts that use the technical ones, without displacing a page in the asker's own words", () => {
+    const small = buildIndex([
+      { id: "paper#1", source: "A paper", page: 1, section: "Membranes", text: "The modal frequencies of a circular membrane are set by the zeros of Bessel functions." },
+      { id: "manual#1", source: "A manual", page: 1, section: "Drum rack", text: "Drop a drum sample onto a pad. Each pad has its own pitch control." },
+      { id: "other#1", source: "Another", page: 1, section: "Reverb", text: "Size sets the length of the tail." },
+    ]);
+    const found = search(small, "why does a drum have no clear pitch").map((h) => h.passage.id);
+    expect(found[0]).toBe("manual#1");            // the asker's own words still win
+    expect(found).toContain("paper#1");           // and the paper that says "membrane" and "frequencies" is reached
+    expect(found).not.toContain("other#1");
+    expect(search(small, "echo")).toEqual([]);    // a related word alone ("delay") finds nothing that is not there
+  });
   it.skipIf(!hasManual)("finds the right pages of the Serum 2 User Guide", () => {
     const lib = loadLibrary(ROOT);
     const pages = (q: string) => search(lib, q, 6).map((h) => h.passage.page);

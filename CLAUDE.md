@@ -956,6 +956,13 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   The filter snap, CT.10 Harmonics make a sub audible, CT.11 Risers (one long-attack envelope to pitch, and
   to the filter through a matrix row), CT.12 Pluck, stab and growl. Thirteen lessons in the Impacts chapter. Like the first ones they
   claim nothing about hearing. A test walks every step of every lesson added that day with the settings its instruction asks for; **none was clicked through in a browser.**
+- **Guide search widened (15 Nov 2026).** The library now holds over twenty texts (2,242 passages). `search`
+  in `src/library/search.ts` adds related technical words to a question at half weight (`RELATED`: drum to
+  membrane and mode, pitch to frequency, echo to delay, speaker to loudspeaker and driver, and so on), so a
+  plain-language question reaches papers that only use the technical words; the asker's own words still
+  count in full. Checked on the real library: "why does a drum not have a clear pitch" now reaches the
+  membrane paper, and manual questions still land on the same pages. Splitting long pages into passages
+  and having a small model pick the best ones are still to do.
 - **Realism pass on the 3D views (14 Nov 2026, owner's request).** `src/ui/three/look.ts`: surfaces drawn
   by code onto small canvases (textured speaker paint, a perforated grille, grass, plywood, paper pulp,
   steel), an open sky with haze, a studio table that shows only shadows, and `truss` (laced lighting

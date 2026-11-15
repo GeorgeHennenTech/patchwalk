@@ -59,16 +59,36 @@ export interface Hit {
 
 const K1 = 1.4, B = 0.75;
 
+/**
+ * Everyday words and the words the texts use for the same thing. A question's own words count in full; the
+ * related ones count for half, so "why has a drum no clear pitch" can reach a paper that only ever says
+ * "membrane" and "modal frequencies", without pushing aside a page that uses the asker's own words.
+ */
+const RELATED: Record<string, string[]> = {
+  drum: ["membrane", "percussion", "mode"], skin: ["membrane"], pitch: ["frequency", "tuning"], note: ["pitch"],
+  speaker: ["loudspeaker", "driver", "cabinet"], louder: ["level", "efficiency", "sensitivity"], loud: ["level"],
+  wobble: ["lfo"], echo: ["delay"], room: ["reverb"], bright: ["harmonic", "cutoff"], dull: ["cutoff", "lowpass"],
+  metal: ["inharmonic", "modal"], bell: ["inharmonic", "modal"], guitar: ["string", "plucked"], pluck: ["plucked", "string"],
+  bow: ["bowed", "friction"], violin: ["bowed", "string"], flute: ["jet", "wind"], clarinet: ["reed", "woodwind"], sax: ["reed", "woodwind"],
+  voice: ["vocal", "tract"], sing: ["vocal", "tract"], piano: ["hammer", "string"], hit: ["impact", "strike", "excitation"],
+  sidechain: ["ducking"], duck: ["sidechain"], coverage: ["dispersion", "beamwidth"], aim: ["angle", "tilt"],
+  sub: ["subwoofer", "bass"], crunchy: ["distortion"], gritty: ["distortion"], warm: ["saturation"], wide: ["stereo", "width"],
+};
+const RELATED_WEIGHT = 0.5;
+
 export function search(index: Index, query: string, limit = 6): Hit[] {
   const scores = new Map<number, number>();
   const N = index.passages.length;
-  for (const term of new Set(tokenize(query))) {
+  const asked = new Set(tokenize(query)), weights = new Map<string, number>();
+  for (const term of asked) weights.set(term, 1);
+  for (const term of asked) for (const other of RELATED[term] ?? []) for (const t of tokenize(other)) if (!weights.has(t)) weights.set(t, RELATED_WEIGHT);
+  for (const [term, weight] of weights) {
     const list = index.postings.get(term);
     if (!list) continue;
     const idf = Math.log(1 + (N - list.length + 0.5) / (list.length + 0.5));
     for (const [i, tf] of list) {
       const norm = tf + K1 * (1 - B + (B * index.lengths[i]!) / index.avgLength);
-      scores.set(i, (scores.get(i) ?? 0) + idf * ((tf * (K1 + 1)) / norm));
+      scores.set(i, (scores.get(i) ?? 0) + weight * idf * ((tf * (K1 + 1)) / norm));
     }
   }
   return [...scores].sort((a, b) => b[1] - a[1]).slice(0, limit).map(([i, score]) => ({ passage: index.passages[i]!, score }));

@@ -24,14 +24,17 @@ export interface StringState {
   hard: number;
   /** Where the string is listened to, as a percentage of its length (0 is at the bridge: everything is heard). */
   pickup: number;
+  /** A second string beside the first, this many cents sharp (0 is one string alone). The two drift against each other. */
+  pair: number;
 }
-export const STRING_INITIAL: StringState = { exciter: "pluck", bright: 60, decay: 3, pick: 20, hard: 60, pickup: 0 };
+export const STRING_INITIAL: StringState = { exciter: "pluck", bright: 60, decay: 3, pick: 20, hard: 60, pickup: 0, pair: 0 };
 export const STRING_RANGES: Record<Exclude<keyof StringState, "exciter">, { min: number; max: number; step: number; unit: string; label: string }> = {
   bright: { min: 0, max: 100, step: 1, unit: "%", label: "Brightness" },
   decay: { min: 0.2, max: 8, step: 0.1, unit: "s", label: "Decay time" },
   pick: { min: 2, max: 50, step: 1, unit: "% along", label: "Pluck position" },
   hard: { min: 0, max: 100, step: 1, unit: "%", label: "Pick hardness" },
   pickup: { min: 0, max: 50, step: 1, unit: "% along", label: "Listening position" },
+  pair: { min: 0, max: 30, step: 1, unit: "cents apart", label: "Second string" },
 };
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
@@ -97,8 +100,20 @@ export function loopFor(s: StringState, hz: number, sampleRate: number): { delay
   return { delay: Math.max(1, delay), allpass: (1 - fraction) / (1 + fraction), gain, weight };
 }
 
-/** One whole note as samples: the excitation goes into the loop once, and the loop does the rest. */
+/** How many times a second two strings `cents` apart drift in and out of step, at a note of `hz`. */
+export const pairBeatHz = (hz: number, cents: number) => hz * (2 ** (cents / 1200) - 1);
+
+/** One whole note as samples. With a second string, the two are worked out separately and added. */
 export function renderString(s: StringState, note: number, sampleRate: number, seconds: number): Float32Array {
+  const one = renderOne(s, note, sampleRate, seconds);
+  if (!(s.pair > 0)) return one;
+  const two = renderOne(s, note + s.pair / 100, sampleRate, seconds);
+  for (let i = 0; i < one.length; i++) one[i] = 0.6 * (one[i]! + two[i]!);
+  return one;
+}
+
+/** One string: the excitation goes into the loop once, and the loop does the rest. */
+function renderOne(s: StringState, note: number, sampleRate: number, seconds: number): Float32Array {
   const hz = noteToHz(note), { delay, allpass, gain, weight } = loopFor(s, hz, sampleRate);
   const input = excitation(s, hz, sampleRate), total = Math.max(1, Math.round(seconds * sampleRate)), out = new Float32Array(total);
   const line = new Float32Array(delay + 2); // the string: what went in `delay` samples ago comes out now

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { noteToHz } from "../src/synth/params";
-import { excitation, loopFor, lossGain, lossWeight, pluckHarmonics, pluckShape, renderString, STRING_INITIAL, tripGain, type StringState } from "../src/strings/string";
+import { excitation, loopFor, pairBeatHz, lossGain, lossWeight, pluckHarmonics, pluckShape, renderString, STRING_INITIAL, tripGain, type StringState } from "../src/strings/string";
 
 const SR = 48000;
 const S = (over: Partial<StringState> = {}): StringState => ({ ...STRING_INITIAL, ...over });
@@ -64,5 +64,14 @@ describe("the plucked string", () => {
     }
     expect(Math.max(...Array.from(excitation(S(), 110, SR)).map(Math.abs))).toBeCloseTo(0.6, 6);
     expect(pluckShape(S({ pick: 20 }), 0.2)).toBeCloseTo(1, 9); expect(pluckShape(S({ pick: 20 }), 0)).toBe(0); expect(pluckShape(S({ pick: 20 }), 1)).toBe(0);
+  });
+  it("a second string a few cents away makes the note swell and fade at the difference between them", () => {
+    const hz = noteToHz(57), beat = pairBeatHz(hz, 10);
+    expect(beat).toBeCloseTo(hz * (2 ** (10 / 1200) - 1), 9); expect(beat).toBeGreaterThan(1.2); expect(beat).toBeLessThan(1.35);
+    const y = renderString(S({ pair: 10, decay: 8, bright: 100 }), 57, SR, 1.2);
+    const level = (t: number) => { let p = 0; for (let i = Math.round(t * SR); i < Math.round((t + 0.03) * SR); i++) p = Math.max(p, Math.abs(y[i]!)); return p; };
+    const half = 0.5 / beat; // half a beat after the start the two are out of step and nearly cancel
+    expect(level(half)).toBeLessThan(level(0.02) * 0.45); expect(level(2 * half)).toBeGreaterThan(level(half) * 1.3);
+    expect(Array.from(renderString(S({ pair: 0 }), 57, SR, 0.05))).toEqual(Array.from(renderString(S(), 57, SR, 0.05)));
   });
 });

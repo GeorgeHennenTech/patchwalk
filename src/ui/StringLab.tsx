@@ -3,7 +3,7 @@
 // worked out whole by src/strings/string.ts and then played, so what is drawn is exactly what is heard.
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { noteToHz } from "../synth/params";
-import { EXCITERS, loopFor, pluckHarmonics, pluckShape, renderString, STRING_INITIAL, STRING_RANGES, type StringState } from "../strings/string";
+import { EXCITERS, loopFor, pairBeatHz, pluckHarmonics, pluckShape, renderString, STRING_INITIAL, STRING_RANGES, type StringState } from "../strings/string";
 
 const KEYS = "awsedftgyhujk"; // one octave of the computer keyboard, from C
 const LOW = 36, HIGH = 72, BLACK = [1, 3, 6, 8, 10];
@@ -21,6 +21,7 @@ const TRIES: Try[] = [
   { id: "middle", say: "Set Pluck position to 50% (the middle) and play.", hear: "Hollow and round. Look at the bars: every second harmonic has gone.", done: (s) => s.pick === 50 && s.exciter === "pluck" },
   { id: "bridge", say: "Set Pluck position under 8% (close to the bridge) and play.", hear: "Thin, nasal and bright: nearly every harmonic is there, at nearly the same size.", done: (s) => s.pick <= 8 && s.exciter === "pluck" },
   { id: "soft", say: "Turn Pick hardness under 15% and play.", hear: "A soft thumb: the top bars shrink and the start of the note is rounder.", done: (s) => s.hard <= 15 },
+  { id: "pair", say: "Set Second string to about 8 cents and hold your ear on one long note.", hear: "The note swells and fades slowly as the two strings drift in and out of step, as paired strings do on a twelve-string guitar.", done: (s) => s.pair >= 5 && s.pair <= 12 },
   { id: "pickup", say: "Set Listening position to 25% and play.", hear: "Every fourth harmonic drops out, as it does under a guitar pickup a quarter of the way along.", done: (s) => s.pickup === 25 },
 ];
 
@@ -90,7 +91,7 @@ export default function StringLab() {
             {(Object.keys(STRING_RANGES) as (keyof typeof STRING_RANGES)[]).map((id) => { const r = STRING_RANGES[id]; return (
               <label key={id} className="strings-range">{r.label}
                 <input type="range" min={r.min} max={r.max} step={r.step} value={s[id]} onChange={(e) => set(id, Number(e.target.value))} aria-label={r.label} />
-                <span className="strings-value">{id === "pickup" && s.pickup === 0 ? "at the bridge" : `${s[id]} ${r.unit}`}</span>
+                <span className="strings-value">{id === "pickup" && s.pickup === 0 ? "at the bridge" : id === "pair" && s.pair === 0 ? "off" : `${s[id]} ${r.unit}`}</span>
               </label>
             ); })}
           </div>
@@ -108,7 +109,7 @@ export default function StringLab() {
           <svg className="strings-fade" viewBox="0 0 240 60" preserveAspectRatio="none" role="img" aria-label="The loudness of the note over time">
             <path d={`M0 60 ${outline.pts.map((p, x) => `L${x} ${60 - Math.min(1, p / 0.7) * 56}`).join(" ")} L240 60 Z`} />
           </svg>
-          <p className="strings-caption">Loudness over {outline.seconds.toFixed(1)} s. For {nameOf(last)} ({hz.toFixed(1)} Hz) the loop is {(48000 / hz).toFixed(1)} samples long at 48,000 samples a second, and {(loop.gain * 100).toFixed(2)}% is kept on each trip.</p>
+          <p className="strings-caption">Loudness over {outline.seconds.toFixed(1)} s. For {nameOf(last)} ({hz.toFixed(1)} Hz) the loop is {(48000 / hz).toFixed(1)} samples long at 48,000 samples a second, and {(loop.gain * 100).toFixed(2)}% is kept on each trip.{s.pair > 0 && ` The two strings drift in and out of step ${pairBeatHz(hz, s.pair).toFixed(1)} times a second.`}</p>
         </div>
       </div>
       <div className="strings-keys" role="group" aria-label="Keys: click to pluck">
@@ -126,7 +127,7 @@ export default function StringLab() {
       <aside className="strings-source">
         <h3>Where this comes from</h3>
         <p>The loop with a two-sample average in it is the Karplus-Strong plucked-string method, built here as Julius O. Smith describes it in “Physical Modeling Using Digital Waveguides” (Computer Music Journal, 1992), which is in the library. The fine tuning follows Jaffe and Smith’s extension of that method.</p>
-        <p><strong>What is missing here.</strong> This is one ideal string and nothing else. There is no body to colour it, no stiffness (which pulls a piano’s harmonics sharp), no second string to beat against, and no bow. A note cannot be bent or muted once it is ringing, because each note is worked out before it plays. Those come with later parts of this track. How it sounds has not yet been judged by a person.</p>
+        <p><strong>What is missing here.</strong> This is one ideal string and nothing else. There is no body to colour it, no stiffness (which pulls a piano’s harmonics sharp), no sympathetic strings, and no bow. A note cannot be bent or muted once it is ringing, because each note is worked out before it plays. Those come with later parts of this track. How it sounds has not yet been judged by a person.</p>
       </aside>
     </section>
   );

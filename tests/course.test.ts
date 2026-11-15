@@ -1230,7 +1230,7 @@ describe("the loudspeaker cutaway", () => {
   });
 });
 
-import { aimedAt, ARENA_ARRAY, footprint, hang, reach, tilts, travelTime, VERO, zones } from "../src/soundsystems/vero";
+import { aimedAt, ARENA_ARRAY, columnFacts, footprint, hang, MAX_ANGLE, reach, tilts, travelTime, VERO, zones } from "../src/soundsystems/vero";
 describe("the Vero array", () => {
   it("is the guide's twelve-cabinet arena array, top to bottom", () => {
     expect(ARENA_ARRAY.map((c) => c.kind).join(" ")).toBe("V60 V60 V60 V60 V315 V315 V315 V90 V90 V315 V90 V90");
@@ -1530,5 +1530,25 @@ describe("saved patches", () => {
     const state = { ...INITIAL, cutoff: 1234, lfo1Dest: "cutoff" };
     expect(fromFile(toFile({ name: "Growl", savedAt: 5, state }))).toEqual({ name: "Growl", state });
     expect(fromFile("{}")).toBeUndefined(); expect(fromFile("not json")).toBeUndefined(); expect(fromFile(JSON.stringify({ patchwalkPatch: 1 }))).toBeUndefined();
+  });
+});
+
+describe("building your own Vero column", () => {
+  it("adds up a column's length and weight, and says where its lowest point is", () => {
+    const f = columnFacts(ARENA_ARRAY, 11);
+    expect(f.length).toBeCloseTo(12 * 0.43, 6);
+    expect(f.weightKg).toBe(4 * 115 + 4 * 116 + 4 * 107);
+    expect(f.bottom).toBeGreaterThan(11 - 12 * 0.43); expect(f.bottom).toBeLessThan(11 - 12 * 0.43 + 0.2); // a curved column ends a little higher than a straight one
+    expect(columnFacts(ARENA_ARRAY, 4).bottom).toBeLessThan(0); // hung too low: the page says so
+  });
+  it("a bigger angle under a cabinet brings the sound of everything below it nearer", () => {
+    const steeper = ARENA_ARRAY.map((c, i) => (i === 0 ? { ...c, angleBelow: 6 } : c));
+    const before = hang(ARENA_ARRAY, 11), after = hang(steeper, 11);
+    for (let i = 1; i < before.length; i++) expect(after[i]!.tilt).toBe(before[i]!.tilt + 4);
+    expect(reach(after[8]!.height, after[8]!.tilt)).toBeLessThan(reach(before[8]!.height, before[8]!.tilt));
+    expect(MAX_ANGLE.V60).toBe(6); expect(MAX_ANGLE.V90).toBe(12.5);
+    // a column of V315s alone has nothing aimed at a listener; the page must cope
+    expect(aimedAt([{ kind: "V315", angleBelow: 0 }, { kind: "V315", angleBelow: 0 }], 11, 30)).toBeUndefined();
+    expect(zones([{ kind: "V315", angleBelow: 0 }], 11)).toEqual([]);
   });
 });

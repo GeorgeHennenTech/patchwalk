@@ -1,12 +1,12 @@
 // A Vero column you can walk round: the guide's typical 12-cabinet arena array, hung to scale, with the
 // beams of the mid-high cabinets and bass cabinets on the ground. Figures are from the Vero user guide.
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
-import { aimedAt, ARENA_ARRAY, EAR, footprint, hang, reach, tilts, travelTime, VERO, zones, type VeroKind } from "../soundsystems/vero";
+import { aimedAt, ARENA_ARRAY, columnFacts, EAR, footprint, hang, MAX_ANGLE, MAX_CABINETS, MIN_CABINETS, reach, tilts, travelTime, VERO, zones, type VeroKind } from "../soundsystems/vero";
 import { grass, grille, paint, paper, plywood, shadowed, sign, sky, steel, truss } from "./three/look";
 import { makeStage, type Stage } from "./three/stage";
 
-const TOP = 11;           // height of the top of the column above the ground, metres (illustrative)
+const TOP_START = 11;     // height of the top of the column above the ground, metres (illustrative; the learner can change it)
 const SUBS = 8;           // bass cabinets drawn in the row (illustrative)
 const STAGE_X = 12;       // the middle of the stage; the second column hangs as far to its other side
 const VIEWS: Record<string, { label: string; from: [number, number, number]; to: [number, number, number] }> = {
@@ -15,8 +15,6 @@ const VIEWS: Record<string, { label: string; from: [number, number, number]; to:
   side: { label: "From the side", from: [-46, 9, 24], to: [0, 4, 24] },
   field: { label: "The whole field", from: [-62, 74, 78], to: [6, 0, 52] },
 };
-const HANG = hang(ARENA_ARRAY, TOP);
-const ZONES = zones(ARENA_ARRAY, TOP);
 const SLOWED = 30;        // the ripples on the ground travel this many times slower than sound
 const FAR = 125;          // the furthest a landing mark is drawn, metres
 const metres = (d: number) => `${d < 10 ? d.toFixed(1) : Math.round(d)} m`;
@@ -106,7 +104,12 @@ export default function VeroScene() {
   const [map, setMap] = useState(true), [stand, setStand] = useState(40);
   const live = useRef({ lit: undefined as string | undefined, beams: false, measures: true, map: true, stand: 40 });
   live.current.lit = hover ?? picked; live.current.beams = beams; live.current.measures = measures; live.current.map = map; live.current.stand = stand;
-  const angles = tilts(ARENA_ARRAY);
+  // the column itself can be changed: which cabinets, the angle under each, and how high it hangs
+  const [array, setArray] = useState(ARENA_ARRAY), [TOP, setTop] = useState(TOP_START);
+  const angles = tilts(array), HANG = useMemo(() => hang(array, TOP), [array, TOP]), ZONES = useMemo(() => zones(array, TOP), [array, TOP]);
+  const own = array !== ARENA_ARRAY || TOP !== TOP_START, facts = columnFacts(array, TOP);
+  const seen = useRef<{ p: [number, number, number]; t: [number, number, number] } | undefined>(undefined); // where the camera was, kept across a rebuild
+  const edit = (i: number, change: Partial<(typeof array)[number]>) => setArray(array.map((c, k) => { if (k !== i) return c; const next = { ...c, ...change }; return { ...next, angleBelow: Math.min(next.angleBelow, MAX_ANGLE[next.kind]) }; }));
 
   useEffect(() => {
     const cabinets: { id: string; lit: THREE.MeshStandardMaterial[]; glow: THREE.Color; beam?: THREE.Mesh }[] = [];
@@ -119,7 +122,7 @@ export default function VeroScene() {
     const land = (id: string | undefined) => {
       for (const o of [...landing.children]) { landing.remove(o); (o as THREE.Mesh).geometry?.dispose(); }
       const n = id?.startsWith("a") ? Number(id.slice(1)) : undefined; if (n === undefined) return;
-      const spec = VERO[ARENA_ARRAY[n]!.kind], at = HANG[n]!; if (!spec.beam) return;
+      const spec = VERO[array[n]!.kind], at = HANG[n]!; if (!spec.beam) return;
       const { near, far } = footprint(at.height, at.tilt, spec.beam.upDown), end = Math.min(far, FAR), half = Math.tan(((spec.beam.across / 2) * Math.PI) / 180), z0 = -at.back;
       if (near < end) landing.add(flat([[-near * half, z0 + near], [near * half, z0 + near], [end * half, z0 + end], [-end * half, z0 + end]], spec.color, 0.42));
       // the middle of the beam, from the cabinet to where it meets the ground
@@ -130,7 +133,7 @@ export default function VeroScene() {
       tag(Number.isFinite(far) && far <= FAR ? `ends ${metres(far)}` : "carries on past the field", end);
       const here = sign(`${metres(at.height)} up · tipped ${at.tilt}°`, 0.42, { fill: spec.color, ink: "#16121c" }); here.position.set(-2.1, at.height, z0 + 0.4); landing.add(here);
     };
-    const st = makeStage(mount.current!, { camera: VIEWS.column!.from, target: VIEWS.column!.to, far: 1400, min: 2.5, max: 240, sun: [-55, 60, 50], shadow: 46, exposure: 0.95,
+    const st = makeStage(mount.current!, { camera: seen.current?.p ?? VIEWS.column!.from, target: seen.current?.t ?? VIEWS.column!.to, far: 1400, min: 2.5, max: 240, sun: [-55, 60, 50], shadow: 46, exposure: 0.95,
       onHover: setHover, onPick: setPicked,
       onFrame: (t) => { cover.visible = live.current.map; if (cover.visible) coverFrame(t); rule.visible = live.current.measures; landing.visible = live.current.measures; if (shown !== live.current.lit) { shown = live.current.lit; land(shown); } for (const c of cabinets) { const on = c.id === live.current.lit; for (const m of c.lit) { m.emissive.copy(c.glow); m.emissiveIntensity = on ? 0.55 : 0; } if (c.beam) { c.beam.visible = live.current.beams; (c.beam.material as THREE.MeshBasicMaterial).opacity = on ? 0.5 : 0.075; } } } });
     if (!st) { setFailed(true); return; }
@@ -141,9 +144,9 @@ export default function VeroScene() {
     const ground = new THREE.Mesh(new THREE.PlaneGeometry(1100, 1100), grass(260)); ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
     scene.add(rule, landing, cover);
     // who covers where: the ground painted by the cabinet pointed at each stretch, ripples running out along it, and a listener
-    const halfAt = (index: number) => Math.tan(((VERO[ARENA_ARRAY[index]!.kind].beam!.across / 2) * Math.PI) / 180);
+    const halfAt = (index: number) => Math.tan(((VERO[array[index]!.kind].beam!.across / 2) * Math.PI) / 180);
     ZONES.forEach((z, k) => {
-      const kind = VERO[ARENA_ARRAY[z.index]!.kind], h = halfAt(z.index);
+      const kind = VERO[array[z.index]!.kind], h = halfAt(z.index);
       cover.add(flat([[-z.from * h, z.from], [z.from * h, z.from], [z.to * h, z.to], [-z.to * h, z.to]], z.inside ? kind.color : "#8a8791", z.inside ? (kind.kind === "V60" ? 0.62 : 0.5) - (k % 2 ? 0 : 0.14) : 0.22));
       if (z.to - z.from >= 5) { const s = sign(z.inside ? `cabinet ${z.index + 1} · ${kind.kind}` : "between beams", 1.3 + z.from * 0.035, z.inside ? { fill: kind.color, ink: "#16121c" } : {}); s.position.set(((z.from + z.to) / 2) * h * 0.55, 1.6, (z.from + z.to) / 2); cover.add(s); }
     });
@@ -158,9 +161,9 @@ export default function VeroScene() {
       ripples.forEach((m, k) => {
         const d = 4 + ((t * speed + (k * span) / ripples.length) % span), z = ZONES.find((q) => d >= q.from && d < q.to);
         m.visible = !!z?.inside; if (!z?.inside) return;
-        m.position.z = d; m.scale.x = 2 * d * halfAt(z.index); (m.material as THREE.MeshBasicMaterial).color.set("#ffffff").lerp(new THREE.Color(VERO[ARENA_ARRAY[z.index]!.kind].color), 0.35);
+        m.position.z = d; m.scale.x = 2 * d * halfAt(z.index); (m.material as THREE.MeshBasicMaterial).color.set("#ffffff").lerp(new THREE.Color(VERO[array[z.index]!.kind].color), 0.35);
       });
-      const d = live.current.stand, a = aimedAt(ARENA_ARRAY, TOP, d);
+      const d = live.current.stand, a = aimedAt(array, TOP, d);
       person.position.z = d;
       if (a) { const from = HANG[a.index]!, pos = ray.geometry.attributes.position as THREE.BufferAttribute; pos.setXYZ(0, 0, from.height, -from.back); pos.setXYZ(1, 0, EAR, d); pos.needsUpdate = true; }
     };
@@ -191,7 +194,7 @@ export default function VeroScene() {
       const frame = steel("#2a2a30", 0.5);
       built.add(box(1.5, 0.1, 0.08, cx, TOP + 0.09, -0.12, frame), box(1.5, 0.1, 0.08, cx, TOP + 0.09, -0.6, frame), box(0.08, 0.12, 0.62, cx - 0.6, TOP + 0.1, -0.36, frame), box(0.08, 0.12, 0.62, cx + 0.6, TOP + 0.1, -0.36, frame));
       for (const side of [-1, 1]) { const chain = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, towerTop - TOP - 0.5, 6), steel("#9a9da3", 0.5)); chain.position.set(cx + side * 0.6, (towerTop + TOP) / 2 - 0.1, -0.36); built.add(chain, box(0.2, 0.34, 0.2, cx + side * 0.6, towerTop - 0.42, -0.36, paint("#c9a21b", { roughness: 0.5 }))); }
-      ARENA_ARRAY.forEach((c, i) => {
+      array.forEach((c, i) => {
         const spec = VERO[c.kind], h = spec.size[1], tilt = (angles[i]! * Math.PI) / 180, id = `a${i}`;
         const { group, lit } = cabinet(c.kind);
         group.position.set(cx, y, z); group.rotation.x = tilt; group.userData.id = id;
@@ -214,17 +217,18 @@ export default function VeroScene() {
       shadowed(group); scene.add(group); st.pickable.push(group); cabinets.push({ id: `s${k}`, lit, glow: new THREE.Color(VERO.V221.color) });
     }
     shadowed(built);
-    return () => { st.dispose(); stage.current = undefined; };
-  }, []);
+    return () => { seen.current = { p: st.camera.position.toArray() as [number, number, number], t: st.controls.target.toArray() as [number, number, number] }; st.dispose(); stage.current = undefined; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [array, TOP]);
 
-  const id = hover ?? picked, n = id?.startsWith("a") ? Number(id.slice(1)) : undefined;
-  const kind: VeroKind | undefined = id === undefined ? undefined : n !== undefined ? ARENA_ARRAY[n]!.kind : "V221";
+  const id = hover ?? picked, nRaw = id?.startsWith("a") ? Number(id.slice(1)) : undefined, n = nRaw !== undefined && nRaw < array.length ? nRaw : undefined;
+  const kind: VeroKind | undefined = id === undefined ? undefined : n !== undefined ? array[n]!.kind : "V221";
   const spec = kind ? VERO[kind] : undefined, tilt = n !== undefined ? angles[n]! : undefined;
   const at = n !== undefined ? HANG[n] : undefined;
   const lands = at && spec?.beam ? reach(at.height, at.tilt) : undefined, covers = at && spec?.beam ? footprint(at.height, at.tilt, spec.beam.upDown) : undefined;
   return (
     <>
-      <p className="muted">The system reported at Tipper's shows. This is the "typical 12-cabinet arena array" from Funktion-One's Vero user guide, hung to scale each side of a stage: four V60, three V315, two V90, one V315, two V90, from the top. Drag to walk round it; click a cabinet.</p>
+      <p className="muted">The system reported at Tipper's shows. {own ? "This is your own column, changed from the guide’s array under “Build your own column” below." : "This is the \"typical 12-cabinet arena array\" from Funktion-One's Vero user guide, hung to scale each side of a stage: four V60, three V315, two V90, one V315, two V90, from the top."} Drag to walk round it; click a cabinet.</p>
       <div className="driver-grid">
         <div className="driver-stage three" ref={mount} role="img" aria-label="A column of twelve loudspeaker cabinets hanging beside a stage, with coloured beams showing where each one sends its sound, and bass cabinets on the ground">
           {failed && <p className="driver-failed">This browser could not start 3D drawing.</p>}
@@ -237,7 +241,7 @@ export default function VeroScene() {
             <button aria-pressed={measures} className={measures ? "on" : ""} onClick={() => setMeasures((m) => !m)}>Measurements</button>
           </div>
           <div className="driver-parts vero-key" role="group" aria-label="Cabinets in the column, top to bottom">
-            {ARENA_ARRAY.map((c, i) => <button key={i} style={{ borderColor: VERO[c.kind].color }} className={id === `a${i}` ? "on" : ""} aria-pressed={picked === `a${i}`} onClick={() => setPicked(picked === `a${i}` ? undefined : `a${i}`)} onPointerEnter={() => setHover(`a${i}`)} onPointerLeave={() => setHover(undefined)}>{i + 1} · {c.kind}</button>)}
+            {array.map((c, i) => <button key={i} style={{ borderColor: VERO[c.kind].color }} className={id === `a${i}` ? "on" : ""} aria-pressed={picked === `a${i}`} onClick={() => setPicked(picked === `a${i}` ? undefined : `a${i}`)} onPointerEnter={() => setHover(`a${i}`)} onPointerLeave={() => setHover(undefined)}>{i + 1} · {c.kind}</button>)}
           </div>
           <div className="driver-info" role="status">
             {spec ? (
@@ -255,7 +259,7 @@ export default function VeroScene() {
         </div>
       </div>
       {map && (() => {
-        const a = aimedAt(ARENA_ARRAY, TOP, stand), c = a ? ARENA_ARRAY[a.index]! : undefined, far = a ? Math.hypot(stand + HANG[a.index]!.back, HANG[a.index]!.height - EAR) : stand;
+        const a = aimedAt(array, TOP, stand), c = a ? array[a.index]! : undefined, far = a ? Math.hypot(stand + HANG[a.index]!.back, HANG[a.index]!.height - EAR) : stand;
         return (
           <div className="vero-stand">
             <label className="driver-slider"><span>Stand</span><input type="range" min={3} max={118} step={1} value={stand} onChange={(e) => setStand(Number(e.target.value))} aria-valuetext={`${stand} metres from the column`} /><output>{stand} m out</output></label>
@@ -271,6 +275,28 @@ export default function VeroScene() {
           </div>
         );
       })()}
+      <details className="vero-build">
+        <summary>Build your own column{own ? " (changed from the guide’s)" : ""}</summary>
+        <p className="muted">Change which cabinet hangs where, the angle under each one, and how high the column hangs. The picture, the painted ground and the listener’s panel all follow. A bigger angle under a cabinet tips everything below it further down, so their sound lands nearer the stage.</p>
+        <ol className="vero-rows">
+          {array.map((c, i) => (
+            <li key={i} style={{ borderColor: VERO[c.kind].color }}>
+              <span className="vero-n">{i + 1}</span>
+              <select value={c.kind} aria-label={`Cabinet ${i + 1}: kind`} onChange={(e) => edit(i, { kind: e.target.value as VeroKind })}>{(["V60", "V90", "V315"] as VeroKind[]).map((k2) => <option key={k2} value={k2}>{k2}</option>)}</select>
+              {i < array.length - 1 ? <label>angle below <input type="number" min={0} max={MAX_ANGLE[c.kind]} step={0.5} value={c.angleBelow} aria-label={`Cabinet ${i + 1}: degrees between it and the one below`} onChange={(e) => edit(i, { angleBelow: Math.max(0, Math.min(MAX_ANGLE[c.kind], Number(e.target.value) || 0)) })} />°</label> : <span className="muted">bottom of the column</span>}
+              <span className="muted">tipped {angles[i]}°</span>
+              <button className="link" disabled={array.length <= MIN_CABINETS} aria-label={`Remove cabinet ${i + 1}`} onClick={() => setArray(array.filter((_, k2) => k2 !== i))}>Remove</button>
+            </li>
+          ))}
+        </ol>
+        <p>
+          <button disabled={array.length >= MAX_CABINETS} onClick={() => setArray([...array, { kind: array[array.length - 1]!.kind, angleBelow: 0 }])}>Add a cabinet at the bottom</button>{" "}
+          <label className="driver-slider tone"><span>Top of the column</span><input type="range" min={5} max={18} step={0.5} value={TOP} onChange={(e) => setTop(Number(e.target.value))} /><output>{TOP} m</output></label>{" "}
+          {own && <button className="link" onClick={() => { setArray(ARENA_ARRAY); setTop(TOP_START); }}>Back to the guide’s array</button>}
+        </p>
+        <p role="status">{array.length} cabinets, {facts.length.toFixed(1)} m of column, about {Math.round(facts.weightKg)} kg in all. Its lowest point is {facts.bottom.toFixed(1)} m above the ground{facts.bottom < 0.5 ? ": that is on or in the ground, so raise the column or take cabinets off" : ""}. {!array.some((c) => c.kind === "V315") && "With no V315 in it, this column has no mid-bass of its own."} {!array.some((c) => VERO[c.kind].beam) && "With no V60 or V90, nothing in it carries the mids and highs."}</p>
+        <p className="muted">Angle limits: V60 up to 6° and V90 up to 12.5°, the guide’s own figures for unbroken coverage. The 6° limit under a V315 is this page’s, not the guide’s. The page does not check that a real column could be flown this way: the maker’s Projection software does that.</p>
+      </details>
       <p className="muted driver-draft">From the guide: the cabinets' sizes, which kinds hang where, the angles between them (pages 62, 67, 108 to 111), and each kind's coverage. The cabinets' look (curved grille, open horn mouths, steel end plates, coloured dials) follows the guide's photographs by eye. Drawn for illustration: the height of the columns, the towers and flying frame, the length of the beams, the number of bass cabinets, the stage, and the cabinets' exact outline and insides. Bold lines on the ground are 20 m apart, faint ones 10 m, measured from the front of the top cabinet. "Who covers where" paints each stretch of ground in the colour of the mid-high cabinet pointed most nearly at a listener standing there (ears 1.7 m up), from the left-hand column only; grey means outside every cabinet's stated angle. In life the cabinets overlap and blend rather than hand over at a line. The "starts" and "ends" marks are straight-line geometry from each cabinet's height, tilt and coverage angle; real sound fades past an edge, it does not stop there, and with the columns' height being illustrative so are these distances.</p>
     </>
   );

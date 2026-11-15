@@ -925,3 +925,12 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 .patch-bar input[type="text"], .patch-bar form > input:not([type="file"]) { flex: 1 1 200px; padding: 7px 11px; border: 2px solid var(--thread); border-radius: 10px; background: var(--panel); color: var(--text); font: inherit; }
 .patch-bar ul { list-style: none; padding: 0; margin: 6px 0; display: grid; gap: 4px; }
 .patch-bar li { display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; }
+
+/* Vero: build your own column. */
+.vero-build { margin: 12px 0; padding: 8px 12px; border: 2px solid var(--thread); border-radius: 12px; }
+.vero-build summary { cursor: pointer; font-weight: 700; }
+.vero-rows { list-style: none; padding: 0; margin: 8px 0; display: grid; gap: 5px; }
+.vero-rows li { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 4px 10px; border-left: 6px solid; border-radius: 6px; background: color-mix(in srgb, var(--thread) 6%, transparent); }
+.vero-rows .vero-n { font-weight: 800; min-width: 1.6em; }
+.vero-rows select, .vero-rows input { padding: 3px 6px; border: 2px solid var(--thread); border-radius: 8px; background: var(--panel); color: var(--text); font: inherit; }
+.vero-rows input { width: 4.6em; }

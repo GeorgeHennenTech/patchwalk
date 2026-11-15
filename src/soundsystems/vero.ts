@@ -89,3 +89,13 @@ export function zones(array: Hung, top: number, from = 2, to = 120, step = 0.5):
 }
 /** Seconds for sound to travel a distance in air at about 20 °C. */
 export const travelTime = (metres: number) => metres / 343;
+
+/** The widest angle the page lets you set between a cabinet and the one below it. V60 and V90: the guide's own limits for unbroken coverage. V315: the page's own limit, not from the guide. */
+export const MAX_ANGLE: Record<VeroKind, number> = { V60: 6, V90: 12.5, V315: 6, V221: 0 };
+export const MIN_CABINETS = 2, MAX_CABINETS = 16;
+/** A column as a whole: how long it hangs, what it weighs, and how far its lowest point is above the ground. */
+export function columnFacts(array: Hung, top: number): { length: number; weightKg: number; bottom: number } {
+  const t = tilts(array); let y = top, len = 0, kg = 0;
+  array.forEach((c, i) => { const h = VERO[c.kind].size[1]; y -= h * Math.cos((t[i]! * Math.PI) / 180); len += h; kg += parseFloat(VERO[c.kind].weight); });
+  return { length: len, weightKg: kg, bottom: y };
+}

@@ -20,8 +20,8 @@ it, and reports in a few lines. None of these needs the owner or spends credits.
 - [x] 8. Reorderable effects rack with a bypass per effect (needed before the processing-chains track)
 - [ ] 9. Second filter, with routing between the two, and two more filter types
 - [ ] 10. Osc B as a full oscillator: unison and warp
-- [ ] 11. Vero: build your own column (choose cabinets and angles, see the coverage change)
-- [ ] 12. Save and load your own patches on the practice synth
+- [x] 11. Vero: build your own column (choose cabinets and angles, see the coverage change)
+- [x] 12. Save and load your own patches on the practice synth
 
 Waiting on the owner, not in the queue: set `OWNER_EMAIL` in Vercel and make their account; a mail service
 for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on their screen.

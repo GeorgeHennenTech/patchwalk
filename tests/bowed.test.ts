@@ -44,4 +44,9 @@ describe("the bowed string", () => {
     expect(bowGrip(0, 50)).toBe(1); expect(bowGrip(1, 50)).toBeLessThan(0.05); expect(bowGrip(0.2, 100)).toBeGreaterThan(bowGrip(0.2, 0));
     let peak = 0; for (const v of renderBowed(B({ speed: 100, pressure: 100, bright: 100 }), 30, SR, 1.5)) peak = Math.max(peak, Math.abs(v)); expect(peak).toBeLessThan(4);
   });
+  it("the quick trial behind the map agrees with the note as it is really played", () => {
+    let same = 0, all = 0;
+    for (const speed of [5, 35, 65, 95]) for (const pressure of [5, 35, 65, 95]) { all++; if (bowResult(B({ speed, pressure })) === bowResult(B({ speed, pressure }), 45, SR)) same++; }
+    expect(same / all).toBeGreaterThanOrEqual(0.85);
+  });
 });

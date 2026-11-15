@@ -74,8 +74,8 @@ export type BowResult = "silent" | "note" | "jumped";
  * What these settings give, found by a quick, coarse trial of the model itself: no sound, a steady note, or
  * a note that has jumped up (the string slipping twice per cycle, so the second harmonic outweighs the first).
  */
-export function bowResult(s: BowState): BowResult {
-  const sr = 12000, hz = noteToHz(45), y = renderBowed({ ...s, attack: 30 }, 45, sr, 0.7, 0);
+export function bowResult(s: BowState, note = 45, sr = 24000): BowResult {
+  const hz = noteToHz(note), y = renderBowed({ ...s, attack: 30 }, note, sr, 0.7, 0);
   let peak = 0;
   for (let i = Math.round(0.45 * sr); i < Math.round(0.68 * sr); i++) peak = Math.max(peak, Math.abs(y[i]!));
   if (peak < 0.01) return "silent";
@@ -84,4 +84,4 @@ export function bowResult(s: BowState): BowResult {
 }
 export const BOW_GRID = { speeds: [5, 20, 35, 50, 65, 80, 95], pressures: [95, 80, 65, 50, 35, 20, 5] };
 /** The result for every combination of bow speed (across) and pressure (down, hardest first), for the map. */
-export const bowMap = (s: BowState): BowResult[][] => BOW_GRID.pressures.map((pressure) => BOW_GRID.speeds.map((speed) => bowResult({ ...s, speed, pressure })));
+export const bowMap = (s: BowState, note = 45): BowResult[][] => BOW_GRID.pressures.map((pressure) => BOW_GRID.speeds.map((speed) => bowResult({ ...s, speed, pressure }, note)));

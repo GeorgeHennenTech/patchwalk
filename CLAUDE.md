@@ -971,6 +971,21 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   always one unbroken stretch. Notes are blown for a fixed 1.4 s (rendered whole, like the others). Two
   lessons, Q6.1 "Breath: too little, enough, too much" and Q6.2 "A hollow tone", in `TUBE_LESSONS`
   (eight model lessons in all). Checked in a browser; not heard by anyone.
+- **Bowed string (15 Nov 2026).** A fourth physical model, `src/strings/bowed.ts` and `src/ui/BowLab.tsx`
+  ("Bowed string" in the Physical models tab). Two delay lines, bow to nut and bow to bridge, carrying
+  velocity; the nut sends the wave back upside down, the bridge upside down through a one-pole low-pass; at
+  the bow the string is given `d x bowGrip(d)` where d is bow speed minus string speed and `bowGrip` is 1
+  when stuck and falls off as it slips (sooner under light pressure). Structure from Smith 1992's bowed
+  string section (library page 20) and the stick-slip account in McIntyre, Schumacher and Woodhouse 1983;
+  **the grip curve and its numbers are our own, and the page says so.** Behaviour, all from the model and
+  tested: in tune within 6 cents from note 36 to 81; all harmonics, odd and even (saw-like); silent with a
+  still bow; louder with a faster bow; with the bow too fast for its pressure the second harmonic takes
+  over ("the note jumps up"); it rings on and fades after the bow lifts. `bowResult` (silent / note /
+  jumped) tries the model at 24 kHz, and `bowMap` gives a 7 by 7 map of speed against pressure for the
+  last note played, drawn with the learner's place marked; a test holds the quick trial to 85% agreement
+  with the full-rate note. One lesson, Q2.5 "Bowing: stick and slip" (`BOW_LESSONS`; nine model lessons in
+  all). A hard fast bow is several times louder than a gentle one, so the lab plays through a limiter.
+  Checked in a browser; not heard by anyone.
 - **Guide search widened (15 Nov 2026).** The library now holds over twenty texts (2,242 passages). `search`
   in `src/library/search.ts` adds related technical words to a question at half weight (`RELATED`: drum to
   membrane and mode, pitch to frequency, echo to delay, speaker to loudspeaker and driver, and so on), so a

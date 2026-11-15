@@ -4,6 +4,7 @@
 import type { QuizItem } from "../course/quiz";
 import type { DrumState } from "../modal/membrane";
 import { speaks, type TubeState } from "../modal/tube";
+import { bowResult, type BowState } from "../strings/bowed";
 import type { StringState } from "../strings/string";
 
 /** What has been played since the current step began. */
@@ -11,6 +12,7 @@ export interface Played { plays: number; notes: number[] }
 export interface ModelStep<S> { do: string; hear: string; target: string; check: (s: S, played: Played) => boolean }
 export interface ModelLesson<S> { id: string; title: string; minutes: number; outcome: string; idea: string[]; initial: Partial<S>; steps: ModelStep<S>[]; recap: string[]; quiz: QuizItem[] }
 
+const lastNote = (p: Played) => p.notes[p.notes.length - 1] ?? 45;
 const distinct = (p: Played) => new Set(p.notes).size;
 const q = (text: string, options: string[], answer: number, why: string, point: number): QuizItem => ({ q: text, options, answer, why, point });
 
@@ -177,6 +179,31 @@ export const TUBE_LESSONS: ModelLesson<TubeState>[] = [
       q("Why does this tube play lower than a string of the same length?", ["It is thicker", "The wave returns upside down, so it takes two trips to repeat", "The reed is heavy", "The breath slows the wave"], 1, "Things only repeat after two trips, which makes the note much lower.", 0),
       q("What is the tone of the tube like in this model?", ["Every harmonic at equal strength", "Hollow, with every second harmonic all but missing", "Only one harmonic", "Noise with no pitch"], 1, "The odd-numbered harmonics stand and the even ones are almost absent.", 1),
       q("How do you make the tone brighter?", ["Let the open end send back more of the highs", "Blow more softly", "Loosen the reed fully", "Shorten the note"], 0, "Keeping more highs in the loop keeps the upper harmonics alive.", 2),
+    ],
+  },
+];
+
+export const BOW_LESSONS: ModelLesson<BowState>[] = [
+  {
+    id: "Q2.5", title: "Bowing: stick and slip", minutes: 7, initial: {},
+    outcome: "Explain how a bow keeps a string sounding, and what bow speed and pressure each do.",
+    idea: [
+      "A bow keeps a note going by sticking and slipping. The hair grips the string and drags it along. The string’s pull grows until the grip breaks, the string flies back, and the hair catches it again. One stick and one slip make one cycle of the note.",
+      "Two things are in the player’s hands. Bow speed is how much energy goes in: faster is louder. Bow pressure is how firmly the hair grips. If the bow moves too fast for its pressure, the string slips more than once in a cycle and the note jumps up to a thin, whistling sound.",
+    ],
+    steps: [
+      { do: "Play a low key with the settings as they are.", hear: "A steady, rich note that lasts while the bow moves, then rings on and fades.", target: "A steady note, played", check: (s, p) => p.plays >= 1 && bowResult(s, lastNote(p)) === "note" },
+      { do: "Turn Bow speed down to 10% or less and play.", hear: "The same note, much quieter. Less speed is less energy.", target: "Bow speed at 10% or less, played", check: (s, p) => p.plays >= 1 && s.speed <= 10 },
+      { do: "Turn Bow speed up to 85% or more and Bow pressure down to 15% or less. Play.", hear: "The note jumps up and turns thin and glassy: the bow is too fast for so light a touch.", target: "A setting in the yellow part of the map, played", check: (s, p) => p.plays >= 1 && s.speed >= 85 && s.pressure <= 15 && bowResult(s, lastNote(p)) === "jumped" },
+      { do: "Keep that speed and raise Bow pressure until the dot is back in the blue. Play.", hear: "The full note returns, and louder than before: a fast bow with enough grip.", target: "Bow speed at 85% or more and a steady note, played", check: (s, p) => p.plays >= 1 && s.speed >= 85 && bowResult(s, lastNote(p)) === "note" },
+      { do: "Move Bow position to 30% or more and play.", hear: "A softer, flutier tone. Bowing further from the bridge gives fewer high harmonics; look at the bars.", target: "Bow position at 30% or more, played", check: (s, p) => p.plays >= 1 && s.position >= 30 },
+    ],
+    recap: ["A bow keeps a string going by sticking to it and slipping back, once per cycle.", "Bow speed sets how much energy goes in: faster is louder.", "Too fast for the pressure and the string slips more than once a cycle, so the note jumps up."],
+    quiz: [
+      q("How does a bow keep a string sounding?", ["By plucking it very fast", "By sticking to it and slipping back, once per cycle", "By blowing air across it", "By heating it"], 1, "The hair drags the string until the grip breaks, then catches it again, over and over.", 0),
+      q("What does a faster bow do?", ["Lowers the pitch", "Makes the note louder", "Stops the note", "Removes the harmonics"], 1, "Bow speed is how much energy goes into the string.", 1),
+      q("The bow is fast but pressed very lightly. What happens?", ["The note jumps up, thin and glassy", "The note gets deeper", "Nothing changes", "The string breaks"], 0, "The string slips more than once in a cycle, so a higher sound takes over.", 2),
+      q("How do you get the full note back at that speed?", ["Press harder", "Bow slower still", "Move to the nut", "Lower the brightness"], 0, "More pressure gives the hair enough grip for one clean stick and slip per cycle.", 2),
     ],
   },
 ];

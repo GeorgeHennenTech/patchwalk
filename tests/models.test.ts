@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { DRUM_LESSONS, STRING_LESSONS, TUBE_LESSONS, type ModelLesson } from "../src/models/lessons";
+import { BOW_LESSONS, DRUM_LESSONS, STRING_LESSONS, TUBE_LESSONS, type ModelLesson } from "../src/models/lessons";
 import { DRUM_INITIAL } from "../src/modal/membrane";
 import { TUBE_INITIAL } from "../src/modal/tube";
+import { BOW_INITIAL } from "../src/strings/bowed";
 import { STRING_INITIAL } from "../src/strings/string";
 
 function sound<S>(lessons: ModelLesson<S>[], initial: S) {
@@ -33,6 +34,11 @@ describe("lessons on the physical models", () => {
     walkA.forEach((s, i) => expect(a.steps[i]!.check(s, P), `Q6.1 step ${i + 1}`).toBe(true));
     const walkB = [TUBE_INITIAL, { ...TUBE_INITIAL, bright: 95 }, { ...TUBE_INITIAL, bright: 10, breath: 75 }, { ...TUBE_INITIAL, noise: 70 }];
     walkB.forEach((s, i) => expect(b.steps[i]!.check(s, P), `Q6.2 step ${i + 1}`).toBe(true));
+  });
+  it("the bowing lesson is well formed, and each step passes with the settings it asks for", () => {
+    sound(BOW_LESSONS, BOW_INITIAL);
+    const P = { plays: 1, notes: [45] }, walk = [BOW_INITIAL, { ...BOW_INITIAL, speed: 8 }, { ...BOW_INITIAL, speed: 95, pressure: 5 }, { ...BOW_INITIAL, speed: 95, pressure: 100 }, { ...BOW_INITIAL, position: 35 }];
+    walk.forEach((s, i) => expect(BOW_LESSONS[0]!.steps[i]!.check(s, P), `step ${i + 1}`).toBe(true));
   });
   it("each step can be passed by doing what it says", () => {
     const P = { plays: 1, notes: [45] };

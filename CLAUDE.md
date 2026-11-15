@@ -174,7 +174,7 @@ Added after the first eight milestones (owner asked for all four in one go):
     "Effects" and "Impacts".
     C5.9 ("One source scaling another") was added to chapter 5 with the matrix's Scaled by column.
     C1.9 ("Left and right, and a second wavetable") was added to chapter 1 with pan and Osc B's wavetable.
-    **Eighty-seven playable lessons.**
+    **Ninety-seven playable lessons** (15 Nov 2026: see "Batch of 15 Nov 2026" below for the ten added that day).
   - `src/ui/PlayView.tsx` ("Lessons" tab) and `src/ui/synth/` — spotlighted controls per step, live targets,
     scope, spectrum, meter, on-screen keyboard, Hold, blind ear checks, recap, guide remarks and suggestion.
   - "Hear it first" demos (`demo` on a lesson), match-by-ear rounds (`rounds`, compared by `src/course/match.ts`:
@@ -647,7 +647,7 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   (2) A quiz on that lesson, options in a mixed order, checked only when all are
   answered: each then shows the right answer, the learner's own, and one line of why. (3) The recap,
   with each point the quiz asked about tagged "you had this" or "read this one again". A quiet "Skip to
-  the recap" link stays, so nobody is trapped. **456 questions over the 87 lessons, from 3 to 8 a lesson, in
+  the recap" link stays, so nobody is trapped. **494 questions over the 97 lessons (the ten lessons added on 15 Nov 2026 have questions the assistant wrote itself), from 3 to 8 a lesson, in
   `src/course/quiz/quiz-a.json` to `quiz-f.json`: the owner asked that the number per lesson come from what
   that lesson teaches, not from a formula, so each lesson was audited (list every distinct thing worth
   remembering, one question per thing, duplicates dropped) and most have 4 to 6** (`{ q, options[4], answer, why, point }`, `point`
@@ -837,6 +837,51 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   per doubling of distance, no floor or walls), levels relative to 1 m straight ahead. The `.gll` file in
   the same zip is a compiled format and was not opened. EASE files for the Res 4 are there too, unused.
   **Vero has no such files in the library, so its field stays a geometry sketch.**
+- **Batch of 15 Nov 2026 (the owner said to do tasks that need no decision from them until told to stop).**
+  All tested, measured where they make sound, and pushed. **None of it has been seen or heard by the owner yet.**
+  - **Vero measurement files: none are public.** Funktion-One publishes no EASE data for the V60, V90 or
+    V315 (coverage data for Vero lives in their own Projection software, which needs a licence). Found and
+    saved: `library/cad/funktion-one/Funktion-One_Vero_VX90_v2.1.gll` (Vero VX, the smaller system; a sealed
+    format we do not open; the owner can view it in AFMG's free GLL Viewer). So the Vero field stays a
+    geometry sketch.
+  - **"Why this matters"** line on every lesson (`src/course/why/`, `WHY`; shown under the title; a test
+    holds them to 12-28 words, no hype, no names). **Coming back** (`dueLessons`, `afterReturn`, `GAPS` of
+    2, 7, 21, 60, 120 days in `src/course/recall.ts`; `ReturnCard` in `Recall.tsx`): finished lessons'
+    questions return after days, then weeks; a miss shortens the gap, nothing is counted against anyone.
+    **Mixed checkpoint** `CX.1` (chapter "X", "Mixed practice", after the LFO chapter): by-ear rounds drawn
+    from four chapters. **Guide answers**: a one-line "Short answer" first, "Go deeper" follow-up buttons,
+    one "Check yourself" question, sources folded away (`layout` in `src/library/answer.ts`); checked with a
+    stand-in reply only.
+  - **Effects can be reordered** (`fxOrder`, `wire`, `moveFx` in `fx.ts`; ◀ ▶ on each effect in the whole
+    synth, or in a step that shows `fxOrder`). Measured: clip then EQ against EQ then clip differ 10.4 dB at
+    the ninth harmonic. **Saved sounds** (`src/synth/patches.ts`, `PatchBar`): save, load, delete, export
+    and import the whole synth under a name. **Vero: build your own column** (choose cabinets and angles).
+  - **Osc B has its own warp and unison** (`bWarp`, `bWarpAmount`, `bVoices`, `bDetune`, `spectrumB`; a
+    voice's `b` is now an array). Unison voices start spread over half a cycle (`bStart`): spread over a
+    whole cycle they cancelled to near silence at zero detune.
+  - **Second filter, routing, peak and shelf** (`filter2On`, `filter2Type`, `cutoff2`, `resonance2`,
+    `filterRoute`: "series" after filter 1, "parallel" beside it). Filter 2 is one stage, always in the
+    path; three gains (`after`, `beside`, `past`) crossfade the routing so notes never restart. Peak lifts a
+    band (resonance is its height, up to `SHAPE_MAX_DB` = 24 dB), Shelf turns the top down by that much; on
+    both the Resonance knob is "how much". `filterResponseDb` adds dB in series and adds the two paths as
+    complex numbers in parallel (`stageResponse`), so the drawn curve is still what is heard. Measured on a
+    saw's harmonics: within 0.1 dB of the drawn curve for peak, shelf, series and parallel.
+  - **Three more warp modes**: Flip (the end of the cycle upside down), Steps (the cycle cut into 64 down to
+    2 flat steps, `stepCount`), Fold (turned up 1 to 5 times and folded back, `foldGain`). Flip and Fold
+    change the wave's height (`warpValue`), not where it is read. Our own rules: not claimed to match
+    Serum's modes of similar names. Measured: flip at 50% on a sine removed the first harmonic and left the
+    second; fold added the third; steps at 8 added the 7th and 9th.
+  - **A smooth drawn LFO shape** (`"curve"`, shown as "Drawn, smooth"; `isDrawn` covers both): the sixteen
+    values joined by straight lines, round the end of the cycle too.
+  - **Ten lessons**: `lessons/additions.ts` (slotted before each chapter's checkpoint by `slot` in
+    `index.ts`): C1.10 Osc B voices and warp, C2.8 Peak and shelf, C2.9 Two filters, C7.7 The order of
+    effects; and five macro recipes C5M.17 to C5M.21 (Radio, Crowd, Talk, Bits, Metal), 21 recipes now;
+    plus CX.1. **Blind ear checks** are now data in `src/course/ear.ts` (`EAR`: shape, higher, brighter,
+    filterType, movement) and three more lessons have one (low-pass cutoff, filter types, tremolo and
+    vibrato). Three knowledge cards: `fm`, `ring-modulation`, `two-filters` (39 cards, all drafts).
+  - **Saved sounds and lesson recall are stored with the account** (`patches`, `recall` on the account's
+    data; `mergePatches`: newest of each name; `mergeRecall`: latest record of each lesson). Focus mode's
+    switch and the saved place are still per browser.
 - **Realism pass on the 3D views (14 Nov 2026, owner's request).** `src/ui/three/look.ts`: surfaces drawn
   by code onto small canvases (textured speaker paint, a perforated grille, grass, plywood, paper pulp,
   steel), an open sky with haze, a studio table that shows only shadows, and `truss` (laced lighting

@@ -79,7 +79,7 @@ stereo width; LEVEL; a picture of the wave; warp modes Sync, Mirror and two of o
 | Unison on Osc B | Unison for the second oscillator | 45 | Missing | Small |
 | Two warp slots (WARP 1 and WARP 2) | Two warps at once per oscillator | 48-49 | Partly: one slot | Medium |
 | Swap Warps | Exchanges the two warp slots | 56 | Missing | Small |
-| Warp on B and C | Warp for every oscillator | 49 | Missing | Medium |
+| Warp on B and C | Warp for every oscillator | 49 | Partly: B has it (15 Nov 2026); no Osc C | Medium |
 | Warp shown live in the 2D picture | The picture bends as the knob turns | 49 | Have it | - |
 | Opening the Wavetable Editor from the oscillator | The pencil button on the wave picture | 40 | Missing (see section 19) | Large |
 
@@ -96,13 +96,13 @@ stereo width; LEVEL; a picture of the wave; warp modes Sync, Mirror and two of o
 | Asym + | Bends the whole wave to the right | 50 | Partly: our "Bend" behaves like this | Small |
 | Asym - | Bends the whole wave to the left | 50 | Missing | Small |
 | Asym +/- | Either direction from the knob's centre | 50 | Missing | Small |
-| Flip | Turns the wave upside down from a chosen point in the cycle | 50 | Missing | Small |
+| Flip | Turns the wave upside down from a chosen point in the cycle | 50 | Have our own version (15 Nov 2026; not checked against Serum's rule) | - |
 | Mirror | Plays the wave forwards then backwards within one cycle | 51 | Have it | - |
 | Remap 1 | A curve you draw decides where in the wave to read | 51 | Missing | Medium |
 | Remap 2 | The same, applied to each half (mirrored) | 51 | Missing | Medium |
 | Remap 3 | A ready-made sine-shaped remap | 51 | Missing | Small |
 | Remap 4 | The curve applied four times per cycle | 51 | Missing | Medium |
-| Quantize | Turns the wave into steps (a sample-rate crush that follows the pitch) | 51 | Missing | Small |
+| Quantize | Turns the wave into steps (a sample-rate crush that follows the pitch) | 51 | Have our own version, "Steps" (15 Nov 2026) | - |
 | Odd/Even | Fades between odd harmonics only, the original, and even harmonics only | 51 | Missing | Small |
 | LPF | A low-pass filter built into the oscillator | 52 | Missing | Small |
 | HPF | A high-pass filter built into the oscillator | 52 | Missing | Small |
@@ -272,9 +272,9 @@ dragging in the picture to set cutoff and resonance together.
 
 | Feature | What it does | Page(s) | Status | Size |
 |---|---|---|---|---|
-| FILTER 2 | A second filter | 133-134 | Missing | Medium |
+| FILTER 2 | A second filter | 133-134 | Have it, simpler (15 Nov 2026: one stage, type, cutoff, resonance) | - |
 | S / A / B / C / N routing switches | Choose which oscillators pass through each filter | 134 | Missing (everything goes through our one filter) | Medium |
-| Filter-to-filter routing | Filter 1 into Filter 2, or side by side | 149 | Missing | Medium |
+| Filter-to-filter routing | Filter 1 into Filter 2, or side by side | 149 | Have it (15 Nov 2026); per-source routing to each filter is still missing | - |
 | 6 and 18 dB slopes | Gentler and in-between slopes | 135-136 | Missing | Small |
 | MG Low 6/12/18/24 | Ladder low-pass in the style of a classic synth | 135 | Missing | Medium |
 | Low 6/12/18/24, High 6/12/18/24 | State-variable low-pass and high-pass | 135-136 | Partly: 12 and 24 only, plain browser filter | Small |
@@ -346,7 +346,7 @@ effect knob.
 |---|---|---|---|---|
 | Three racks: MAIN, BUS 1, BUS 2 | Three separate effect chains | 153 | Partly: one | Medium |
 | Add any module, several of the same | Build the chain from an empty rack | 152, 155 | Missing (fixed set of six) | Medium |
-| Reordering | Drag effects into any order | 156 | Missing (fixed order) | Medium |
+| Reordering | Drag effects into any order | 156 | Have it with arrow buttons (15 Nov 2026); no dragging | - |
 | Copy a module, with or without modulation | Duplicate an effect in the rack | 156 | Missing | Small |
 | Bypass / remove | Skip an effect for a moment, or take it out | 157 | Partly: on/off only | Small |
 | Rack presets, Save FX Bus / Load FX Bus | Save and recall a whole chain | 154, 158 | Missing | Small |

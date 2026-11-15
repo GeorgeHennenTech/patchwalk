@@ -199,6 +199,17 @@ than one instrument instead of being rewritten.
 
 ## 8. What to do next
 
+**Latest (15 Nov 2026).** The owner asked for a long run of tasks that need no decision from them. Done and
+pushed: everything listed under "Batch of 15 Nov 2026" in `CLAUDE.md` (a second filter with routing, peak
+and shelf types, three more warp modes, a smooth drawn LFO shape, Osc B's own warp and unison, reorderable
+effects, saved sounds, ten more lessons making 97, more ear checks, three knowledge cards, saved sounds and
+recall stored with the account). **None of it has been seen or heard by the owner.** Still waiting on the
+owner: a verdict on the Res 2 "definition pass" and its engineer's view (which decides whether Vero, the
+horn and the driver get the same treatment), and a read of the quiz and "why this matters" wording.
+Good next tasks that need no decision: lesson scripts in `docs/lessons/` for lessons written straight into
+code; an engineer's view from the Res 4 EASE files; per-source routing to each filter; an Osc C; more
+blind ear checks (envelopes, LFO speed).
+
 **First: `docs/TODO.md` has a numbered queue at the top.** When the owner says "proceed with the next task", do the first unticked item there, tick it, and report briefly. They are working from their phone.
 
 Take these in order. After each, test, check in a browser, commit, push, and report briefly.

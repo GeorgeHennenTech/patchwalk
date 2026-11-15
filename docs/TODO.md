@@ -18,7 +18,14 @@ it, and reports in a few lines. None of these needs the owner or spends credits.
 - [x] 6. Coming back: recall questions from finished lessons return after days, then weeks
 - [x] 7. A mixed by-ear checkpoint that draws on several chapters at once (filter, envelope, LFO)
 - [x] 8. Reorderable effects rack with a bypass per effect (needed before the processing-chains track)
-- [ ] 9. Second filter, with routing between the two, and two more filter types
+- [x] 9. Second filter, with routing between the two, and two more filter types (peak and shelf)
+- [x] 13. Lessons for the new controls: peak and shelf, two filters, Osc B voices and warp, the order of effects
+- [x] 14. Saved sounds and lesson recall stored with the account
+- [x] 15. Three more warp modes (Flip, Steps, Fold)
+- [x] 16. Five more macro recipes (21 now)
+- [x] 17. Blind ear checks for cutoff, filter type, and tremolo against vibrato
+- [x] 18. Knowledge cards for FM, ring modulation and two filters
+- [x] 19. A smooth drawn LFO shape
 - [x] 10. Osc B as a full oscillator: unison and warp
 - [x] 11. Vero: build your own column (choose cabinets and angles, see the coverage change)
 - [x] 12. Save and load your own patches on the practice synth
@@ -31,7 +38,8 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [x] Envelope hold and fall shape (straight, eased, sharp), with a lesson
 - [x] Tempo, a click, and LFOs that sync to the beat, restart or run free, fade in, and can be drawn; three lessons
 - [x] Warp, sync, FM and ring modulation on the synth, with five lessons and a by-ear checkpoint ("Reshaping the wave")
-- [ ] Knowledge cards for FM and ring modulation; lesson scripts for the six new lessons
+- [x] Knowledge cards for FM and ring modulation
+- [ ] Lesson scripts in `docs/lessons/` for the lessons written straight into code
 - [x] LFO lessons: three lessons and a checkpoint
 - [x] Modulation lessons: routes and amounts, one way or both ways, modulating a modulator, and a checkpoint
 - [x] Velocity and key position: as sources on the synth, and a lesson
@@ -56,7 +64,7 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [ ] Music theory lessons that use the MIDI keyboard (owner, 14 Nov 2026): track I of the curriculum.
 - [ ] Source texts on sound systems for the owner to find: see `docs/LITERATURE.md`.
 - [ ] Build from `docs/LEARNING_RESEARCH.md` (owner, 14 Nov 2026): Focus mode for ADHD, end-of-lesson recall, spaced return, mixed by-ear checkpoints, "why this matters" lines, fading guidance, optional noise, the new answer layout.
-- [ ] Remaining synthesis chapters from the course plan (87 lessons built)
+- [ ] Remaining synthesis chapters from the course plan (97 lessons built)
 
 ## Synth
 - [x] Filter with a draggable curve

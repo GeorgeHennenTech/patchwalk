@@ -1357,7 +1357,7 @@ describe("focus mode", () => {
 });
 
 import { pointsHad, QUIZ, shuffled } from "../src/course/quiz";
-import { loadRecall, missed, recallNote, saveRecall } from "../src/course/recall";
+import { afterReturn, dueAt, dueLessons, GAPS, loadRecall, missed, nextReturn, recallNote, saveRecall } from "../src/course/recall";
 describe("end-of-lesson recall", () => {
   it("every lesson has a recap to recall against, and an outcome to nudge with", () => {
     for (const l of LESSONS) { expect(l.recap.length, l.id).toBeGreaterThan(0); expect(l.outcome.length, l.id).toBeGreaterThan(10); expect(new Set(l.recap).size, l.id).toBe(l.recap.length); }
@@ -1449,5 +1449,24 @@ describe("why this matters", () => {
       starts.add(words.slice(0, 3).join(" ").toLowerCase());
     }
     expect(starts.size).toBeGreaterThan(LESSONS.length - 6); // the openings vary
+  });
+});
+
+describe("lessons coming back", () => {
+  const DAY = 24 * 3600 * 1000;
+  it("a finished lesson returns after two days, then further off each time it goes well, and soon again when something is missed", () => {
+    const first = { at: 0, had: [true, false, true] };
+    expect(dueAt(first)).toBe(2 * DAY);
+    expect(dueLessons({ a: first }, ["a"], 1.9 * DAY)).toEqual([]); expect(dueLessons({ a: first }, ["a"], 2 * DAY)).toEqual(["a"]);
+    let r = afterReturn(first, [true, true, true], 2 * DAY);
+    expect(r).toMatchObject({ at: 2 * DAY, stage: 1 }); expect(dueAt(r)).toBe(9 * DAY); expect(nextReturn(r)).toBe("in a week");
+    r = afterReturn(r, [true, undefined, true], 9 * DAY); expect(r.stage).toBe(2); expect(nextReturn(r)).toBe("in 3 weeks");
+    r = afterReturn(r, [true, false, true], 30 * DAY); expect(r.stage).toBe(0); expect(nextReturn(r)).toBe("in 2 days"); // missed one: back soon, nothing worse
+    let far: ReturnType<typeof afterReturn> = first; for (let i = 0; i < 12; i++) far = afterReturn(far, [true], 0); expect(far.stage).toBe(GAPS.length - 1); // never runs off the end
+  });
+  it("brings back only finished lessons that were quizzed, longest overdue first", () => {
+    const log = { a: { at: 5 * DAY, had: [] }, b: { at: 0, had: [] }, c: { at: 0, had: [], stage: 3 } };
+    expect(dueLessons(log, ["a", "b", "c", "never-quizzed"], 8 * DAY)).toEqual(["b", "a"]);
+    expect(dueLessons(log, ["a"], 8 * DAY)).toEqual(["a"]); // b is not in the finished list
   });
 });

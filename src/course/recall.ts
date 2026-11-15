@@ -7,7 +7,7 @@ type Store = Pick<Storage, "getItem" | "setItem">;
 const local = (): Store | undefined => { try { return globalThis.localStorage; } catch { return undefined; } };
 
 /** One go at recalling a lesson: when, and for each recap point whether it was remembered (undefined = not marked). */
-export interface RecallRecord { at: number; had: (boolean | undefined)[] }
+export interface RecallRecord { at: number; had: (boolean | undefined)[]; /** how many returns have gone well in a row: decides how long until the next one */ stage?: number }
 export type RecallLog = Record<string, RecallRecord>;
 
 export function loadRecall(s: Pick<Storage, "getItem"> | undefined = local()): RecallLog {
@@ -31,4 +31,23 @@ export function recallNote(had: readonly (boolean | undefined)[]): string {
   if (shaky === 0) return "Every point the quiz asked about came back to you.";
   if (got === 0) return "None of these came back yet, and that is normal straight after a first go: trying, then reading the answer, is what makes it stick. These points will come round again.";
   return `${got} of the ${asked} points the quiz asked about came back to you. The ${shaky === 1 ? "other is" : "others are"} marked to read again, and will come round another day.`;
+}
+
+/** Days to wait before a lesson comes back: two days after first finishing it, then a week, three weeks, two months, four months. */
+export const GAPS = [2, 7, 21, 60, 120];
+const DAY = 24 * 3600 * 1000;
+export const dueAt = (r: RecallRecord) => r.at + GAPS[Math.min(r.stage ?? 0, GAPS.length - 1)]! * DAY;
+/** Finished lessons whose return has come round, longest overdue first. Lessons never quizzed are not brought back. */
+export function dueLessons(log: RecallLog, done: readonly string[], now: number): string[] {
+  return done.filter((id) => log[id] && dueAt(log[id]!) <= now).sort((a, b) => dueAt(log[a]!) - dueAt(log[b]!));
+}
+/** The record after a return: a clean go moves the lesson further off; anything missed brings it back in two days. Never a penalty beyond that. */
+export function afterReturn(before: RecallRecord | undefined, had: (boolean | undefined)[], now: number): RecallRecord {
+  const clean = had.every((h) => h !== false);
+  return { at: now, had, stage: clean ? Math.min((before?.stage ?? 0) + 1, GAPS.length - 1) : 0 };
+}
+/** When a lesson next comes back, in plain words. */
+export function nextReturn(r: RecallRecord): string {
+  const days = GAPS[Math.min(r.stage ?? 0, GAPS.length - 1)]!;
+  return days < 7 ? `in ${days} days` : days === 7 ? "in a week" : days < 60 ? `in ${Math.round(days / 7)} weeks` : `in about ${Math.round(days / 30)} months`;
 }

@@ -899,3 +899,5 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 
 /* "Why this matters" at the top of a lesson. */
 .why-matters { padding: 9px 13px; border-left: 5px solid var(--accent); border-radius: 0 12px 12px 0; background: color-mix(in srgb, var(--accent) 9%, transparent); max-width: 70ch; }
+
+.builds-on.coming-back { transform: rotate(-0.4deg); margin-bottom: 14px; }

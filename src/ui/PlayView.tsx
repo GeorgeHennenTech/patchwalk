@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { CHAPTER_ORDER, CHAPTERS, chapterOf, LESSONS, placeOf } from "../course/lessons";
 import { allMatch, compareToTarget, type MatchVerdict } from "../course/match";
 import { ago, focusOn, loadPlace, minutesLeft, savePlace, setFocus, stopNote, unitsIn, type Place } from "../course/focus";
-import { RecallCard } from "./Recall";
+import { RecallCard, ReturnCard } from "./Recall";
+import { dueLessons, loadRecall } from "../course/recall";
 import { WHY } from "../course/why";
 import { guideContext, loadDone, saveDone, suggestNext } from "../course/progress";
 import type { MatchRound, Panel, PlayableLesson } from "../course/types";
@@ -257,6 +258,9 @@ export function PlayView({ cards, wanted }: { cards: Card[]; wanted?: { id: stri
   const resume = useRef<Place | undefined>(was);
   const sitting = useRef(0); // lessons finished since the page was opened
   const [navOpen, setNavOpen] = useState(false);
+  // lessons finished days or weeks ago whose return has come round
+  const [due, setDue] = useState<string[]>(() => dueLessons(loadRecall(), loadDone(), Date.now()));
+  const [returning, setReturning] = useState(false);
   const [lessonId, setLessonId] = useState(() => was?.lessonId ?? (suggestNext(LESSONS, loadDone()) ?? LESSONS[0]!).id);
   const [stepIndex, setStepIndex] = useState(0);
   const [remarks, setRemarks] = useState<Record<number, string>>({});
@@ -358,6 +362,14 @@ export function PlayView({ cards, wanted }: { cards: Card[]; wanted?: { id: stri
       </nav>
 
       <article className="learn-body">
+        {due.length > 0 && !returning && (
+          <aside className="builds-on coming-back" aria-label="Lessons coming back">
+            <span className="builds-on-tag">Coming back</span>
+            <p>{due.length === 1 ? "One lesson you finished a while ago is" : `${due.length} lessons you finished a while ago are`} ready for a quick return: a few questions each, from memory. It is what makes them stay.</p>
+            <p><button className="primary" onClick={() => setReturning(true)}>Start ({due.length === 1 ? "about 2 minutes" : `about ${due.length * 2} minutes`})</button> <button className="link" onClick={() => setDue([])}>Later</button></p>
+          </aside>
+        )}
+        {returning && due[0] && (() => { const l = LESSONS.find((x) => x.id === due[0]); return l ? <ReturnCard key={l.id} lessonId={l.id} title={l.title} recap={l.recap} left={due.length - 1} onDone={() => { const rest = due.slice(1); setDue(rest); if (!rest.length) setReturning(false); }} /> : null; })()}
         <p className="learn-place">{place.chapter} · lesson {place.number} of {place.of} <button className="focus-switch" aria-pressed={focus} onClick={toggleFocus} title="Keeps the time and steps left in view, hides the lesson list, and brings you back to where you were">Focus mode: {focus ? "on" : "off"}</button></p>
         <h2>{lesson.title}</h2>
         {focus && (

@@ -3,7 +3,7 @@
 // The sounds are whole numbers and settings the app chose, so the answer is known exactly.
 import { INITIAL, noteToHz, SHAPES, type Shape, type SynthState } from "../synth/params";
 
-export type EarKind = "shape" | "higher" | "brighter" | "filterType" | "movement";
+export type EarKind = "shape" | "higher" | "brighter" | "filterType" | "movement" | "attack" | "faster";
 export interface EarTone { shape?: Shape; hz?: number; patch?: SynthState; note?: number; seconds: number; at: number }
 export interface EarQuestion { answer: string; tones: EarTone[] }
 export interface EarSpec { ask: string; options: string[]; label: (option: string) => string; make: (rand?: () => number) => EarQuestion }
@@ -48,6 +48,24 @@ export const EAR: Record<EarKind, EarSpec> = {
     make: (rand = Math.random) => {
       const answer = rand() < 0.5 ? "aLevelDb" : "fine";
       return { answer, tones: [{ patch: { ...INITIAL, shape: "triangle", lfo1Dest: answer, lfo1Amount: answer === "fine" ? 50 : 70, lfo1Rate: 4 + pick(rand, 4) }, note: 57 + pick(rand, 12), seconds: 2, at: 0 }] };
+    },
+  },
+  // the same note twice, one starting at once and one fading in
+  attack: {
+    ask: "The same note is played twice. Which one has the slower attack: which fades in?", options: ["first", "second"], label: (o) => `The ${o}`,
+    make: (rand = Math.random) => {
+      const note = 50 + pick(rand, 14), slow = 250 + pick(rand, 4) * 150, second = rand() < 0.5;
+      const tone = (envA: number, at: number): EarTone => ({ patch: { ...SAW, filterOn: true, cutoff: 2500, envA, envR: 150 }, note, seconds: 1.3, at });
+      return { answer: second ? "second" : "first", tones: [tone(second ? 2 : slow, 0), tone(second ? slow : 2, 1.7)] };
+    },
+  },
+  // the same note twice with an LFO on loudness, at two speeds at least half as fast again apart
+  faster: {
+    ask: "The same note is played twice with an LFO on its loudness. Which LFO is faster?", options: ["first", "second"], label: (o) => `The ${o}`,
+    make: (rand = Math.random) => {
+      const note = 52 + pick(rand, 12), low = 2 + pick(rand, 4), high = Math.round(low * (1.5 + rand()) * 10) / 10, second = rand() < 0.5;
+      const tone = (lfo1Rate: number, at: number): EarTone => ({ patch: { ...INITIAL, shape: "triangle", lfo1Dest: "aLevelDb", lfo1Amount: 70, lfo1Rate }, note, seconds: 2, at });
+      return { answer: second ? "second" : "first", tones: [tone(second ? low : high, 0), tone(second ? high : low, 2.4)] };
     },
   },
 };

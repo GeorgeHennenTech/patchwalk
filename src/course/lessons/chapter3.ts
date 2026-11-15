@@ -13,7 +13,7 @@ const SWEPT = { filterOn: true, cutoff: 300, resonance: 30, env2Dest: "cutoff", 
 
 export const CHAPTER_3: PlayableLesson[] = [
   {
-    id: "C3.1", title: "Attack, decay, sustain, release", buildsOn: ["C0.3"], minutes: 9, cardIds: ["amp-envelope"],
+    id: "C3.1", title: "Attack, decay, sustain, release", earCheck: "attack", buildsOn: ["C0.3"], minutes: 9, cardIds: ["amp-envelope"],
     outcome: "Shape how a note’s loudness starts, settles and ends, using the four stages of an envelope.",
     demo: { caption: "The same note three ways: switched straight on and off, fading in slowly, then ringing on after it is let go.", tones: patches([{}, { envA: 600 }, { envR: 1200 }], 1.1, 1.3) },
     idea: [

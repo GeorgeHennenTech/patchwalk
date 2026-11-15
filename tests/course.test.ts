@@ -1660,6 +1660,14 @@ describe("blind ear checks", () => {
       const m = EAR.movement.make(); expect(m.tones[0]!.patch!.lfo1Dest).toBe(m.answer);
     }
   });
+  it("'which fades in' and 'which is faster' are right about what they play", () => {
+    for (let i = 0; i < 40; i++) {
+      const a = EAR.attack.make(), [a1, a2] = a.tones.map((t) => t.patch!.envA) as [number, number];
+      expect(a.answer).toBe(a2 > a1 ? "second" : "first"); expect(Math.max(a1, a2)).toBeGreaterThanOrEqual(250);
+      const f = EAR.faster.make(), [f1, f2] = f.tones.map((t) => t.patch!.lfo1Rate) as [number, number];
+      expect(f.answer).toBe(f2 > f1 ? "second" : "first"); expect(Math.max(f1, f2) / Math.min(f1, f2)).toBeGreaterThanOrEqual(1.45);
+    }
+  });
   it("lessons only ask for kinds that exist", () => { for (const l of LESSONS) if (l.earCheck) expect(Object.keys(EAR)).toContain(l.earCheck); });
 });
 

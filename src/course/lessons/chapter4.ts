@@ -12,7 +12,7 @@ const WOBBLE = { ...BASS, lfo1Dest: "cutoff", lfo1Amount: 60, lfo1Rate: 3 } as c
 
 export const CHAPTER_4: PlayableLesson[] = [
   {
-    id: "C4.1", title: "A slow repeating shape", buildsOn: ["C1.1", "C3.1"], minutes: 8, cardIds: ["lfo-basics"], initial: { lfo1Amount: 80 },
+    id: "C4.1", title: "A slow repeating shape", earCheck: "faster", buildsOn: ["C1.1", "C3.1"], minutes: 8, cardIds: ["lfo-basics"], initial: { lfo1Amount: 80 },
     outcome: "Explain what an LFO is, and set its rate and shape while it moves a control.",
     demo: { caption: "A steady note, then the same note with an LFO moving its level slowly, then quickly.", tones: patches([{}, { lfo1Dest: "aLevelDb", lfo1Amount: 80, lfo1Rate: 1.5 }, { lfo1Dest: "aLevelDb", lfo1Amount: 80, lfo1Rate: 9 }], 2.0) },
     idea: [

@@ -1568,3 +1568,40 @@ describe("oscillator B as a fuller oscillator", () => {
     expect(MACRO_DESTS_B).toContain("bDetune"); expect(MACRO_DESTS_B).toContain("bWarpAmount"); expect(MACRO_DESTS_B).not.toContain("bVoices");
   });
 });
+
+describe("second filter, and the peak and shelf types", () => {
+  const base: SynthState = { ...INITIAL, filterOn: true, cutoff: 1000, resonance: 50 };
+  it("peak lifts a band and leaves the rest alone", () => {
+    const s: SynthState = { ...base, filterType: "peak" };
+    expect(filterResponseDb(s, 1000, null)).toBeCloseTo(12, 1);
+    expect(Math.abs(filterResponseDb(s, 60, null))).toBeLessThan(0.3);
+    expect(Math.abs(filterResponseDb(s, 12000, null))).toBeLessThan(0.3);
+    expect(resonanceTrim(s)).toBe(1);
+  });
+  it("shelf turns the top down by a fixed amount", () => {
+    const s: SynthState = { ...base, filterType: "shelf", resonance: 100 };
+    expect(Math.abs(filterResponseDb(s, 40, null))).toBeLessThan(0.3);
+    expect(filterResponseDb(s, 16000, null)).toBeCloseTo(-24, 0);
+    expect(filterResponseDb(s, 1000, null)).toBeCloseTo(-12, 0);
+  });
+  it("filter 2 off changes nothing", () => {
+    const s: SynthState = { ...base, filterType: "low" };
+    for (const f of [100, 1000, 5000]) expect(filterResponseDb({ ...s, filterRoute: "parallel" }, f, null)).toBeCloseTo(filterResponseDb(s, f, null), 9);
+  });
+  it("one after the other, the two filters' cuts add up", () => {
+    const one: SynthState = { ...base, resonance: 0, filterType: "low", cutoff: 2000 };
+    const two: SynthState = { ...INITIAL, filter2On: true, filter2Type: "high", cutoff2: 300 };
+    const both: SynthState = { ...one, filter2On: true, filter2Type: "high", cutoff2: 300 };
+    for (const f of [100, 800, 6000]) expect(filterResponseDb(both, f, null)).toBeCloseTo(filterResponseDb(one, f, null) + filterResponseDb(two, f, null), 6);
+    expect(filterResponseDb(both, 800, null)).toBeGreaterThan(-1.5); // a band is left in the middle
+    expect(filterResponseDb(both, 60, null)).toBeLessThan(-20);
+    expect(filterResponseDb(both, 12000, null)).toBeLessThan(-20);
+  });
+  it("side by side, each lets its own part through", () => {
+    const s: SynthState = { ...base, resonance: 0, filterType: "low", cutoff: 200, filter2On: true, filter2Type: "high", cutoff2: 4000, filterRoute: "parallel" };
+    expect(filterResponseDb(s, 50, null)).toBeGreaterThan(-1.5);   // the low-pass's part
+    expect(filterResponseDb(s, 15000, null)).toBeGreaterThan(-1.5); // the high-pass's part
+    expect(filterResponseDb(s, 900, null)).toBeLessThan(-15);       // the hole between them
+    expect(filterResponseDb({ ...s, filterRoute: "series" }, 900, null)).toBeLessThan(-35);
+  });
+});

@@ -4,7 +4,7 @@
 import { applyMacros } from "./macros";
 import { adsr, fallConstant, isLevel, keyValue, lfoCoefficients, lfoHz, lfoStartPhase, modDepth, noteLevelBase, routeLayout, routes, slowModulate, velocityValue, type Adsr, type Route } from "./mod";
 import { FxChain } from "./fx";
-import { DRIVE_RANGE, driveCurve, filterStages, resonanceTrim, type Stage } from "./filter";
+import { DRIVE_RANGE, driveCurve, filter2Stage, filterStages, resonanceTrim, sideBySide, type Stage } from "./filter";
 import { dbToGain, fmIndex, FM_MAX_INDEX, harmonic, spectrumA, HARMONICS, playedHz, playedHzB, subHz, unisonOffsets, unisonPans, type Shape, type SynthState, spectrumB } from "./params";
 
 const RAMP = 0.012; // seconds; short ramps avoid clicks when a value jumps
@@ -33,7 +33,7 @@ interface Voice {
   /** Every source feeds `mix`, then drive, then the two filter stages, then the resonance level trim. */
   /** One entry per connected envelope or LFO: its signal, and a depth control feeding the destination. */
   mods: { route: Route; src: OscillatorNode | ConstantSourceNode; depth: GainNode; bias: ConstantSourceNode; fade: GainNode; phase: number; /** where it leaves from: `fade`, or the gate of a scaling source */ out: GainNode; aux?: { src: OscillatorNode | ConstantSourceNode; phase: number; gate: GainNode } }[];
-  filter: { mix: GainNode; shaper: WaveShaperNode; one: BiquadFilterNode; two: BiquadFilterNode; trim: GainNode; drive: number };
+  filter: { mix: GainNode; shaper: WaveShaperNode; one: BiquadFilterNode; two: BiquadFilterNode; trim: GainNode; drive: number; three: BiquadFilterNode; after: GainNode; beside: GainNode; past: GainNode };
   amp: GainNode;
   /** A pitch offset in cents that every oscillator of the note follows: it starts at the distance from the previous note and runs down to nothing, which is the slide. */
   glide: ConstantSourceNode;
@@ -162,6 +162,7 @@ export class Engine {
     const q = stage.type === "lowpass" || stage.type === "highpass" ? 20 * Math.log10(stage.q) : stage.q;
     if (jump) { node.frequency.setValueAtTime(stage.hz, t); node.Q.setValueAtTime(q, t); }
     else { node.frequency.setTargetAtTime(stage.hz, t, RAMP); node.Q.setTargetAtTime(q, t, RAMP); }
+    if (jump) node.gain.setValueAtTime(stage.gainDb ?? 0, t); else node.gain.setTargetAtTime(stage.gainDb ?? 0, t, RAMP);
   }
 
   /** Make one note's drive and filter match the settings. `jump` sets values at once (for a new note). */
@@ -179,6 +180,13 @@ export class Engine {
     this.setStage(f.two, two, t, jump);
     if (jump) f.trim.gain.setValueAtTime(resonanceTrim(s), t);
     else f.trim.gain.setTargetAtTime(resonanceTrim(s), t, RAMP);
+    // Filter 2 is always in the path. After filter 1: filter 1 feeds it. Beside: the sources feed it too, and
+    // filter 1 also goes straight on. Three gains crossfade between the two, so nothing restarts.
+    this.setStage(f.three, filter2Stage(s, this.ctx.sampleRate), t, jump);
+    const side = sideBySide(s) ? 1 : 0;
+    for (const [g, value] of [[f.after, 1 - side], [f.beside, side], [f.past, side]] as const) {
+      if (jump) g.gain.setValueAtTime(value, t); else g.gain.setTargetAtTime(value, t, RAMP);
+    }
   }
 
   /**
@@ -356,9 +364,12 @@ export class Engine {
     const out = this.ctx.createGain();
     out.gain.value = noteLevelBase(s);
     amp.connect(out).connect(this.fx.input);
-    const filter = { mix: this.ctx.createGain(), shaper: this.ctx.createWaveShaper(), one: this.ctx.createBiquadFilter(), two: this.ctx.createBiquadFilter(), trim: this.ctx.createGain(), drive: -1 };
+    const filter = { mix: this.ctx.createGain(), shaper: this.ctx.createWaveShaper(), one: this.ctx.createBiquadFilter(), two: this.ctx.createBiquadFilter(), trim: this.ctx.createGain(), three: this.ctx.createBiquadFilter(), after: this.ctx.createGain(), beside: this.ctx.createGain(), past: this.ctx.createGain(), drive: -1 };
     filter.mix.gain.value = 1 / DRIVE_RANGE; // the shaper's curve covers inputs of -1..1
-    filter.mix.connect(filter.shaper).connect(filter.one).connect(filter.two).connect(filter.trim).connect(amp);
+    filter.mix.connect(filter.shaper).connect(filter.one).connect(filter.two).connect(filter.trim);
+    filter.trim.connect(filter.after).connect(filter.three).connect(amp);
+    filter.shaper.connect(filter.beside).connect(filter.three);
+    filter.trim.connect(filter.past).connect(amp);
     const into = filter.mix;
 
     const offsets = unisonOffsets(s.voices, s.detune), pans = unisonPans(s.voices, s.spread);

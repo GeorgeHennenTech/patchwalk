@@ -19,6 +19,7 @@ export const MODULES: Module[] = [
   { id: "b", name: "Osc B", groups: ["Oscillator B"], toggle: "bOn" },
   { id: "noise", name: "Noise", groups: ["Noise"], toggle: "noiseOn" },
   { id: "filter", name: "Filter", groups: ["Filter"], toggle: "filterOn" },
+  { id: "filter2", name: "Filter 2", groups: ["Filter 2"], toggle: "filter2On" },
   { id: "voice", name: "Voicing", groups: ["Voicing"], color: "#ff4fa3" },
 ];
 
@@ -101,7 +102,7 @@ function Display({ module, synth, note }: { module: Module; synth: Synth; note: 
     frame = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(frame);
   }, [moving, module.id]);
-  if (module.id === "filter") return <FilterCurve synth={synth} note={note} compact />;
+  if (module.id === "filter" || module.id === "filter2") return <FilterCurve synth={synth} note={note} compact />;
   if (!d) return null;
   if (module.source?.startsWith("lfo") && synth.state[`${module.source as "lfo1"}Shape`] === "drawn") return <LfoDraw id={module.source as "lfo1"} synth={synth} />;
   return <svg className="mod-wave" viewBox="0 0 200 64" preserveAspectRatio="none" role="img" aria-label={`${module.name} wave`}>{module.source?.startsWith("lfo") && <line className="mod-mid" x1="0" x2="200" y1="32" y2="32" />}<path ref={wave} d={d} />{module.source?.startsWith("lfo") && <Playhead id={module.source as "lfo1"} synth={synth} width={100} height={64} />}</svg>;

@@ -8,7 +8,9 @@ export const TABLES = ["none", "basic", "bright", "vowel"] as const;
 export type Table = (typeof TABLES)[number];
 export const NOISES = ["white", "pink"] as const;
 // Kept here (not in filter.ts) so this file stays free of imports from the modules that depend on it.
-const FILTER_TYPES = ["low", "high", "band", "notch"] as const;
+const FILTER_TYPES = ["low", "high", "band", "notch", "peak", "shelf"] as const;
+const FILTER_ROUTES = ["series", "parallel"] as const;
+const FILTER_NAMES = { low: "Low-pass", high: "High-pass", band: "Band-pass", notch: "Notch", peak: "Peak", shelf: "Shelf" };
 const SLOPES = ["12", "24"] as const;
 /** Settings an envelope or LFO can move. "none" means it is not connected. */
 /**
@@ -107,6 +109,13 @@ export interface SynthState {
   // ---- filter (see filter.ts for the maths)
   filterOn: boolean;
   filterType: (typeof FILTER_TYPES)[number];
+  /** The second filter: one gentle stage with its own type, cutoff and resonance. */
+  filter2On: boolean;
+  filter2Type: (typeof FILTER_TYPES)[number];
+  cutoff2: number;
+  resonance2: number;
+  /** One after the other (series), or side by side with their outputs added (parallel). */
+  filterRoute: (typeof FILTER_ROUTES)[number];
   /** Cutoff frequency in Hz, for middle C when key tracking is in use. */
   cutoff: number;
   /** Resonance, 0..100 (% of the way from flat to the tallest peak). */
@@ -193,6 +202,7 @@ export const INITIAL: SynthState = {
   bOn: false, bShape: "saw", bTable: "none", bPosition: 0, aPan: 0, bPan: 0, bOctave: 0, bSemitone: 0, bFine: 0, bPhase: 0, bLevelDb: 0,
   subOn: false, subOctave: -1, subLevelDb: -6, noiseOn: false, noiseType: "white", noiseLevelDb: -18,
   filterOn: false, filterType: "low", cutoff: 20000, resonance: 0, slope: "12", drive: 0, keyTrack: 0,
+  filter2On: false, filter2Type: "high", cutoff2: 200, resonance2: 0, filterRoute: "series",
   envA: 5, envD: 300, envS: 100, envR: 30, envH: 0, env2H: 0, envBend: "eased", env2Bend: "eased",
   env2A: 5, env2D: 400, env2S: 0, env2R: 100, env2Dest: "none", env2Amount: 50,
   lfo1Rate: 2, lfo1Shape: "sine", lfo1Dest: "none", lfo1Amount: 30,
@@ -219,7 +229,7 @@ export const INITIAL: SynthState = {
   macro4: 0, macro4Name: "Macro 4", macro4Dest1: "none", macro4Amt1: 50, macro4Dest2: "none", macro4Amt2: 50, macro4Dest3: "none", macro4Amt3: 50,
 };
 
-export type Group = "Master" | "Oscillator A" | "Unison" | "Oscillator B" | "Sub" | "Noise" | "Filter" | "Envelope 1" | "Envelope 2" | "LFO 1" | "LFO 2" | "LFO 3" | "Velocity" | "Mod wheel" | "Key position" | "Voicing" | "Distortion" | "EQ" | "Compressor" | "Chorus" | "Delay" | "Reverb" | "Macro 1" | "Macro 2" | "Macro 3" | "Macro 4";
+export type Group = "Master" | "Oscillator A" | "Unison" | "Oscillator B" | "Sub" | "Noise" | "Filter" | "Filter 2" | "Envelope 1" | "Envelope 2" | "LFO 1" | "LFO 2" | "LFO 3" | "Velocity" | "Mod wheel" | "Key position" | "Voicing" | "Distortion" | "EQ" | "Compressor" | "Chorus" | "Delay" | "Reverb" | "Macro 1" | "Macro 2" | "Macro 3" | "Macro 4";
 
 export interface ParamSpec {
   id: keyof SynthState;
@@ -284,12 +294,17 @@ const BASE_PARAMS: Record<string, ParamSpec> = {
   noiseType: { id: "noiseType", label: "Noise type", group: "Noise", kind: "choice", choices: NOISES, names: { white: "White", pink: "Pink" } },
   noiseLevelDb: { id: "noiseLevelDb", label: "Noise level", group: "Noise", kind: "range", min: -48, max: 0, step: 1, unit: "dB" },
   filterOn: { id: "filterOn", label: "Filter", group: "Filter", kind: "toggle" },
-  filterType: { id: "filterType", label: "Filter type", group: "Filter", kind: "choice", choices: FILTER_TYPES, names: { low: "Low-pass", high: "High-pass", band: "Band-pass", notch: "Notch" } },
+  filterType: { id: "filterType", label: "Filter type", group: "Filter", kind: "choice", choices: FILTER_TYPES, names: FILTER_NAMES },
   cutoff: { id: "cutoff", label: "Cutoff", group: "Filter", kind: "range", min: 20, max: 20000, step: 1, log: true, unit: "Hz" },
   resonance: { id: "resonance", label: "Resonance", group: "Filter", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
   slope: { id: "slope", label: "Slope", group: "Filter", kind: "choice", choices: SLOPES, names: { "12": "Gentle (12)", "24": "Steep (24)" } },
   drive: { id: "drive", label: "Drive", group: "Filter", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
   keyTrack: { id: "keyTrack", label: "Key track", group: "Filter", kind: "range", min: 0, max: 100, step: 5, unit: "%" },
+  filter2On: { id: "filter2On", label: "Filter 2", group: "Filter 2", kind: "toggle" },
+  filter2Type: { id: "filter2Type", label: "Filter 2 type", group: "Filter 2", kind: "choice", choices: FILTER_TYPES, names: FILTER_NAMES },
+  cutoff2: { id: "cutoff2", label: "Filter 2 cutoff", group: "Filter 2", kind: "range", min: 20, max: 20000, step: 1, log: true, unit: "Hz" },
+  resonance2: { id: "resonance2", label: "Filter 2 resonance", group: "Filter 2", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
+  filterRoute: { id: "filterRoute", label: "Filter 2 sits", group: "Filter 2", kind: "choice", choices: FILTER_ROUTES, names: { series: "After filter 1", parallel: "Beside filter 1" } },
   ...envelope("env", "Envelope 1", "Env 1"),
   ...envelope("env2", "Envelope 2", "Env 2"),
   ...source("env2", "Envelope 2", "Env 2"),

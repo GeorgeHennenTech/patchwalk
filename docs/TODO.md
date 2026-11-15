@@ -35,6 +35,7 @@ it, and reports in a few lines. None of these needs the owner or spends credits.
 - [x] 25b. String lab: a second string for beating, and match a hidden string by ear
 - [x] 25c. Drum lab: a drum head as ringing modes (round and square), click to hit it anywhere
 - [x] 25d. Six lessons on the physical models (four on the string, two on the drum), with quizzes
+- [x] 25e. Five more impact lessons: snares, booms, the filter snap, audible subs, risers
 - [ ] 26. String lab next: make it an instrument the lesson engine can use (steps, checks, match by ear), then stiffness, two strings, a body, and a worklet for bends and bowing
 - [ ] 27. Genre lessons that use the new wavetables
 - [x] 10. Osc B as a full oscillator: unison and warp
@@ -75,7 +76,7 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [ ] Music theory lessons that use the MIDI keyboard (owner, 14 Nov 2026): track I of the curriculum.
 - [ ] Source texts on sound systems for the owner to find: see `docs/LITERATURE.md`.
 - [ ] Build from `docs/LEARNING_RESEARCH.md` (owner, 14 Nov 2026): Focus mode for ADHD, end-of-lesson recall, spaced return, mixed by-ear checkpoints, "why this matters" lines, fading guidance, optional noise, the new answer layout.
-- [ ] Remaining synthesis chapters from the course plan (99 lessons built)
+- [ ] Remaining synthesis chapters from the course plan (104 lessons built)
 
 ## Synth
 - [x] Filter with a draggable curve

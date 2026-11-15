@@ -1168,5 +1168,219 @@
    "why": "Position is where along the table you are: a narrower pulse, or a higher band.",
    "point": 2
   }
+ ],
+ "CT.7": [
+  {
+   "q": "What two things make up a snare-like hit?",
+   "options": [
+    "Two tones an octave apart",
+    "A short tone and a burst of noise",
+    "A long tone and reverb",
+    "Two bursts of noise"
+   ],
+   "answer": 1,
+   "why": "The tone gives a body and a rough pitch; the noise gives the crack.",
+   "point": 0
+  },
+  {
+   "q": "Which part gives the hit its crack?",
+   "options": [
+    "The tone",
+    "The noise",
+    "The release",
+    "The octave setting"
+   ],
+   "answer": 1,
+   "why": "Noise fills the spectrum right across, which is heard as the crack on top.",
+   "point": 1
+  },
+  {
+   "q": "You want the hit tight and dry. What do you change?",
+   "options": [
+    "A shorter decay",
+    "A longer decay",
+    "More reverb",
+    "A lower octave"
+   ],
+   "answer": 0,
+   "why": "Both parts share one envelope, and a short decay cuts them off quickly.",
+   "point": 2
+  }
+ ],
+ "CT.8": [
+  {
+   "q": "Where does most of a boom's size come from?",
+   "options": [
+    "Its pitch being high",
+    "Its length",
+    "Its attack time",
+    "Its pan position"
+   ],
+   "answer": 1,
+   "why": "A boom is low and is allowed to ring for seconds; lasting is what makes it seem large.",
+   "point": 0
+  },
+  {
+   "q": "Why add a little distortion to a boom?",
+   "options": [
+    "To shorten it",
+    "To raise its pitch",
+    "To add harmonics so it is heard as well as felt",
+    "To remove the bass"
+   ],
+   "answer": 2,
+   "why": "The added harmonics sit where every speaker can play them.",
+   "point": 1
+  },
+  {
+   "q": "What does the room after the boom do?",
+   "options": [
+    "Carries the sound on after the note fades",
+    "Removes the low end",
+    "Makes the start sharper",
+    "Changes the note"
+   ],
+   "answer": 0,
+   "why": "The reverb keeps the boom going once the note itself has gone.",
+   "point": 2
+  },
+  {
+   "q": "What does the small fall in pitch at the front add?",
+   "options": [
+    "A longer tail",
+    "A push at the very start",
+    "More noise",
+    "A wider sound"
+   ],
+   "answer": 1,
+   "why": "As on the kick, a quick fall in pitch gives the front of the hit a knock.",
+   "point": 2
+  }
+ ],
+ "CT.9": [
+  {
+   "q": "What does a fast envelope on the filter do to a bass note?",
+   "options": [
+    "Lowers its pitch",
+    "Puts a bright front on it",
+    "Makes it longer",
+    "Removes its bass"
+   ],
+   "answer": 1,
+   "why": "The filter opens for an instant at the start, then the note settles to its dull body.",
+   "point": 0
+  },
+  {
+   "q": "The filter envelope's decay is made much longer. What does the snap become?",
+   "options": [
+    "A click",
+    "Silence",
+    "A slow sweep",
+    "A higher note"
+   ],
+   "answer": 2,
+   "why": "A very short decay is a snap; a long one lets the brightness arrive and leave at leisure.",
+   "point": 1
+  },
+  {
+   "q": "What does raising resonance do to the snap?",
+   "options": [
+    "Softens it",
+    "Sharpens it into a squelch",
+    "Removes it",
+    "Slows it down"
+   ],
+   "answer": 1,
+   "why": "The resonant peak is swept across the note's harmonics in an instant.",
+   "point": 2
+  }
+ ],
+ "CT.10": [
+  {
+   "q": "Why does a pure low sine vanish on small speakers?",
+   "options": [
+    "It is too loud",
+    "Its single harmonic is too low for them to reproduce",
+    "It has too many harmonics",
+    "It is out of tune"
+   ],
+   "answer": 1,
+   "why": "A sine has one harmonic, and a very low one is below what small speakers can play.",
+   "point": 0
+  },
+  {
+   "q": "How does distortion make a sub audible everywhere?",
+   "options": [
+    "It raises the note an octave",
+    "It adds harmonics above the low one",
+    "It removes the low harmonic",
+    "It adds reverb"
+   ],
+   "answer": 1,
+   "why": "The new harmonics sit at two, three, four times the frequency, where any speaker can play them.",
+   "point": 1
+  },
+  {
+   "q": "What is the EQ after the distortion for?",
+   "options": [
+    "Adding bass",
+    "Turning down the fizz at the top",
+    "Changing the pitch",
+    "Making it mono"
+   ],
+   "answer": 1,
+   "why": "It tames the highest added harmonics and leaves the middle ones that carry the note.",
+   "point": 2
+  },
+  {
+   "q": "What does lowering the distortion's Mix give you?",
+   "options": [
+    "Only the distorted sound",
+    "Silence",
+    "The clean sub with some edge laid over it",
+    "A higher pitch"
+   ],
+   "answer": 2,
+   "why": "Mix blends the clean signal back in, so the weight stays and the edge is added.",
+   "point": 2
+  }
+ ],
+ "CT.11": [
+  {
+   "q": "What is a riser made from in this lesson?",
+   "options": [
+    "A fast LFO",
+    "An envelope with a long attack sent to pitch",
+    "A short decay",
+    "A noise burst"
+   ],
+   "answer": 1,
+   "why": "The long attack is a slow ramp, and sending it to pitch makes the note climb.",
+   "point": 0
+  },
+  {
+   "q": "How do you make the riser brighten as it climbs?",
+   "options": [
+    "Send the same envelope to the filter as well",
+    "Turn the volume up",
+    "Shorten the attack",
+    "Switch the filter off"
+   ],
+   "answer": 0,
+   "why": "One envelope can lift pitch and cutoff together through a matrix row.",
+   "point": 1
+  },
+  {
+   "q": "You want a longer build. What do you change?",
+   "options": [
+    "A shorter attack",
+    "A longer attack",
+    "A lower amount",
+    "A different wave"
+   ],
+   "answer": 1,
+   "why": "The attack time is how long the ramp takes, so it is the length of the build.",
+   "point": 2
+  }
  ]
 }

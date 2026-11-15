@@ -874,7 +874,7 @@ describe("impact lessons", () => {
   });
   it("the chapter comes last, is named Impacts, and makes no claim about a named artist", () => {
     expect(IMPACT_CHAPTER.map((l) => l.id)).toEqual(["CT.1", "CT.2", "CT.3", "CT.4", "CT.5", "CT.6", "CT.C"]);
-    expect(placeOf(IMPACT_CHAPTER[1]!)).toEqual({ chapter: "Impacts", number: 2, of: 7 });
+    expect(placeOf(IMPACT_CHAPTER[1]!)).toEqual({ chapter: "Impacts", number: 2, of: 12 });
     for (const l of IMPACT_CHAPTER) expect([l.outcome, ...l.idea, ...l.recap, ...l.steps.flatMap((s) => [s.do, s.hear])].join(" ")).not.toMatch(/Tipper|brain/i);
   });
   it("a kick needs the envelope on the wide pitch destination, and the remark gives where the pitch starts and lands", () => {

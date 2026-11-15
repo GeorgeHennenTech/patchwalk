@@ -155,3 +155,104 @@ export const WARP_ADDITIONS: PlayableLesson[] = [
     inSerum: "Serum's warp menu includes Flip and Quantize (pages 50 and 51 of its guide). The versions here follow our own rules and have not been checked against Serum's, so nothing is checked. Listening only.",
   },
 ];
+
+// ---- more impact lessons (track T in docs/IMPACTS.md), built once the synth had effects and the matrix.
+// Like the first ones they describe what is done and what can be measured, and claim nothing about hearing.
+const TOK = { shape: "sine", octave: -1, envA: 1, envD: 180, envS: 0, envR: 120 } as const;
+const LOW = { shape: "sine", octave: -2, envA: 2, envD: 600, envS: 0, envR: 300 } as const;
+const DULL = { shape: "saw", octave: -1, filterOn: true, cutoff: 250, resonance: 20, envA: 2, envD: 600, envS: 60, envR: 120 } as const;
+const SUBTONE = { shape: "sine", octave: -2 } as const;
+const BED = { shape: "saw", filterOn: true, cutoff: 300, envA: 5, envS: 100, envR: 200 } as const;
+const CLIMB = { ...BED, env2Dest: "aPitchWide", env2Amount: 30, env2A: 3000, env2S: 100 } as const;
+const hitTones = (list: DemoTone["patch"][], len = 0.8, gap = 0.3, note = 57): DemoTone[] => list.map((patch, i) => ({ patch, note, at: i * (len + gap), seconds: len }));
+const rowTo = (s: Snapshot, source: string, dest: string, least: number) => s.state.matrix.some((r) => r.source === source && r.dest === dest && r.amount >= least);
+
+export const IMPACT_ADDITIONS: PlayableLesson[] = [
+  {
+    id: "CT.7", title: "Snares: a tone and a burst of noise", buildsOn: ["CT.2", "C1.7"], minutes: 7, cardIds: ["noise-and-sub"], initial: { ...TOK },
+    outcome: "Build a snare-like hit from a short tone and a burst of noise, and set it tight or loose.",
+    demo: { caption: "A short tone, the same with noise on top, then with a small fall in pitch at the front.", tones: hitTones([{ ...TOK }, { ...TOK, noiseOn: true, noiseLevelDb: -6 }, { ...TOK, noiseOn: true, noiseLevelDb: -6, env2Dest: "aPitchWide", env2Amount: 15, env2D: 60 }]) },
+    idea: [
+      "A kick is one falling tone. Many other drum hits are two things at once: a short tone, which gives the hit a body and a rough pitch, and a burst of noise, which gives it a crack. Change the balance between the two and you move from a tom toward a snare toward a hi-hat.",
+      "Both parts here share one envelope, so they start and stop together. Its decay decides whether the hit is tight and dry or loose and ringing.",
+    ],
+    steps: [
+      { do: "Strike a key a few times. Do not hold it.", show: ["keyboard", "scope", "spectrum"], hear: "A short, round “tok”: a tone with nothing on top.", target: "Two notes played", check: (s) => struck(s) >= 2 },
+      { do: "Switch on Noise and bring its level up to about -6 dB. Strike again.", show: ["keyboard", "noiseOn", "noiseLevelDb", "scope", "spectrum"], hear: "A crack on top of the tok. The spectrum fills in right across.", target: "Noise on, level between -10 and -2 dB, a note played", check: (s) => s.state.noiseOn && between(s.state.noiseLevelDb, -10, -2) && struck(s) >= 1 },
+      { do: "Send Envelope 2 to Osc A pitch, wide, with an Amount of about 15%. Strike again.", show: ["keyboard", "env2Dest", "env2Amount", "scope"], hear: "The tone now knocks at the front, as the kick did, under the noise.", target: "Envelope 2 sent to Osc A pitch, wide; amount between 10% and 25%; a note played", check: (s) => s.state.noiseOn && s.state.env2Dest === "aPitchWide" && between(s.state.env2Amount, 10, 25) && struck(s) >= 1 },
+      { do: "Shorten Envelope 1’s Decay to 120 ms or less and strike.", show: ["keyboard", "envD", "scope"], hear: "Tight and dry: a rim-like snap.", target: "Decay at 120 ms or less, a note played", check: (s) => s.state.noiseOn && s.state.envD <= 120 && struck(s) >= 1 },
+      { do: "Lengthen Decay to 350 ms or more and strike.", show: ["keyboard", "envD", "scope"], hear: "Loose and splashy. The same two parts, given longer to ring.", target: "Decay at 350 ms or more, a note played", check: (s) => s.state.noiseOn && s.state.envD >= 350 && struck(s) >= 1,
+        remark: (s) => `Your hit is a tone and noise ${Math.abs(s.state.noiseLevelDb)} dB under full level, both fading over ${s.state.envD} ms.` },
+    ],
+    recap: ["A snare-like hit is a short tone and a burst of noise together.", "The noise gives the crack; the tone gives the body.", "The decay time sets tight and dry against loose and ringing."],
+  },
+  {
+    id: "CT.8", title: "Booms: size from length", buildsOn: ["CT.4", "C7.1", "C7.6"], minutes: 8, cardIds: [], initial: { ...LOW },
+    outcome: "Turn a short low thud into a large boom using length, a little distortion and a room.",
+    demo: { caption: "A short thud; the same made long; then with distortion and a room.", tones: [{ patch: { ...LOW }, note: 57, at: 0, seconds: 0.8 }, { patch: { ...LOW, envD: 3000, envR: 1200 }, note: 57, at: 1.1, seconds: 2.2 }, { patch: { ...LOW, envD: 3000, envR: 1200, distOn: true, distDrive: 40, reverbOn: true, reverbMix: 30, reverbSize: 3 }, note: 57, at: 3.7, seconds: 2.6 }] },
+    idea: [
+      "A boom is a hit that takes its time. The pitch is low, and the note is allowed to ring for seconds. Most of what makes it seem large is simply that it lasts.",
+      "Two additions help. A little distortion gives the low tone harmonics, so it is heard as well as felt. A room after it carries the sound on once the note itself has gone.",
+    ],
+    steps: [
+      { do: "Strike a low key.", show: ["keyboard", "scope"], hear: "A short, soft thud.", target: "A note played", check: (s) => struck(s) >= 1 },
+      { do: "Make it long: Envelope 1 Decay 2.5 s or more and Release 1 s or more. Strike again.", show: ["keyboard", "envD", "envR", "scope"], hear: "The same thud, now rolling on. It already seems bigger.", target: "Decay 2.5 s or more, release 1 s or more, a note played", check: (s) => s.state.envD >= 2500 && s.state.envR >= 1000 && struck(s) >= 1 },
+      { do: "Switch on Distortion (Soft clip) and set Drive between 25% and 55%. Strike.", show: ["keyboard", "distOn", "distType", "distDrive", "spectrum"], hear: "A rougher, fuller boom. New bars have appeared above the low one.", target: "Distortion on, drive between 25% and 55%, a note played", check: (s) => s.state.distOn && between(s.state.distDrive, 25, 55) && s.state.envD >= 2500 && struck(s) >= 1 },
+      { do: "Send Envelope 2 to Osc A pitch, wide, with an Amount of about 12%. Strike.", show: ["keyboard", "env2Dest", "env2Amount", "scope"], hear: "A small push at the very front, then the long boom.", target: "Envelope 2 sent to Osc A pitch, wide; amount between 8% and 20%; a note played", check: (s) => s.state.env2Dest === "aPitchWide" && between(s.state.env2Amount, 8, 20) && struck(s) >= 1 },
+      { do: "Switch on Reverb: Mix between 15% and 40%, Size 2 s or more. Strike once and wait.", show: ["keyboard", "reverbOn", "reverbMix", "reverbSize"], hear: "The boom now happens somewhere: a space carries it on after the note fades.", target: "Reverb on, mix between 15% and 40%, size 2 s or more, a note played", check: (s) => s.state.reverbOn && between(s.state.reverbMix, 15, 40) && s.state.reverbSize >= 2 && struck(s) >= 1 },
+    ],
+    recap: ["A boom is low and long: much of its size comes from its length.", "A little distortion adds harmonics, so the boom is heard as well as felt.", "A small fall in pitch at the front and a room after it make it larger still."],
+  },
+  {
+    id: "CT.9", title: "The filter snap", buildsOn: ["CT.5", "C3.4"], minutes: 7, cardIds: ["filter-envelope"], initial: { ...DULL },
+    outcome: "Give each bass note a bright front with a fast envelope on the filter.",
+    demo: { caption: "A dull bass note; the same with a fast snap of brightness at the front; then with a slow sweep.", tones: hitTones([{ ...DULL }, { ...DULL, env2Dest: "cutoff", env2Amount: 70, env2D: 80 }, { ...DULL, env2Dest: "cutoff", env2Amount: 70, env2D: 700 }], 1, 0.3, 45) },
+    idea: [
+      "A bass note with a closed filter is heavy but vague: you feel it more than you hear where it starts. Opening the filter for an instant at the start of each note puts a bright click on the front, and the note then settles back to its dull body.",
+      "The envelope’s decay is the whole character. Very short is a snap. Longer is a pluck. Longer still stops being a hit and becomes a sweep.",
+    ],
+    steps: [
+      { do: "Strike a low key a few times.", show: ["keyboard", "curve"], hear: "A dull, heavy bass note with a soft start.", target: "Two notes played", check: (s) => struck(s) >= 2 },
+      { do: "Send Envelope 2 to Filter cutoff with an Amount of 50% or more. Strike.", show: ["keyboard", "env2Dest", "env2Amount", "curve"], hear: "Each note opens bright and closes again. Watch the curve jump and fall back.", target: "Envelope 2 sent to Filter cutoff, amount 50% or more, a note played", check: (s) => s.state.env2Dest === "cutoff" && s.state.env2Amount >= 50 && struck(s) >= 1 },
+      { do: "Make it a snap: Envelope 2 Decay 120 ms or less. Strike.", show: ["keyboard", "envelope2", "env2D", "curve"], hear: "A click of brightness at the very front, then the dull body. The note now has an edge you can place in time.", target: "Envelope 2 decay at 120 ms or less, a note played", check: (s) => s.state.env2Dest === "cutoff" && s.state.env2D <= 120 && struck(s) >= 1 },
+      { do: "Stretch Envelope 2 Decay to 600 ms or more and strike.", show: ["keyboard", "envelope2", "env2D", "curve"], hear: "A slow “wow”. It is no longer a hit: the brightness arrives and leaves at leisure.", target: "Envelope 2 decay at 600 ms or more, a note played", check: (s) => s.state.env2Dest === "cutoff" && s.state.env2D >= 600 && struck(s) >= 1 },
+      { do: "Go back to a snap (150 ms or less) and raise Resonance to 50% or more. Strike.", show: ["keyboard", "env2D", "resonance", "curve"], hear: "The snap now squelches: the resonant peak is swept across the note’s harmonics in an instant.", target: "Envelope 2 decay at 150 ms or less, resonance 50% or more, a note played", check: (s) => s.state.env2Dest === "cutoff" && s.state.env2D <= 150 && s.state.resonance >= 50 && struck(s) >= 1 },
+    ],
+    recap: ["A fast envelope on the filter puts a bright front on each bass note.", "The envelope’s decay decides whether it is a snap, a pluck or a sweep.", "Resonance sharpens the snap into a squelch."],
+  },
+  {
+    id: "CT.10", title: "Harmonics make a sub audible", buildsOn: ["C0.4", "C7.1", "C7.2"], minutes: 7, cardIds: ["fx-distortion"], initial: { ...SUBTONE },
+    outcome: "Add harmonics to a pure sub so it can be heard on any speaker, without losing its weight.",
+    demo: { caption: "A pure low sine, then the same with soft clipping, then with hard clipping.", tones: hitTones([{ ...SUBTONE }, { ...SUBTONE, distOn: true, distDrive: 55 }, { ...SUBTONE, distOn: true, distType: "hard", distDrive: 55 }], 1.3, 0.3) },
+    idea: [
+      "A pure sine has one harmonic. Play it very low and that single harmonic sits below what small speakers can reproduce, so on a phone or a laptop the note all but disappears.",
+      "Distortion adds harmonics above it, at two, three, four times the frequency and beyond. Those are well inside what any speaker can play, so the note is heard everywhere, while the low harmonic is still there for systems that can move that much air.",
+    ],
+    steps: [
+      { do: "Switch on Hold and play a low key.", show: ["keyboard", "hold", "spectrum"], hear: "A pure, deep tone: one bar at the far left of the spectrum.", target: "A note held", check: (s) => s.held.length >= 1 },
+      { do: "Switch on Distortion and turn Drive up to 50% or more.", show: ["keyboard", "hold", "distOn", "distDrive", "spectrum"], hear: "The same note with an edge. New bars have appeared to the right of the first.", target: "Distortion on, drive at 50% or more", check: (s) => s.state.distOn && s.state.distDrive >= 50 },
+      { do: "Change the type to Hard clip.", show: ["keyboard", "hold", "distType", "spectrum"], hear: "Harsher and louder-seeming. The new bars are taller and reach further right.", target: "Hard clip chosen", check: (s) => s.state.distOn && s.state.distType === "hard" },
+      { do: "Bring Mix down to between 30% and 60%.", show: ["keyboard", "hold", "distMix", "spectrum"], hear: "The clean sub with some of the edge laid over it: weight and audibility together.", target: "Mix between 30% and 60%", check: (s) => s.state.distOn && between(s.state.distMix, 30, 60) },
+      { do: "Switch on EQ and turn its High band down to -6 dB or lower.", show: ["keyboard", "hold", "eqOn", "eqHigh", "spectrum"], hear: "The fizz at the top is turned down; the middle bars, which carry the note on small speakers, stay.", target: "EQ on, high band at -6 dB or lower", check: (s) => s.state.distOn && s.state.eqOn && s.state.eqHigh <= -6 },
+    ],
+    recap: ["A pure sub has a single harmonic, too low for small speakers to reproduce.", "Distortion adds harmonics above it that every speaker can play.", "Mix and an EQ after the distortion keep the added edge under control."],
+  },
+  {
+    id: "CT.11", title: "Risers", buildsOn: ["CT.4", "C5.4"], minutes: 9, cardIds: ["mod-routing"], initial: { ...BED },
+    outcome: "Build a riser: one slow envelope lifting pitch and brightness together before a hit.",
+    demo: { caption: "A steady note, then the same climbing in pitch, then climbing in pitch and brightness.", tones: [{ patch: { ...BED }, note: 45, at: 0, seconds: 1.2 }, { patch: { ...CLIMB }, note: 45, at: 1.5, seconds: 3 }, { patch: { ...CLIMB, matrix: [{ source: "env2", dest: "cutoff", amount: 70, way: "up" }] }, note: 45, at: 4.8, seconds: 3 }] },
+    idea: [
+      "A sub drop falls after a hit. A riser is its mirror: something climbs slowly before the hit, so the listener knows one is coming. The climb is usually several things at once: pitch, brightness, sometimes noise.",
+      "All of it can come from one envelope with a long attack. Its attack is a slow ramp from nothing to full. Send that ramp to pitch and the note climbs; send it to the filter as well and it brightens as it climbs.",
+    ],
+    steps: [
+      { do: "Hold a low key for two seconds.", show: ["keyboard", "scope", "curve"], hear: "A steady, dull saw. Nothing moves.", target: "A note held for two seconds", check: (s) => s.longestHeld >= 2 },
+      { do: "Set Envelope 2: Attack 2.5 s or more, Sustain 100%. Send it to Osc A pitch, wide, with an Amount between 20% and 40%. Hold a key for three seconds.", show: ["keyboard", "envelope2", "env2A", "env2S", "env2Dest", "env2Amount", "scope"], hear: "The note climbs steadily for as long as the attack lasts.", target: "Envelope 2 attack 2.5 s or more, sustain 100%, sent to Osc A pitch, wide, amount 20% to 40%; a note held for three seconds", check: (s) => s.state.env2Dest === "aPitchWide" && s.state.env2A >= 2500 && s.state.env2S === 100 && between(s.state.env2Amount, 20, 40) && s.longestHeld >= 3 },
+      { do: "Open the Matrix and add a row: Envelope 2 to Filter cutoff, Amount 40% or more. Hold a key for three seconds.", show: ["keyboard", "matrix", "curve", "scope"], hear: "Now it brightens as it climbs. The curve slides to the right while the pitch goes up.", target: "A matrix row sending Envelope 2 to Filter cutoff at 40% or more; a note held for three seconds", check: (s) => s.state.env2Dest === "aPitchWide" && rowTo(s, "env2", "cutoff", 40) && s.longestHeld >= 3 },
+      { do: "Make the build longer: Envelope 2 Attack 5 s or more. Hold a key for five seconds.", show: ["keyboard", "envelope2", "env2A", "curve"], hear: "The same climb, stretched. A longer build promises a bigger arrival.", target: "Envelope 2 attack 5 s or more; a note held for five seconds", check: (s) => s.state.env2A >= 5000 && rowTo(s, "env2", "cutoff", 40) && s.longestHeld >= 5,
+        remark: (s) => `Your riser climbs ${((s.state.env2Amount / 100) * 4).toFixed(1)} octaves over ${(s.state.env2A / 1000).toFixed(1)} s.` },
+      { do: "Switch on Reverb with Mix at 25% or more, and hold a key for three seconds.", show: ["keyboard", "reverbOn", "reverbMix"], hear: "A wash gathers behind the climb, so the build seems to grow in size as well as pitch.", target: "Reverb on, mix 25% or more; a note held for three seconds", check: (s) => s.state.reverbOn && s.state.reverbMix >= 25 && s.longestHeld >= 3 },
+    ],
+    recap: ["A riser is a slow climb before a hit: an envelope with a long attack sent to pitch.", "Sending the same envelope to the filter makes it brighten as it climbs.", "The longer the attack, the longer the build."],
+  },
+];

@@ -14,7 +14,7 @@ const F = { filterOn: true } as const;
 
 export const CHAPTER_2: PlayableLesson[] = [
   {
-    id: "C2.1", title: "Low-pass cutoff", buildsOn: ["C1.1"], minutes: 8, cardIds: ["lowpass-cutoff-resonance"],
+    id: "C2.1", title: "Low-pass cutoff", earCheck: "brighter", buildsOn: ["C1.1"], minutes: 8, cardIds: ["lowpass-cutoff-resonance"],
     outcome: "Switch on a low-pass filter and use its cutoff to take brightness off a sound, from the top down.",
     demo: { caption: "The same bright note three times: untouched, with the top taken off, then with most of it gone.", tones: patches([{}, { ...F, cutoff: 2000 }, { ...F, cutoff: 500 }]) },
     idea: [
@@ -58,7 +58,7 @@ export const CHAPTER_2: PlayableLesson[] = [
     inSerum: "From Init, switch on Filter 1, lower CUTOFF and raise RES, then sweep. How RES reads on screen is not confirmed yet, so nothing is checked.",
   },
   {
-    id: "C2.3", title: "High-pass, band-pass and notch", buildsOn: ["C2.2"], minutes: 8, cardIds: ["filter-types-and-slope"], initial: { ...F, cutoff: 1000 },
+    id: "C2.3", title: "High-pass, band-pass and notch", earCheck: "filterType", buildsOn: ["C2.2"], minutes: 8, cardIds: ["filter-types-and-slope"], initial: { ...F, cutoff: 1000 },
     outcome: "Choose between the four basic filter shapes by what each one keeps and what it removes.",
     demo: { caption: "One note through four filters: low-pass, high-pass, band-pass, notch.", tones: patches([{ ...F, cutoff: 1000 }, { ...F, cutoff: 1000, filterType: "high" }, { ...F, cutoff: 1000, filterType: "band", resonance: 30 }, { ...F, cutoff: 1000, filterType: "notch" }], 1.1) },
     idea: [

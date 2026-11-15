@@ -11,6 +11,7 @@ import type { MatchRound, Panel, PlayableLesson } from "../course/types";
 import type { Card } from "../lesson/cards";
 import { macroSlots } from "../synth/macros";
 import { routes } from "../synth/mod";
+import { EAR, type EarKind } from "../course/ear";
 import { beatHz, destName, INITIAL, noteToHz, PARAMS, SHAPES, type Shape, type SynthState } from "../synth/params";
 import { useSynth, type Synth } from "../synth/useSynth";
 import { AskBox } from "./Answer";
@@ -206,43 +207,38 @@ function MatchRounds({ rounds, synth, lesson, onPass, plain }: { rounds: MatchRo
 }
 
 /** Blind listening quiz. The app generates the sounds, so it knows the answers. */
-function EarCheck({ kind, synth, onPass }: { kind: "shape" | "higher"; synth: Synth; onPass: () => void }) {
-  const ROUNDS = 5;
-  const make = () => (kind === "shape"
-    ? { answer: SHAPES[Math.floor(Math.random() * 4)]! as string, hz: noteToHz(48 + Math.floor(Math.random() * 25)) }
-    : (() => { const a = noteToHz(52 + Math.floor(Math.random() * 20)); const up = Math.random() < 0.5; const ratio = 2 ** ((1 + Math.floor(Math.random() * 6)) / 12); return { answer: up ? "second" : "first", hz: a, hz2: up ? a * ratio : a / ratio }; })());
-  const [q, setQ] = useState(make);
+function EarCheck({ kind, synth, onPass }: { kind: EarKind; synth: Synth; onPass: () => void }) {
+  const ROUNDS = 5, spec = EAR[kind];
+  const [q, setQ] = useState(() => spec.make());
   const [score, setScore] = useState({ right: 0, asked: 0 });
   const [last, setLast] = useState<string>();
   const play = () => {
     const e = synth.engine.current;
     if (!e) return;
-    if (kind === "shape") e.audition(q.answer as Shape, q.hz);
-    else { e.audition("sine", q.hz, 0.7); e.audition("sine", (q as { hz2: number }).hz2, 0.7, 0.85); }
+    for (const t of q.tones) { if (t.patch) e.auditionPatch(t.patch, t.note ?? 57, t.seconds, t.at); else e.audition(t.shape ?? "sine", t.hz ?? 440, t.seconds, t.at); }
   };
   const answer = (a: string) => {
     const right = a === q.answer;
     const next = { right: score.right + (right ? 1 : 0), asked: score.asked + 1 };
     setScore(next);
-    setLast(right ? "Correct." : `Not quite: that was ${kind === "shape" ? q.answer : `the ${q.answer} tone`}.`);
+    setLast(right ? "Correct." : `Not quite: that was ${spec.label(q.answer).toLowerCase()}.`);
     if (next.asked >= ROUNDS) { if (next.right >= ROUNDS - 1) onPass(); }
-    else setQ(make());
+    else setQ(spec.make());
   };
   const finished = score.asked >= ROUNDS;
-  const options = kind === "shape" ? [...SHAPES] : ["first", "second"];
   return (
     <section className="exercise">
       <h3>Ear check <Badge kind={finished && score.right >= ROUNDS - 1 ? "ok" : "muted"}>{score.right} of {score.asked} right</Badge></h3>
-      <p>{kind === "shape" ? "A wave shape is played with the controls hidden. Which one is it?" : "Two tones are played one after the other. Which is higher?"}</p>
+      <p>{spec.ask}</p>
       {!synth.running ? <button className="primary" onClick={() => void synth.start()}>Start audio</button> : !finished ? (
         <div className="toolbar">
           <button className="primary" onClick={play}>Play</button>
-          {options.map((o) => <button key={o} className="choice" onClick={() => answer(o)}>{kind === "shape" ? o : `The ${o}`}</button>)}
+          {spec.options.map((o) => <button key={o} className="choice" onClick={() => answer(o)}>{spec.label(o)}</button>)}
         </div>
       ) : (
         <div className="toolbar">
           <span>{score.right >= ROUNDS - 1 ? "Passed." : "Four out of five passes. Have another go."}</span>
-          <button className="link" onClick={() => { setScore({ right: 0, asked: 0 }); setLast(undefined); setQ(make()); }}>Try again</button>
+          <button className="link" onClick={() => { setScore({ right: 0, asked: 0 }); setLast(undefined); setQ(spec.make()); }}>Try again</button>
         </div>
       )}
       {last && <p className="muted" role="status">{last}</p>}

@@ -53,7 +53,7 @@ export const CHAPTER_4: PlayableLesson[] = [
     inSerum: "From Init, switch on Filter 1, lower CUTOFF, and drag LFO 1 onto the CUTOFF knob. Save it and drop it into the “LFOs and modulation” Serum task to see what the app can read from it.",
   },
   {
-    id: "C4.3", title: "Tremolo and vibrato", buildsOn: ["C4.1", "C1.2"], minutes: 7, cardIds: ["tremolo", "pitch-lfo"],
+    id: "C4.3", title: "Tremolo and vibrato", earCheck: "movement", buildsOn: ["C4.1", "C1.2"], minutes: 7, cardIds: ["tremolo", "pitch-lfo"],
     outcome: "Tell an LFO on level from an LFO on pitch, and run two LFOs at once.",
     demo: { caption: "Tremolo, where the level moves; then vibrato, where the pitch moves.", tones: patches([{ lfo1Dest: "aLevelDb", lfo1Amount: 60, lfo1Rate: 6 }, { lfo1Dest: "fine", lfo1Amount: 3, lfo1Rate: 6 }], 2.2) },
     idea: [

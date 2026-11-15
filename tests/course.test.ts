@@ -1631,3 +1631,34 @@ describe("warp: flip, steps and fold", () => {
     expect(warpValue("fold", 0, 0, 0.3)).toBeCloseTo(0.3, 9); expect(foldGain(100)).toBe(5);
   });
 });
+
+import { EAR, type EarKind } from "../src/course/ear";
+describe("blind ear checks", () => {
+  it("every kind makes questions whose answer is one of the offered options, with sounds to play", () => {
+    for (const kind of Object.keys(EAR) as EarKind[]) {
+      const spec = EAR[kind], seen = new Set<string>();
+      for (let i = 0; i < 60; i++) {
+        const q = spec.make();
+        expect(spec.options, kind).toContain(q.answer); seen.add(q.answer);
+        expect(q.tones.length, kind).toBeGreaterThanOrEqual(1);
+        for (const t of q.tones) expect(!!t.patch || !!t.shape, kind).toBe(true);
+        expect(spec.label(q.answer).length).toBeGreaterThan(2);
+      }
+      expect(seen.size, kind).toBe(spec.options.length); // every answer comes up
+    }
+  });
+  it("'which is brighter' really has the higher cutoff where it says, at least an octave apart", () => {
+    for (let i = 0; i < 40; i++) {
+      const q = EAR.brighter.make(), [a, b] = q.tones.map((t) => t.patch!.cutoff) as [number, number];
+      expect(q.answer).toBe(b > a ? "second" : "first");
+      expect(Math.abs(Math.log2(b / a))).toBeGreaterThanOrEqual(1);
+    }
+  });
+  it("the filter-type and movement questions play what they say", () => {
+    for (let i = 0; i < 20; i++) {
+      const f = EAR.filterType.make(); expect(f.tones[1]!.patch!.filterType).toBe(f.answer); expect(f.tones[0]!.patch!.filterOn).toBe(false);
+      const m = EAR.movement.make(); expect(m.tones[0]!.patch!.lfo1Dest).toBe(m.answer);
+    }
+  });
+  it("lessons only ask for kinds that exist", () => { for (const l of LESSONS) if (l.earCheck) expect(Object.keys(EAR)).toContain(l.earCheck); });
+});

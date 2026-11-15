@@ -28,6 +28,7 @@ const chord = (notes: number[], at: number, seconds = 1.2): DemoTone[] => notes.
 const ODE_2: Score = { title: "Ode to Joy, second phrase", items: [...[60, 60, 62, 64, 64, 62].map((n) => ({ notes: [n], beats: 1 })), { notes: [62], beats: 2 }] };
 const ODE: Score = { title: "Ode to Joy", items: [...[64, 64, 65, 67, 67, 65, 64, 62].map((n) => ({ notes: [n], beats: 1 })), ...ODE_2.items] };
 const CHORDS: Score = { title: "Four chords", items: [[60, 64, 67], [60, 65, 69], [62, 67, 71], [60, 64, 67]].map((notes) => ({ notes, beats: 2 })) };
+const LOOP: Score = { title: "C, G, A minor, F", items: [[60, 64, 67], [62, 67, 71], [60, 64, 69], [60, 65, 69]].map((notes) => ({ notes, beats: 2 })) };
 const MAJOR = [0, 2, 4, 5, 7, 9, 11, 12], MINOR = [0, 2, 3, 5, 7, 8, 10, 12];
 
 export const THEORY_CHAPTER: PlayableLesson[] = [
@@ -76,8 +77,8 @@ export const THEORY_CHAPTER: PlayableLesson[] = [
       "With a major third (four semitones) the chord is major, which most people hear as bright. Lower that one note by a semitone to a minor third (three) and the chord is minor, heard as darker. The root and the fifth do not move.",
     ],
     steps: [
-      { do: "Hold A, D and G together (C, E and G).", show: [...K], hear: "A full, settled, bright chord: C major.", target: "Three notes together: a root, four semitones up, and seven up", check: (s) => same(shape(s), [0, 4, 7]) },
-      { do: "Hold A, E and G together (C, D sharp and G).", show: [...K], hear: "The same chord with its middle note lowered: C minor. Darker, with the same solid frame.", target: "Three notes together: a root, three semitones up, and seven up", check: (s) => same(shape(s), [0, 3, 7]) },
+      { do: "Hold A, D and G together (C, E and G).", show: [...K], hear: "A full, settled, bright chord: C major.", target: "Three notes together: a root, four semitones up, and seven up", score: { items: [{ notes: [60, 64, 67], beats: 2 }], title: "C major" }, check: (s) => same(shape(s), [0, 4, 7]) },
+      { do: "Hold A, E and G together (C, D sharp and G).", show: [...K], hear: "The same chord with its middle note lowered: C minor. Darker, with the same solid frame.", target: "Three notes together: a root, three semitones up, and seven up", score: { items: [{ notes: [60, 63, 67], beats: 2 }], title: "C minor" }, check: (s) => same(shape(s), [0, 3, 7]) },
       { do: "Build a major chord on F: hold F, H and K (F, A and C).", show: [...K], hear: "Bright again, on a different root. The recipe is the same: four semitones, then three more.", target: "A major chord whose root is not C", check: (s) => same(shape(s), [0, 4, 7]) && Math.min(...s.held) % 12 !== 0 },
       { do: "Build a minor chord on D: hold S, F and H (D, F and A).", show: [...K], hear: "Dark, on D. Three semitones, then four more.", target: "A minor chord whose root is not C", check: (s) => same(shape(s), [0, 3, 7]) && Math.min(...s.held) % 12 !== 0,
         remark: (s) => `That is ${nameOf(Math.min(...s.held))} minor: a root, a minor third above it and a fifth above it.` },
@@ -109,10 +110,10 @@ export const THEORY_CHAPTER: PlayableLesson[] = [
       "Do that on the white keys and you never choose major or minor: the scale chooses for you. Starting on C or F the chord comes out major. Starting on D or E it comes out minor. That mix of bright and dark chords is where a key gets its character.",
     ],
     steps: [
-      { do: "Hold A, D and G: start on C and take every other white key.", show: [...K], hear: "C major: bright, and it feels like home.", target: "C, E and G sounding together", check: (s) => sounding(s, [0, 4, 7]) },
-      { do: "Move every finger one white key up: hold S, F and H.", show: [...K], hear: "A darker chord. The same hand shape has given a minor chord: D minor.", target: "D, F and A sounding together", check: (s) => sounding(s, [2, 5, 9]) },
-      { do: "One more white key up: hold D, G and J.", show: [...K], hear: "Minor again: E minor.", target: "E, G and B sounding together", check: (s) => sounding(s, [4, 7, 11]) },
-      { do: "And once more: hold F, H and K.", show: [...K], hear: "Bright again: F major. The hand never changed shape; the scale decided.", target: "F, A and C sounding together", check: (s) => sounding(s, [5, 9, 0]) },
+      { do: "Hold A, D and G: start on C and take every other white key.", show: [...K], hear: "C major: bright, and it feels like home.", target: "C, E and G sounding together", score: { items: [{ notes: [60, 64, 67], beats: 2 }], title: "C major" }, check: (s) => sounding(s, [0, 4, 7]) },
+      { do: "Move every finger one white key up: hold S, F and H.", show: [...K], hear: "A darker chord. The same hand shape has given a minor chord: D minor.", target: "D, F and A sounding together", score: { items: [{ notes: [62, 65, 69], beats: 2 }], title: "D minor" }, check: (s) => sounding(s, [2, 5, 9]) },
+      { do: "One more white key up: hold D, G and J.", show: [...K], hear: "Minor again: E minor.", target: "E, G and B sounding together", score: { items: [{ notes: [64, 67, 71], beats: 2 }], title: "E minor" }, check: (s) => sounding(s, [4, 7, 11]) },
+      { do: "And once more: hold F, H and K.", show: [...K], hear: "Bright again: F major. The hand never changed shape; the scale decided.", target: "F, A and C sounding together", score: { items: [{ notes: [65, 69, 72], beats: 2 }], title: "F major" }, check: (s) => sounding(s, [5, 9, 0]) },
       { do: "Go back home: hold A, D and G again.", show: [...K], hear: "After the others, C major sounds like an arrival.", target: "C, E and G sounding together", check: (s) => sounding(s, [0, 4, 7]) && s.sequence.length >= 3 },
     ],
     recap: ["Chords that belong to a scale are built by taking every other note of it.", "In C major the chords on C and F come out major, and those on D and E come out minor.", "The scale decides which chords are major and which are minor; the hand shape stays the same."],
@@ -126,10 +127,10 @@ export const THEORY_CHAPTER: PlayableLesson[] = [
       "Inversions matter for two reasons. They change the chord’s colour a little: lighter, less settled. And they let you move from one chord to the next by shifting a finger or two, where jumping the whole hand would sound clumsy.",
     ],
     steps: [
-      { do: "Hold A, D and G: C major with C at the bottom.", show: [...K], hear: "The plain, settled form.", target: "C, E and G together, with C lowest", check: (s) => sounding(s, [0, 4, 7]) && Math.min(...s.held) % 12 === 0 },
-      { do: "Hold D, G and K: the same three notes with E at the bottom and C moved to the top.", show: [...K], hear: "Still C major, but lighter and less final.", target: "C, E and G together, with E lowest", check: (s) => sounding(s, [0, 4, 7]) && Math.min(...s.held) % 12 === 4 },
-      { do: "Hold F, H and K: F major with F at the bottom.", show: [...K], hear: "F major in its plain form.", target: "F, A and C together, with F lowest", check: (s) => sounding(s, [5, 9, 0]) && Math.min(...s.held) % 12 === 5 },
-      { do: "Hold A, F and H: F major again, with C at the bottom.", show: [...K], hear: "The same chord, sitting right next to where C major was. Only two fingers had to move.", target: "F, A and C together, with C lowest", check: (s) => sounding(s, [5, 9, 0]) && Math.min(...s.held) % 12 === 0 },
+      { do: "Hold A, D and G: C major with C at the bottom.", show: [...K], hear: "The plain, settled form.", target: "C, E and G together, with C lowest", score: { items: [{ notes: [60, 64, 67], beats: 2 }], title: "C major, C at the bottom" }, check: (s) => sounding(s, [0, 4, 7]) && Math.min(...s.held) % 12 === 0 },
+      { do: "Hold D, G and K: the same three notes with E at the bottom and C moved to the top.", show: [...K], hear: "Still C major, but lighter and less final.", target: "C, E and G together, with E lowest", score: { items: [{ notes: [64, 67, 72], beats: 2 }], title: "C major, E at the bottom" }, check: (s) => sounding(s, [0, 4, 7]) && Math.min(...s.held) % 12 === 4 },
+      { do: "Hold F, H and K: F major with F at the bottom.", show: [...K], hear: "F major in its plain form.", target: "F, A and C together, with F lowest", score: { items: [{ notes: [65, 69, 72], beats: 2 }], title: "F major, F at the bottom" }, check: (s) => sounding(s, [5, 9, 0]) && Math.min(...s.held) % 12 === 5 },
+      { do: "Hold A, F and H: F major again, with C at the bottom.", show: [...K], hear: "The same chord, sitting right next to where C major was. Only two fingers had to move.", target: "F, A and C together, with C lowest", score: { items: [{ notes: [60, 65, 69], beats: 2 }], title: "F major, C at the bottom" }, check: (s) => sounding(s, [5, 9, 0]) && Math.min(...s.held) % 12 === 0 },
     ],
     recap: ["A chord is named by the notes in it, not by their order.", "An inversion puts a note other than the root at the bottom, which lightens the chord.", "Inversions let neighbouring chords sit close together, so the hand hardly moves."],
   },
@@ -142,11 +143,11 @@ export const THEORY_CHAPTER: PlayableLesson[] = [
       "Played with every root at the bottom, the hand would leap about. With inversions each chord is a small move from the last, and the top notes make a little tune of their own.",
     ],
     steps: [
-      { do: "Hold A, D and G: C major.", show: [...K], hear: "Home.", target: "C, E and G together", check: (s) => sounding(s, [0, 4, 7]) },
-      { do: "Hold S, G and J: G major, with D at the bottom.", show: [...K], hear: "A lift away from home. It wants to go somewhere.", target: "G, B and D together", check: (s) => sounding(s, [7, 11, 2]) },
-      { do: "Hold A, D and H: A minor, with C at the bottom.", show: [...K], hear: "The dark one of the four. Only one finger moved from C major.", target: "A, C and E together", check: (s) => sounding(s, [9, 0, 4]) },
-      { do: "Hold A, F and H: F major, with C at the bottom.", show: [...K], hear: "Warm, and leaning back toward home.", target: "F, A and C together", check: (s) => sounding(s, [5, 9, 0]) },
-      { do: "Play all four in a row without stopping: C, G, A minor, F.", show: [...K], hear: "A loop you have heard in a great many songs. Go round again and it joins up.", target: "The four chords played one after another, in that order", check: (s) => chordRun(s, [[0, 4, 7], [7, 11, 2], [9, 0, 4], [5, 9, 0]]) },
+      { do: "Hold A, D and G: C major.", show: [...K], hear: "Home.", target: "C, E and G together", score: { items: [{ notes: [60, 64, 67], beats: 2 }], title: "C major" }, check: (s) => sounding(s, [0, 4, 7]) },
+      { do: "Hold S, G and J: G major, with D at the bottom.", show: [...K], hear: "A lift away from home. It wants to go somewhere.", target: "G, B and D together", score: { items: [{ notes: [62, 67, 71], beats: 2 }], title: "G major, D at the bottom" }, check: (s) => sounding(s, [7, 11, 2]) },
+      { do: "Hold A, D and H: A minor, with C at the bottom.", show: [...K], hear: "The dark one of the four. Only one finger moved from C major.", target: "A, C and E together", score: { items: [{ notes: [60, 64, 69], beats: 2 }], title: "A minor, C at the bottom" }, check: (s) => sounding(s, [9, 0, 4]) },
+      { do: "Hold A, F and H: F major, with C at the bottom.", show: [...K], hear: "Warm, and leaning back toward home.", target: "F, A and C together", score: { items: [{ notes: [60, 65, 69], beats: 2 }], title: "F major, C at the bottom" }, check: (s) => sounding(s, [5, 9, 0]) },
+      { do: "Play all four in a row without stopping: C, G, A minor, F.", show: [...K], hear: "A loop you have heard in a great many songs. Go round again and it joins up.", target: "The four chords played one after another, in that order", score: LOOP, check: (s) => chordRun(s, [[0, 4, 7], [7, 11, 2], [9, 0, 4], [5, 9, 0]]) },
     ],
     recap: ["A progression is a row of chords; it gives music its sense of leaving and coming home.", "The chords on the first, fifth, sixth and fourth notes of a major scale make a very widely used loop.", "Inversions keep each chord a small move from the one before."],
   },

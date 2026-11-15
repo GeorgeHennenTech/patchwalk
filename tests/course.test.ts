@@ -874,7 +874,7 @@ describe("impact lessons", () => {
   });
   it("the chapter comes last, is named Impacts, and makes no claim about a named artist", () => {
     expect(IMPACT_CHAPTER.map((l) => l.id)).toEqual(["CT.1", "CT.2", "CT.3", "CT.4", "CT.5", "CT.6", "CT.C"]);
-    expect(placeOf(IMPACT_CHAPTER[1]!)).toEqual({ chapter: "Impacts", number: 2, of: 12 });
+    expect(placeOf(IMPACT_CHAPTER[1]!)).toEqual({ chapter: "Impacts", number: 2, of: 13 });
     for (const l of IMPACT_CHAPTER) expect([l.outcome, ...l.idea, ...l.recap, ...l.steps.flatMap((s) => [s.do, s.hear])].join(" ")).not.toMatch(/Tipper|brain/i);
   });
   it("a kick needs the envelope on the wide pitch destination, and the remark gives where the pitch starts and lands", () => {
@@ -1751,6 +1751,7 @@ describe("the lessons added on 15 Nov can each be walked through", () => {
     "CT.9": [[{}, played], [{ env2Dest: "cutoff", env2Amount: 70 }, played], [{ env2D: 80 }, played], [{ env2D: 700 }, played], [{ env2D: 100, resonance: 60 }, played]],
     "CT.10": [[{}, { held: [33] }], [{ distOn: true, distDrive: 60 }], [{ distType: "hard" }], [{ distMix: 45 }], [{ eqOn: true, eqHigh: -9 }]],
     "CT.11": [[{}, { longestHeld: 2.5 }], [{ env2Dest: "aPitchWide", env2A: 3000, env2S: 100, env2Amount: 30 }, { longestHeld: 3.5 }], [{ matrix: [{ source: "env2", dest: "cutoff", amount: 60, way: "up" }] }, { longestHeld: 3.5 }], [{ env2A: 6000 }, { longestHeld: 5.5 }], [{ reverbOn: true, reverbMix: 30 }, { longestHeld: 3.5 }]],
+    "CT.12": [[{ envS: 0, envD: 220 }, played], [{ envS: 100, envR: 30 }, played], [{ lfo1Dest: "cutoff", lfo1Amount: 60, lfo1Rate: 7 }, { longestHeld: 2.5 }], [{ drive: 60 }, { longestHeld: 2.5 }]],
     "C1.11": [[{ table: "pdsaw" }, { held: [45] }], [{ position: 100 }, range("position", 0, 100)], [{ table: "moogsaw", position: 100 }], [{ position: 0 }], [{ table: "pdpulse", position: 95 }, range("position", 5, 95)], [{ table: "formant", position: 95 }, range("position", 5, 95)]],
     "C6.6": [[{}, { held: [57] }], [{ warpAmount: 50 }], [{ warpAmount: 95 }, range("warpAmount", 5, 95)], [{ warp: "steps", warpAmount: 60 }], [{ warpAmount: 80 }], [{ warp: "flip", warpAmount: 50 }]],
     "C2.8": [[{}, { held: [45] }], [{ resonance: 70 }], [{ cutoff: 3500 }, range("cutoff", 300, 3500)], [{ filterType: "shelf", cutoff: 800, resonance: 100 }], [{}, { changes: { filterType: 2 } }]],

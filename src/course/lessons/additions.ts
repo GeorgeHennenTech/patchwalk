@@ -255,4 +255,20 @@ export const IMPACT_ADDITIONS: PlayableLesson[] = [
     ],
     recap: ["A riser is a slow climb before a hit: an envelope with a long attack sent to pitch.", "Sending the same envelope to the filter makes it brighten as it climbs.", "The longer the attack, the longer the build."],
   },
+  {
+    id: "CT.12", title: "Pluck, stab and growl", buildsOn: ["CT.5", "C4.2", "C2.5"], minutes: 8, cardIds: ["amp-envelope", "lfo-cutoff"], initial: { ...DULL, cutoff: 900 },
+    outcome: "Make one bass sound hit three ways: a pluck that dies, a stab that is cut off, and a growl that moves.",
+    demo: { caption: "The same bass as a pluck, a stab and a growl.", tones: [{ patch: { ...DULL, cutoff: 900, envS: 0, envD: 220 }, note: 45, at: 0, seconds: 0.7 }, { patch: { ...DULL, cutoff: 900, envS: 100, envR: 30 }, note: 45, at: 1, seconds: 0.35 }, { patch: { ...DULL, cutoff: 900, envS: 100, lfo1Dest: "cutoff", lfo1Amount: 60, lfo1Rate: 7, drive: 60 }, note: 45, at: 1.8, seconds: 2 }] },
+    idea: [
+      "A bass note hits differently depending on what happens after its start. A pluck starts at full level and dies away by itself. A stab stays at full level and is then cut off dead, so its end is as sharp as its beginning.",
+      "A growl is a held note whose tone keeps moving: here an LFO shakes the filter several times a second, and drive roughens the result. Its impact comes from motion, not from the start.",
+    ],
+    steps: [
+      { do: "Make a pluck: Envelope 1 Sustain 0 and Decay 300 ms or less. Strike a few low keys.", show: ["keyboard", "envelope", "envD", "envS"], hear: "Each note starts full and falls away at once, however long you hold the key.", target: "Sustain 0, decay 300 ms or less, two notes played", check: (s) => s.state.envS === 0 && s.state.envD <= 300 && struck(s) >= 2 },
+      { do: "Make a stab: Sustain 100% and Release 60 ms or less. Play short notes.", show: ["keyboard", "envelope", "envS", "envR"], hear: "A block of sound: full level, then gone the moment you let go.", target: "Sustain 100%, release 60 ms or less, two notes played", check: (s) => s.state.envS === 100 && s.state.envR <= 60 && struck(s) >= 2 },
+      { do: "Make a growl: send LFO 1 to Filter cutoff with an Amount of 40% or more and a Rate between 4 and 12 Hz. Hold a key for two seconds.", show: ["keyboard", "lfo1Dest", "lfo1Amount", "lfo1Rate", "curve"], hear: "The tone opens and closes several times a second: a snarling, talking bass.", target: "LFO 1 sent to Filter cutoff, amount 40% or more, rate 4 to 12 Hz; a note held for two seconds", check: (s) => s.state.lfo1Dest === "cutoff" && s.state.lfo1Amount >= 40 && between(s.state.lfo1Rate, 4, 12) && s.longestHeld >= 2 },
+      { do: "Turn the filter’s Drive up to 50% or more and hold a key again.", show: ["keyboard", "drive", "curve", "scope"], hear: "Rougher and thicker. The drive adds harmonics before the filter, so the moving filter has more to chew on.", target: "Drive at 50% or more; a note held for two seconds", check: (s) => s.state.lfo1Dest === "cutoff" && s.state.drive >= 50 && s.longestHeld >= 2 },
+    ],
+    recap: ["A pluck starts full and dies away by itself; a stab stays full and is cut off dead.", "A growl is a held note whose filter keeps moving.", "Drive before the filter gives the moving filter more harmonics to work on."],
+  },
 ];

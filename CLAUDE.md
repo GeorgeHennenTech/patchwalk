@@ -174,7 +174,7 @@ Added after the first eight milestones (owner asked for all four in one go):
     "Effects" and "Impacts".
     C5.9 ("One source scaling another") was added to chapter 5 with the matrix's Scaled by column.
     C1.9 ("Left and right, and a second wavetable") was added to chapter 1 with pan and Osc B's wavetable.
-    **104 playable lessons** (15 Nov 2026: see "Batch of 15 Nov 2026" below for the ten added that day).
+    **105 playable lessons** (15 Nov 2026: see "Batch of 15 Nov 2026" below for the ten added that day).
   - `src/ui/PlayView.tsx` ("Lessons" tab) and `src/ui/synth/` — spotlighted controls per step, live targets,
     scope, spectrum, meter, on-screen keyboard, Hold, blind ear checks, recap, guide remarks and suggestion.
   - "Hear it first" demos (`demo` on a lesson), match-by-ear rounds (`rounds`, compared by `src/course/match.ts`:
@@ -647,7 +647,7 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   (2) A quiz on that lesson, options in a mixed order, checked only when all are
   answered: each then shows the right answer, the learner's own, and one line of why. (3) The recap,
   with each point the quiz asked about tagged "you had this" or "read this one again". A quiet "Skip to
-  the recap" link stays, so nobody is trapped. **519 questions over the 104 lessons (the ten lessons added on 15 Nov 2026 have questions the assistant wrote itself), from 3 to 8 a lesson, in
+  the recap" link stays, so nobody is trapped. **522 questions over the 105 lessons (the ten lessons added on 15 Nov 2026 have questions the assistant wrote itself), from 3 to 8 a lesson, in
   `src/course/quiz/quiz-a.json` to `quiz-f.json`: the owner asked that the number per lesson come from what
   that lesson teaches, not from a formula, so each lesson was audited (list every distinct thing worth
   remembering, one question per thing, duplicates dropped) and most have 4 to 6** (`{ q, options[4], answer, why, point }`, `point`
@@ -954,8 +954,8 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
 - **Five more impact lessons (15 Nov 2026).** `IMPACT_ADDITIONS` in `lessons/additions.ts`, slotted before
   the impacts checkpoint: CT.7 Snares (a tone and a burst of noise), CT.8 Booms (size from length), CT.9
   The filter snap, CT.10 Harmonics make a sub audible, CT.11 Risers (one long-attack envelope to pitch, and
-  to the filter through a matrix row). Twelve lessons in the Impacts chapter. Like the first ones they
-  claim nothing about hearing. Their step checks pass the tests but **none was clicked through in a browser.**
+  to the filter through a matrix row), CT.12 Pluck, stab and growl. Thirteen lessons in the Impacts chapter. Like the first ones they
+  claim nothing about hearing. A test walks every step of every lesson added that day with the settings its instruction asks for; **none was clicked through in a browser.**
 - **Realism pass on the 3D views (14 Nov 2026, owner's request).** `src/ui/three/look.ts`: surfaces drawn
   by code onto small canvases (textured speaker paint, a perforated grille, grass, plywood, paper pulp,
   steel), an open sky with haze, a studio table that shows only shadows, and `truss` (laced lighting

@@ -1382,5 +1382,43 @@
    "why": "The attack time is how long the ramp takes, so it is the length of the build.",
    "point": 2
   }
+ ],
+ "CT.12": [
+  {
+   "q": "How does a pluck differ from a stab?",
+   "options": [
+    "A pluck is louder",
+    "A pluck dies away by itself; a stab stays full and is cut off",
+    "A stab has no start",
+    "They are the same"
+   ],
+   "answer": 1,
+   "why": "The pluck's envelope falls with no sustain. The stab holds at full level until the key is let go.",
+   "point": 0
+  },
+  {
+   "q": "What makes a growl?",
+   "options": [
+    "A very short decay",
+    "A held note whose filter keeps moving",
+    "A pure sine",
+    "A long release"
+   ],
+   "answer": 1,
+   "why": "An LFO shakes the filter several times a second, so the tone never sits still.",
+   "point": 1
+  },
+  {
+   "q": "Why add drive before the filter on a growl?",
+   "options": [
+    "To lower the pitch",
+    "To shorten the note",
+    "To give the moving filter more harmonics to work on",
+    "To remove the bass"
+   ],
+   "answer": 2,
+   "why": "Drive adds harmonics, and the moving filter then sweeps through a richer sound.",
+   "point": 2
+  }
  ]
 }

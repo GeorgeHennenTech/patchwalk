@@ -878,5 +878,195 @@
    "why": "After the distortion, the cut shapes the finished tone, edge included.",
    "point": 2
   }
+ ],
+ "C5M.17": [
+  {
+   "q": "What do a low-pass and a high-pass in a row leave?",
+   "options": [
+    "A band between their cutoffs",
+    "A hole in the middle",
+    "Only the bass",
+    "The full sound"
+   ],
+   "answer": 0,
+   "why": "Each takes one end away, so the band between the cutoffs is left.",
+   "point": 0
+  },
+  {
+   "q": "How does the Radio macro narrow the band from both ends?",
+   "options": [
+    "Both slots move up",
+    "One slot moves down and the other up",
+    "It lowers the volume",
+    "It adds resonance"
+   ],
+   "answer": 1,
+   "why": "The low-pass comes down while the high-pass comes up, so the edges close in together.",
+   "point": 1
+  },
+  {
+   "q": "Why does this macro sound like the full saw at zero?",
+   "options": [
+    "The filters are switched off by the macro",
+    "The macro mutes Filter 2",
+    "Both filters start wide open",
+    "The saw is louder at zero"
+   ],
+   "answer": 2,
+   "why": "With both cutoffs at their extremes nothing is removed until the macro turns.",
+   "point": 2
+  }
+ ],
+ "C5M.18": [
+  {
+   "q": "Five voices with no detune sound like what?",
+   "options": [
+    "A wide crowd",
+    "A chord",
+    "Silence",
+    "One note"
+   ],
+   "answer": 3,
+   "why": "With no difference in pitch the voices sit on top of one another.",
+   "point": 0
+  },
+  {
+   "q": "Which setting gives thickness and which gives width?",
+   "options": [
+    "Detune gives thickness, spread gives width",
+    "Spread gives thickness, detune gives width",
+    "Level gives both",
+    "Octave gives both"
+   ],
+   "answer": 0,
+   "why": "Detune makes the voices drift apart in pitch. Spread places them across the speakers.",
+   "point": 1
+  },
+  {
+   "q": "What does the Crowd macro change at the same moment?",
+   "options": [
+    "Only Osc A's level",
+    "The detune of both oscillators and A's spread",
+    "The filter cutoff",
+    "The tempo"
+   ],
+   "answer": 1,
+   "why": "Its three slots thicken both oscillators and widen Osc A together.",
+   "point": 2
+  }
+ ],
+ "C5M.19": [
+  {
+   "q": "What makes a held note seem to change vowel?",
+   "options": [
+    "Getting louder",
+    "Getting duller overall",
+    "Moving the band that is emphasised",
+    "Changing its pitch"
+   ],
+   "answer": 2,
+   "why": "A voice changes vowel by moving its emphasised bands, and a moving peak does the same.",
+   "point": 0
+  },
+  {
+   "q": "Why does the note keep its weight and top as the band moves?",
+   "options": [
+    "Peak lifts a band and removes nothing",
+    "The macro adds bass",
+    "The filter is off",
+    "The note is replayed"
+   ],
+   "answer": 0,
+   "why": "Peak leaves everything outside the lifted band as it was.",
+   "point": 1
+  },
+  {
+   "q": "What is the second slot on the Talk macro for?",
+   "options": [
+    "Lowering the volume",
+    "Making the band taller as it rises",
+    "Switching the filter type",
+    "Adding echo"
+   ],
+   "answer": 1,
+   "why": "It raises the resonance, which on Peak is the height of the band.",
+   "point": 2
+  }
+ ],
+ "C5M.20": [
+  {
+   "q": "Where does the Steps warp roughen the sound?",
+   "options": [
+    "In the reverb",
+    "In the finished signal's level",
+    "In the filter",
+    "In the oscillator's wave, so it follows the pitch"
+   ],
+   "answer": 3,
+   "why": "Steps cuts each cycle into flat steps, so the roughness moves with the note.",
+   "point": 0
+  },
+  {
+   "q": "What does Crush do?",
+   "options": [
+    "Rounds the finished signal's level to a coarse grid",
+    "Cuts each cycle into steps",
+    "Removes the bass",
+    "Adds echoes"
+   ],
+   "answer": 0,
+   "why": "Crush works on the finished signal, whatever note is playing.",
+   "point": 1
+  },
+  {
+   "q": "What does the Bits macro show a macro can do?",
+   "options": [
+    "Only move effects",
+    "Only move oscillator settings",
+    "Reach into the oscillator and the effects at once",
+    "Change the tempo"
+   ],
+   "answer": 2,
+   "why": "One slot goes to the warp amount and the other to the distortion's drive.",
+   "point": 2
+  }
+ ],
+ "C5M.21": [
+  {
+   "q": "What does folding do to a sine?",
+   "options": [
+    "Removes its only harmonic",
+    "Adds harmonics",
+    "Lowers its pitch",
+    "Makes it quieter only"
+   ],
+   "answer": 1,
+   "why": "A sine has one harmonic, and each fold adds more.",
+   "point": 0
+  },
+  {
+   "q": "Why does growing fold sound metallic?",
+   "options": [
+    "The pitch drifts",
+    "The harmonics rise and fall unevenly",
+    "Reverb is added",
+    "The bass disappears"
+   ],
+   "answer": 1,
+   "why": "The new harmonics do not grow steadily. They shift in an uneven way as the amount rises.",
+   "point": 1
+  },
+  {
+   "q": "Why does the second slot lower the filter as folding rises?",
+   "options": [
+    "To add bass",
+    "To make it louder",
+    "To change the note",
+    "To hold back the shrill top"
+   ],
+   "answer": 3,
+   "why": "Heavy folding gets shrill, so the filter moves the other way to keep the top under control.",
+   "point": 2
+  }
  ]
 }

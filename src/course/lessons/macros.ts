@@ -261,6 +261,67 @@ const MORE_RECIPES: Recipe[] = [
     sweep: "A soft thud growing a sharper knock and a rougher, louder-seeming body.",
     recap: ["A kick’s hardness is partly the size of its pitch fall.", "Distortion adds harmonics that carry on small speakers.", "A macro can move an envelope’s amount as well as a knob."],
   },
+  // ---- added with the second filter, the peak type, Osc B's voices and the Steps and Fold warps
+  {
+    id: "C5M.17", title: "Full range to small radio", minutes: 7, name: "Radio", buildsOn: ["C5M.2", "C2.9"], cardIds: ["macro-multi", "filter-types-and-slope"], views: ["curve"],
+    initial: { shape: "saw", filterOn: true, cutoff: 20000, filter2On: true, filter2Type: "high", cutoff2: 20 },
+    outcome: "Close a sound down to a narrow band from both ends at once, with two filters on one knob.",
+    idea: [
+      "A small speaker has no bass and no top. To imitate one you need two cuts: a low-pass coming down from above and a high-pass coming up from below, one after the other, so only a band in the middle is left.",
+      "The macro moves the two cutoffs toward each other. At zero both filters are wide open. Turned up, the sound shrinks to a small radio. It is the opposite-directions idea again, on two filters.",
+    ],
+    slots: [{ to: "cutoff", amount: -40, hear: "" }, { to: "cutoff2", amount: 50, hear: "" }],
+    sweep: "The full saw closing in from both ends until only a boxy middle band is left. On the curve, two slopes walk toward each other.",
+    recap: ["Two filters in a row leave a band between their cutoffs.", "One slot down and one slot up moves both edges of the band together.", "At zero both filters are open, so the macro starts from the full sound."],
+  },
+  {
+    id: "C5M.18", title: "One player to a crowd", minutes: 7, name: "Crowd", buildsOn: ["C5M.1", "C1.10"], cardIds: ["macro-multi", "unison-detune"],
+    initial: { shape: "saw", voices: 5, detune: 0, spread: 0, bOn: true, bShape: "saw", bOctave: 1, bLevelDb: -9, bVoices: 5, bDetune: 0 },
+    outcome: "Take two oscillators from tight and single to wide and many with one knob.",
+    idea: [
+      "Both oscillators here already have five voices each, but with no detune the voices sit on top of one another and sound like one. Thickness comes from the voices drifting apart in pitch, and width from placing them across the speakers.",
+      "The macro raises the detune of both oscillators and the spread of Osc A together. At zero: one tight, narrow note. Turned up: a wide, slowly moving crowd.",
+    ],
+    slots: [{ to: "detune", amount: 35, hear: "" }, { to: "bDetune", amount: 40, hear: "" }, { to: "spread", amount: 80, hear: "" }],
+    sweep: "A single hard note loosening into a wide, swirling mass, and tightening again as you bring the macro down.",
+    recap: ["Voices only sound like many once they are detuned.", "Detune gives thickness; spread gives width.", "One macro can thicken two oscillators at the same moment."],
+  },
+  {
+    id: "C5M.19", title: "A talking band", minutes: 7, name: "Talk", buildsOn: ["C5M.1", "C2.8"], cardIds: ["macro-multi", "filter-types-and-slope"], views: ["curve"],
+    initial: { shape: "saw", octave: -1, filterOn: true, filterType: "peak", cutoff: 350, resonance: 55 },
+    outcome: "Make a sound seem to change vowel by sliding a lifted band with one knob.",
+    idea: [
+      "A voice changes vowel by moving the bands it emphasises, not by getting brighter or duller overall. The Peak filter type does the same thing: it lifts one band and leaves the rest alone.",
+      "The macro slides that band upward and makes it a little taller on the way. The note keeps all its weight and all its top; only the emphasis moves.",
+    ],
+    slots: [{ to: "cutoff", amount: 35, hear: "" }, { to: "resonance", amount: 25, hear: "" }],
+    sweep: "The same note seeming to say different vowels as the bump on the curve travels up through it.",
+    recap: ["Moving an emphasised band sounds like a change of vowel.", "Peak lifts a band without removing anything.", "A second slot can make the band taller as it rises."],
+  },
+  {
+    id: "C5M.20", title: "Smooth to steps", minutes: 7, name: "Bits", buildsOn: ["C5M.4", "C6.1", "C7.1"], cardIds: ["macro-fx", "warp"], views: ["scope"],
+    initial: { shape: "saw", octave: -1, warp: "steps", warpAmount: 0, distOn: true, distType: "crush", distDrive: 0, distMix: 100 },
+    outcome: "Roughen a sound in two places at once: the oscillator's wave and the finished signal.",
+    idea: [
+      "There are two different ways to make a sound blocky. The Steps warp cuts each cycle of the wave into flat steps, so the roughness follows the pitch. Crush rounds the finished signal's level to a coarse grid, whatever the note.",
+      "The macro brings in both. The result is grittier than either alone, and it goes from clean to broken across one knob.",
+    ],
+    slots: [{ to: "warpAmount", amount: 70, hear: "" }, { to: "distDrive", amount: 55, hear: "" }],
+    sweep: "A clean saw turning into a buzzing staircase. The scope shows the ramp breaking into blocks.",
+    recap: ["Steps roughens the wave inside the oscillator, so it follows the pitch.", "Crush roughens the finished signal's level.", "A macro can reach into the oscillator and the effects at once."],
+  },
+  {
+    id: "C5M.21", title: "Fold and tame", minutes: 7, name: "Metal", buildsOn: ["C5M.4", "C6.1"], cardIds: ["macro-multi", "warp"], views: ["scope", "spectrum"],
+    initial: { shape: "sine", octave: -1, warp: "fold", warpAmount: 0, filterOn: true, cutoff: 20000 },
+    outcome: "Turn a pure tone metallic by folding it, while a filter holds back the harshest part.",
+    idea: [
+      "The Fold warp turns the wave up and folds back whatever passes the top. A sine has one harmonic; each fold adds more, and they rise and fall in an uneven, metallic way as the amount grows.",
+      "Left alone, heavy folding gets shrill. So the macro's second slot lowers the filter as the folding rises: the compensation idea from the loudness lessons, applied to brightness.",
+    ],
+    slots: [{ to: "warpAmount", amount: 90, hear: "" }, { to: "cutoff", amount: -25, hear: "" }],
+    sweep: "A soft sine growing bright, hollow and bell-like, without ever turning to hiss.",
+    recap: ["Folding adds harmonics to a plain wave.", "The harmonics shift unevenly as the fold grows, which sounds metallic.", "A filter slot moving the other way keeps the top under control."],
+  },
 ];
 
 const BITE = wired(RECIPES[0]!, 0), MORPH = wired(RECIPES[1]!, 0), WOBBLE = wired(RECIPES[4]!, 0), DIRT = wired(RECIPES[6]!, 0);

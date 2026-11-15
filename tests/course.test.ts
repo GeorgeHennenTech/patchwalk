@@ -684,7 +684,7 @@ describe("macros", () => {
   it("the macro chapter is listed after Modulation, and every recipe wires what it teaches", () => {
     expect(CHAPTER_ORDER.map((c) => CHAPTERS[c])).toEqual(["Sound itself", "Oscillators", "Filters", "Envelopes", "LFOs", "Mixed practice", "Modulation", "Macros", "Reshaping the wave", "Effects", "Playing a line", "Impacts"]);
     expect(new Set(LESSONS.map((l) => chapterOf(l))).size).toBe(CHAPTER_ORDER.length);
-    expect(MACRO_CHAPTER.map((l) => l.id)).toEqual(["C5M.1", "C5M.2", "C5M.3", "C5M.4", "C5M.5", "C5M.6", "C5M.7", "C5M.8", "C5M.9", "C5M.10", "C5M.11", "C5M.12", "C5M.13", "C5M.14", "C5M.15", "C5M.16", "C5M.C"]);
+    expect(MACRO_CHAPTER.map((l) => l.id)).toEqual(["C5M.1", "C5M.2", "C5M.3", "C5M.4", "C5M.5", "C5M.6", "C5M.7", "C5M.8", "C5M.9", "C5M.10", "C5M.11", "C5M.12", "C5M.13", "C5M.14", "C5M.15", "C5M.16", "C5M.17", "C5M.18", "C5M.19", "C5M.20", "C5M.21", "C5M.C"]);
     for (const l of MACRO_CHAPTER.slice(0, 7)) {
       // the finished macro, as the demo plays it, really changes the sound between zero and full
       const [zero, , top] = l.demo!.tones.map((t) => applyMacros({ ...INITIAL, ...t.patch }));

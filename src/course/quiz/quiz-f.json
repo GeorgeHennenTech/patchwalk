@@ -2050,5 +2050,93 @@
    "why": "A saw has every harmonic, so restoring the even ones moves a square toward a saw.",
    "point": 2
   }
+ ],
+ "CN.10": [
+  {
+   "q": "On a staff, what does moving a note higher up the page mean?",
+   "options": [
+    "It is louder",
+    "It is higher in pitch",
+    "It lasts longer",
+    "It is played later"
+   ],
+   "answer": 1,
+   "why": "Up and down is pitch; left to right is time.",
+   "point": 0
+  },
+  {
+   "q": "In the treble clef, which notes sit on the five lines, bottom to top?",
+   "options": [
+    "F, A, C, E",
+    "C, D, E, F, G",
+    "E, G, B, D, F",
+    "A, B, C, D, E"
+   ],
+   "answer": 2,
+   "why": "The lines are E, G, B, D, F and the spaces between them F, A, C, E.",
+   "point": 1
+  },
+  {
+   "q": "Where is middle C written in the treble clef?",
+   "options": [
+    "On the top line",
+    "In the first space",
+    "On a short line of its own below the staff",
+    "It cannot be written"
+   ],
+   "answer": 2,
+   "why": "It is too low for the five lines, so it gets its own short line underneath.",
+   "point": 1
+  },
+  {
+   "q": "What does a sharp sign in front of a note mean?",
+   "options": [
+    "Play it louder",
+    "Play the black key just above it",
+    "Hold it longer",
+    "Skip it"
+   ],
+   "answer": 1,
+   "why": "A sharp raises the note by a semitone, to the key just above.",
+   "point": 2
+  }
+ ],
+ "CN.11": [
+  {
+   "q": "What is the basic skill of reading a tune?",
+   "options": [
+    "Memorising every note's name first",
+    "Finding how far the next note is from the last",
+    "Counting the lines from the top each time",
+    "Playing as fast as possible"
+   ],
+   "answer": 1,
+   "why": "Most tunes move by steps with a few leaps, so you read the distance from note to note.",
+   "point": 0
+  },
+  {
+   "q": "How long does a hollow note with a stem last?",
+   "options": [
+    "Half a beat",
+    "One beat",
+    "Two beats",
+    "Four beats"
+   ],
+   "answer": 2,
+   "why": "A filled note with a stem is one beat; a hollow one with a stem is two.",
+   "point": 1
+  },
+  {
+   "q": "What do notes stacked one above another mean?",
+   "options": [
+    "Play them one after another",
+    "Play them together as a chord",
+    "Play only the top one",
+    "Play them twice"
+   ],
+   "answer": 1,
+   "why": "Stacked notes sound at the same moment.",
+   "point": 2
+  }
  ]
 }

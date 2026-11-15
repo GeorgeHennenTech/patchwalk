@@ -45,6 +45,8 @@ export interface LessonStep {
   /** Short description of what the app checks, shown as the target. */
   target: string;
   check: (s: Snapshot) => boolean;
+  /** Sheet music shown with the step, which follows along as the learner plays (see score.ts). */
+  score?: import("./score").Score;
   /** Settings applied when the step begins (e.g. to set up a starting point). */
   preset?: Partial<SynthState>;
   /** A sentence the guide says once the step is done, about what the learner actually did. Code-generated. */

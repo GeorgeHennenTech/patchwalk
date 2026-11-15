@@ -1014,3 +1014,27 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 .bow-here { fill: #ff4fa3; stroke: #fff; stroke-width: 1.5; }
 .bow-key { padding: 0 4px; border-radius: 3px; color: #17101f; font-weight: 600; }
 .bow-key.note { background: #6aa8e6; } .bow-key.jumped { background: #ffe14f; }
+
+/* ---- sheet music that follows along ---- */
+.score { background: #fffdf6; color: #1b1424; border: 2px solid var(--thread); border-radius: 12px; padding: 10px 12px; margin: 0 0 12px; }
+.score-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-bottom: 4px; }
+.score-status { margin-left: auto; font-size: 14px; font-variant-numeric: tabular-nums; }
+.score-scroll { overflow-x: auto; }
+.score-staff { display: block; height: auto; }
+.score-line { stroke: #1b1424; stroke-width: 1; }
+.score-end { stroke: #1b1424; stroke-width: 3; }
+.score-clef { font-size: 64px; fill: #1b1424; font-family: "Noto Music", "Bravura", "Segoe UI Symbol", "Apple Symbols", "Symbola", serif; }
+.score-stem { stroke: currentColor; stroke-width: 1.4; }
+.score-note { color: #1b1424; }
+.score-head { fill: currentColor; stroke: currentColor; stroke-width: 1.3; }
+.score-head.open { fill: #fffdf6; }
+.score-sharp { fill: currentColor; font-size: 17px; }
+.score-name { fill: currentColor; font-size: 12px; font-weight: 700; }
+.score-key { fill: #6b5a80; font-size: 10px; }
+.score-note.done { color: #1c8a4a; }
+.score-note.now { color: #d81b77; }
+.score-note.now.wrong { color: #c62828; }
+.score-note.sounding { color: #1565c0; }
+.score-here { fill: rgba(216, 27, 119, 0.1); stroke: #d81b77; stroke-width: 1.5; stroke-dasharray: 4 3; }
+.score-note.wrong .score-here { fill: rgba(198, 40, 40, 0.12); stroke: #c62828; }
+.score-help { margin: 4px 0 0; font-size: 13px; }

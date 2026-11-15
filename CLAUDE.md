@@ -174,7 +174,7 @@ Added after the first eight milestones (owner asked for all four in one go):
     "Effects" and "Impacts".
     C5.9 ("One source scaling another") was added to chapter 5 with the matrix's Scaled by column.
     C1.9 ("Left and right, and a second wavetable") was added to chapter 1 with pan and Osc B's wavetable.
-    **120 playable lessons** (15 Nov 2026: see "Batch of 15 Nov 2026" below for the ten added that day).
+    **122 playable lessons** (15 Nov 2026: see "Batch of 15 Nov 2026" below for the ten added that day).
   - `src/ui/PlayView.tsx` ("Lessons" tab) and `src/ui/synth/` — spotlighted controls per step, live targets,
     scope, spectrum, meter, on-screen keyboard, Hold, blind ear checks, recap, guide remarks and suggestion.
   - "Hear it first" demos (`demo` on a lesson), match-by-ear rounds (`rounds`, compared by `src/course/match.ts`:
@@ -647,7 +647,7 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   (2) A quiz on that lesson, options in a mixed order, checked only when all are
   answered: each then shows the right answer, the learner's own, and one line of why. (3) The recap,
   with each point the quiz asked about tagged "you had this" or "read this one again". A quiet "Skip to
-  the recap" link stays, so nobody is trapped. **572 questions over the 120 lessons (the ten lessons added on 15 Nov 2026 have questions the assistant wrote itself), from 3 to 8 a lesson, in
+  the recap" link stays, so nobody is trapped. **579 questions over the 122 lessons (the ten lessons added on 15 Nov 2026 have questions the assistant wrote itself), from 3 to 8 a lesson, in
   `src/course/quiz/quiz-a.json` to `quiz-f.json`: the owner asked that the number per lesson come from what
   that lesson teaches, not from a formula, so each lesson was audited (list every distinct thing worth
   remembering, one question per thing, duplicates dropped) and most have 4 to 6** (`{ q, options[4], answer, why, point }`, `point`
@@ -990,13 +990,30 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   for once a MIDI keyboard worked).** `lessons/theory.ts`, chapter "N", listed between "Playing a line" and
   "Impacts": CN.1 Notes, semitones and octaves; CN.2 Intervals: fifths and thirds; CN.3 Major and minor
   chords; CN.4 Scales: major and minor; CN.5 Chords that belong to a scale; CN.6 Inversions; CN.7 A four-chord
-  progression (`chordRun` reads the last twelve notes three at a time); CN.8 Seventh chords; CN.9 Changing key (the Semitone box moves the letter keys to another key). They are checked from what is
+  progression (`chordRun` reads the last twelve notes three at a time); CN.8 Seventh chords; CN.9 Changing key (the Semitone box moves the letter keys to another key); CN.10 and CN.11 read from a staff (see "Sheet music that follows along"). They are checked from what is
   played, not from knobs: the notes sounding together (`s.held`, compared as steps above the lowest, or as
   pitch classes) and the notes played in order (`s.sequence`, new on the snapshot and the tracker: every
   note-on since the step began, the last 64). Everything can be done on the letter keys A to K (C to C);
   the mouse or a MIDI keyboard works too, in any octave and from any starting note that fits. Run through
   in a browser for the first lesson (single notes, two in a row, two held together). **Holding three
   letter keys at once depends on the computer keyboard; most allow it, some do not.**
+- **Sheet music that follows along (15 Nov 2026; the owner asked for the theory lessons to "play like sheet
+  music but be interactive", not like a rhythm game).** `src/course/score.ts`: a `Score` is a row of items
+  (`notes`: one MIDI number or several for a chord; `beats`); `staffPlace` puts a note on the treble staff
+  (steps above the bottom line E, sharp or not, its name, and the letter key that plays it), `ledgerLines`,
+  `timing`, and `follow(score, sequence)`: how far the played notes have got. **Following goes by note name
+  (any octave), waits on a wrong note without penalty, takes a chord's notes in any order, and does not
+  judge timing.** `src/ui/Score.tsx` (`ScoreView`) draws the staff by code (the clef is the Unicode
+  character, in whatever music or symbol font the computer has): played notes green, the next one ringed,
+  red while the last note was wrong, note names and letter keys underneath (a switch, remembered), and
+  "Listen", which plays the page at the synth's tempo through `engine.playAt` with a marker moving along.
+  A lesson step shows one by carrying `score`. Lessons CN.10 "Reading notes on the staff" and CN.11 "Play
+  a tune from the page" (the opening of Beethoven's "Ode to Joy", then four chords), and the two scale
+  steps of CN.4 show their scales as notation. Checked in a browser: notes turned green as played, a wrong
+  note left the ring where it was, the step passed at the end, a chord played on three letter keys moved
+  the page on, and Listen moved the marker. Not built: bass clef, key signatures, rests, flats (black keys
+  are always written as sharps), notes shorter than a beat, more than one line of music, and any check of
+  rhythm.
 - **Flanger and phaser (15 Nov 2026).** Two more effects in `fx.ts`, between chorus and delay in the default
   order (eight effects now). Flanger: a delay resting at 5 ms and swinging up to 2 ms either way (it must
   stay above one 128-sample block because it sits in a feedback loop), with feedback and mix; the dry sound

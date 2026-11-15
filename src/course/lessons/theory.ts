@@ -1,6 +1,7 @@
 // "Notes and chords": the first lessons of the theory track (track I in docs/CURRICULUM.md). They are
 // checked from what is played: the notes sounding together (`held`) and the notes played in order
 // (`sequence`). Everything can be done on the letter keys A to K, which run from one C to the next.
+import { melody, played, type Score } from "../score";
 import type { DemoTone, PlayableLesson, Snapshot } from "../types";
 
 const SOFT = { shape: "triangle", envA: 5, envD: 900, envS: 55, envR: 350 } as const;
@@ -24,6 +25,9 @@ const chordRun = (s: Snapshot, chords: number[][]) => {
 };
 const tone = (note: number, at: number, seconds = 0.5): DemoTone => ({ patch: { ...SOFT }, note, at, seconds });
 const chord = (notes: number[], at: number, seconds = 1.2): DemoTone[] => notes.map((n) => tone(n, at, seconds));
+const ODE_2: Score = { title: "Ode to Joy, second phrase", items: [...[60, 60, 62, 64, 64, 62].map((n) => ({ notes: [n], beats: 1 })), { notes: [62], beats: 2 }] };
+const ODE: Score = { title: "Ode to Joy", items: [...[64, 64, 65, 67, 67, 65, 64, 62].map((n) => ({ notes: [n], beats: 1 })), ...ODE_2.items] };
+const CHORDS: Score = { title: "Four chords", items: [[60, 64, 67], [60, 65, 69], [62, 67, 71], [60, 64, 67]].map((notes) => ({ notes, beats: 2 })) };
 const MAJOR = [0, 2, 4, 5, 7, 9, 11, 12], MINOR = [0, 2, 3, 5, 7, 8, 10, 12];
 
 export const THEORY_CHAPTER: PlayableLesson[] = [
@@ -89,9 +93,9 @@ export const THEORY_CHAPTER: PlayableLesson[] = [
       "The natural minor scale uses a different pattern: tone, semitone, tone, tone, semitone, tone, tone. Three of its notes sit a semitone lower than in the major scale, and those three give it its darker colour.",
     ],
     steps: [
-      { do: "Play the white keys upward from C to C, one at a time: A S D F G H J K.", show: [...K], hear: "The familiar “do re mi” climb. It sounds finished when it reaches the top C.", target: "Eight notes in a row following the major scale upward", check: (s) => ran(s, MAJOR) },
+      { do: "Play the white keys upward from C to C, one at a time: A S D F G H J K.", show: [...K], hear: "The familiar “do re mi” climb. It sounds finished when it reaches the top C.", target: "Eight notes in a row following the major scale upward", check: (s) => ran(s, MAJOR), score: melody(MAJOR.map((n) => 60 + n), 1, "C major, going up") },
       { do: "Play it back down: K J H G F D S A.", show: [...K], hear: "The same notes falling home.", target: "Eight notes in a row following the major scale downward", check: (s) => ran(s, [...MAJOR].reverse().map((n) => n - 12)) },
-      { do: "Now C minor, upward: A S E F G Y U K. Three of the notes are black keys.", show: [...K], hear: "The same climb with a darker, more serious colour.", target: "Eight notes in a row following the natural minor scale upward", check: (s) => ran(s, MINOR) },
+      { do: "Now C minor, upward: A S E F G Y U K. Three of the notes are black keys.", show: [...K], hear: "The same climb with a darker, more serious colour.", target: "Eight notes in a row following the natural minor scale upward", check: (s) => ran(s, MINOR), score: melody(MINOR.map((n) => 60 + n), 1, "C minor, going up") },
       { do: "Play just the first five notes of C major, then the first five of C minor: A S D F G, then A S E F G.", show: [...K], hear: "Only the third note differs, and it is enough to change the mood: the same note that separates a major chord from a minor one.", target: "The first five notes of the minor scale, played after trying the major", check: (s) => ran(s, MINOR.slice(0, 5)) && s.sequence.length >= 10 },
     ],
     recap: ["A scale is a set of notes chosen by a pattern of tones and semitones.", "The major scale’s pattern is tone, tone, semitone, tone, tone, tone, semitone; from C it is all white keys.", "The natural minor scale lowers three of those notes by a semitone, which darkens it."],
@@ -178,5 +182,38 @@ export const THEORY_CHAPTER: PlayableLesson[] = [
       { do: "Set Semitone back to 0 and Octave to -1, and hold the same chord.", show: [...K, "semitone", "octave"], hear: "C major again, an octave lower: darker and heavier, but the same chord.", target: "Semitone at 0, octave at -1, and a major chord held", check: (s) => s.state.semitone === 0 && s.state.octave === -1 && same(shape(s), [0, 4, 7]) },
     ],
     recap: ["A scale or chord is a pattern, so it can start on any note; the starting note names the key.", "Moving music to another key is transposing: its shape and character stay the same.", "On a synth, shifting the oscillator by semitones puts the white keys in a new key."],
+  },
+  {
+    id: "CN.10", title: "Reading notes on the staff", buildsOn: ["CN.1"], minutes: 8, cardIds: [], initial: { ...SOFT },
+    outcome: "Read notes from a staff and play them: which line or space is which note, and what a sharp sign does.",
+    demo: { caption: "Five notes climbing step by step from middle C, then the same five leaping about.", tones: [...[60, 62, 64, 65, 67].map((n, i) => tone(n, i * 0.4, 0.35)), ...[60, 64, 67, 62, 65].map((n, i) => tone(n, 2.4 + i * 0.4, 0.35))] },
+    idea: [
+      "Sheet music is a graph. Left to right is time; up and down is pitch. The five lines are a ladder: a note sits on a line or in the space between two lines, and each move to the next line or space is one white key. The sign at the far left, the treble clef, fixes which notes the lines stand for.",
+      "With that clef the bottom line is the E above middle C, and the lines going up are E, G, B, D, F. The spaces between them are F, A, C, E. Middle C is too low for the five lines, so it gets a short line of its own underneath. A sharp sign in front of a note means the black key just above it.",
+    ],
+    steps: [
+      { do: "Play the five notes on the page, left to right. They climb one step at a time from middle C.", show: [...K], hear: "C, D, E, F, G: the first five white keys. Each move up the page is one white key up.", target: "The five notes played in order", score: melody([60, 62, 64, 65, 67], 1, "Steps up from middle C"), check: (s) => played(melody([60, 62, 64, 65, 67]), s.sequence) },
+      { do: "Now the notes that sit on the five lines, from the bottom line up.", show: [...K], hear: "E, G, B, D, F. They leap: from one line to the next skips a white key.", target: "The five line notes played in order", score: melody([64, 67, 71, 74, 77], 1, "The lines"), check: (s) => played(melody([64, 67, 71, 74, 77]), s.sequence) },
+      { do: "And the notes in the four spaces, from the bottom up.", show: [...K], hear: "F, A, C, E. Together the lines and spaces cover every white key from E up to F.", target: "The four space notes played in order", score: melody([65, 69, 72, 76], 1, "The spaces"), check: (s) => played(melody([65, 69, 72, 76]), s.sequence) },
+      { do: "Read this one: it leaps up and comes back down.", show: [...K], hear: "The notes of the C major chord, one at a time, up and back: C, E, G, C, G, E, C.", target: "The seven notes played in order", score: melody([60, 64, 67, 72, 67, 64, 60], 1, "Leaps"), check: (s) => played(melody([60, 64, 67, 72, 67, 64, 60]), s.sequence) },
+      { do: "This one has a sharp sign in front of its fourth note. Play it.", show: [...K], hear: "C, D, E, then F sharp, the black key just above F, then G. The sharp makes the climb to G sound eager.", target: "The five notes played in order, with F sharp", score: melody([60, 62, 64, 66, 67], 1, "A sharp"), check: (s) => played(melody([60, 62, 64, 66, 67]), s.sequence) },
+    ],
+    recap: ["On a staff, left to right is time and up and down is pitch; each line or space is one white key.", "In the treble clef the lines are E, G, B, D, F and the spaces F, A, C, E; middle C has a short line of its own below.", "A sharp sign in front of a note means the black key just above it."],
+  },
+  {
+    id: "CN.11", title: "Play a tune from the page", buildsOn: ["CN.10", "CN.3"], minutes: 9, cardIds: [], initial: { ...SOFT },
+    outcome: "Play a well-known tune, and then a row of chords, by reading them from the staff.",
+    demo: { caption: "The opening of Beethoven’s “Ode to Joy”.", tones: [64, 64, 65, 67, 67, 65, 64, 62, 60, 60, 62, 64, 64, 62, 62].map((n, i) => tone(n, i * 0.42, i === 14 ? 0.8 : 0.38)) },
+    idea: [
+      "Reading music is the same small skill repeated: look at the next note, find how far it is from the last one, play it. Most tunes move by steps to the next line or space, with an occasional leap, so you rarely have to work a note out from nothing.",
+      "Notes also show how long they last. A filled note with a stem lasts one beat. A hollow note with a stem lasts two. When notes are stacked one above another, they are played together: a chord.",
+    ],
+    steps: [
+      { do: "Play the first phrase. It moves almost entirely by step. Press Listen first if you want to hear it.", show: [...K], hear: "The start of “Ode to Joy”: up from E to G and back down to D.", target: "The eight notes played in order", score: melody([64, 64, 65, 67, 67, 65, 64, 62], 1, "Ode to Joy, first phrase"), check: (s) => played(melody([64, 64, 65, 67, 67, 65, 64, 62]), s.sequence) },
+      { do: "Play the second phrase. The last note is hollow: it lasts two beats.", show: [...K], hear: "Down to C, back up to E, and settling on D.", target: "The seven notes played in order", score: ODE_2, check: (s) => played(ODE_2, s.sequence) },
+      { do: "Now both phrases in a row.", show: [...K], hear: "The whole opening line of the tune.", target: "All fifteen notes played in order", score: ODE, check: (s) => played(ODE, s.sequence) },
+      { do: "Stacked notes are played together. Read and play these four chords.", show: [...K], hear: "C major, F major, G major, and home to C major. Each is three notes held at once.", target: "The four chords played in order", score: CHORDS, check: (s) => played(CHORDS, s.sequence) },
+    ],
+    recap: ["Reading is finding how far the next note is from the last: mostly steps, sometimes a leap.", "A filled note with a stem lasts one beat; a hollow one with a stem lasts two.", "Notes stacked one above another are played together as a chord."],
   },
 ];

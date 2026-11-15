@@ -1808,6 +1808,8 @@ describe("the lessons added on 15 Nov can each be walked through", () => {
     "C8.4": [[{ arpOn: "on" }, played], [{ arpMode: "down" }, played], [{ arpDiv: "4" }, played], [{ arpOctaves: 2 }, played], [{ arpGate: 25 }, played]],
     "CN.9": [[{}, { sequence: [60, 62, 64, 65, 67, 69, 71, 72] }], [{ semitone: 2 }, { sequence: [60, 62, 64, 65, 67, 69, 71, 72] }], [{ semitone: 7 }, { held: [60, 64, 67] }], [{ semitone: 0, octave: -1 }, { held: [60, 64, 67] }]],
     "C1.12": [[{}, { held: [45] }], [{ table: "pdsquare", position: 100 }, range("position", 0, 100)], [{ table: "tanhsquare", position: 100 }, range("position", 0, 100)], [{ table: "tanhsaw", position: 100 }]],
+    "CN.10": [[{}, { sequence: [60, 62, 64, 65, 67] }], [{}, { sequence: [64, 67, 71, 62, 65] }], [{}, { sequence: [65, 69, 72, 64] }], [{}, { sequence: [60, 64, 67, 72, 67, 64, 60] }], [{}, { sequence: [60, 62, 64, 66, 67] }]],
+    "CN.11": [[{}, { sequence: [64, 64, 65, 67, 67, 65, 64, 62] }], [{}, { sequence: [60, 60, 62, 64, 64, 62, 62] }], [{}, { sequence: [64, 64, 65, 67, 67, 65, 64, 62, 60, 60, 62, 64, 64, 62, 62] }], [{}, { sequence: [60, 64, 67, 65, 60, 69, 67, 62, 71, 64, 60, 67] }]],
     "CT.12": [[{ envS: 0, envD: 220 }, played], [{ envS: 100, envR: 30 }, played], [{ lfo1Dest: "cutoff", lfo1Amount: 60, lfo1Rate: 7 }, { longestHeld: 2.5 }], [{ drive: 60 }, { longestHeld: 2.5 }]],
     "C1.11": [[{ table: "pdsaw" }, { held: [45] }], [{ position: 100 }, range("position", 0, 100)], [{ table: "moogsaw", position: 100 }], [{ position: 0 }], [{ table: "pdpulse", position: 95 }, range("position", 5, 95)], [{ table: "formant", position: 95 }, range("position", 5, 95)]],
     "C6.6": [[{}, { held: [57] }], [{ warpAmount: 50 }], [{ warpAmount: 95 }, range("warpAmount", 5, 95)], [{ warp: "steps", warpAmount: 60 }], [{ warpAmount: 80 }], [{ warp: "flip", warpAmount: 50 }]],
@@ -1861,5 +1863,35 @@ describe("the arpeggiator's rules", () => {
     expect(arpStepSeconds(120, "2")).toBeCloseTo(0.25, 9); expect(arpStepSeconds(120, "4")).toBeCloseTo(0.125, 9); expect(arpStepSeconds(90, "3")).toBeCloseTo(60 / 90 / 3, 9);
     expect(nextArpTime(1.01, 0.25)).toBeCloseTo(1.25, 9); expect(nextArpTime(1.25, 0.25)).toBeCloseTo(1.25, 9);
     expect(INITIAL.arpOn).toBe("off");
+  });
+});
+
+import { follow, ledgerLines, melody, played as scorePlayed, staffPlace, timing } from "../src/course/score";
+describe("sheet music that follows along", () => {
+  it("places notes on the treble staff: the bottom line is E, middle C needs a line of its own, sharps are marked", () => {
+    expect(staffPlace(64)).toMatchObject({ step: 0, sharp: false, name: "E", key: "D" });
+    expect(staffPlace(60)).toMatchObject({ step: -2, name: "C", key: "A" }); expect(ledgerLines(-2)).toEqual([-2]);
+    expect(staffPlace(77).step).toBe(8); expect(ledgerLines(8)).toEqual([]); expect(ledgerLines(4)).toEqual([]);
+    expect(staffPlace(66)).toMatchObject({ step: 1, sharp: true, name: "F♯", key: "T" }); expect(staffPlace(72).key).toBe("K");
+    expect([64, 67, 71, 74, 77].map((n) => staffPlace(n).step)).toEqual([0, 2, 4, 6, 8]);   // the five lines
+    expect([65, 69, 72, 76].map((n) => staffPlace(n).step)).toEqual([1, 3, 5, 7]);          // the four spaces
+    expect(ledgerLines(12)).toEqual([10, 12]);
+  });
+  it("moves on when the right note is played, waits on a wrong one, and counts any octave", () => {
+    const tune = melody([60, 62, 64]);
+    expect(follow(tune, [])).toMatchObject({ at: 0, completed: 0, wrong: false });
+    expect(follow(tune, [60])).toMatchObject({ at: 1, wrong: false });
+    expect(follow(tune, [60, 65])).toMatchObject({ at: 1, wrong: true });      // waits
+    expect(follow(tune, [60, 65, 74])).toMatchObject({ at: 2, wrong: false }); // D an octave up counts
+    expect(follow(tune, [60, 62, 64])).toMatchObject({ at: 0, completed: 1 }); expect(scorePlayed(tune, [60, 62, 64])).toBe(true); expect(scorePlayed(tune, [60, 62])).toBe(false);
+    expect(follow(tune, [60, 62, 64, 60])).toMatchObject({ at: 1, completed: 1 }); // and round again
+  });
+  it("a chord is passed by all its notes, in any order, and a stray note starts the chord again", () => {
+    const chords = { items: [{ notes: [60, 64, 67], beats: 2 }, { notes: [65, 69, 72], beats: 2 }] };
+    expect(follow(chords, [67, 60])).toMatchObject({ at: 0, part: [7, 0] });
+    expect(follow(chords, [67, 60, 64])).toMatchObject({ at: 1, part: [] });
+    expect(follow(chords, [60, 64, 62, 67])).toMatchObject({ at: 0, part: [7] });
+    expect(scorePlayed(chords, [60, 64, 67, 72, 65, 69])).toBe(true);
+    expect(timing(chords)).toEqual({ starts: [0, 2], total: 4 });
   });
 });

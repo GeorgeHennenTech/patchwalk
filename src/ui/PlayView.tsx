@@ -12,6 +12,7 @@ import type { Card } from "../lesson/cards";
 import { macroSlots } from "../synth/macros";
 import { routes } from "../synth/mod";
 import { EAR, type EarKind } from "../course/ear";
+import { ScoreView } from "./Score";
 import { beatHz, destName, INITIAL, noteToHz, PARAMS, SHAPES, type Shape, type SynthState } from "../synth/params";
 import { useSynth, type Synth } from "../synth/useSynth";
 import { AskBox } from "./Answer";
@@ -423,6 +424,7 @@ export function PlayView({ cards, wanted }: { cards: Card[]; wanted?: { id: stri
               <div className="step-do"><span className="tick" aria-hidden>{i < stepIndex ? "✓" : i + 1}</span> {s.do}</div>
               {i === stepIndex && (
                 <div className="step-detail">
+                  {s.score && <ScoreView score={s.score} sequence={snap.sequence} synth={synth} />}
                   <p><strong>You should hear:</strong> {s.hear}</p>
                   <p><Badge kind={passed ? "ok" : "muted"}>{passed ? "done" : "target"}</Badge> {s.target}</p>
                   <button className="primary" disabled={!passed} onClick={next}>{i === lesson.steps.length - 1 ? "Finish the steps" : "Next step"}</button>

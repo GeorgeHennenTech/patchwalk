@@ -1118,5 +1118,55 @@
    "why": "With the second half turned over, the wave repeats twice as often.",
    "point": 2
   }
+ ],
+ "C1.11": [
+  {
+   "q": "What does phase distortion do to a sine?",
+   "options": [
+    "Filters out its highs",
+    "Reads it at an uneven speed",
+    "Adds a second oscillator",
+    "Plays it backwards"
+   ],
+   "answer": 1,
+   "why": "The sine is hurried through part of the cycle and slowed through the rest, which bends its shape.",
+   "point": 0
+  },
+  {
+   "q": "As the reading gets more uneven, what happens to the tone?",
+   "options": [
+    "It gets brighter",
+    "It gets quieter only",
+    "It drops in pitch",
+    "Nothing changes"
+   ],
+   "answer": 0,
+   "why": "A more bent wave has more harmonics, so it sounds brighter, with no filter involved.",
+   "point": 0
+  },
+  {
+   "q": "How did the recorded analogue saw differ from the textbook saw?",
+   "options": [
+    "It was a square",
+    "It had no harmonics",
+    "It was rounder, and rounder still on high notes",
+    "It was louder"
+   ],
+   "answer": 2,
+   "why": "The measured saw had a rounded corner, more so as the notes got higher.",
+   "point": 1
+  },
+  {
+   "q": "In the Phase pulse and Formant tables, what does Position choose?",
+   "options": [
+    "The note's pitch",
+    "The volume",
+    "Which oscillator plays",
+    "How narrow the pulse is, or where the band sits"
+   ],
+   "answer": 3,
+   "why": "Position is where along the table you are: a narrower pulse, or a higher band.",
+   "point": 2
+  }
  ]
 }

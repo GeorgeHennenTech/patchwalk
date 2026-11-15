@@ -1,5 +1,5 @@
-import { noteToHz } from "../../synth/params";
-import type { DemoTone, PlayableLesson, Snapshot } from "../types";
+import { INITIAL, noteToHz, type SynthState } from "../../synth/params";
+import type { DemoTone, MatchRound, PlayableLesson, Snapshot } from "../types";
 import { CHAPTER_1 } from "./chapter1";
 import { CHAPTER_2 } from "./chapter2";
 import { CHAPTER_3 } from "./chapter3";
@@ -153,15 +153,41 @@ const BASE: PlayableLesson[] = [
 ];
 
 /** Every playable lesson, in suggested order. */
-export const LESSONS: PlayableLesson[] = [...BASE, ...CHAPTER_1, ...CHAPTER_2, ...CHAPTER_3, ...CHAPTER_4, ...CHAPTER_5, ...MACRO_CHAPTER, ...CHAPTER_6, ...CHAPTER_7, ...CHAPTER_8, ...IMPACT_CHAPTER];
+/**
+ * A checkpoint that mixes the four by-ear checkpoints before it, so the learner has to work out WHICH part of
+ * the synth is different before fixing it (docs/LEARNING_RESEARCH.md: mixing kinds is what teaches telling
+ * things apart). It borrows rounds from those checkpoints. Each round starts from a clean synth, and shows
+ * the controls of all four parts, not only the ones that matter.
+ */
+function mixedCheckpoint(): PlayableLesson {
+  const round = (id: string, i: number) => [...CHAPTER_1, ...CHAPTER_2, ...CHAPTER_3, ...CHAPTER_4].find((l) => l.id === id)!.rounds![i]!;
+  const picked = [round("C2.C", 1), round("C4.C", 1), round("C1.C", 1), round("C3.C", 1), round("C4.C", 3), round("C2.C", 2), round("C3.C", 2), round("C1.C", 0)];
+  const keys = [...new Set(picked.flatMap((r) => [...Object.keys(r.from), ...Object.keys(r.target)]))] as (keyof SynthState)[];
+  const clean = Object.fromEntries(keys.map((k) => [k, INITIAL[k]])) as Partial<SynthState>;
+  // one control from each part is always on show, plus whatever the round is really about
+  const always: (keyof SynthState)[] = ["voices", "detune", "cutoff", "resonance", "envA", "envS", "lfo1Rate", "lfo1Amount"];
+  const rounds: MatchRound[] = picked.map((r) => ({ ...r, from: { ...clean, ...r.from }, controls: [...new Set([...always, ...(r.controls ?? r.match)])] }));
+  return {
+    id: "CX.1", title: "Mixed checkpoint: which part is it?", buildsOn: ["C1.C", "C2.C", "C3.C", "C4.C"], minutes: 14, cardIds: [],
+    outcome: "Hear a hidden sound and work out which part of the synth makes it different: the oscillators, the filter, an envelope or an LFO.",
+    idea: [
+      "In the checkpoints so far you always knew where to look. Here you do not. Each round hides a sound that differs from yours in one part of the synth, and the controls of all four parts are in front of you.",
+      "Ask in this order. Is the tone itself thicker or thinner? That is the oscillators. Is the top or bottom missing, or is there a whistle? That is the filter. Does it change once over the note? That is an envelope. Does it keep moving in a repeating way? That is an LFO.",
+    ],
+    steps: [], rounds,
+    recap: ["Work out which part is different before touching anything.", "A change that happens once per note is an envelope; one that keeps repeating is an LFO.", "A steady difference in tone is the oscillators or the filter: thickness for one, missing top or bottom for the other."],
+  };
+}
+
+export const LESSONS: PlayableLesson[] = [...BASE, ...CHAPTER_1, ...CHAPTER_2, ...CHAPTER_3, ...CHAPTER_4, mixedCheckpoint(), ...CHAPTER_5, ...MACRO_CHAPTER, ...CHAPTER_6, ...CHAPTER_7, ...CHAPTER_8, ...IMPACT_CHAPTER];
 
 /**
  * Chapter names, by the number in a lesson's id ("C2.5" is in chapter 2). Ids are for code, scripts and
  * plans; the learner sees the chapter name, the lesson's place in it, and its title.
  */
-export const CHAPTERS: Record<string, string> = { "0": "Sound itself", "1": "Oscillators", "2": "Filters", "3": "Envelopes", "4": "LFOs", "5": "Modulation", "5M": "Macros", "6": "Reshaping the wave", "7": "Effects", "8": "Playing a line", "T": "Impacts" };
+export const CHAPTERS: Record<string, string> = { "0": "Sound itself", "1": "Oscillators", "2": "Filters", "3": "Envelopes", "4": "LFOs", "5": "Modulation", "5M": "Macros", "6": "Reshaping the wave", "7": "Effects", "X": "Mixed practice", "8": "Playing a line", "T": "Impacts" };
 /** The order chapters are listed in. (An object's number-like keys sort themselves, which would misplace "5M".) */
-export const CHAPTER_ORDER = ["0", "1", "2", "3", "4", "5", "5M", "6", "7", "8", "T"];
+export const CHAPTER_ORDER = ["0", "1", "2", "3", "4", "X", "5", "5M", "6", "7", "8", "T"];
 export const chapterOf = (lesson: PlayableLesson) => lesson.id.slice(1, lesson.id.indexOf("."));
 /** Where a lesson sits: its chapter's name, its number within the chapter, and how many the chapter has. */
 export function placeOf(lesson: PlayableLesson, lessons: PlayableLesson[] = LESSONS): { chapter: string; number: number; of: number } {

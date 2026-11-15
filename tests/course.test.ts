@@ -626,7 +626,7 @@ import { CHAPTER_5 } from "../src/course/lessons/chapter5";
 describe("chapter 5: routes, direction, and modulating a modulator", () => {
   const st = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
   it("the modulation chapter follows the LFOs and starts from real settings", () => {
-    expect(LESSONS.map((l) => l.id).slice(37, 47)).toEqual(["C5.1", "C5.2", "C5.3", "C5.4", "C5.5", "C5.6", "C5.7", "C5.8", "C5.9", "C5.C"]);
+    expect(LESSONS.map((l) => l.id).slice(38, 48)).toEqual(["C5.1", "C5.2", "C5.3", "C5.4", "C5.5", "C5.6", "C5.7", "C5.8", "C5.9", "C5.C"]);
     for (const l of CHAPTER_5) for (const k of Object.keys(l.initial ?? {})) expect(k in INITIAL, `${l.id}: ${k}`).toBe(true);
   });
   it("an LFO set to one way pushes one side only, like an envelope; both ways is the default", () => {
@@ -682,7 +682,7 @@ describe("macros", () => {
     expect(MACRO_DESTS[0]).toBe("none");
   });
   it("the macro chapter is listed after Modulation, and every recipe wires what it teaches", () => {
-    expect(CHAPTER_ORDER.map((c) => CHAPTERS[c])).toEqual(["Sound itself", "Oscillators", "Filters", "Envelopes", "LFOs", "Modulation", "Macros", "Reshaping the wave", "Effects", "Playing a line", "Impacts"]);
+    expect(CHAPTER_ORDER.map((c) => CHAPTERS[c])).toEqual(["Sound itself", "Oscillators", "Filters", "Envelopes", "LFOs", "Mixed practice", "Modulation", "Macros", "Reshaping the wave", "Effects", "Playing a line", "Impacts"]);
     expect(new Set(LESSONS.map((l) => chapterOf(l))).size).toBe(CHAPTER_ORDER.length);
     expect(MACRO_CHAPTER.map((l) => l.id)).toEqual(["C5M.1", "C5M.2", "C5M.3", "C5M.4", "C5M.5", "C5M.6", "C5M.7", "C5M.8", "C5M.9", "C5M.10", "C5M.11", "C5M.12", "C5M.13", "C5M.14", "C5M.15", "C5M.16", "C5M.C"]);
     for (const l of MACRO_CHAPTER.slice(0, 7)) {
@@ -1468,5 +1468,24 @@ describe("lessons coming back", () => {
     const log = { a: { at: 5 * DAY, had: [] }, b: { at: 0, had: [] }, c: { at: 0, had: [], stage: 3 } };
     expect(dueLessons(log, ["a", "b", "c", "never-quizzed"], 8 * DAY)).toEqual(["b", "a"]);
     expect(dueLessons(log, ["a"], 8 * DAY)).toEqual(["a"]); // b is not in the finished list
+  });
+});
+
+describe("the mixed by-ear checkpoint", () => {
+  const mixed = LESSONS.find((l) => l.id === "CX.1")!;
+  it("draws its rounds from all four earlier checkpoints, never two of the same kind in a row", () => {
+    const kind = (r: (typeof mixed.rounds & object)[number]) => (r.match.some((k) => k.startsWith("lfo")) ? "lfo" : r.match.some((k) => k.startsWith("env")) ? "env" : r.match.some((k) => ["cutoff", "resonance", "filterType", "slope", "drive"].includes(k)) ? "filter" : "osc");
+    const kinds = mixed.rounds!.map(kind);
+    expect(new Set(kinds)).toEqual(new Set(["osc", "filter", "env", "lfo"]));
+    for (let i = 1; i < kinds.length; i++) expect(kinds[i]).not.toBe(kinds[i - 1]);
+  });
+  it("starts every round from a clean synth and shows controls from every part, so the round does not give itself away", () => {
+    const touched = new Set(mixed.rounds!.flatMap((r) => Object.keys(r.from)));
+    for (const r of mixed.rounds!) {
+      for (const k of touched) expect(k in r.from, k).toBe(true); // nothing is left over from the round before
+      for (const k of r.match) expect(r.controls).toContain(k);
+      for (const part of [["voices", "detune"], ["cutoff", "resonance"], ["envA", "envS"], ["lfo1Rate", "lfo1Amount"]]) expect(part.some((k) => r.controls!.includes(k as never))).toBe(true);
+      expect(r.controls!.length).toBeGreaterThan(r.match.length);
+    }
   });
 });

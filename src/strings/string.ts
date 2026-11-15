@@ -137,3 +137,19 @@ function renderOne(s: StringState, note: number, sampleRate: number, seconds: nu
 
 /** The string's shape just after the pluck, for the picture: a straight line up to the pluck point and down again (0..1 along, 0..1 high). */
 export const pluckShape = (s: StringState, x: number) => { const p = clamp(s.pick, 1, 50) / 100; return x <= p ? x / p : (1 - x) / (1 - p); };
+
+/** A hidden string to copy by ear: only brightness, decay time and pluck position differ from the starting settings. */
+export function stringTarget(rand: () => number = Math.random): StringState {
+  const pickOf = <T,>(list: T[]) => list[Math.min(list.length - 1, Math.floor(rand() * list.length))]!;
+  return { ...STRING_INITIAL, bright: pickOf([10, 35, 65, 95]), decay: pickOf([0.5, 1.5, 4, 7]), pick: pickOf([6, 15, 30, 50]) };
+}
+export type Verdict = "matches" | "low" | "high";
+/**
+ * How an attempt compares with the target, one word per control and never the target's numbers.
+ * Brightness within 15 points, decay within half as long again, pluck position within 6 points.
+ */
+export function judgeString(mine: StringState, target: StringState): { bright: Verdict; decay: Verdict; pick: Verdict; all: boolean } {
+  const by = (off: number, slack: number): Verdict => (Math.abs(off) <= slack ? "matches" : off < 0 ? "low" : "high");
+  const bright = by(mine.bright - target.bright, 15), decay = by(Math.log(mine.decay / target.decay), Math.log(1.5) + 1e-9), pick = by(mine.pick - target.pick, 6);
+  return { bright, decay, pick, all: bright === "matches" && decay === "matches" && pick === "matches" && mine.exciter === target.exciter };
+}

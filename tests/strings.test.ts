@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { noteToHz } from "../src/synth/params";
-import { excitation, loopFor, pairBeatHz, lossGain, lossWeight, pluckHarmonics, pluckShape, renderString, STRING_INITIAL, tripGain, type StringState } from "../src/strings/string";
+import { excitation, judgeString, stringTarget, loopFor, pairBeatHz, lossGain, lossWeight, pluckHarmonics, pluckShape, renderString, STRING_INITIAL, tripGain, type StringState } from "../src/strings/string";
 
 const SR = 48000;
 const S = (over: Partial<StringState> = {}): StringState => ({ ...STRING_INITIAL, ...over });
@@ -73,5 +73,15 @@ describe("the plucked string", () => {
     const half = 0.5 / beat; // half a beat after the start the two are out of step and nearly cancel
     expect(level(half)).toBeLessThan(level(0.02) * 0.45); expect(level(2 * half)).toBeGreaterThan(level(half) * 1.3);
     expect(Array.from(renderString(S({ pair: 0 }), 57, SR, 0.05))).toEqual(Array.from(renderString(S(), 57, SR, 0.05)));
+  });
+  it("match by ear: the verdict says which way each control is off, and never passes a wrong string", () => {
+    const t = S({ bright: 65, decay: 4, pick: 30 });
+    expect(judgeString(S({ bright: 60, decay: 3.2, pick: 34 }), t)).toEqual({ bright: "matches", decay: "matches", pick: "matches", all: true });
+    expect(judgeString(S({ bright: 20, decay: 9, pick: 30 }), t)).toEqual({ bright: "low", decay: "high", pick: "matches", all: false });
+    expect(judgeString(S({ bright: 95, decay: 1, pick: 50 }), t)).toEqual({ bright: "high", decay: "low", pick: "high", all: false });
+    expect(judgeString(S({ bright: 65, decay: 4, pick: 30, exciter: "noise" }), t).all).toBe(false);
+    const seen = new Set<string>();
+    for (let i = 0; i < 80; i++) { const x = stringTarget(); seen.add(`${x.bright}|${x.decay}|${x.pick}`); expect(x.hard).toBe(STRING_INITIAL.hard); expect(x.pair).toBe(0); expect(judgeString(x, x).all).toBe(true); }
+    expect(seen.size).toBeGreaterThan(20); // plenty of different targets
   });
 });

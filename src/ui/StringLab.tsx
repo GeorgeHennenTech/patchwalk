@@ -3,7 +3,7 @@
 // worked out whole by src/strings/string.ts and then played, so what is drawn is exactly what is heard.
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { noteToHz } from "../synth/params";
-import { EXCITERS, loopFor, pairBeatHz, pluckHarmonics, pluckShape, renderString, STRING_INITIAL, STRING_RANGES, type StringState } from "../strings/string";
+import { EXCITERS, judgeString, loopFor, pairBeatHz, stringTarget, pluckHarmonics, pluckShape, renderString, STRING_INITIAL, STRING_RANGES, type StringState } from "../strings/string";
 
 const KEYS = "awsedftgyhujk"; // one octave of the computer keyboard, from C
 const LOW = 36, HIGH = 72, BLACK = [1, 3, 6, 8, 10];
@@ -35,13 +35,17 @@ export default function StringLab() {
   const out = useRef<GainNode | undefined>(undefined);
   const state = useRef(s); state.current = s;
 
-  const play = useCallback((note: number) => {
-    const now = state.current;
+  const [target, setTarget] = useState<StringState>();
+  const [verdict, setVerdict] = useState<ReturnType<typeof judgeString>>();
+  const [wins, setWins] = useState(0);
+  const play = useCallback((note: number, as?: StringState) => {
+    const now = as ?? state.current;
     if (!ctx.current) { ctx.current = new AudioContext(); out.current = ctx.current.createGain(); out.current.gain.value = 0.7; out.current.connect(ctx.current.destination); }
     const c = ctx.current; void c.resume();
     const seconds = Math.min(9, Math.max(0.6, now.decay * 1.3)), samples = renderString(now, note, c.sampleRate, seconds);
     const buffer = c.createBuffer(1, samples.length, c.sampleRate); buffer.getChannelData(0).set(samples);
     const source = c.createBufferSource(); source.buffer = buffer; source.connect(out.current!); source.start();
+    if (as) return; // the hidden target: play it and leave no trace on screen
     setLast(note); setLit(note); window.setTimeout(() => setLit((n) => (n === note ? undefined : n)), 180);
     const k = seen.current; k.notes.add(note);
     k.bright = [Math.min(k.bright[0], now.bright), Math.max(k.bright[1], now.bright)]; k.decay = [Math.min(k.decay[0], now.decay), Math.max(k.decay[1], now.decay)];
@@ -120,6 +124,28 @@ export default function StringLab() {
         })}
       </div>
       <p className="muted">Click a key, or use the letter keys A to K (W, E, T, Y, U are the black keys). Change a setting, then pluck again: a note already ringing keeps the settings it was plucked with.</p>
+      <section className="exercise strings-match">
+        <h3>Match a string by ear <span className="badge">{wins} matched</span></h3>
+        {!target ? (
+          <><p>A hidden string is set up with its own brightness, decay time and pluck position. Listen to it, then set yours to sound the same. The picture and bars show only your string.</p>
+            <button className="primary" onClick={() => { setTarget(stringTarget()); setVerdict(undefined); setS((old) => ({ ...STRING_INITIAL, exciter: old.exciter === "noise" ? "pluck" : old.exciter })); }}>Give me a string to match</button></>
+        ) : (
+          <><div className="toolbar">
+              <button className="primary" onClick={() => play(45, target)}>Hear the target</button>
+              <button onClick={() => play(45)}>Hear mine</button>
+              <button onClick={() => { const v = judgeString(s, target); setVerdict(v); if (v.all) setWins((w) => w + 1); }}>Check</button>
+              <button className="link" onClick={() => { setTarget(undefined); setVerdict(undefined); }}>Stop</button>
+            </div>
+            {verdict && (verdict.all ? <p role="status"><strong>That matches.</strong> <button className="link" onClick={() => { setTarget(stringTarget()); setVerdict(undefined); }}>Another one</button></p> : (
+              <ul role="status" className="strings-verdict">
+                <li>Brightness: {verdict.bright === "matches" ? "matches" : verdict.bright === "low" ? "yours is too dull" : "yours is too bright"}</li>
+                <li>Decay time: {verdict.decay === "matches" ? "matches" : verdict.decay === "low" ? "yours dies away too soon" : "yours rings too long"}</li>
+                <li>Pluck position: {verdict.pick === "matches" ? "matches" : verdict.pick === "low" ? "yours is too near the bridge" : "yours is too near the middle"}</li>
+              </ul>
+            ))}
+            <p className="muted">Both are played on the same low note. Leave Pick hardness, Listening position and Second string where they are: the target does not change them.</p></>
+        )}
+      </section>
       <section className="exercise strings-tries">
         <h3>Things to try <span className="badge">{done.length} of {TRIES.length}</span></h3>
         <ol>{TRIES.map((t) => <li key={t.id} className={done.includes(t.id) ? "done" : ""}><strong>{done.includes(t.id) ? "✓ " : ""}{t.say}</strong> <span>{t.hear}</span></li>)}</ol>

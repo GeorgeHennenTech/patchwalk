@@ -977,3 +977,5 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 .strings-source { margin-top: 16px; border: 2px dashed var(--accent); border-radius: 12px; padding: 12px 16px; max-width: 80ch; }
 .strings-source h3 { margin: 0 0 6px; font-size: 15px; }
 .strings-source p { margin: 0 0 8px; line-height: 1.55; font-size: 14.5px; }
+.strings-verdict { margin: 8px 0; padding-left: 1.2rem; display: grid; gap: 4px; }
+.strings-match { margin-bottom: 14px; }

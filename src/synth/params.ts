@@ -22,7 +22,8 @@ export const FAST_DESTS = ["none", "cutoff", "fine", "bFine", "aLevelDb", "bLeve
 /** Every destination, fast ones first. Filled in below, once the knobs themselves are defined. */
 export const MOD_DESTS: string[] = [...FAST_DESTS];
 /** Ways of reshaping oscillator A's wave by reading it at an uneven speed. "none" leaves it alone. */
-export const WARPS = ["none", "bend", "mirror", "sync", "pd"] as const;
+export const WARPS = ["none", "bend", "mirror", "sync", "pd", "flip", "steps", "fold"] as const;
+const WARP_NAMES = { none: "Off", bend: "Bend", mirror: "Mirror", sync: "Sync", pd: "Squeeze", flip: "Flip", steps: "Steps", fold: "Fold" };
 export type Warp = (typeof WARPS)[number];
 const WAYS = ["both", "up"] as const;
 /** How an envelope falls during its decay and release: at an even rate, easing off, or dropping fast then lingering. */
@@ -266,7 +267,7 @@ const BASE_PARAMS: Record<string, ParamSpec> = {
   randomPhase: { id: "randomPhase", label: "Random phase", group: "Oscillator A", kind: "range", min: 0, max: 100, step: 5, unit: "%" },
   freeHz: { id: "freeHz", label: "Frequency", group: "Oscillator A", kind: "range", min: 55, max: 1760, step: 1, log: true, unit: "Hz" },
   aLevelDb: { id: "aLevelDb", label: "A level", group: "Oscillator A", kind: "range", min: -48, max: 0, step: 1, unit: "dB" },
-  warp: { id: "warp", label: "Warp", group: "Oscillator A", kind: "menu", choices: WARPS, names: { none: "Off", bend: "Bend", mirror: "Mirror", sync: "Sync", pd: "Squeeze" } },
+  warp: { id: "warp", label: "Warp", group: "Oscillator A", kind: "menu", choices: WARPS, names: WARP_NAMES },
   warpAmount: { id: "warpAmount", label: "Warp amount", group: "Oscillator A", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
   fmAmount: { id: "fmAmount", label: "FM from B", group: "Oscillator A", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
   ringAmount: { id: "ringAmount", label: "Ring from B", group: "Oscillator A", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
@@ -279,7 +280,7 @@ const BASE_PARAMS: Record<string, ParamSpec> = {
   bSemitone: { id: "bSemitone", label: "B semitone", group: "Oscillator B", kind: "range", min: -12, max: 12, step: 1, unit: "st" },
   bTable: { id: "bTable", label: "B wavetable", group: "Oscillator B", kind: "choice", choices: TABLES, names: { none: "Off", basic: "Basic morph", bright: "Bright sweep", vowel: "Vowel" } },
   bPosition: { id: "bPosition", label: "B position", group: "Oscillator B", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
-  bWarp: { id: "bWarp", label: "B warp", group: "Oscillator B", kind: "menu", choices: WARPS, names: { none: "Off", bend: "Bend", mirror: "Mirror", sync: "Sync", pd: "Squeeze" } },
+  bWarp: { id: "bWarp", label: "B warp", group: "Oscillator B", kind: "menu", choices: WARPS, names: WARP_NAMES },
   bWarpAmount: { id: "bWarpAmount", label: "B warp amount", group: "Oscillator B", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
   bVoices: { id: "bVoices", label: "B voices", group: "Oscillator B", kind: "range", min: 1, max: 7, step: 1, unit: "" },
   bDetune: { id: "bDetune", label: "B detune", group: "Oscillator B", kind: "range", min: 0, max: 100, step: 1, unit: "cents" },
@@ -529,7 +530,25 @@ export function warpPhase(mode: Warp, amount: number, p: number): number {
     case "mirror": { const turn = 1 - a / 2; return p <= turn ? p / turn : (1 - p) / (1 - turn); }
     case "sync": { const x = p * (1 + (SYNC_MAX - 1) * a); return x - Math.floor(x); }
     case "pd": { const knee = 0.5 - 0.45 * a; return p < knee ? (0.5 * p) / knee : 0.5 + (0.5 * (p - knee)) / (1 - knee); }
+    case "steps": { const n = stepCount(amount); return a <= 0 ? p : Math.floor(p * n) / n; }
+    case "flip": case "fold": return p; // these two change the wave's height, not where it is read: see warpValue
   }
+}
+/** Steps: how many flat steps one cycle is cut into, from 64 (close to smooth) down to 2. */
+export const stepCount = (amount: number) => Math.max(2, Math.round(64 / 2 ** ((Math.min(100, Math.max(0, amount)) / 100) * 5)));
+/** Fold: how many times the wave is turned up before the part past the top is folded back (1 to 5 times). */
+export const foldGain = (amount: number) => 1 + (Math.min(100, Math.max(0, amount)) / 100) * 4;
+/**
+ * The second half of warp: what happens to the wave's height `y` (from -1 to 1 of its own peak) at point `p`
+ * of the cycle. Only two modes use it.
+ * - flip: the end of the cycle is turned upside down; the amount is how much of the cycle, counted from the end.
+ * - fold: the wave is turned up, and whatever passes the top is folded back down (and the same at the bottom).
+ */
+export function warpValue(mode: Warp, amount: number, p: number, y: number): number {
+  const a = Math.min(100, Math.max(0, amount)) / 100;
+  if (mode === "flip") return p >= 1 - a ? -y : y;
+  if (mode === "fold") { const x = (y * foldGain(amount) + 1) / 4, t = x - Math.floor(x); return 1 - 4 * Math.abs(t - 0.5); }
+  return y;
 }
 
 /** A wave as harmonics with both parts: `sin` alone describes the unwarped shapes; warping adds `cos`. */
@@ -551,9 +570,13 @@ export function spectrumA(state: Pick<SynthState, "shape" | "table" | "position"
   const base = new Float32Array(CYCLE + 1);
   for (let i = 0; i <= CYCLE; i++) { let y = 0; for (let n = 1; n < h.length; n++) if (h[n]) y += h[n]! * Math.sin((2 * Math.PI * n * i) / CYCLE); base[i] = y; }
   const warped = new Float32Array(CYCLE);
+  const heights = state.warp === "flip" || state.warp === "fold";
+  let peak = 1e-9;
+  if (heights) for (let i = 0; i < CYCLE; i++) peak = Math.max(peak, Math.abs(base[i]!));
   for (let i = 0; i < CYCLE; i++) {
     const at = Math.min(1, Math.max(0, warpPhase(state.warp, amount, i / CYCLE))) * CYCLE, k = Math.min(CYCLE - 1, Math.floor(at));
-    warped[i] = base[k]! + (base[k + 1]! - base[k]!) * (at - k);
+    const y = base[k]! + (base[k + 1]! - base[k]!) * (at - k);
+    warped[i] = heights ? warpValue(state.warp, amount, i / CYCLE, y / peak) * peak : y;
   }
   const sin = new Float32Array(h.length), cos = new Float32Array(h.length);
   for (let n = 1; n < h.length; n++) {

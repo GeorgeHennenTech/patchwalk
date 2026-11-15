@@ -815,7 +815,7 @@ describe("LFO tempo sync, start mode and drawn shapes", () => {
 });
 
 import { CHAPTER_6 } from "../src/course/lessons/chapter6";
-import { fmIndex, MOD_DESTS, spectrumA, warpPhase, WARPS } from "../src/synth/params";
+import { fmIndex, foldGain, MOD_DESTS, spectrumA, stepCount, warpPhase, warpValue, WARPS } from "../src/synth/params";
 describe("warp, FM and ring modulation", () => {
   const power = (s: Partial<SynthState>) => { const sp = spectrumA({ ...INITIAL, ...s }); return Array.from(sp.sin, (x, n) => x * x + sp.cos[n]! ** 2); };
   it("every warp mode leaves the wave alone at an amount of zero and stays inside the cycle", () => {
@@ -1603,5 +1603,31 @@ describe("second filter, and the peak and shelf types", () => {
     expect(filterResponseDb(s, 15000, null)).toBeGreaterThan(-1.5); // the high-pass's part
     expect(filterResponseDb(s, 900, null)).toBeLessThan(-15);       // the hole between them
     expect(filterResponseDb({ ...s, filterRoute: "series" }, 900, null)).toBeLessThan(-35);
+  });
+});
+
+describe("warp: flip, steps and fold", () => {
+  const sine = { shape: "sine", table: "none", position: 0 } as const;
+  const level = (sp: { sin: Float32Array; cos: Float32Array }, n: number) => Math.hypot(sp.sin[n]!, sp.cos[n]!);
+  it("at zero none of them changes the wave", () => {
+    for (const warp of ["flip", "steps", "fold"] as const) { const sp = spectrumA({ ...sine, warp, warpAmount: 0 }); expect(level(sp, 1)).toBeCloseTo(1, 6); expect(level(sp, 2)).toBeCloseTo(0, 6); }
+  });
+  it("flip turns the end of the cycle upside down: half way, a sine becomes a rectified sine with no first harmonic", () => {
+    const sp = spectrumA({ ...sine, warp: "flip", warpAmount: 50 });
+    expect(level(sp, 1)).toBeLessThan(0.01); expect(level(sp, 2)).toBeGreaterThan(0.3);
+    const whole = spectrumA({ ...sine, warp: "flip", warpAmount: 100 }); // the whole wave upside down: same tone
+    expect(level(whole, 1)).toBeCloseTo(1, 3); expect(level(whole, 2)).toBeLessThan(0.01);
+  });
+  it("steps cuts the cycle into fewer and fewer flat steps", () => {
+    expect([0, 20, 60, 100].map(stepCount)).toEqual([64, 32, 8, 2]);
+    expect(warpPhase("steps", 100, 0.3)).toBe(0); expect(warpPhase("steps", 100, 0.7)).toBe(0.5);
+    const sp = spectrumA({ ...sine, warp: "steps", warpAmount: 60 }); // eight steps: harmonics appear either side of 8
+    expect(level(sp, 7)).toBeGreaterThan(0.1); expect(level(sp, 9)).toBeGreaterThan(0.08); expect(level(sp, 4)).toBeLessThan(0.01);
+  });
+  it("fold adds odd harmonics to a sine and keeps the wave inside its own peak", () => {
+    const sp = spectrumA({ ...sine, warp: "fold", warpAmount: 50 });
+    expect(level(sp, 3)).toBeGreaterThan(0.2); expect(level(sp, 2)).toBeLessThan(0.01);
+    for (const y of [-1, -0.4, 0, 0.3, 1]) expect(Math.abs(warpValue("fold", 100, 0, y))).toBeLessThanOrEqual(1);
+    expect(warpValue("fold", 0, 0, 0.3)).toBeCloseTo(0.3, 9); expect(foldGain(100)).toBe(5);
   });
 });

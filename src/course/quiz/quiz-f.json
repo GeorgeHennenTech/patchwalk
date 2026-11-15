@@ -25,6 +25,18 @@
       "point": 1
     },
     {
+      "q": "Mono, Legato off, slow Attack. You play overlapping notes. What do you hear?",
+      "options": [
+        "Every note swells in from quiet",
+        "One unbroken note with no new swell",
+        "Only the first note swells in",
+        "Two notes swelling in together"
+      ],
+      "answer": 0,
+      "why": "Without legato, each new key starts the envelope again, even when the keys overlap.",
+      "point": 2
+    },
+    {
       "q": "Attack is slow and Legato is on. What do overlapped notes do?",
       "options": [
         "Swell in from quiet every time",
@@ -75,6 +87,18 @@
       "point": 0
     },
     {
+      "q": "Glide is about 1 second. You play a low key, then hold one far above. What do you hear?",
+      "options": [
+        "A long, even climb that stops on the note",
+        "A quick scoop, then the note at once",
+        "A climb that carries on past the note",
+        "The high note at once, with no slide"
+      ],
+      "answer": 0,
+      "why": "Glide slides the pitch from the previous note over the set time, and a long time gives a long climb.",
+      "point": 0
+    },
+    {
       "q": "The glide time stays the same. How does a wide jump compare with a narrow one?",
       "options": [
         "The wide jump takes longer to arrive",
@@ -85,18 +109,6 @@
       "answer": 3,
       "why": "The time is fixed whatever the distance, so a wide jump has to move faster.",
       "point": 1
-    },
-    {
-      "q": "Glide acts only on overlapped notes. How do you play a clean jump with no slide?",
-      "options": [
-        "Let go of one key before pressing the next",
-        "Press the next key while holding the first",
-        "Choose a key far from the last one",
-        "Hold the new key down for longer"
-      ],
-      "answer": 0,
-      "why": "Only a note pressed while another is still held slides, so separated notes jump cleanly.",
-      "point": 2
     },
     {
       "q": "Glide acts on every note. You play separated low and high keys. What do you hear?",
@@ -111,19 +123,55 @@
       "point": 2
     },
     {
-      "q": "Glide is about 1 second. You play a low key, then hold one far above. What do you hear?",
+      "q": "Glide acts only on overlapped notes. How do you play a clean jump with no slide?",
       "options": [
-        "A long, even climb that stops on the note",
-        "A quick scoop, then the note at once",
-        "A climb that carries on past the note",
-        "The high note at once, with no slide"
+        "Let go of one key before pressing the next",
+        "Press the next key while holding the first",
+        "Choose a key far from the last one",
+        "Hold the new key down for longer"
       ],
       "answer": 0,
-      "why": "Glide slides the pitch from the previous note over the set time, and a long time gives a long climb.",
-      "point": 0
+      "why": "Only a note pressed while another is still held slides, so separated notes jump cleanly.",
+      "point": 2
+    },
+    {
+      "q": "Mono, Legato on, Glide on overlapped notes. What do overlapped notes do?",
+      "options": [
+        "Jump cleanly, and each starts afresh",
+        "Slide in pitch, but each starts afresh",
+        "Jump cleanly, but run together as one",
+        "Slide in pitch and run together as one"
+      ],
+      "answer": 3,
+      "why": "With legato and glide on overlapped notes, overlapped notes slide and run together while separated ones start afresh on their pitch.",
+      "point": 2
     }
   ],
   "C8.3": [
+    {
+      "q": "What do the two wheels let you do that envelopes and LFOs do not?",
+      "options": [
+        "Move the sound by hand while a note sounds",
+        "Move the sound by themselves on every note",
+        "Change the sound only before a note starts",
+        "Play more than one note at a time"
+      ],
+      "answer": 0,
+      "why": "Envelopes and LFOs move a sound by themselves, while the wheels let you move it by hand as a note sounds.",
+      "point": 1
+    },
+    {
+      "q": "You drag the Bend wheel to the top, then let go. What does the pitch do?",
+      "options": [
+        "It stays up where you left it",
+        "It snaps back to the note",
+        "It falls the same distance below the note",
+        "It carries on rising by itself"
+      ],
+      "answer": 1,
+      "why": "The bend wheel moves pitch by hand and springs back to the middle when you let go.",
+      "point": 0
+    },
     {
       "q": "Which setting makes the same push of the bend wheel travel further in pitch?",
       "options": [
@@ -135,6 +183,30 @@
       "answer": 2,
       "why": "Bend range says how many semitones the bend wheel reaches at either end.",
       "point": 0
+    },
+    {
+      "q": "You raise the mod wheel halfway and take your hand away. What does the wheel do?",
+      "options": [
+        "Drops back to the bottom",
+        "Stays where you left it",
+        "Springs back to the middle",
+        "Carries on up to the top"
+      ],
+      "answer": 1,
+      "why": "The bend wheel springs back, while the mod wheel stays where you leave it.",
+      "point": 1
+    },
+    {
+      "q": "You raise the mod wheel on a held note and nothing at all changes. What is the likely reason?",
+      "options": [
+        "Bend range is set too low",
+        "It works only between notes",
+        "It has sprung back to the middle",
+        "It has not been sent anywhere yet"
+      ],
+      "answer": 3,
+      "why": "The mod wheel is a source, so it does nothing until it is sent somewhere.",
+      "point": 1
     },
     {
       "q": "The mod wheel is sent to filter cutoff but sits at the bottom. What do you hear?",
@@ -159,43 +231,19 @@
       "answer": 3,
       "why": "Sent to another connection's amount, the wheel fades movement such as vibrato in and out.",
       "point": 2
-    },
-    {
-      "q": "You drag the Bend wheel to the top, then let go. What does the pitch do?",
-      "options": [
-        "It stays up where you left it",
-        "It snaps back to the note",
-        "It falls the same distance below the note",
-        "It carries on rising by itself"
-      ],
-      "answer": 1,
-      "why": "The bend wheel moves pitch by hand and springs back to the middle when you let go.",
-      "point": 0
-    },
-    {
-      "q": "You want to open the filter by hand while a note sounds. What do you set up?",
-      "options": [
-        "Send the Mod wheel to Filter cutoff and raise it",
-        "Push the Bend wheel to the top and hold it",
-        "Set Bend range to 12 and push Bend up",
-        "Send the Mod wheel to LFO 1 amount and raise it"
-      ],
-      "answer": 0,
-      "why": "The mod wheel is a source, so sent to Filter cutoff it opens the filter as your hand raises it.",
-      "point": 1
     }
   ],
   "CT.1": [
     {
-      "q": "With Sustain at 0 and a short Decay, why does the Attack setting matter more?",
+      "q": "You change only Envelope 1's Attack. Which part of the hit are you shaping?",
       "options": [
-        "The body gets louder than the start",
-        "The start is most of what there is",
-        "The tail covers up the start",
-        "The note no longer has a start"
+        "The body",
+        "The tail",
+        "The pitch",
+        "The start"
       ],
-      "answer": 1,
-      "why": "A hit has a start, a body and a tail, and with a short body the start is most of the sound.",
+      "answer": 3,
+      "why": "A hit has a start, a body and a tail, and Attack is the start.",
       "point": 0
     },
     {
@@ -235,19 +283,31 @@
       "point": 2
     },
     {
-      "q": "You change only Envelope 1's Attack. Which part of the hit are you shaping?",
+      "q": "With Sustain at 0 and a short Decay, why does the Attack setting matter more?",
       "options": [
-        "The body",
-        "The tail",
-        "The pitch",
-        "The start"
+        "The body gets louder than the start",
+        "The start is most of what there is",
+        "The tail covers up the start",
+        "The note no longer has a start"
       ],
-      "answer": 3,
-      "why": "A hit has a start, a body and a tail, and Attack is the start.",
+      "answer": 1,
+      "why": "A hit has a start, a body and a tail, and with a short body the start is most of the sound.",
       "point": 0
     }
   ],
   "CT.2": [
+    {
+      "q": "You strike the low sine before any pitch fall is added. What do you hear?",
+      "options": [
+        "A hard knock, then a low thump",
+        "A swoop down from high up",
+        "A soft thud with no front to it",
+        "A long drum that booms on"
+      ],
+      "answer": 2,
+      "why": "A basic kick needs a fast fall in pitch, and the sine alone is a soft thud with no front.",
+      "point": 0
+    },
     {
       "q": "Why is the pitch fall in a kick not heard as a melody?",
       "options": [
@@ -259,6 +319,30 @@
       "answer": 3,
       "why": "The pitch falls in a few hundredths of a second, so all it leaves is a knock at the front.",
       "point": 0
+    },
+    {
+      "q": "Why is Osc A pitch, wide the destination used for the kick?",
+      "options": [
+        "It makes the body of the drum last longer",
+        "It can move the pitch by as much as four octaves",
+        "It keeps the pitch steady on the key played",
+        "It turns the sine wave into a brighter shape"
+      ],
+      "answer": 1,
+      "why": "Osc A pitch, wide can move the pitch by as much as four octaves, enough to start the drum high.",
+      "point": 1
+    },
+    {
+      "q": "Your kick swoops down like a laser. How do you shrink the swoop to a knock?",
+      "options": [
+        "Lengthen Envelope 1's Decay to about 600 ms",
+        "Shorten Envelope 2's Decay and set its Fall to Sharp",
+        "Turn Envelope 2's Amount up further",
+        "Play a lower key so it lands lower"
+      ],
+      "answer": 1,
+      "why": "Envelope 2 on pitch makes the knock, and a short, sharp fall turns the swoop into one.",
+      "point": 1
     },
     {
       "q": "The knock of your kick is right, but it should boom for longer. What do you change?",
@@ -283,30 +367,6 @@
       "answer": 0,
       "why": "The key you play is the pitch the drum settles on, so each key is a different tuning.",
       "point": 2
-    },
-    {
-      "q": "Your kick swoops down like a laser. How do you shrink the swoop to a knock?",
-      "options": [
-        "Lengthen Envelope 1's Decay to about 600 ms",
-        "Shorten Envelope 2's Decay and set its Fall to Sharp",
-        "Turn Envelope 2's Amount up further",
-        "Play a lower key so it lands lower"
-      ],
-      "answer": 1,
-      "why": "Envelope 2 on pitch makes the knock, and a short, sharp fall turns the swoop into one.",
-      "point": 1
-    },
-    {
-      "q": "You strike the low sine before any pitch fall is added. What do you hear?",
-      "options": [
-        "A hard knock, then a low thump",
-        "A swoop down from high up",
-        "A soft thud with no front to it",
-        "A long drum that booms on"
-      ],
-      "answer": 2,
-      "why": "A basic kick needs a fast fall in pitch, and the sine alone is a soft thud with no front.",
-      "point": 0
     }
   ],
   "CT.3": [
@@ -321,6 +381,18 @@
       "answer": 1,
       "why": "Amount is how far the pitch falls, and Envelope 2's decay is how fast it comes down.",
       "point": 0
+    },
+    {
+      "q": "Your kick's front is a hard knock and you want a soft, round thud. What do you turn?",
+      "options": [
+        "Envelope 2's Amount, down",
+        "Envelope 2's Amount, up",
+        "Envelope 2's Decay, up",
+        "The level of the note, down"
+      ],
+      "answer": 0,
+      "why": "Near and fast is a soft thud, so a smaller Amount softens the front.",
+      "point": 1
     },
     {
       "q": "Why does a large, quick fall sound like a hard knock?",
@@ -345,18 +417,6 @@
       "answer": 2,
       "why": "A slow fall stops being a knock and is heard as a falling pitch: a zap.",
       "point": 2
-    },
-    {
-      "q": "Your kick's front is a hard knock and you want a soft, round thud. What do you turn?",
-      "options": [
-        "Envelope 2's Amount, down",
-        "Envelope 2's Amount, up",
-        "Envelope 2's Decay, up",
-        "The level of the note, down"
-      ],
-      "answer": 0,
-      "why": "Near and fast is a soft thud, so a smaller Amount softens the front.",
-      "point": 1
     },
     {
       "q": "You take Envelope 2's Decay down to about 10 ms. What happens to the front of the kick?",
@@ -385,6 +445,30 @@
       "point": 0
     },
     {
+      "q": "Where is a sub drop usually placed?",
+      "options": [
+        "On every beat, in place of the kick",
+        "At the very end of each bass note",
+        "Under a big hit at the start of a section",
+        "Above the melody, high up in pitch"
+      ],
+      "answer": 2,
+      "why": "A sub drop is a slow fall on a low tone, usually placed under a big hit at the start of a section.",
+      "point": 0
+    },
+    {
+      "q": "Envelope 2 is sent to pitch but is still short. You hold a low key. What do you hear?",
+      "options": [
+        "A slide down for as long as it sounds",
+        "A quick dip at the start of the note",
+        "A slow climb up to the note",
+        "A steady pitch with no dip at all"
+      ],
+      "answer": 1,
+      "why": "A sub drop needs a slow fall, and a short Envelope 2 gives only a quick dip at the start.",
+      "point": 0
+    },
+    {
       "q": "You want a sub drop to end on a lower pitch. What do you do?",
       "options": [
         "Turn the Amount up",
@@ -394,6 +478,18 @@
       ],
       "answer": 3,
       "why": "The key you play is always where the drop lands, and the amount only sets how far above it starts.",
+      "point": 1
+    },
+    {
+      "q": "You want a sub drop to start from higher above the note it lands on. What do you change?",
+      "options": [
+        "Turn Envelope 2's Amount up",
+        "Make Envelope 2's Decay longer",
+        "Set the Fall to Straight",
+        "Hold the key down for longer"
+      ],
+      "answer": 0,
+      "why": "The amount sets how far above the landing note the drop starts.",
       "point": 1
     },
     {
@@ -407,18 +503,6 @@
       "answer": 1,
       "why": "A straight fall moves evenly, while an eased fall drops fast and then lingers low.",
       "point": 2
-    },
-    {
-      "q": "Envelope 2 is sent to pitch but is still short. You hold a low key. What do you hear?",
-      "options": [
-        "A slide down for as long as it sounds",
-        "A quick dip at the start of the note",
-        "A slow climb up to the note",
-        "A steady pitch with no dip at all"
-      ],
-      "answer": 1,
-      "why": "A sub drop needs a slow fall, and a short Envelope 2 gives only a quick dip at the start.",
-      "point": 0
     },
     {
       "q": "You watch the scope while a sub drop slides down. What do the waves do?",
@@ -447,6 +531,18 @@
       "point": 0
     },
     {
+      "q": "You stretch Envelope 2's Decay on the filter to about 400 ms. What does each note do?",
+      "options": [
+        "Snaps bright, then closes at once",
+        "Stays dull and even from start to finish",
+        "Says wow as the filter closes slowly",
+        "Leaves silence before the next note"
+      ],
+      "answer": 2,
+      "why": "A fast filter envelope gives a bright front, while a slow one closes gradually and says wow.",
+      "point": 0
+    },
+    {
       "q": "Why give Envelope 1 a strong start that settles to a lower level?",
       "options": [
         "It stops the notes becoming one drone",
@@ -469,30 +565,6 @@
       "answer": 3,
       "why": "A short release leaves a gap of silence before the next note, and the gaps separate the hits.",
       "point": 2
-    },
-    {
-      "q": "You stretch Envelope 2's Decay on the filter to about 400 ms. What does each note do?",
-      "options": [
-        "Snaps bright, then closes at once",
-        "Stays dull and even from start to finish",
-        "Says wow as the filter closes slowly",
-        "Leaves silence before the next note"
-      ],
-      "answer": 2,
-      "why": "A fast filter envelope gives a bright front, while a slow one closes gradually and says wow.",
-      "point": 0
-    },
-    {
-      "q": "Your bass is dull and even from start to finish. What gives each note a bright snap?",
-      "options": [
-        "Envelope 2 sent to Filter cutoff, with a long Decay",
-        "Envelope 1's Sustain set to about 55%",
-        "Release set to about 600 ms",
-        "Envelope 2 sent to Filter cutoff, with a short Decay"
-      ],
-      "answer": 3,
-      "why": "A fast filter envelope opens the filter for an instant and gives every bass note a bright front.",
-      "point": 0
     }
   ],
   "CT.6": [
@@ -509,18 +581,6 @@
       "point": 0
     },
     {
-      "q": "You raise the Amount to about 60% and the Decay to about 120 ms. What happens?",
-      "options": [
-        "Each note simply begins with no front",
-        "Each note has a smaller, tighter knock",
-        "Each note swoops in like a laser",
-        "Each note settles above the key's pitch"
-      ],
-      "answer": 2,
-      "why": "Small and quick is heard as part of the start, while large or slow is heard as a swoop.",
-      "point": 1
-    },
-    {
       "q": "How does the pitch fall on this bass note compare with the one in a kick?",
       "options": [
         "The same method, only much smaller",
@@ -533,16 +593,16 @@
       "point": 2
     },
     {
-      "q": "You turn Envelope 2's Amount down to 0 while playing. What do you hear?",
+      "q": "You raise the Amount to about 60% and the Decay to about 120 ms. What happens?",
       "options": [
-        "The note simply begins, with no front",
-        "The note swoops in like a tom drum",
-        "The note stops sounding altogether",
-        "The note starts low and rises"
+        "Each note simply begins with no front",
+        "Each note has a smaller, tighter knock",
+        "Each note swoops in like a laser",
+        "Each note settles above the key's pitch"
       ],
-      "answer": 0,
-      "why": "A small, fast pitch fall gives a bass note its front, so without it the note simply begins.",
-      "point": 0
+      "answer": 2,
+      "why": "Small and quick is heard as part of the start, while large or slow is heard as a swoop.",
+      "point": 1
     },
     {
       "q": "Your bass notes have started to sound like tom drums. How do you get a defined front back?",

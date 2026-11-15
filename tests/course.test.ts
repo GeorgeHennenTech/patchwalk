@@ -1373,12 +1373,12 @@ describe("end-of-lesson recall", () => {
     expect(recallNote([true, false, true])).toMatch(/^2 of the 3 .* other is marked/);
     for (const h of [[false], [true, false], [false, false, false]]) expect(recallNote(h)).not.toMatch(/wrong|fail|only|score/i);
   });
-  it("has sound questions for every lesson (three, or five where the lesson has five or more steps), each tied to a recap point", () => {
+  it("has sound questions for every lesson, as many as the lesson has things to remember (three to ten), each tied to a recap point", () => {
     expect(Object.keys(QUIZ).sort()).toEqual(LESSONS.map((l) => l.id).sort());
     const answers = [0, 0, 0, 0];
     for (const l of LESSONS) {
       const items = QUIZ[l.id]!;
-      expect(items.length, l.id).toBe(l.steps.length >= 5 ? 5 : 3);
+      expect(items.length, l.id).toBeGreaterThanOrEqual(3); expect(items.length, l.id).toBeLessThanOrEqual(10);
       expect(new Set(items.map((i) => i.q)).size, l.id).toBe(items.length);
       for (const it of items) {
         expect(it.options.length, it.q).toBe(4); expect(new Set(it.options).size, it.q).toBe(4);

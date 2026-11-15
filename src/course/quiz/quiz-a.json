@@ -1,28 +1,28 @@
 {
   "C0.1": [
     {
-      "q": "You want a note to keep sounding while your hands adjust a control. What do you switch on?",
-      "options": [
-        "Start audio",
-        "The volume",
-        "Hold",
-        "The on-screen keyboard"
-      ],
-      "answer": 2,
-      "why": "Hold keeps a note sounding after you let go, so your hands are free.",
-      "point": 1
-    },
-    {
       "q": "You open the synth and click a key, but hear nothing. What is the most likely reason?",
       "options": [
-        "Audio has not been started yet",
         "Hold is switched off",
         "The starting patch is silent",
+        "Audio has not been started yet",
         "Keys only work from the computer keyboard"
       ],
-      "answer": 0,
+      "answer": 2,
       "why": "Audio starts only after you click to start it.",
       "point": 0
+    },
+    {
+      "q": "You want to play the white keys from your computer keyboard. Which row of letters do you use?",
+      "options": [
+        "The row starting A S D F",
+        "The row starting Q W E R",
+        "The row starting Z X C V",
+        "The row of number keys"
+      ],
+      "answer": 0,
+      "why": "The row starting A S D F plays the white keys.",
+      "point": 2
     },
     {
       "q": "What does the starting patch sound like?",
@@ -37,27 +37,27 @@
       "point": 2
     },
     {
-      "q": "Hold is on and a note is sounding. You turn the volume down. What do you hear?",
+      "q": "You want a note to keep sounding while your hands adjust a control. What do you switch on?",
       "options": [
-        "The note dropping in pitch",
-        "The note getting quieter",
-        "The note stopping at once",
-        "The note getting brighter"
+        "Start audio",
+        "Hold",
+        "The volume",
+        "The on-screen keyboard"
       ],
       "answer": 1,
-      "why": "Hold keeps the note sounding, so turning the volume down makes that same note quieter.",
+      "why": "Hold keeps a note sounding after you let go, so your hands are free.",
       "point": 1
     },
     {
-      "q": "You click a key with the mouse, then play a different note from the computer keyboard. What do you hear?",
+      "q": "How is everything in this course learned?",
       "options": [
-        "A brighter tone at the same pitch",
-        "Two tones sounding together",
-        "Nothing until Hold is on",
-        "The same tone at another pitch"
+        "By changing many things between notes",
+        "By changing one thing while a note sounds",
+        "By reading the settings before playing",
+        "By playing as many notes as possible"
       ],
-      "answer": 3,
-      "why": "Both ways of playing give the same plain tone, just at the pitch of the key you choose.",
+      "answer": 1,
+      "why": "Every lesson changes one thing while a note sounds, so you hear what it does.",
       "point": 2
     }
   ],
@@ -66,74 +66,98 @@
       "q": "What does frequency measure?",
       "options": [
         "How big the wave is on the scope",
-        "How many times the wave repeats each second",
         "How long a note has been held",
-        "How many notes are sounding at once"
+        "How many notes are sounding at once",
+        "How many times the wave repeats each second"
       ],
-      "answer": 1,
+      "answer": 3,
       "why": "Frequency is the number of repeats per second, measured in hertz.",
       "point": 0
     },
     {
       "q": "As you drag the frequency up, the waves on the scope get narrower. What do you hear?",
       "options": [
+        "The pitch rising",
         "The pitch falling",
         "The note getting louder",
-        "The note getting quieter",
-        "The pitch rising"
+        "The note getting quieter"
       ],
-      "answer": 3,
+      "answer": 0,
       "why": "More repeats per second sounds higher in pitch.",
       "point": 1
     },
     {
-      "q": "A note is at 440 Hz. What frequency is the same note one octave down?",
-      "options": [
-        "220 Hz",
-        "340 Hz",
-        "430 Hz",
-        "880 Hz"
-      ],
-      "answer": 0,
-      "why": "Each octave is a doubling, so one octave down is half the frequency.",
-      "point": 2
-    },
-    {
       "q": "You switch on Hold, play a note and leave everything alone. What does the wave on the scope do?",
       "options": [
-        "It stands still",
         "It gets narrower",
         "It slowly fades away",
+        "It stands still",
         "It keeps growing taller"
       ],
-      "answer": 0,
+      "answer": 2,
       "why": "A steady tone repeats the same way every time, so its wave stands still on the scope.",
       "point": 0
     },
     {
-      "q": "You set the frequency to 220 Hz, then to 440 Hz. How does the second note compare with the first?",
+      "q": "You halve a note's frequency. What do you hear?",
       "options": [
-        "A different note, slightly higher",
-        "The same note, twice as loud",
+        "The same note, half as loud",
+        "A different note, slightly lower",
         "The same note, one octave higher",
         "The same note, one octave lower"
       ],
-      "answer": 2,
-      "why": "Doubling the frequency gives the same note one octave up.",
+      "answer": 3,
+      "why": "Halving the frequency gives the same note one octave down.",
+      "point": 2
+    },
+    {
+      "q": "A note is at 440 Hz. What frequency is the same note one octave up?",
+      "options": [
+        "450 Hz",
+        "880 Hz",
+        "540 Hz",
+        "660 Hz"
+      ],
+      "answer": 1,
+      "why": "Each octave is a doubling, so one octave up is twice the frequency.",
       "point": 2
     }
   ],
   "C0.3": [
     {
-      "q": "You lower the volume by 6 dB, then by 6 dB again. How do the two steps compare?",
+      "q": "What does the level of a sound describe?",
       "options": [
-        "The second step sounds far bigger",
-        "The second step cannot be heard",
-        "They sound like equal steps in loudness",
-        "Only the first step moves the meter"
+        "How fast the wave repeats",
+        "How bright the sound seems",
+        "How big the wave is",
+        "How long the note lasts"
       ],
       "answer": 2,
+      "why": "Level is how big the wave is, and it is measured in decibels.",
+      "point": 0
+    },
+    {
+      "q": "You lower the volume by 6 dB, then by 6 dB again. How do the two steps compare?",
+      "options": [
+        "They sound like equal steps in loudness",
+        "The second step sounds far bigger",
+        "The second step cannot be heard",
+        "Only the first step moves the meter"
+      ],
+      "answer": 0,
       "why": "Decibels are built on ratios, so equal decibel steps sound like equal steps in loudness.",
+      "point": 0
+    },
+    {
+      "q": "You have lowered the volume by 6 dB twice. What brings back the loudness you started with?",
+      "options": [
+        "Raising the volume by 12 dB",
+        "Raising the volume by 6 dB",
+        "Lowering the volume by 12 dB",
+        "Switching Hold off and on"
+      ],
+      "answer": 0,
+      "why": "Two 6 dB steps down add up to 12 dB, so 12 dB up returns to the start.",
       "point": 0
     },
     {
@@ -141,46 +165,46 @@
       "options": [
         "About 1 dB",
         "About 3 dB",
-        "About 6 dB",
-        "About 10 dB"
+        "About 10 dB",
+        "About 6 dB"
       ],
-      "answer": 3,
+      "answer": 2,
       "why": "As a rule of thumb, roughly 10 dB sounds like twice or half as loud.",
+      "point": 1
+    },
+    {
+      "q": "Two sounds read the same on the meter, but one seems louder. What is the likely reason?",
+      "options": [
+        "It is lower in pitch",
+        "It is brighter or denser",
+        "It has been held longer",
+        "It was played more recently"
+      ],
+      "answer": 1,
+      "why": "The meter shows level but ears judge loudness, and brighter, denser sounds seem louder at the same level.",
       "point": 1
     },
     {
       "q": "Why set a comfortable listening level before working on sounds?",
       "options": [
         "Quiet sounds have fewer harmonics in them",
-        "Loud listening tires your ears and hides detail",
         "The meter only works at low levels",
-        "Loud notes drift higher in pitch"
-      ],
-      "answer": 1,
-      "why": "Loud listening tires your ears and hides detail, so a comfortable level lets you hear more.",
-      "point": 2
-    },
-    {
-      "q": "You have lowered the volume by 6 dB twice. What brings back the loudness you started with?",
-      "options": [
-        "Raising the volume by 6 dB",
-        "Lowering the volume by 12 dB",
-        "Switching Hold off and on",
-        "Raising the volume by 12 dB"
+        "Loud notes drift higher in pitch",
+        "Loud listening tires your ears and hides detail"
       ],
       "answer": 3,
-      "why": "Two 6 dB steps down add up to 12 dB, so 12 dB up returns to the start.",
-      "point": 0
+      "why": "Loud listening tires your ears and hides detail, so a comfortable level lets you hear more.",
+      "point": 2
     },
     {
       "q": "You are setting your device volume for a long session. Which level do you choose?",
       "options": [
         "One that fills the meter",
-        "One you could talk over",
         "One as loud as possible",
+        "One you could talk over",
         "One you can barely hear"
       ],
-      "answer": 1,
+      "answer": 2,
       "why": "A comfortable level is one you could talk over and hear for minutes at a time.",
       "point": 2
     }
@@ -189,24 +213,48 @@
     {
       "q": "Where do a pitched sound's harmonics sit?",
       "options": [
-        "All of them stacked exactly at the pitch you hear",
         "One at the pitch you hear, others at whole multiples",
+        "All of them stacked exactly at the pitch you hear",
         "All of them somewhere below the pitch you hear",
         "Scattered up and down with no pattern at all"
       ],
-      "answer": 1,
+      "answer": 0,
       "why": "A pitched sound is a stack of harmonics: one at the pitch you hear and others at whole multiples of it.",
       "point": 0
     },
     {
+      "q": "How does the spectrum show a sound's harmonics?",
+      "options": [
+        "As peaks, from loud on the left to quiet on the right",
+        "As one wave that stands still across the screen",
+        "As a single bar that rises with the volume",
+        "As peaks, from low on the left to high on the right"
+      ],
+      "answer": 3,
+      "why": "The spectrum shows the harmonics as peaks from left (low) to right (high).",
+      "point": 0
+    },
+    {
+      "q": "The spectrum shows just one peak. What are you hearing?",
+      "options": [
+        "A bright tone, sharp and buzzy",
+        "A pure tone, soft and hollow",
+        "Two notes played together",
+        "A tone that is very loud"
+      ],
+      "answer": 1,
+      "why": "A pure tone is a single harmonic, so it shows one peak and sounds soft and hollow.",
+      "point": 1
+    },
+    {
       "q": "Two sounds have the same pitch and the same loudness, yet sound different. Why?",
       "options": [
-        "They have a different mix of harmonics",
         "One of them repeats faster each second",
+        "They have a different mix of harmonics",
         "One of them has a bigger wave",
         "One of them is held for longer"
       ],
-      "answer": 0,
+      "answer": 1,
       "why": "Which harmonics are present, and how strong each is, gives a sound its colour.",
       "point": 1
     },
@@ -214,16 +262,40 @@
       "q": "What makes a tone sound brighter?",
       "options": [
         "Fewer harmonics overall",
-        "A single peak on the spectrum",
-        "More and stronger high harmonics",
-        "A bigger reading on the meter"
+        "A longer held note",
+        "A bigger reading on the meter",
+        "More and stronger high harmonics"
       ],
-      "answer": 2,
+      "answer": 3,
       "why": "More and stronger high harmonics sound brighter.",
       "point": 2
+    },
+    {
+      "q": "You play a different note and watch the spectrum. What do the peaks do?",
+      "options": [
+        "The whole row moves together",
+        "Only the first peak moves",
+        "They stay exactly where they were",
+        "They merge into one peak"
+      ],
+      "answer": 0,
+      "why": "The harmonics sit at whole multiples of the pitch, so the whole row moves with the note.",
+      "point": 0
     }
   ],
   "C1.1": [
+    {
+      "q": "What decides which harmonics an oscillator's sound contains?",
+      "options": [
+        "The key you press",
+        "How loud it is set",
+        "The shape it repeats",
+        "How long the note is held"
+      ],
+      "answer": 2,
+      "why": "The oscillator repeats a shape, and the shape decides the harmonics.",
+      "point": 0
+    },
     {
       "q": "How does a triangle differ from a sine?",
       "options": [
@@ -251,37 +323,37 @@
     {
       "q": "Why does a saw sound bright and full?",
       "options": [
-        "It contains every harmonic",
         "It contains one harmonic only",
         "It is louder than the others",
+        "It contains every harmonic",
         "It plays an octave higher"
       ],
-      "answer": 0,
+      "answer": 2,
       "why": "A saw has every harmonic, which sounds bright and full.",
       "point": 2
     },
     {
       "q": "You play a low note on Sine through small speakers. What do you notice?",
       "options": [
+        "It is hard to hear",
         "It is bright and buzzy",
         "It is hollow like a clarinet",
-        "It is hard to hear",
         "It is louder than a saw"
       ],
-      "answer": 2,
+      "answer": 0,
       "why": "A sine has a single harmonic, so a low one is hard to hear on small speakers.",
       "point": 0
     },
     {
-      "q": "You hold a note on Square, then switch to Saw. What changes on the spectrum?",
+      "q": "Why do most classic synth sounds start from a saw or a square?",
       "options": [
-        "The missing peaks appear, so every peak is present",
-        "Every other peak drops out, leaving gaps",
-        "All but one of the peaks drop out",
-        "The peaks stay put and only get taller"
+        "There is plenty to carve away later",
+        "They are the quietest shapes to use",
+        "They hold a single harmonic each",
+        "They stay in tune better than others"
       ],
       "answer": 0,
-      "why": "A saw has every harmonic, so the peaks a square leaves out are all there.",
+      "why": "A saw or a square is rich in harmonics, so there is plenty to carve away later.",
       "point": 2
     }
   ],
@@ -299,55 +371,67 @@
       "point": 0
     },
     {
-      "q": "Semitone is set to +7. What do you hear when you press a key?",
+      "q": "How many semitone steps make up one octave?",
       "options": [
-        "A different note, a fifth above the key",
-        "The same note, one octave higher",
-        "The same note, barely changed at all",
-        "The same note, in the bass register"
+        "Seven",
+        "Twelve",
+        "Ten",
+        "A hundred"
       ],
-      "answer": 0,
-      "why": "Semitone moves the oscillator in keyboard steps, so it makes intervals such as a fifth.",
+      "answer": 1,
+      "why": "Semitone moves the oscillator in keyboard steps, twelve to the octave.",
       "point": 1
     },
     {
-      "q": "When does Fine tuning make a difference you can really hear?",
+      "q": "Semitone is set to +7. What do you hear when you press a key?",
       "options": [
-        "Whenever it is moved, as a new note",
-        "Only when Octave is set to 0",
-        "Only on notes in the bass register",
-        "When another sound is playing next to it"
+        "The same note, one octave higher",
+        "The same note, barely changed at all",
+        "The same note, in the bass register",
+        "A different note, a fifth above the key"
       ],
       "answer": 3,
-      "why": "Cents are too small to hear as a new note, so fine tune only matters next to another sound.",
-      "point": 2
-    },
-    {
-      "q": "You hold a middle note and set Octave to -1. What do you hear?",
-      "options": [
-        "A different note, a fifth lower",
-        "The same note, lower",
-        "The same note, barely changed",
-        "The same note, quieter"
-      ],
-      "answer": 1,
-      "why": "Octave moves the oscillator in doublings, so you get the same note in a lower register.",
-      "point": 0
+      "why": "Semitone moves the oscillator in keyboard steps, so it makes intervals such as a fifth.",
+      "point": 1
     },
     {
       "q": "You want the oscillator a few cents off, too little to hear as a new note. Which control do you use?",
       "options": [
         "Octave",
         "Semitone",
-        "Hold",
-        "Fine"
+        "Fine",
+        "Hold"
       ],
-      "answer": 3,
+      "answer": 2,
       "why": "Fine moves the oscillator in cents, which are too small to hear as a new note.",
+      "point": 2
+    },
+    {
+      "q": "When does Fine tuning make a difference you can really hear?",
+      "options": [
+        "When another sound is playing next to it",
+        "Whenever it is moved, on any note",
+        "Only when Octave is set to 0",
+        "Only on notes in the bass register"
+      ],
+      "answer": 0,
+      "why": "Cents are too small to hear as a new note, so fine tune only matters next to another sound.",
       "point": 2
     }
   ],
   "C1.M": [
+    {
+      "q": "In a match-by-ear round, what is your job?",
+      "options": [
+        "Change the target until it matches your own sound",
+        "Play different keys until the two pitches line up",
+        "Turn your sound up until it covers the target",
+        "Change your settings until your sound matches the target"
+      ],
+      "answer": 3,
+      "why": "You hear the target and your own sound on the same key and change your settings until they match.",
+      "point": 1
+    },
     {
       "q": "When matching a hidden sound, in what order should you listen?",
       "options": [
@@ -364,11 +448,11 @@
       "q": "What makes the differences between the target and your sound obvious?",
       "options": [
         "Listening to the target for a long time",
-        "Playing each one on a different key",
         "Switching quickly between the two",
+        "Playing each one on a different key",
         "Turning both of them up louder"
       ],
-      "answer": 2,
+      "answer": 1,
       "why": "Switching quickly between target and yours makes differences obvious.",
       "point": 1
     },
@@ -414,54 +498,78 @@
       "q": "You hold a note and sweep Position from one end to the other. What happens to the pitch?",
       "options": [
         "It rises as the colour gets brighter",
-        "It stays put while the colour changes",
         "It jumps at each new shape",
-        "It falls as the colour gets duller"
+        "It falls as the colour gets duller",
+        "It stays put while the colour changes"
       ],
-      "answer": 1,
+      "answer": 3,
       "why": "Sweeping the position changes the harmonics smoothly while the pitch stays the same.",
       "point": 2
     },
     {
-      "q": "You choose the Basic morph wavetable with Position at the very start. What do you hear?",
-      "options": [
-        "The table's buzziest colour",
-        "A much higher note",
-        "A pure tone",
-        "Nothing until Position moves"
-      ],
-      "answer": 2,
-      "why": "At the start of the Basic morph table the frame is a pure tone.",
-      "point": 1
-    },
-    {
       "q": "You choose a different wavetable and sweep Position again. What do you hear?",
       "options": [
-        "A different kind of colour change",
         "The very same colour change as before",
+        "A different kind of colour change",
         "A change in pitch, not in colour",
         "No change, as Position stops working"
       ],
-      "answer": 0,
+      "answer": 1,
       "why": "Each wavetable is its own row of shapes, so sweeping another one changes the colour in a different way.",
       "point": 0
+    },
+    {
+      "q": "You want the buzziest colour a wavetable has. What do you do?",
+      "options": [
+        "Move the note up by one whole octave",
+        "Sweep Position back and forth very quickly",
+        "Move Position to the table's brightest frame",
+        "Hold the note down for a longer time"
+      ],
+      "answer": 2,
+      "why": "Position chooses the shape, and the brightest frame is the buzziest colour the table has.",
+      "point": 1
     }
   ],
   "C1.4": [
+    {
+      "q": "You switch on Osc B at the same pitch and shape as A. What do you hear?",
+      "options": [
+        "Louder and slightly fuller",
+        "One key playing a fifth",
+        "Quieter and slightly thinner",
+        "The same note in the bass"
+      ],
+      "answer": 0,
+      "why": "A second oscillator at the same pitch thickens the tone, so it sounds louder and slightly fuller.",
+      "point": 0
+    },
+    {
+      "q": "You want Osc B to add brightness on top of A. How do you set it?",
+      "options": [
+        "One octave up",
+        "Semitone at +7",
+        "Same pitch as A",
+        "Switched off"
+      ],
+      "answer": 0,
+      "why": "Set one octave up, the second oscillator adds brightness above the first.",
+      "point": 0
+    },
     {
       "q": "Osc B's semitone is set to +7. What does one key play now?",
       "options": [
         "One note, twice as loud",
         "One note, an octave higher",
-        "Two notes, an octave apart",
-        "Two notes, a fifth apart"
+        "Two notes, a fifth apart",
+        "Two notes, an octave apart"
       ],
-      "answer": 3,
+      "answer": 2,
       "why": "At intervals other than the same pitch or an octave, one key plays two notes.",
       "point": 0
     },
     {
-      "q": "Osc B, an octave up, should be only a quiet sheen above A. What do you adjust?",
+      "q": "Osc B is dominating and you want it only to support Osc A. What do you adjust?",
       "options": [
         "Osc B's semitone",
         "Osc B's level",
@@ -475,89 +583,17 @@
     {
       "q": "Two oscillators play at different levels. Which one sets the character of the sound?",
       "options": [
-        "The louder one",
         "The higher one",
         "The lower one",
-        "Always oscillator A"
-      ],
-      "answer": 0,
-      "why": "The louder oscillator defines the sound.",
-      "point": 2
-    },
-    {
-      "q": "You switch on Osc B at the same pitch and shape as A. What do you hear?",
-      "options": [
-        "One key playing a fifth",
-        "Quieter and slightly thinner",
-        "The same note in the bass",
-        "Louder and slightly fuller"
+        "Always oscillator A",
+        "The louder one"
       ],
       "answer": 3,
-      "why": "A second oscillator at the same pitch thickens the tone, so it sounds louder and slightly fuller.",
-      "point": 0
-    },
-    {
-      "q": "You want Osc B to add brightness on top of A. How do you set it?",
-      "options": [
-        "Semitone at +7",
-        "One octave up",
-        "Same pitch as A",
-        "Switched off"
-      ],
-      "answer": 1,
-      "why": "Set one octave up, the second oscillator adds brightness above the first.",
-      "point": 0
+      "why": "The louder oscillator defines the sound.",
+      "point": 2
     }
   ],
   "C1.5": [
-    {
-      "q": "Two oscillators are tuned a few cents apart. What do you hear?",
-      "options": [
-        "Two clearly separate notes",
-        "A steady, unchanging tone",
-        "A swell that repeats",
-        "A hiss with no pitch"
-      ],
-      "answer": 2,
-      "why": "Two near-equal pitches drift in and out of step, adding then cancelling, which you hear as a repeating swell.",
-      "point": 0
-    },
-    {
-      "q": "What sets how fast the swell repeats?",
-      "options": [
-        "The difference between the two frequencies",
-        "The level of the louder oscillator",
-        "The length of time the note is held",
-        "The wave shape of the two oscillators"
-      ],
-      "answer": 0,
-      "why": "The swell repeats at a rate equal to the difference between the two frequencies.",
-      "point": 1
-    },
-    {
-      "q": "You keep the same gap in cents and play a key an octave higher. What does the beating do?",
-      "options": [
-        "It slows down",
-        "It speeds up",
-        "It stays the same",
-        "It stops"
-      ],
-      "answer": 1,
-      "why": "The same gap in cents beats faster on higher notes.",
-      "point": 2
-    },
-    {
-      "q": "The swell is too slow for you. What do you do with the two Fine controls?",
-      "options": [
-        "Move them further apart",
-        "Move them closer together",
-        "Set them both back to 0",
-        "Move them both up together"
-      ],
-      "answer": 0,
-      "why": "A wider gap between the two pitches makes the beating faster.",
-      "point": 2
-    },
     {
       "q": "Both Fine controls are at 0 and you hold a low note. What do you hear?",
       "options": [
@@ -569,67 +605,139 @@
       "answer": 2,
       "why": "With no gap between the two pitches there is no beating, so the tone is steady.",
       "point": 0
+    },
+    {
+      "q": "On a held note you hear a slow swell that keeps repeating. What is set?",
+      "options": [
+        "Two oscillators tuned a few cents apart",
+        "Two oscillators tuned an octave apart",
+        "Two oscillators at exactly the same pitch",
+        "One oscillator playing on its own"
+      ],
+      "answer": 0,
+      "why": "Two near-equal pitches drift in and out of step, which you hear as a repeating swell.",
+      "point": 0
+    },
+    {
+      "q": "Two tones drift in and out of step. What happens to the sound?",
+      "options": [
+        "In step they cancel, out of step they add",
+        "In step it rises in pitch, out of step it falls",
+        "In step it brightens, out of step it dulls",
+        "In step they add, out of step they cancel"
+      ],
+      "answer": 3,
+      "why": "In step the two tones add and out of step they cancel, which makes the swell.",
+      "point": 0
+    },
+    {
+      "q": "What sets how fast the beating is?",
+      "options": [
+        "The level of the louder oscillator",
+        "The difference between the two frequencies",
+        "The length of time the note is held",
+        "The wave shape of the two oscillators"
+      ],
+      "answer": 1,
+      "why": "The swell repeats at a rate equal to the difference between the two frequencies.",
+      "point": 1
+    },
+    {
+      "q": "The beating is too slow for you. What do you do with the two Fine controls?",
+      "options": [
+        "Move them closer together",
+        "Move them further apart",
+        "Set them both back to 0",
+        "Move them both up together"
+      ],
+      "answer": 1,
+      "why": "A wider gap between the two pitches makes the beating faster.",
+      "point": 2
+    },
+    {
+      "q": "You keep the same gap in cents and play a key an octave higher. What does the beating do?",
+      "options": [
+        "It slows down",
+        "It stays the same",
+        "It stops",
+        "It speeds up"
+      ],
+      "answer": 3,
+      "why": "The same gap in cents beats faster on higher notes.",
+      "point": 2
     }
   ],
   "C1.6": [
+    {
+      "q": "What does unison do inside one oscillator?",
+      "options": [
+        "Stacks several copies, spread slightly in pitch",
+        "Adds one copy, set an octave lower",
+        "Plays several copies, one after another",
+        "Makes a single copy several times louder"
+      ],
+      "answer": 0,
+      "why": "Unison is several copies inside one oscillator, spread slightly in pitch.",
+      "point": 0
+    },
     {
       "q": "You raise Voices to 3 with Detune at zero. Why does the tone hardly change?",
       "options": [
         "The copies cancel each other",
         "Unison needs seven voices to work",
-        "Spread has not been raised yet",
-        "The copies are identical"
+        "The copies are identical",
+        "Spread has not been raised yet"
       ],
-      "answer": 3,
+      "answer": 2,
       "why": "Unison stacks detuned copies, so with no detune the copies are identical and sound much the same.",
-      "point": 0
-    },
-    {
-      "q": "With Detune raised, what does going from 3 voices to 7 do to the sound?",
-      "options": [
-        "Makes it thinner and plainer",
-        "Makes it higher in pitch",
-        "Makes it smoother and thicker",
-        "Makes it sour and out of tune"
-      ],
-      "answer": 2,
-      "why": "With many copies the individual beats average out into a smooth thickness.",
-      "point": 1
-    },
-    {
-      "q": "What happens when Detune is pushed too far?",
-      "options": [
-        "The note sounds sour and its pitch blurs",
-        "The note goes silent as the copies cancel",
-        "The note moves over to one side",
-        "The note drops into the bass register"
-      ],
-      "answer": 0,
-      "why": "Too much detune blurs the pitch, so back off to where it is thick but still in tune.",
-      "point": 2
-    },
-    {
-      "q": "You want the sound to open out to the sides. Which control do you raise?",
-      "options": [
-        "Voices",
-        "Detune",
-        "Spread",
-        "Hold"
-      ],
-      "answer": 2,
-      "why": "Spread places the copies across left and right, which adds width.",
       "point": 0
     },
     {
       "q": "With 3 voices on, you slowly raise Detune from zero. What appears in the sound?",
       "options": [
         "A second, higher note",
-        "A swirl",
         "A gap of silence",
-        "A drop in pitch"
+        "A drop in pitch",
+        "A swirl"
+      ],
+      "answer": 3,
+      "why": "Detune spreads the copies slightly in pitch, and you hear that as a swirl.",
+      "point": 0
+    },
+    {
+      "q": "With Detune raised, what does going from 3 voices to 7 do to the sound?",
+      "options": [
+        "Makes it thinner and plainer",
+        "Makes it smoother and thicker",
+        "Makes it higher in pitch",
+        "Makes it sour and out of tune"
       ],
       "answer": 1,
-      "why": "Detune spreads the copies slightly in pitch, and you hear that as a swirl.",
+      "why": "With many copies the individual beats average out into a smooth thickness.",
+      "point": 1
+    },
+    {
+      "q": "What happens when Detune is pushed too far?",
+      "options": [
+        "The note goes silent as the copies cancel",
+        "The note moves over to one side",
+        "The note sounds sour and its pitch blurs",
+        "The note drops into the bass register"
+      ],
+      "answer": 2,
+      "why": "Too much detune blurs the pitch, so back off to where it is thick but still in tune.",
+      "point": 2
+    },
+    {
+      "q": "You want the sound to open out to the sides. Which control do you raise?",
+      "options": [
+        "Spread",
+        "Voices",
+        "Detune",
+        "Hold"
+      ],
+      "answer": 0,
+      "why": "Spread places the copies across left and right, which adds width.",
       "point": 0
     }
   ],
@@ -637,25 +745,49 @@
     {
       "q": "Why add a sub under detuned main oscillators?",
       "options": [
-        "It adds hiss and air on top",
         "It stays steady and anchors the low end",
+        "It adds hiss and air on top",
         "It makes the detuned beating faster",
         "It makes the main tone sound brighter"
       ],
-      "answer": 1,
+      "answer": 0,
       "why": "The sub is a simple low tone that stays steady even when the main oscillators are detuned.",
+      "point": 0
+    },
+    {
+      "q": "You switch on the sub, one octave down. What appears on the spectrum?",
+      "options": [
+        "A new peak at the far right",
+        "A fill across the whole spectrum",
+        "A new peak at the far left",
+        "A gap where the main tone was"
+      ],
+      "answer": 2,
+      "why": "The sub is a low tone under the main pitch, so it shows as a new peak at the far left.",
       "point": 0
     },
     {
       "q": "Why does noise sound like breath or air and not like a note?",
       "options": [
         "It plays one octave under the main pitch",
+        "It has no pitch; its energy is spread out",
         "It has only one harmonic, like a sine",
-        "It is always quieter than the sub",
-        "It has no pitch; its energy is spread out"
+        "It is always quieter than the sub"
+      ],
+      "answer": 1,
+      "why": "Noise has no pitch: its energy is spread across the spectrum.",
+      "point": 1
+    },
+    {
+      "q": "White noise is on at a low level. You switch it to pink. What do you hear?",
+      "options": [
+        "A brighter, sharper hiss",
+        "A low tone under the note",
+        "A louder main tone",
+        "A darker, softer hiss"
       ],
       "answer": 3,
-      "why": "Noise has no pitch: its energy is spread across the spectrum.",
+      "why": "Pink noise gives a darker, softer hiss than white noise.",
       "point": 1
     },
     {
@@ -669,68 +801,32 @@
       "answer": 2,
       "why": "Both work best quiet, sitting under the main tone in proportion.",
       "point": 2
-    },
-    {
-      "q": "You switch on the sub, one octave down. What appears on the spectrum?",
-      "options": [
-        "A new peak at the far right",
-        "A fill across the whole spectrum",
-        "A gap where the main tone was",
-        "A new peak at the far left"
-      ],
-      "answer": 3,
-      "why": "The sub is a low tone under the main pitch, so it shows as a new peak at the far left.",
-      "point": 0
-    },
-    {
-      "q": "White noise is on at a low level. You switch it to pink. What do you hear?",
-      "options": [
-        "A darker, softer hiss",
-        "A brighter, sharper hiss",
-        "A low tone under the note",
-        "A louder main tone"
-      ],
-      "answer": 0,
-      "why": "Pink noise gives a darker, softer hiss than white noise.",
-      "point": 1
     }
   ],
   "C1.8": [
     {
       "q": "What is phase?",
       "options": [
+        "Where in its cycle a wave starts",
         "How many cycles a wave makes each second",
         "How big a wave is on the scope",
-        "Where in its cycle a wave starts",
         "How far left or right a wave sits"
       ],
-      "answer": 2,
+      "answer": 0,
       "why": "Phase is where in its cycle a wave starts.",
       "point": 0
     },
     {
       "q": "You want every bass note to hit in exactly the same way. What do you set?",
       "options": [
-        "Random phase at 0",
         "Random phase at 100%",
         "Osc B's phase at 180°",
-        "Hold switched on"
-      ],
-      "answer": 0,
-      "why": "With fixed phase every note begins identically, which is tight and repeatable.",
-      "point": 1
-    },
-    {
-      "q": "Two identical square waves play half a cycle apart. What do you hear?",
-      "options": [
-        "A tone twice as loud",
-        "A square one octave higher",
-        "A slow swell that repeats",
-        "Almost nothing: they cancel"
+        "Hold switched on",
+        "Random phase at 0"
       ],
       "answer": 3,
-      "why": "Opposite phases cancel when the two waves are otherwise identical.",
-      "point": 2
+      "why": "With fixed phase every note begins identically, which is tight and repeatable.",
+      "point": 1
     },
     {
       "q": "Random phase is at 100% and you strike one note four times. What do you hear?",
@@ -745,15 +841,39 @@
       "point": 1
     },
     {
-      "q": "Moving Osc B's phase to 180° made the sound almost vanish. How do you get full level back?",
+      "q": "Two oscillators are layered. What decides whether they add or cancel?",
       "options": [
-        "Raise Random phase to 100%",
-        "Strike the note four more times",
-        "Bring B's phase back to match A",
-        "Change both oscillators to Saw"
+        "Their two levels",
+        "Their relative phase",
+        "Their octave settings",
+        "Whether Hold is on"
       ],
-      "answer": 2,
-      "why": "When the two phases are equal the waves add, so the full level returns.",
+      "answer": 1,
+      "why": "When two oscillators are layered, their relative phase decides whether they add or cancel.",
+      "point": 2
+    },
+    {
+      "q": "Two identical square waves play half a cycle apart. What do you hear?",
+      "options": [
+        "A tone twice as loud",
+        "A square one octave higher",
+        "A slow swell that repeats",
+        "Almost nothing: they cancel"
+      ],
+      "answer": 3,
+      "why": "Opposite phases cancel when the two waves are otherwise identical.",
+      "point": 2
+    },
+    {
+      "q": "Two identical saws play half a cycle apart. What is left?",
+      "options": [
+        "A saw one octave higher",
+        "A saw twice as loud",
+        "A square at the same pitch",
+        "A sine one octave lower"
+      ],
+      "answer": 0,
+      "why": "Two saws half a cycle apart leave a saw an octave higher.",
       "point": 2
     }
   ],
@@ -762,35 +882,59 @@
       "q": "Osc A's Pan is at -100. Where do you hear it?",
       "options": [
         "Only in the right speaker",
-        "Only in the left speaker",
         "In the middle, as before",
+        "Only in the left speaker",
         "In both speakers, but quieter"
       ],
-      "answer": 1,
+      "answer": 2,
       "why": "Pan at 0 is the middle; -100 is only the left speaker and 100 only the right.",
       "point": 0
+    },
+    {
+      "q": "You pan two oscillators far apart but hear no change at all. What is the likely reason?",
+      "options": [
+        "Pan only works while Hold is off",
+        "Pan needs a wavetable on Osc B",
+        "Both oscillators are at the same pitch",
+        "You are listening on a single speaker"
+      ],
+      "answer": 3,
+      "why": "You need headphones or two speakers to hear panning.",
+      "point": 0
+    },
+    {
+      "q": "Two oscillators both sit in the middle and are hard to tell apart. Which control helps?",
+      "options": [
+        "Position",
+        "Pan",
+        "Hold",
+        "Wavetable"
+      ],
+      "answer": 1,
+      "why": "Two oscillators panned apart are easier to tell from each other.",
+      "point": 1
     },
     {
       "q": "Osc A is panned to about -40 and Osc B to about +40. How does it sound?",
       "options": [
         "Like two completely separate things",
         "Like one sound in the middle only",
-        "Like one sound on the right only",
-        "Like one wide sound with a middle"
+        "Like one wide sound with a middle",
+        "Like one sound on the right only"
       ],
-      "answer": 3,
+      "answer": 2,
       "why": "Partly apart sounds like one wide thing; fully apart often sounds like two.",
       "point": 1
     },
     {
       "q": "A is panned left, B right. You sweep Osc B's wavetable Position. What changes?",
       "options": [
+        "Only the right-hand side's tone",
         "The tone on both sides together",
         "Only the left-hand side's tone",
-        "Only the right-hand side's tone",
         "The pitch of both oscillators"
       ],
-      "answer": 2,
+      "answer": 0,
       "why": "Osc B has its own wavetable and position, independent of Osc A's.",
       "point": 2
     }
@@ -799,24 +943,24 @@
     {
       "q": "What is the best way to listen to a hidden target sound?",
       "options": [
-        "Judge everything in one listen",
         "Take one quality at a time",
+        "Judge everything in one listen",
         "Guess the exact numbers first",
         "Listen only for how loud it is"
       ],
-      "answer": 1,
+      "answer": 0,
       "why": "Take one quality at a time: pitch content, thickness, weight, then brightness.",
       "point": 0
     },
     {
       "q": "You cannot tell how your sound differs from the target. What helps most?",
       "options": [
-        "Switching quickly between the two",
         "Listening to the target for longer",
         "Changing every setting at once",
+        "Switching quickly between the two",
         "Playing each on a different key"
       ],
-      "answer": 0,
+      "answer": 2,
       "why": "Quick switching between target and yours beats long listening.",
       "point": 1
     },
@@ -824,11 +968,11 @@
       "q": "The check says one of your settings is too high. What do you do?",
       "options": [
         "Wait for the app to show the number",
-        "Reset every setting and start over",
         "Lower it a little and check again",
+        "Reset every setting and start over",
         "Raise it further and check again"
       ],
-      "answer": 2,
+      "answer": 1,
       "why": "Being told too high or too low is enough to home in, without the numbers.",
       "point": 2
     }

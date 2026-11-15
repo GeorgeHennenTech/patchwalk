@@ -1740,3 +1740,36 @@ describe("wavetables built from published formulas", () => {
     for (const t of TABLES) if (t !== "none") for (const p of [0, 33, 66, 100]) expect(Math.max(...mags(t, p)), `${t} ${p}`).toBeGreaterThan(0.1);
   });
 });
+
+describe("the lessons added on 15 Nov can each be walked through", () => {
+  // for every step: the settings a learner following the instruction would end up with, and what they did
+  const played = { played: { mouse: 3, keys: 0, midi: 0 }, distinctNotes: 3, lastNote: 45 } as Partial<Snapshot>;
+  const range = (id: string, min: number, max: number) => ({ range: { [id]: { min, max } } }) as Partial<Snapshot>;
+  const WALKS: Record<string, [Partial<SynthState>, Partial<Snapshot>?][]> = {
+    "CT.7": [[{}, played], [{ noiseOn: true, noiseLevelDb: -6 }, played], [{ env2Dest: "aPitchWide", env2Amount: 15 }, played], [{ envD: 100 }, played], [{ envD: 400 }, played]],
+    "CT.8": [[{}, played], [{ envD: 3000, envR: 1200 }, played], [{ distOn: true, distDrive: 40 }, played], [{ env2Dest: "aPitchWide", env2Amount: 12 }, played], [{ reverbOn: true, reverbMix: 30, reverbSize: 3 }, played]],
+    "CT.9": [[{}, played], [{ env2Dest: "cutoff", env2Amount: 70 }, played], [{ env2D: 80 }, played], [{ env2D: 700 }, played], [{ env2D: 100, resonance: 60 }, played]],
+    "CT.10": [[{}, { held: [33] }], [{ distOn: true, distDrive: 60 }], [{ distType: "hard" }], [{ distMix: 45 }], [{ eqOn: true, eqHigh: -9 }]],
+    "CT.11": [[{}, { longestHeld: 2.5 }], [{ env2Dest: "aPitchWide", env2A: 3000, env2S: 100, env2Amount: 30 }, { longestHeld: 3.5 }], [{ matrix: [{ source: "env2", dest: "cutoff", amount: 60, way: "up" }] }, { longestHeld: 3.5 }], [{ env2A: 6000 }, { longestHeld: 5.5 }], [{ reverbOn: true, reverbMix: 30 }, { longestHeld: 3.5 }]],
+    "C1.11": [[{ table: "pdsaw" }, { held: [45] }], [{ position: 100 }, range("position", 0, 100)], [{ table: "moogsaw", position: 100 }], [{ position: 0 }], [{ table: "pdpulse", position: 95 }, range("position", 5, 95)], [{ table: "formant", position: 95 }, range("position", 5, 95)]],
+    "C6.6": [[{}, { held: [57] }], [{ warpAmount: 50 }], [{ warpAmount: 95 }, range("warpAmount", 5, 95)], [{ warp: "steps", warpAmount: 60 }], [{ warpAmount: 80 }], [{ warp: "flip", warpAmount: 50 }]],
+    "C2.8": [[{}, { held: [45] }], [{ resonance: 70 }], [{ cutoff: 3500 }, range("cutoff", 300, 3500)], [{ filterType: "shelf", cutoff: 800, resonance: 100 }], [{}, { changes: { filterType: 2 } }]],
+    "C2.9": [[{ filter2On: true }, { held: [45] }], [{ cutoff2: 600 }], [{ cutoff: 1200 }], [{ filterRoute: "parallel" }], [{ cutoff: 200, cutoff2: 4000 }], [{ filterRoute: "series" }]],
+    "C7.7": [[{}, played], [{ fxOrder: ["comp", "chorus", "delay", "eq", "reverb", "dist"] }], [{}, played], [{ fxOrder: ["comp", "chorus", "delay", "eq", "dist", "reverb"], eqOn: true, eqHigh: -12 }, played], [{ fxOrder: ["comp", "chorus", "delay", "dist", "eq", "reverb"] }, played]],
+    "C1.10": [[{ aOn: false }, { held: [45] }], [{ bVoices: 3, bDetune: 25 }], [{ bDetune: 0 }], [{ bDetune: 20, bWarp: "sync", bWarpAmount: 60 }], [{ aOn: true }]],
+  };
+  it("each step passes with the settings its instruction asks for", () => {
+    for (const [id, walk] of Object.entries(WALKS)) {
+      const lesson = LESSONS.find((l) => l.id === id)!;
+      expect(walk.length, id).toBe(lesson.steps.length);
+      let state = { ...INITIAL, ...lesson.initial } as SynthState;
+      walk.forEach(([change, extra], i) => {
+        state = { ...state, ...change };
+        const s = { ...snapshot(newTrack(INITIAL), state, { audioRunning: true, held: [], holdOn: false, now: 0 }), ...extra } as Snapshot;
+        expect(lesson.steps[i]!.check(s), `${id} step ${i + 1}: ${lesson.steps[i]!.do}`).toBe(true);
+        const said = lesson.steps[i]!.remark?.(s);
+        if (said !== undefined) expect(said, id).not.toMatch(/NaN|undefined/);
+      });
+    }
+  });
+});

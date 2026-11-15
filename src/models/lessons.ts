@@ -3,6 +3,7 @@
 // with the settings the step asks for. Codes such as Q1.1 are for plans and code only.
 import type { QuizItem } from "../course/quiz";
 import type { DrumState } from "../modal/membrane";
+import { speaks, type TubeState } from "../modal/tube";
 import type { StringState } from "../strings/string";
 
 /** What has been played since the current step began. */
@@ -132,6 +133,50 @@ export const DRUM_LESSONS: ModelLesson<DrumState>[] = [
       q("You damp the high modes heavily. What is left?", ["A long metallic ring", "Mostly the lowest mode: a dry, tuned drum", "Silence", "Only the highest mode"], 1, "With the high modes gone at once, the lowest is what you hear.", 0),
       q("All the modes ring on for seconds. What does it sound like?", ["A soft thump", "A string", "Metal: a gong or a plate", "A click"], 2, "The whole out-of-tune set ringing together is the sound of struck metal.", 1),
       q("What changes when the round head is swapped for a square one?", ["The modes sit at different frequencies", "The drum gets louder", "Nothing", "It gains harmonics that are whole multiples"], 0, "The shape decides which patterns are possible and where their frequencies fall.", 2),
+    ],
+  },
+];
+
+export const TUBE_LESSONS: ModelLesson<TubeState>[] = [
+  {
+    id: "Q6.1", title: "Breath: too little, enough, too much", minutes: 6, initial: {},
+    outcome: "Explain why a blown instrument needs a certain amount of breath, and what the reed has to do with it.",
+    idea: [
+      "A plucked string is given its energy once and left alone. A blown tube is fed the whole time. Breath pushes past a reed into the tube; a wave runs to the open end and comes back; and the returning wave opens and closes the reed, letting breath in at just the right moments to keep the wave going.",
+      "That only works in a certain range. With too little breath the loop loses more on each trip than the breath puts back, and nothing holds. With too much, the reed is pressed shut and no breath gets in at all.",
+    ],
+    steps: [
+      { do: "Play a key with the settings as they are.", hear: "A steady, hollow note that lasts as long as it is blown, then stops.", target: "A note that speaks", check: (s, p) => p.plays >= 1 && speaks(s, s.breath) },
+      { do: "Turn Breath down until the marker is left of the lit blocks, and play.", hear: "A puff of air and no note. The loop cannot keep itself going.", target: "A breath too weak to speak, played", check: (s, p) => p.plays >= 1 && s.breath < 50 && !speaks(s, s.breath) },
+      { do: "Set Reed stiffness to 20% or less, then turn Breath up to 90% or more and play.", hear: "Nothing again, for the opposite reason: a loose reed is blown shut.", target: "Reed stiffness at 20% or less, breath at 90% or more, played", check: (s, p) => p.plays >= 1 && s.reed <= 20 && s.breath >= 90 && !speaks(s, s.breath) },
+      { do: "Keep that breath and raise Reed stiffness until the marker sits on a lit block. Play.", hear: "The note is back. A stiffer reed stays open against harder blowing.", target: "Breath at 90% or more, and the tube speaks", check: (s, p) => p.plays >= 1 && s.breath >= 90 && speaks(s, s.breath) },
+    ],
+    recap: ["A blown tube is fed all the time: the returning wave works the reed so that breath keeps the wave going.", "Too little breath and the loop cannot feed itself; too much and the reed is blown shut.", "A stiffer reed needs more breath to speak and can take harder blowing."],
+    quiz: [
+      q("How does a blown tube differ from a plucked string?", ["It has no pitch", "It is fed energy the whole time it sounds", "It rings longer after one push", "It has no loop"], 1, "A string is set going once. A blown tube keeps taking in breath, timed by the returning wave.", 0),
+      q("Why does a very soft breath make no note?", ["The reed is blown shut", "The loop loses more each trip than the breath puts back", "The tube is too long", "The pitch is too low to hear"], 1, "Below a certain breath the wave dies away faster than it is fed.", 1),
+      q("What happens when a loose reed is blown very hard?", ["The note gets higher", "The note gets louder without limit", "The reed is pressed shut and the note stops", "Nothing changes"], 2, "With the reed held shut, no breath gets into the tube.", 1),
+      q("What does a stiffer reed change?", ["It needs more breath to speak and can take harder blowing", "It lowers the pitch", "It speaks with less breath", "It removes the harmonics"], 0, "The range of breath that works moves upward.", 2),
+    ],
+  },
+  {
+    id: "Q6.2", title: "A hollow tone, and where its brightness comes from", minutes: 5, initial: { breath: 65, reed: 50, bright: 60 },
+    outcome: "Describe the tone of a straight tube with a reed, and change how bright it is.",
+    idea: [
+      "The wave in this tube comes back from the open end upside down, so it takes two trips, not one, before things repeat. One result is that the tube plays a note much lower than a string of the same length would. Another, in this model, is a hollow tone in which every second harmonic is all but missing.",
+      "How bright the tone is depends on how much of the highs the open end sends back. Send back more and the upper harmonics are kept alive; send back less and the tone turns soft and woody.",
+    ],
+    steps: [
+      { do: "Play a low key and look at the bars.", hear: "A hollow, woody note. The odd-numbered bars stand; the even ones are almost flat.", target: "A note that speaks, played", check: (s, p) => p.plays >= 1 && speaks(s, s.breath) },
+      { do: "Turn Brightness up to 90% or more and play.", hear: "Reedier and more buzzing. The higher odd bars have grown.", target: "Brightness at 90% or more, played", check: (s, p) => p.plays >= 1 && s.bright >= 90 },
+      { do: "Turn Brightness down to 15% or less and play.", hear: "Soft and round, close to a pure tone. If it will not speak, give it a little more breath.", target: "Brightness at 15% or less, and the tube speaks", check: (s, p) => p.plays >= 1 && s.bright <= 15 && speaks(s, s.breath) },
+      { do: "Raise Breath noise to 60% or more and play.", hear: "Air in the tone, as when a player blows without quite sealing the reed.", target: "Breath noise at 60% or more, played", check: (s, p) => p.plays >= 1 && s.noise >= 60 },
+    ],
+    recap: ["The wave returns upside down, so the tube plays far lower than its length suggests.", "In this model the tone is hollow: every second harmonic is all but missing.", "The more of the highs the open end sends back, the brighter and reedier the tone."],
+    quiz: [
+      q("Why does this tube play lower than a string of the same length?", ["It is thicker", "The wave returns upside down, so it takes two trips to repeat", "The reed is heavy", "The breath slows the wave"], 1, "Things only repeat after two trips, which makes the note much lower.", 0),
+      q("What is the tone of the tube like in this model?", ["Every harmonic at equal strength", "Hollow, with every second harmonic all but missing", "Only one harmonic", "Noise with no pitch"], 1, "The odd-numbered harmonics stand and the even ones are almost absent.", 1),
+      q("How do you make the tone brighter?", ["Let the open end send back more of the highs", "Blow more softly", "Loosen the reed fully", "Shorten the note"], 0, "Keeping more highs in the loop keeps the upper harmonics alive.", 2),
     ],
   },
 ];

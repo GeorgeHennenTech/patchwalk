@@ -36,6 +36,8 @@ it, and reports in a few lines. None of these needs the owner or spends credits.
 - [x] 25c. Drum lab: a drum head as ringing modes (round and square), click to hit it anywhere
 - [x] 25d. Six lessons on the physical models (four on the string, two on the drum), with quizzes
 - [x] 25e. Five more impact lessons: snares, booms, the filter snap, audible subs, risers
+- [x] 25f. Tube lab: a blown tube with a reed (it only speaks inside a range of breath), with two lessons
+- [x] 25g. The guide's search reaches technical papers from everyday words
 - [ ] 26. String lab next: make it an instrument the lesson engine can use (steps, checks, match by ear), then stiffness, two strings, a body, and a worklet for bends and bowing
 - [ ] 27. Genre lessons that use the new wavetables
 - [x] 10. Osc B as a full oscillator: unison and warp

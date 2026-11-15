@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { DRUM_LESSONS, STRING_LESSONS, type ModelLesson } from "../src/models/lessons";
+import { DRUM_LESSONS, STRING_LESSONS, TUBE_LESSONS, type ModelLesson } from "../src/models/lessons";
 import { DRUM_INITIAL } from "../src/modal/membrane";
+import { TUBE_INITIAL } from "../src/modal/tube";
 import { STRING_INITIAL } from "../src/strings/string";
 
 function sound<S>(lessons: ModelLesson<S>[], initial: S) {
@@ -25,6 +26,14 @@ function sound<S>(lessons: ModelLesson<S>[], initial: S) {
 describe("lessons on the physical models", () => {
   it("string lessons are well formed and none passes a step before it is done", () => sound(STRING_LESSONS, STRING_INITIAL));
   it("drum lessons are well formed and none passes a step before it is done", () => sound(DRUM_LESSONS, DRUM_INITIAL));
+  it("tube lessons are well formed, and each step passes with the settings it asks for", () => {
+    for (const l of TUBE_LESSONS) { expect(l.recap.length).toBe(3); expect(new Set(l.quiz.map((q) => q.point)).size).toBe(3); for (const s of l.steps) expect(s.check({ ...TUBE_INITIAL, ...l.initial }, { plays: 0, notes: [] })).toBe(false); }
+    const P = { plays: 1, notes: [57] }, [a, b] = TUBE_LESSONS as [ModelLesson<typeof TUBE_INITIAL>, ModelLesson<typeof TUBE_INITIAL>];
+    const walkA = [TUBE_INITIAL, { ...TUBE_INITIAL, breath: 15 }, { ...TUBE_INITIAL, reed: 10, breath: 95 }, { ...TUBE_INITIAL, reed: 100, breath: 95 }];
+    walkA.forEach((s, i) => expect(a.steps[i]!.check(s, P), `Q6.1 step ${i + 1}`).toBe(true));
+    const walkB = [TUBE_INITIAL, { ...TUBE_INITIAL, bright: 95 }, { ...TUBE_INITIAL, bright: 10, breath: 75 }, { ...TUBE_INITIAL, noise: 70 }];
+    walkB.forEach((s, i) => expect(b.steps[i]!.check(s, P), `Q6.2 step ${i + 1}`).toBe(true));
+  });
   it("each step can be passed by doing what it says", () => {
     const P = { plays: 1, notes: [45] };
     expect(STRING_LESSONS[0]!.steps[1]!.check({ ...STRING_INITIAL, exciter: "noise" }, { plays: 3, notes: [45, 48, 52] })).toBe(true);

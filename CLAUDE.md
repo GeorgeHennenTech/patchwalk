@@ -956,6 +956,19 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   The filter snap, CT.10 Harmonics make a sub audible, CT.11 Risers (one long-attack envelope to pitch, and
   to the filter through a matrix row), CT.12 Pluck, stab and growl. Thirteen lessons in the Impacts chapter. Like the first ones they
   claim nothing about hearing. A test walks every step of every lesson added that day with the settings its instruction asks for; **none was clicked through in a browser.**
+- **Blown tube (15 Nov 2026).** A third physical model, `src/modal/tube.ts` and `src/ui/TubeLab.tsx` ("Blown
+  tube" in the Physical models tab). A delay line half a period long (the wave returns from the open end
+  upside down, times 0.95, through the same two-sample loss filter as the string); at the mouthpiece the
+  outgoing wave is mouth pressure plus the reflected part of (returning wave minus mouth pressure), the
+  reflected share coming from `reedReflection`, a straight line limited to -1..1. The structure follows
+  the single-reed section of Smith 1992 (library page 19); **the reed's curve and its numbers are our own,
+  and the page says so.** It sounds only while blown, and only inside a range of breath: `speaks` and
+  `speakingRange` try the model itself and the lab draws that range with the learner's breath marked.
+  Tested: in tune within 6 cents from note 40 to 84, odd harmonics present and even ones under 2%, silent
+  below the range and above it, a looser reed speaking with less breath and choking sooner, the range
+  always one unbroken stretch. Notes are blown for a fixed 1.4 s (rendered whole, like the others). Two
+  lessons, Q6.1 "Breath: too little, enough, too much" and Q6.2 "A hollow tone", in `TUBE_LESSONS`
+  (eight model lessons in all). Checked in a browser; not heard by anyone.
 - **Guide search widened (15 Nov 2026).** The library now holds over twenty texts (2,242 passages). `search`
   in `src/library/search.ts` adds related technical words to a question at half weight (`RELATED`: drum to
   membrane and mode, pitch to frequency, echo to delay, speaker to loudspeaker and driver, and so on), so a

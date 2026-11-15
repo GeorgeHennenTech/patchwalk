@@ -127,6 +127,24 @@ export const FX_ADDITIONS: PlayableLesson[] = [
     recap: ["Each effect works on what the one before it sends on, so order changes the result.", "Distortion after reverb roughens the tail and makes it louder; before reverb, the tail stays smooth.", "An EQ cut before distortion changes what gets distorted; after it, the cut shapes the finished tone."],
     inSerum: "Serum's effects can be reordered by dragging an effect to a new place in the list or in the rack (page 156 of its guide). Try distortion before and after reverb there. Listening only.",
   },
+  {
+    id: "C7.8", title: "Flanger and phaser", buildsOn: ["C7.4", "C2.3"], minutes: 8, cardIds: ["fx-chorus"], initial: { shape: "saw" },
+    outcome: "Tell a flanger from a phaser by ear, and say what each one is doing to the sound.",
+    demo: { caption: "A saw: plain, through a flanger, then through a phaser.", tones: [{ patch: { shape: "saw" }, note: 45, at: 0, seconds: 1.2 }, { patch: { shape: "saw", flangerOn: true, flangerRate: 0.6 }, note: 45, at: 1.5, seconds: 2.4 }, { patch: { shape: "saw", phaserOn: true, phaserRate: 0.6 }, note: 45, at: 4.2, seconds: 2.4 }] },
+    idea: [
+      "A flanger adds a copy of the sound delayed by a few thousandths of a second. At some frequencies the copy arrives exactly out of step with the original and the two cancel, leaving a row of evenly spaced notches. Sweep the length of the delay and the whole row slides up and down: the jet-plane whoosh. Feeding some of the delayed sound back in sharpens it.",
+      "A phaser reaches a similar place by another road. It passes the sound through stages that leave every frequency at full strength but turn each one round by a different amount, then adds the result to the original. Where the two are opposite they cancel. That gives only a few notches, unevenly spaced, and a softer swirl.",
+    ],
+    steps: [
+      { do: "Switch on Hold, play a low note, and switch on the Flanger.", show: [...K, "flangerOn", "flangerRate", "spectrum"], hear: "A slow whoosh sweeping through the note. On the spectrum a row of gaps slides back and forth.", target: "A note held, Flanger on", check: (s) => s.held.length >= 1 && s.state.flangerOn },
+      { do: "Turn the Flanger’s Depth down to 0.", show: [...K, "flangerDepth", "spectrum"], hear: "The sweep stops. What is left is a fixed, hollow colour: the notches standing still.", target: "Flanger on, depth at 0", check: (s) => s.state.flangerOn && s.state.flangerDepth === 0 },
+      { do: "Bring Depth back to 60% or more and raise Feedback to 70% or more.", show: [...K, "flangerDepth", "flangerFeedback", "spectrum"], hear: "Sharper and metallic, with a whistle that travels up and down.", target: "Flanger depth 60% or more, feedback 70% or more", check: (s) => s.state.flangerOn && s.state.flangerDepth >= 60 && s.state.flangerFeedback >= 70 },
+      { do: "Switch the Flanger off and the Phaser on.", show: [...K, "flangerOn", "phaserOn", "phaserRate", "spectrum"], hear: "A gentler swirl, less like metal. Only a few gaps move through the spectrum.", target: "Flanger off, Phaser on", check: (s) => !s.state.flangerOn && s.state.phaserOn },
+      { do: "Sweep the Phaser’s Centre from below 400 Hz to above 2 kHz.", show: [...K, "phaserCentre", "phaserDepth", "spectrum"], hear: "The region the swirl happens in moves from the body of the note up into its brightness.", target: "Phaser centre taken below 400 Hz and above 2 kHz", check: (s) => s.state.phaserOn && swept(s, "phaserCentre", 400, 2000) },
+    ],
+    recap: ["A flanger adds a very short delayed copy; the two cancel at evenly spaced frequencies, and sweeping the delay moves them.", "Feedback sharpens a flanger into a metallic whistle.", "A phaser makes only a few notches by turning frequencies round, so its sweep is softer."],
+    inSerum: "Serum has FLANGER and PHASER effects in its rack. Their controls have not been compared with these, so nothing is checked. Listening only.",
+  },
 ];
 
 const FOLD = { shape: "sine", warp: "fold", warpAmount: 0 } as const;

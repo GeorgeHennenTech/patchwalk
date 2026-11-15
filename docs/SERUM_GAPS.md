@@ -364,10 +364,10 @@ effect knob.
 | BODE (frequency shifter): MONO INPUT, SHIFT (Retrig), RANGE, DIR, WIDTH, DELAY, BPM, FEED, BALANCE, BLUR, MIX | Moves every frequency by the same number of Hz (not a pitch shift), with a built-in delay | 161 | Missing | Large |
 | CONVOLVE: IMPULSE, SIZE, TONE, ϕ MIN, PRE-DLY, BPM, ATTACK, DECAY, DAMP, IR GAIN, MIX | Stamps the sound of a recorded room (or any short sound) onto the signal | 164-165 | Partly: our reverb is a convolution of generated noise; no loading, shaping or choice | Medium |
 | FILTER (as an effect) | The whole filter module again, after the notes are mixed, with all types and Key Track | 170-172 | Missing | Medium |
-| FLANGER: RATE, BPM, DEPTH, FEEDBACK, PHASE, MIX | A very short moving delay giving a sweeping, jet-like tone | 172-173 | Missing | Small |
+| FLANGER: RATE, BPM, DEPTH, FEEDBACK, PHASE, MIX | A very short moving delay giving a sweeping, jet-like tone | 172-173 | Have a simple one (15 Nov 2026) | Small |
 | HYPER: RATE, UNISON, DETUNE, RETRIG, MIX | A many-voice micro-delay chorus that imitates unison cheaply | 173 | Missing | Medium |
 | DIMENSION: SIZE, MIX | Four out-of-phase delays that widen a mono sound | 174 | Missing | Small |
-| PHASER: RATE, BPM, POLES, DEPTH, DEPTH 2, FREQ, FEEDBACK, PHASE, MIX | Moving notches in the spectrum | 174-175 | Missing | Medium |
+| PHASER: RATE, BPM, POLES, DEPTH, DEPTH 2, FREQ, FEEDBACK, PHASE, MIX | Moving notches in the spectrum | 174-175 | Have a simple one (15 Nov 2026) | Medium |
 | SPLITTER L/H: SPLIT FREQ | Splits the sound into lows and highs, each with its own chain of effects | 177-178 | Missing | Large |
 | SPLITTER L/M/H: two SPLIT FREQ | The same with three bands | 179-180 | Missing | Large |
 | SPLITTER M/S | Splits into middle and sides, each with its own chain | 180-181 | Missing | Large |

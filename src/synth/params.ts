@@ -192,6 +192,9 @@ export interface SynthState {
   /** Compressor: threshold in dB, ratio (to one), attack and release in ms, and make-up gain in dB. */
   compOn: boolean; compThreshold: number; compRatio: number; compAttack: number; compRelease: number; compMakeup: number;
   chorusOn: boolean; chorusRate: number; chorusDepth: number; chorusMix: number;
+  /** Flanger: a very short swept delay added to the sound. Phaser: swept all-pass stages added to the sound. */
+  flangerOn: boolean; flangerRate: number; flangerDepth: number; flangerFeedback: number; flangerMix: number;
+  phaserOn: boolean; phaserRate: number; phaserDepth: number; phaserCentre: number; phaserMix: number;
   /** Delay: echo spacing in ms or in beats, how much of each echo is fed back (0..95%), and the echo level. */
   delayOn: boolean; delaySync: (typeof DELAY_SYNCS)[number]; delayDiv: (typeof DIVISIONS)[number]; delayTime: number; delayFeedback: number; delayMix: number;
   /** Reverb: how long the tail takes to die away, in seconds, and its level. */
@@ -229,12 +232,14 @@ export const INITIAL: SynthState = {
   lfo3Sync: "hz", lfo3Div: "1", lfo3Trig: "retrig", lfo3Rise: 0, lfo3Steps: DEFAULT_STEPS,
   velDest: "none", velAmount: 60, keyDest: "none", keyAmount: 50, wheel: 0, wheelDest: "none", wheelAmount: 50, bendRange: 2,
   matrix: [],
-  fxOrder: ["dist", "eq", "comp", "chorus", "delay", "reverb"],
+  fxOrder: ["dist", "eq", "comp", "chorus", "flanger", "phaser", "delay", "reverb"],
   voiceMode: "poly", legato: "off", glide: 0, glideMode: "always",
   distOn: false, distType: "soft", distDrive: 30, distMix: 100,
   eqOn: false, eqLow: 0, eqMid: 0, eqMidHz: 1000, eqHigh: 0,
   compOn: false, compThreshold: -24, compRatio: 4, compAttack: 10, compRelease: 150, compMakeup: 0,
   chorusOn: false, chorusRate: 0.8, chorusDepth: 50, chorusMix: 50,
+  flangerOn: false, flangerRate: 0.3, flangerDepth: 70, flangerFeedback: 40, flangerMix: 70,
+  phaserOn: false, phaserRate: 0.4, phaserDepth: 60, phaserCentre: 800, phaserMix: 80,
   delayOn: false, delaySync: "ms", delayDiv: "1/2", delayTime: 300, delayFeedback: 40, delayMix: 35,
   reverbOn: false, reverbSize: 2, reverbMix: 30,
   macro1: 0, macro1Name: "Macro 1", macro1Dest1: "none", macro1Amt1: 50, macro1Dest2: "none", macro1Amt2: 50, macro1Dest3: "none", macro1Amt3: 50,
@@ -243,7 +248,7 @@ export const INITIAL: SynthState = {
   macro4: 0, macro4Name: "Macro 4", macro4Dest1: "none", macro4Amt1: 50, macro4Dest2: "none", macro4Amt2: 50, macro4Dest3: "none", macro4Amt3: 50,
 };
 
-export type Group = "Master" | "Oscillator A" | "Unison" | "Oscillator B" | "Sub" | "Noise" | "Filter" | "Filter 2" | "Envelope 1" | "Envelope 2" | "LFO 1" | "LFO 2" | "LFO 3" | "Velocity" | "Mod wheel" | "Key position" | "Voicing" | "Distortion" | "EQ" | "Compressor" | "Chorus" | "Delay" | "Reverb" | "Macro 1" | "Macro 2" | "Macro 3" | "Macro 4";
+export type Group = "Master" | "Oscillator A" | "Unison" | "Oscillator B" | "Sub" | "Noise" | "Filter" | "Filter 2" | "Envelope 1" | "Envelope 2" | "LFO 1" | "LFO 2" | "LFO 3" | "Velocity" | "Mod wheel" | "Key position" | "Voicing" | "Distortion" | "EQ" | "Compressor" | "Chorus" | "Flanger" | "Phaser" | "Delay" | "Reverb" | "Macro 1" | "Macro 2" | "Macro 3" | "Macro 4";
 
 export interface ParamSpec {
   id: keyof SynthState;
@@ -351,6 +356,16 @@ const BASE_PARAMS: Record<string, ParamSpec> = {
   chorusRate: { id: "chorusRate", label: "Chorus rate", group: "Chorus", kind: "range", min: 0.1, max: 5, step: 0.01, log: true, unit: "Hz" },
   chorusDepth: { id: "chorusDepth", label: "Chorus depth", group: "Chorus", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
   chorusMix: { id: "chorusMix", label: "Chorus mix", group: "Chorus", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
+  flangerOn: { id: "flangerOn", label: "Flanger", group: "Flanger", kind: "toggle" },
+  flangerRate: { id: "flangerRate", label: "Flanger rate", group: "Flanger", kind: "range", min: 0.05, max: 5, step: 0.01, log: true, unit: "Hz" },
+  flangerDepth: { id: "flangerDepth", label: "Flanger depth", group: "Flanger", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
+  flangerFeedback: { id: "flangerFeedback", label: "Flanger feedback", group: "Flanger", kind: "range", min: 0, max: 90, step: 1, unit: "%" },
+  flangerMix: { id: "flangerMix", label: "Flanger mix", group: "Flanger", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
+  phaserOn: { id: "phaserOn", label: "Phaser", group: "Phaser", kind: "toggle" },
+  phaserRate: { id: "phaserRate", label: "Phaser rate", group: "Phaser", kind: "range", min: 0.05, max: 5, step: 0.01, log: true, unit: "Hz" },
+  phaserDepth: { id: "phaserDepth", label: "Phaser depth", group: "Phaser", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
+  phaserCentre: { id: "phaserCentre", label: "Phaser centre", group: "Phaser", kind: "range", min: 200, max: 4000, step: 1, log: true, unit: "Hz" },
+  phaserMix: { id: "phaserMix", label: "Phaser mix", group: "Phaser", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
   delayOn: { id: "delayOn", label: "Delay", group: "Delay", kind: "toggle" },
   delaySync: { id: "delaySync", label: "Delay time in", group: "Delay", kind: "choice", choices: DELAY_SYNCS, names: { ms: "ms", beat: "Beats" } },
   delayDiv: { id: "delayDiv", label: "Delay repeats every", group: "Delay", kind: "menu", choices: DIVISIONS, names: DIVISION_NAMES },

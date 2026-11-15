@@ -1760,5 +1760,55 @@
    "why": "The added seventh smooths a minor chord.",
    "point": 2
   }
+ ],
+ "C7.8": [
+  {
+   "q": "What does a flanger add to the sound?",
+   "options": [
+    "A long echo",
+    "A copy delayed by a few thousandths of a second",
+    "A second oscillator",
+    "Noise"
+   ],
+   "answer": 1,
+   "why": "The very short delay makes the copy cancel the original at certain frequencies.",
+   "point": 0
+  },
+  {
+   "q": "What makes the jet-plane whoosh?",
+   "options": [
+    "Sweeping the length of the delay",
+    "Turning up the volume",
+    "A longer reverb",
+    "Changing the note"
+   ],
+   "answer": 0,
+   "why": "As the delay changes, the whole row of notches slides up and down.",
+   "point": 0
+  },
+  {
+   "q": "What does feedback do to a flanger?",
+   "options": [
+    "Softens it",
+    "Stops the sweep",
+    "Sharpens it into a metallic whistle",
+    "Removes the notches"
+   ],
+   "answer": 2,
+   "why": "Feeding the delayed sound back in makes the effect more pointed and metallic.",
+   "point": 1
+  },
+  {
+   "q": "How does a phaser differ from a flanger?",
+   "options": [
+    "It has more notches",
+    "It makes only a few notches, so its sweep is softer",
+    "It adds echoes",
+    "It distorts"
+   ],
+   "answer": 1,
+   "why": "A phaser turns frequencies round instead of delaying them, which gives a few uneven notches.",
+   "point": 2
+  }
  ]
 }

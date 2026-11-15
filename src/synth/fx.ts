@@ -4,11 +4,25 @@
 // Every effect is always in the path: "off" means its own signal is turned down, so switching one on or
 // off never restarts a note.
 import { beatsOf } from "./mod";
+import { stageResponse } from "./filter";
 import type { SynthState } from "./params";
 
-export const FX_ORDER = ["dist", "eq", "comp", "chorus", "delay", "reverb"] as const;
+export const FX_ORDER = ["dist", "eq", "comp", "chorus", "flanger", "phaser", "delay", "reverb"] as const;
 export type FxId = (typeof FX_ORDER)[number];
-export const FX_NAMES: Record<FxId, string> = { dist: "Distortion", eq: "EQ", comp: "Compressor", chorus: "Chorus", delay: "Delay", reverb: "Reverb" };
+export const FX_NAMES: Record<FxId, string> = { dist: "Distortion", eq: "EQ", comp: "Compressor", chorus: "Chorus", flanger: "Flanger", phaser: "Phaser", delay: "Delay", reverb: "Reverb" };
+
+/** Flanger: the swept delay rests at this length and swings this far either way at full depth (seconds). */
+export const FLANGER_BASE = 0.005, FLANGER_SWING = 0.002;
+/** Where the flanger's k-th notch falls (k = 0 is the lowest) for a delay of `seconds`: half a cycle, one and a half, and so on fit in the delay. */
+export const flangerNotchHz = (seconds: number, k: number) => (k + 0.5) / seconds;
+/** Phaser: how many all-pass stages, how sharp each is, and how far the sweep goes either way at full depth (cents). */
+export const PHASER_STAGES = 4, PHASER_Q = 0.7, PHASER_SWING_CENTS = 2400;
+/** How much a phaser at rest lets through at `hz` with its wet path at full level, in dB (the dry sound plus the all-passed sound). */
+export function phaserDb(centre: number, hz: number, sampleRate = 48000): number {
+  let re = 1, im = 0;
+  for (let i = 0; i < PHASER_STAGES; i++) { const [a, b] = stageResponse({ type: "allpass", hz: centre, q: PHASER_Q }, hz, sampleRate); [re, im] = [re * a - im * b, re * b + im * a]; }
+  return 10 * Math.log10(Math.max(1e-12, (1 + re) ** 2 + im ** 2));
+}
 
 /** A usable order from whatever is stored: every effect once, unknown names dropped, any missing ones added at the end. */
 export function fxOrderOf(order: readonly string[] | undefined): FxId[] {
@@ -86,7 +100,7 @@ export const compReductionDb = (over: number, ratio: number) => (over <= 0 ? 0 :
 export const EQ_LOW_HZ = 150, EQ_HIGH_HZ = 5000;
 
 type Fx = Pick<SynthState, "fxOrder" | "distOn" | "distType" | "distDrive" | "distMix" | "eqOn" | "eqLow" | "eqMid" | "eqMidHz" | "eqHigh" | "compOn" | "compThreshold" | "compRatio" | "compAttack" | "compRelease" | "compMakeup"
-  | "chorusOn" | "chorusRate" | "chorusDepth" | "chorusMix" | "delayOn" | "delaySync" | "delayDiv" | "delayTime" | "delayFeedback" | "delayMix" | "reverbOn" | "reverbSize" | "reverbMix" | "bpm">;
+  | "chorusOn" | "chorusRate" | "chorusDepth" | "chorusMix" | "flangerOn" | "flangerRate" | "flangerDepth" | "flangerFeedback" | "flangerMix" | "phaserOn" | "phaserRate" | "phaserDepth" | "phaserCentre" | "phaserMix" | "delayOn" | "delaySync" | "delayDiv" | "delayTime" | "delayFeedback" | "delayMix" | "reverbOn" | "reverbSize" | "reverbMix" | "bpm">;
 const RAMP = 0.015;
 
 /** The chain itself. `input` takes the notes; `output` goes on to the main volume. */
@@ -99,6 +113,8 @@ export class FxChain {
   private readonly comp: DynamicsCompressorNode;
   private readonly compDry: GainNode; private readonly compWet: GainNode;
   private readonly chorusLfo: OscillatorNode; private readonly chorusDepths: [GainNode, GainNode]; private readonly chorusWet: GainNode;
+  private readonly flangerLfo: OscillatorNode; private readonly flangerDepth: GainNode; private readonly flangerFb: GainNode; private readonly flangerWet: GainNode;
+  private readonly phaserLfo: OscillatorNode; private readonly phaserDepth: GainNode; private readonly phaserStages: BiquadFilterNode[]; private readonly phaserWet: GainNode;
   private readonly delay: DelayNode; private readonly feedback: GainNode; private readonly delayWet: GainNode;
   private readonly convolver: ConvolverNode; private readonly reverbWet: GainNode;
   private last: Partial<Fx> = {};
@@ -140,6 +156,23 @@ export class FxChain {
     merge.connect(this.chorusWet).connect(chorus.out);
     chorus.in.connect(chorus.out);
     this.chorusLfo.start();
+    // flanger: one very short delay whose length sweeps, added to the dry sound, with some of it fed back
+    this.flangerLfo = ctx.createOscillator(); this.flangerLfo.frequency.value = s.flangerRate;
+    this.flangerDepth = gain(0); this.flangerFb = gain(0); this.flangerWet = gain(0);
+    const flanger = unit("flanger"), sweep = ctx.createDelay(0.05); sweep.delayTime.value = FLANGER_BASE;
+    this.flangerLfo.connect(this.flangerDepth).connect(sweep.delayTime);
+    flanger.in.connect(flanger.out);
+    flanger.in.connect(sweep).connect(this.flangerWet).connect(flanger.out);
+    sweep.connect(this.flangerFb).connect(sweep);
+    this.flangerLfo.start();
+    // phaser: four all-pass stages whose turning point sweeps, added to the dry sound
+    this.phaserLfo = ctx.createOscillator(); this.phaserLfo.frequency.value = s.phaserRate;
+    this.phaserDepth = gain(0); this.phaserWet = gain(0);
+    const phaser = unit("phaser");
+    this.phaserStages = Array.from({ length: PHASER_STAGES }, () => { const f = ctx.createBiquadFilter(); f.type = "allpass"; f.frequency.value = s.phaserCentre; f.Q.value = PHASER_Q; this.phaserLfo.connect(this.phaserDepth).connect(f.detune); return f; });
+    phaser.in.connect(phaser.out);
+    this.phaserStages.reduce<AudioNode>((from, f) => from.connect(f), phaser.in).connect(this.phaserWet).connect(phaser.out);
+    this.phaserLfo.start();
     // delay: echoes that feed back into themselves
     this.delay = ctx.createDelay(4.5); this.feedback = gain(0); this.delayWet = gain(0);
     const delay = unit("delay");
@@ -186,6 +219,14 @@ export class FxChain {
     const swing = (s.chorusDepth / 100) * 0.006;
     set(this.chorusDepths[0].gain, swing); set(this.chorusDepths[1].gain, -swing);
     set(this.chorusWet.gain, s.chorusOn ? s.chorusMix / 100 : 0);
+    set(this.flangerLfo.frequency, s.flangerRate);
+    set(this.flangerDepth.gain, (s.flangerDepth / 100) * FLANGER_SWING);
+    set(this.flangerFb.gain, s.flangerOn ? s.flangerFeedback / 100 : 0);
+    set(this.flangerWet.gain, s.flangerOn ? s.flangerMix / 100 : 0);
+    set(this.phaserLfo.frequency, s.phaserRate);
+    set(this.phaserDepth.gain, (s.phaserDepth / 100) * PHASER_SWING_CENTS);
+    for (const f of this.phaserStages) set(f.frequency, s.phaserCentre);
+    set(this.phaserWet.gain, s.phaserOn ? s.phaserMix / 100 : 0);
     const seconds = delaySeconds(s);
     // a jump in delay time is heard as a pitch swoop, so glide to it a little more slowly
     if (jump) this.delay.delayTime.setValueAtTime(seconds, t); else this.delay.delayTime.setTargetAtTime(seconds, t, 0.05);

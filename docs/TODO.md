@@ -80,7 +80,7 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [ ] Music theory lessons that use the MIDI keyboard (owner, 14 Nov 2026): track I of the curriculum. First eight built 15 Nov ("Notes and chords": semitones and octaves, intervals, major and minor chords, scales, chords from a scale, inversions, a four-chord progression, sevenths); ten more planned.
 - [ ] Source texts on sound systems for the owner to find: see `docs/LITERATURE.md`.
 - [ ] Build from `docs/LEARNING_RESEARCH.md` (owner, 14 Nov 2026): Focus mode for ADHD, end-of-lesson recall, spaced return, mixed by-ear checkpoints, "why this matters" lines, fading guidance, optional noise, the new answer layout.
-- [ ] Remaining synthesis chapters from the course plan (113 lessons built)
+- [ ] Remaining synthesis chapters from the course plan (114 lessons built)
 
 ## Synth
 - [x] Filter with a draggable curve

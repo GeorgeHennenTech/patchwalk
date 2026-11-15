@@ -892,7 +892,7 @@ import { compAutoMakeupCancelDb, compReductionDb, crushLevels, delaySeconds, dis
 describe("effects", () => {
   it("everything is off to begin with, and each effect has a switch", () => {
     for (const id of FX_ORDER) { expect(INITIAL[`${id}On`]).toBe(false); expect(PARAMS[`${id}On`]!.kind).toBe("toggle"); }
-    expect(FX_MODULES.map((m) => m.name)).toEqual(["Distortion", "EQ", "Compressor", "Chorus", "Delay", "Reverb"]);
+    expect(FX_MODULES.map((m) => m.name)).toEqual(["Distortion", "EQ", "Compressor", "Chorus", "Flanger", "Phaser", "Delay", "Reverb"]);
   });
   it("soft clip bends, hard clip cuts flat, fold turns back, crush rounds to steps; all stay within full level", () => {
     expect(distGain(0)).toBe(1); expect(distGain(100)).toBe(32);
@@ -1494,14 +1494,14 @@ import { fxOrderOf, moveFx } from "../src/synth/fx";
 describe("the order of the effects", () => {
   it("starts in the usual order, and one effect can be moved a place earlier or later", () => {
     expect(INITIAL.fxOrder).toEqual([...FX_ORDER]);
-    expect(moveFx(INITIAL.fxOrder, "reverb", -1)).toEqual(["dist", "eq", "comp", "chorus", "reverb", "delay"]);
-    expect(moveFx(INITIAL.fxOrder, "dist", 1)).toEqual(["eq", "dist", "comp", "chorus", "delay", "reverb"]);
+    expect(moveFx(INITIAL.fxOrder, "reverb", -1)).toEqual(["dist", "eq", "comp", "chorus", "flanger", "phaser", "reverb", "delay"]);
+    expect(moveFx(INITIAL.fxOrder, "dist", 1)).toEqual(["eq", "dist", "comp", "chorus", "flanger", "phaser", "delay", "reverb"]);
     expect(moveFx(INITIAL.fxOrder, "dist", -1)).toEqual([...FX_ORDER]); expect(moveFx(INITIAL.fxOrder, "reverb", 1)).toEqual([...FX_ORDER]); // the ends stay put
     expect(INITIAL.fxOrder).toEqual([...FX_ORDER]); // moving makes a new list
   });
   it("always ends up with every effect exactly once, whatever was stored", () => {
     expect(fxOrderOf(undefined)).toEqual([...FX_ORDER]);
-    expect(fxOrderOf(["reverb", "nonsense", "reverb", "dist"])).toEqual(["reverb", "dist", "eq", "comp", "chorus", "delay"]);
+    expect(fxOrderOf(["reverb", "nonsense", "reverb", "dist"])).toEqual(["reverb", "dist", "eq", "comp", "chorus", "flanger", "phaser", "delay"]);
   });
 });
 
@@ -1804,6 +1804,7 @@ describe("the lessons added on 15 Nov can each be walked through", () => {
     "CN.6": [[{}, { held: [60, 64, 67] }], [{}, { held: [64, 67, 72] }], [{}, { held: [65, 69, 72] }], [{}, { held: [60, 65, 69] }]],
     "CN.7": [[{}, { held: [60, 64, 67] }], [{}, { held: [62, 67, 71] }], [{}, { held: [60, 64, 69] }], [{}, { held: [60, 65, 69] }], [{}, { sequence: [64, 60, 67, 62, 71, 67, 60, 69, 64, 69, 60, 65] }]],
     "CN.8": [[{}, { held: [60, 64, 67, 71] }], [{}, { held: [60, 64, 67, 70] }], [{}, { held: [62, 65, 69, 72] }], [{}, { held: [60, 64, 67, 69] }]],
+    "C7.8": [[{ flangerOn: true }, { held: [45] }], [{ flangerDepth: 0 }], [{ flangerDepth: 70, flangerFeedback: 80 }], [{ flangerOn: false, phaserOn: true }], [{ phaserCentre: 2500 }, range("phaserCentre", 300, 2500)]],
     "CT.12": [[{ envS: 0, envD: 220 }, played], [{ envS: 100, envR: 30 }, played], [{ lfo1Dest: "cutoff", lfo1Amount: 60, lfo1Rate: 7 }, { longestHeld: 2.5 }], [{ drive: 60 }, { longestHeld: 2.5 }]],
     "C1.11": [[{ table: "pdsaw" }, { held: [45] }], [{ position: 100 }, range("position", 0, 100)], [{ table: "moogsaw", position: 100 }], [{ position: 0 }], [{ table: "pdpulse", position: 95 }, range("position", 5, 95)], [{ table: "formant", position: 95 }, range("position", 5, 95)]],
     "C6.6": [[{}, { held: [57] }], [{ warpAmount: 50 }], [{ warpAmount: 95 }, range("warpAmount", 5, 95)], [{ warp: "steps", warpAmount: 60 }], [{ warpAmount: 80 }], [{ warp: "flip", warpAmount: 50 }]],
@@ -1825,5 +1826,21 @@ describe("the lessons added on 15 Nov can each be walked through", () => {
         if (said !== undefined) expect(said, id).not.toMatch(/NaN|undefined/);
       });
     }
+  });
+});
+
+import { FLANGER_BASE, flangerNotchHz, phaserDb } from "../src/synth/fx";
+describe("flanger and phaser", () => {
+  it("the flanger's notches sit where half a cycle, one and a half, and so on fit in its delay", () => {
+    expect(flangerNotchHz(FLANGER_BASE, 0)).toBeCloseTo(100, 6); expect(flangerNotchHz(FLANGER_BASE, 1)).toBeCloseTo(300, 6); expect(flangerNotchHz(0.0025, 0)).toBeCloseTo(200, 6);
+    expect(INITIAL.flangerOn).toBe(false); expect(INITIAL.phaserOn).toBe(false);
+  });
+  it("a phaser at rest leaves the far ends alone and cuts deep notches in between, which move with its centre", () => {
+    expect(phaserDb(800, 20)).toBeCloseTo(6, 0);                 // far below: the two paths add
+    const dips = (centre: number) => { const out: number[] = []; let last = phaserDb(centre, 60), falling = false; for (let hz = 62; hz < 16000; hz *= 1.01) { const v = phaserDb(centre, hz); if (v > last && falling && last < -15) out.push(hz / 1.01); falling = v < last; last = v; } return out; };
+    const at800 = dips(800), at1600 = dips(1600);
+    expect(at800.length).toBe(4); expect(at1600.length).toBe(4);  // four stages give four notches
+    expect(at1600[0]! / at800[0]!).toBeCloseTo(2, 1);             // an octave up, the notches are an octave up
+    expect(at800[0]!).toBeLessThan(800); expect(at800[3]!).toBeGreaterThan(800);
   });
 });

@@ -174,7 +174,7 @@ Added after the first eight milestones (owner asked for all four in one go):
     "Effects" and "Impacts".
     C5.9 ("One source scaling another") was added to chapter 5 with the matrix's Scaled by column.
     C1.9 ("Left and right, and a second wavetable") was added to chapter 1 with pan and Osc B's wavetable.
-    **Ninety-seven playable lessons** (15 Nov 2026: see "Batch of 15 Nov 2026" below for the ten added that day).
+    **Ninety-eight playable lessons** (15 Nov 2026: see "Batch of 15 Nov 2026" below for the ten added that day).
   - `src/ui/PlayView.tsx` ("Lessons" tab) and `src/ui/synth/` — spotlighted controls per step, live targets,
     scope, spectrum, meter, on-screen keyboard, Hold, blind ear checks, recap, guide remarks and suggestion.
   - "Hear it first" demos (`demo` on a lesson), match-by-ear rounds (`rounds`, compared by `src/course/match.ts`:
@@ -647,7 +647,7 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   (2) A quiz on that lesson, options in a mixed order, checked only when all are
   answered: each then shows the right answer, the learner's own, and one line of why. (3) The recap,
   with each point the quiz asked about tagged "you had this" or "read this one again". A quiet "Skip to
-  the recap" link stays, so nobody is trapped. **494 questions over the 97 lessons (the ten lessons added on 15 Nov 2026 have questions the assistant wrote itself), from 3 to 8 a lesson, in
+  the recap" link stays, so nobody is trapped. **498 questions over the 98 lessons (the ten lessons added on 15 Nov 2026 have questions the assistant wrote itself), from 3 to 8 a lesson, in
   `src/course/quiz/quiz-a.json` to `quiz-f.json`: the owner asked that the number per lesson come from what
   that lesson teaches, not from a formula, so each lesson was audited (list every distinct thing worth
   remembering, one question per thing, duplicates dropped) and most have 4 to 6** (`{ q, options[4], answer, why, point }`, `point`
@@ -875,10 +875,10 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
     values joined by straight lines, round the end of the cycle too.
   - **Ten lessons**: `lessons/additions.ts` (slotted before each chapter's checkpoint by `slot` in
     `index.ts`): C1.10 Osc B voices and warp, C2.8 Peak and shelf, C2.9 Two filters, C7.7 The order of
-    effects; and five macro recipes C5M.17 to C5M.21 (Radio, Crowd, Talk, Bits, Metal), 21 recipes now;
+    effects, C6.6 Fold, steps and flip; and five macro recipes C5M.17 to C5M.21 (Radio, Crowd, Talk, Bits, Metal), 21 recipes now;
     plus CX.1. **Blind ear checks** are now data in `src/course/ear.ts` (`EAR`: shape, higher, brighter,
-    filterType, movement) and three more lessons have one (low-pass cutoff, filter types, tremolo and
-    vibrato). Three knowledge cards: `fm`, `ring-modulation`, `two-filters` (39 cards, all drafts).
+    filterType, movement, attack, faster) and five more lessons have one (low-pass cutoff, filter types,
+    tremolo and vibrato, the envelope's stages, a slow repeating shape). Three knowledge cards: `fm`, `ring-modulation`, `two-filters` (39 cards, all drafts).
   - **Saved sounds and lesson recall are stored with the account** (`patches`, `recall` on the account's
     data; `mergePatches`: newest of each name; `mergeRecall`: latest record of each lesson). Focus mode's
     switch and the saved place are still per browser.

@@ -202,7 +202,7 @@ than one instrument instead of being rewritten.
 **Latest (15 Nov 2026).** The owner asked for a long run of tasks that need no decision from them. Done and
 pushed: everything listed under "Batch of 15 Nov 2026" in `CLAUDE.md` (a second filter with routing, peak
 and shelf types, three more warp modes, a smooth drawn LFO shape, Osc B's own warp and unison, reorderable
-effects, saved sounds, ten more lessons making 97, more ear checks, three knowledge cards, saved sounds and
+effects, saved sounds, eleven more lessons making 98, more ear checks, three knowledge cards, saved sounds and
 recall stored with the account). **None of it has been seen or heard by the owner.** Still waiting on the
 owner: a verdict on the Res 2 "definition pass" and its engineer's view (which decides whether Vero, the
 horn and the driver get the same treatment), and a read of the quiz and "why this matters" wording.

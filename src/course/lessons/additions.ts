@@ -3,6 +3,7 @@
 // into its chapter just before that chapter's checkpoint (see index.ts).
 import { SHAPE_MAX_DB } from "../../synth/filter";
 import { fxOrderOf } from "../../synth/fx";
+import { foldGain, stepCount } from "../../synth/params";
 import type { DemoTone, PlayableLesson, Snapshot } from "../types";
 
 const between = (v: number, lo: number, hi: number) => v >= lo && v <= hi;
@@ -102,5 +103,32 @@ export const FX_ADDITIONS: PlayableLesson[] = [
     ],
     recap: ["Each effect works on what the one before it sends on, so order changes the result.", "Distortion after reverb roughens the tail and makes it louder; before reverb, the tail stays smooth.", "An EQ cut before distortion changes what gets distorted; after it, the cut shapes the finished tone."],
     inSerum: "Serum's effects can be reordered by dragging an effect to a new place in the list or in the rack (page 156 of its guide). Try distortion before and after reverb there. Listening only.",
+  },
+];
+
+const FOLD = { shape: "sine", warp: "fold", warpAmount: 0 } as const;
+const W = ["scope", "spectrum"] as const;
+export const WARP_ADDITIONS: PlayableLesson[] = [
+  {
+    id: "C6.6", title: "Fold, steps and flip", buildsOn: ["C6.1"], minutes: 8, cardIds: ["warp"], initial: { ...FOLD },
+    outcome: "Reshape a wave by changing its height, not only where it is read: fold it, cut it into steps, and turn part of it over.",
+    demo: { caption: "A sine: plain, folded, cut into steps, then with its second half turned over.", tones: tones([{ shape: "sine" }, { ...FOLD, warpAmount: 60 }, { shape: "sine", warp: "steps", warpAmount: 60 }, { shape: "sine", warp: "flip", warpAmount: 50 }], 1.3, 0.3, 57) },
+    idea: [
+      "Bend, mirror, sync and squeeze all change where in the wave the oscillator reads. Fold and Flip work on the wave's height instead. Fold turns the wave up and folds whatever passes the top back down. Flip turns the end of each cycle upside down.",
+      "Steps is in between: it holds each reading for a while before taking the next, so a smooth wave becomes a staircase. All three add harmonics to a plain wave, each with its own character.",
+    ],
+    steps: [
+      { do: "Switch on Hold and play a note. It is a sine, and Warp is set to Fold with the amount at 0.", show: [...K, ...W], hear: "A pure tone: one bar on the spectrum.", target: "A note held", check: (s) => s.held.length >= 1 },
+      { do: "Turn Warp amount up to about 50%.", show: [...K, "warp", "warpAmount", ...W], hear: "Brighter and hollow. On the scope the tops of the wave have been folded down into dips.", target: "Fold, amount between 40% and 60%", check: (s) => s.state.warp === "fold" && between(s.state.warpAmount, 40, 60),
+        remark: (s) => `At ${s.state.warpAmount}% the wave is turned up ${foldGain(s.state.warpAmount).toFixed(1)} times, and everything past the top is folded back.` },
+      { do: "Sweep the amount slowly from below 10% to above 90%.", show: [...K, "warpAmount", ...W], hear: "A metallic, shifting tone. The bars on the spectrum rise and fall in turn; they do not simply grow.", target: "Amount taken below 10% and above 90%", check: (s) => s.state.warp === "fold" && swept(s, "warpAmount", 10, 90) },
+      { do: "Change Warp to Steps and set the amount to about 60%.", show: [...K, "warp", "warpAmount", ...W], hear: "A buzzy, digital edge on the note. The scope shows a staircase in the outline of the sine.", target: "Steps, amount between 50% and 70%", check: (s) => s.state.warp === "steps" && between(s.state.warpAmount, 50, 70),
+        remark: (s) => `At ${s.state.warpAmount}% each cycle is cut into ${stepCount(s.state.warpAmount)} flat steps.` },
+      { do: "Raise the amount to about 80%.", show: [...K, "warpAmount", ...W], hear: "Much rougher: only a handful of steps are left in each cycle.", target: "Steps, amount between 72% and 88%", check: (s) => s.state.warp === "steps" && between(s.state.warpAmount, 72, 88),
+        remark: (s) => `Now there are ${stepCount(s.state.warpAmount)} steps in each cycle. Fewer steps, rougher sound.` },
+      { do: "Change Warp to Flip and set the amount to 50%.", show: [...K, "warp", "warpAmount", ...W], hear: "The note seems to jump up an octave. With its second half turned over, the wave repeats twice in the time it used to repeat once.", target: "Flip, amount between 45% and 55%", check: (s) => s.state.warp === "flip" && between(s.state.warpAmount, 45, 55) },
+    ],
+    recap: ["Fold turns the wave up and folds back what passes the top, adding harmonics that shift unevenly.", "Steps cuts each cycle into flat steps: fewer steps, rougher tone.", "Flip turns the end of the cycle upside down; half way, a sine repeats twice as often and sounds an octave up."],
+    inSerum: "Serum's warp menu includes Flip and Quantize (pages 50 and 51 of its guide). The versions here follow our own rules and have not been checked against Serum's, so nothing is checked. Listening only.",
   },
 ];

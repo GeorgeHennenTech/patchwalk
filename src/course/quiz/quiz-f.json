@@ -1068,5 +1068,55 @@
    "why": "Heavy folding gets shrill, so the filter moves the other way to keep the top under control.",
    "point": 2
   }
+ ],
+ "C6.6": [
+  {
+   "q": "What does Fold do to a wave?",
+   "options": [
+    "Reads it backwards",
+    "Turns it up and folds back what passes the top",
+    "Cuts it into flat steps",
+    "Lowers its pitch"
+   ],
+   "answer": 1,
+   "why": "Fold works on the wave's height: whatever passes the top is folded back down.",
+   "point": 0
+  },
+  {
+   "q": "As the Fold amount rises, how do the harmonics behave?",
+   "options": [
+    "They rise and fall unevenly",
+    "They all grow steadily",
+    "They disappear",
+    "Only the first one changes"
+   ],
+   "answer": 0,
+   "why": "The bars rise and fall in turn, which is why folding sounds metallic.",
+   "point": 0
+  },
+  {
+   "q": "With Steps, what happens as the number of steps in a cycle gets smaller?",
+   "options": [
+    "The tone gets smoother",
+    "The pitch drops",
+    "The tone gets rougher",
+    "Nothing changes"
+   ],
+   "answer": 2,
+   "why": "Fewer steps make a coarser staircase, and a rougher tone.",
+   "point": 1
+  },
+  {
+   "q": "Flip at half way on a sine makes the note seem to do what?",
+   "options": [
+    "Drop an octave",
+    "Go silent",
+    "Stay the same",
+    "Jump up an octave"
+   ],
+   "answer": 3,
+   "why": "With the second half turned over, the wave repeats twice as often.",
+   "point": 2
+  }
  ]
 }

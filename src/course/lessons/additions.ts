@@ -42,7 +42,7 @@ export const FILTER_ADDITIONS: PlayableLesson[] = [
     inSerum: "Serum's filter menu lists Band/Peak/Notch types (page 136 of its guide). How the height of its peak is set is not confirmed, so nothing is checked. Listening only.",
   },
   {
-    id: "C2.9", title: "Two filters", buildsOn: ["C2.3"], minutes: 9, cardIds: ["filter-types-and-slope"], initial: { ...TWO },
+    id: "C2.9", title: "Two filters", buildsOn: ["C2.3"], minutes: 9, cardIds: ["two-filters"], initial: { ...TWO },
     outcome: "Use a second filter after the first to leave a band, and beside the first to leave a hole.",
     demo: { caption: "A low-pass alone, then a high-pass after it (a band), then the two side by side set wide apart (a hole in the middle).", tones: tones([{ ...TWO }, { ...TWO, cutoff: 1200, filter2On: true, filter2Type: "high", cutoff2: 600 }, { ...TWO, cutoff: 200, filter2On: true, filter2Type: "high", cutoff2: 4000, filterRoute: "parallel" }]) },
     idea: [

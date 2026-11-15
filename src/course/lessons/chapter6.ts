@@ -79,7 +79,7 @@ export const CHAPTER_6: PlayableLesson[] = [
     inSerum: "Serum's guide lists PD modes in the warp menu that use another oscillator (page 55), which is a different thing from this squeeze. For pulse width in Serum, look for a pulse-width warp mode; its exact name is not confirmed here, so nothing is checked.",
   },
   {
-    id: "C6.4", title: "FM: one oscillator shaking another", buildsOn: ["C1.4", "C3.4"], minutes: 10, cardIds: [], initial: { ...SINES },
+    id: "C6.4", title: "FM: one oscillator shaking another", buildsOn: ["C1.4", "C3.4"], minutes: 10, cardIds: ["fm"], initial: { ...SINES },
     outcome: "Use oscillator B to shake oscillator A's pitch so fast that it becomes tone: bright, bell-like or growling.",
     demo: { caption: "A sine; the same sine with FM from B; then a bell made with an envelope on the FM amount.", tones: [{ patch: { ...SINES }, note: 57, at: 0, seconds: 1.3 }, { patch: { ...SINES, fmAmount: 35 }, note: 57, at: 1.6, seconds: 1.3 }, { patch: { ...BELL }, note: 69, at: 3.2, seconds: 2.2 }] },
     idea: [
@@ -101,7 +101,7 @@ export const CHAPTER_6: PlayableLesson[] = [
     inSerum: "Serum's warp menu has FM (from other oscillator) modes such as FM (B); its guide notes that the other oscillator must be enabled for this (page 54). That differs from this synth, where B can stay switched off. Nothing is checked.",
   },
   {
-    id: "C6.5", title: "Ring modulation", buildsOn: ["C6.4"], minutes: 8, cardIds: [], initial: { ...SINES },
+    id: "C6.5", title: "Ring modulation", buildsOn: ["C6.4"], minutes: 8, cardIds: ["ring-modulation"], initial: { ...SINES },
     outcome: "Multiply two oscillators, predict the two tones that come out, and tell ring modulation from FM.",
     demo: { caption: "Two sines a fifth apart: A alone, then A multiplied by B. Then the same with saws.", tones: patches([{ ...SINES, bSemitone: 7 }, { ...SINES, bSemitone: 7, ringAmount: 100 }, { shape: "saw", bShape: "saw", bSemitone: 7 }, { shape: "saw", bShape: "saw", bSemitone: 7, ringAmount: 100 }]) },
     idea: [

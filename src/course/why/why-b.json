@@ -1,0 +1,17 @@
+{
+  "C2.1": "Closing a low-pass filter turns a buzzy saw into a round, dark bass, and opening it again brings the bite back.",
+  "C2.2": "Turning up resonance makes a filter sweep squelch and whistle, the sound behind wet, rubbery basslines.",
+  "C2.3": "Choosing high-pass, band-pass or notch lets you thin a pad so it leaves room for the bass, or carve a narrow, nasal lead.",
+  "C2.4": "A steep filter shuts a bass down hard and dark, while a gentle one leaves some edge, so you pick what the track needs.",
+  "C2.5": "Driving a sound into the filter adds grit and thickness, giving you a warm, heavy bass or a harsh, snarling one.",
+  "C2.6": "Letting the cutoff follow the keys keeps a bassline or melody equally bright from its lowest note to its highest.",
+  "C2.7": "Ringing a filter until it whistles gives you eerie, glassy tones you can play as melodies from the keyboard.",
+  "C2.C": "Naming what a filter has taken away by ear lets you copy the dark, squelchy or gritty tone of a sound you hear.",
+  "C3.1": "Shaping how a note starts, settles and fades decides whether your sound stabs, swells or lingers after you lift your finger.",
+  "C3.2": "With only four controls you can turn the same oscillators into a short pluck for a melody, a slow pad or a steady organ.",
+  "C3.3": "Keeping a note at full level for a moment gives a bass hit more weight up front, and the fall shape makes it sound struck.",
+  "C3.4": "An envelope on the cutoff gives each bass note a bright start that closes down, the plucky movement that makes a bassline bounce.",
+  "C3.5": "Sending an envelope to pitch builds a kick that thumps, a laser zap for a fill, or a lead that scoops up into each note.",
+  "C3.6": "On a high-pass the body of a note arrives late, and on a band-pass it speaks like a vowel, handy for odd, talking basses.",
+  "C3.C": "Judging how a sound starts, holds, fades and changes brightness lets you match the timing of a pluck, pad or bass by ear."
+}

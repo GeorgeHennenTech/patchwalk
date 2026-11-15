@@ -115,8 +115,13 @@ export default function Res2View() {
     };
     cone("bassDriver", 15, py(0.735), -0.3); cone("midDriver", 8, py((OPENINGS.mid.y0 + OPENINGS.mid.y1) / 2), -0.19); cone("highDriver", 1, py((OPENINGS.high.y0 + OPENINGS.high.y1) / 2), -0.1);
     st.scene.add(drivers);
-    // a plain plinth to stand it at ear height
-    const plinth = new THREE.Mesh(new THREE.BoxGeometry(W * 0.9, BASE, D * 0.9), paint("#3b3840", { roughness: 0.9 })); plinth.position.set(0, BASE / 2, -D / 2); st.scene.add(plinth);
+    // it stands on a bass cabinet, because below 60 Hz it needs one. A plain stand-in: not drawn to any model.
+    { const purple = paint("#1f1b38"), dark = paint("#0b0a14", { roughness: 0.9 }), bw = W * 1.12, bd = D * 1.25;
+      const box = new THREE.Mesh(new THREE.BoxGeometry(bw, BASE, bd), purple); box.position.set(0, BASE / 2, -bd / 2 + 0.04);
+      const mouth = new THREE.Mesh(new THREE.BoxGeometry(bw * 0.86, BASE * 0.78, 0.02), dark); mouth.position.set(0, BASE / 2, 0.045);
+      const bar = new THREE.Mesh(new THREE.BoxGeometry(0.03, BASE * 0.78, 0.03), purple); bar.position.set(0, BASE / 2, 0.055);
+      const tag = sign("a bass cabinet (stand-in)", 0.06); tag.position.set(0, 0.1, 0.12);
+      st.scene.add(box, mouth, bar, tag); }
     shadowed(st.scene);
     // sizes: thin lines with a figure on each
     const rule = (a: [number, number, number], b: [number, number, number], text: string) => {
@@ -301,7 +306,7 @@ export default function Res2View() {
               <li><strong>Each driver alone.</strong> The 8-inch file covers 250 Hz to 5 kHz and the 1-inch file 6.3 kHz to 20 kHz. So the handover sits between those two bands in these files; the pair playing together around it is not shown.</li>
               <li><strong>Open air only.</strong> The floor map takes away 6 dB for each doubling of distance and nothing else: no floor bounce, no walls, no second cabinet, no bass horn.</li>
               <li><strong>Relative, not absolute.</strong> Colours compare each spot with 1 m straight ahead in the same band. How loud that is depends on the amplifier.</li>
-              <li><strong>Ears at 1.7 m.</strong> The map is for someone standing; the cabinet is on a plinth we chose.</li>
+              <li><strong>Ears at 1.7 m.</strong> The map is for someone standing; the cabinet sits at a height we chose.</li>
             </ul>
           </div>
         </aside>
@@ -319,7 +324,7 @@ export default function Res2View() {
           <p>So treat the outside, the sizes and the numbers as the maker’s, and everything behind the front panel as a sketch.</p>
         </div>
       </aside>
-      <p className="muted driver-draft">From the maker’s drawing: the cabinet’s sizes, its 28° taper, and where the three openings are on the front. From the maker’s spec sheet (Funktion-One documents, page {RES2.page}): the three drivers, 60 Hz to 18 kHz, the 250 Hz crossover, 50° by 25° coverage, 48 kg, two NL4 connectors, M10 flypoints. Colours follow the maker’s photograph by eye: a deep purple cabinet with a pale grey moulding for the two upper horns. The model was built in Blender from that drawing, with rounded edges, hand slots, screws and the strut in the bass horn placed by eye from the photograph. Drawn for illustration: how deep each horn goes and its shape inside, the drivers’ positions, and the plinth. The pink wavefronts are a picture, not a measurement: they are spaced one true wavelength apart (sound travels 343 m a second, so the wavelength is 343 divided by the frequency), travel hundreds of times slower than sound so they can be seen, and are drawn inside the stated 50° by 25° at every frequency, although in life low notes spread wider than that. The landmark sounds are rough conventions, not measurements. Your own speakers or headphones are what you hear the tone through, so very low and very high tones may be faint or silent on them.</p>
+      <p className="muted driver-draft">From the maker’s drawing: the cabinet’s sizes, its 28° taper, and where the three openings are on the front. From the maker’s spec sheet (Funktion-One documents, page {RES2.page}): the three drivers, 60 Hz to 18 kHz, the 250 Hz crossover, 50° by 25° coverage, 48 kg, two NL4 connectors, M10 flypoints. Colours follow the maker’s photograph by eye: a deep purple cabinet with a pale grey moulding for the two upper horns. The model was built in Blender from that drawing, with rounded edges, hand slots, screws and the strut in the bass horn placed by eye from the photograph. Drawn for illustration: how deep each horn goes and its shape inside, the drivers’ positions, and the bass cabinet it stands on (a stand-in, not any model; the sheet says a Res 2 can be supplemented with separate bass). The pink wavefronts are a picture, not a measurement: they are spaced one true wavelength apart (sound travels 343 m a second, so the wavelength is 343 divided by the frequency), travel hundreds of times slower than sound so they can be seen, and are drawn inside the stated 50° by 25° at every frequency, although in life low notes spread wider than that. The landmark sounds are rough conventions, not measurements. Your own speakers or headphones are what you hear the tone through, so very low and very high tones may be faint or silent on them.</p>
     </>
   );
 }

@@ -799,10 +799,10 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 .players .people { list-style: none; padding: 0; margin: 8px 0; display: grid; gap: 6px; }
 
 /* The eye that shows a password as typed. */
-.account-gate .pw-field { position: relative; display: block; }
-.account-gate .pw-field input { width: 100%; box-sizing: border-box; padding-right: 46px; }
-.account-gate .pw-eye { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); display: grid; place-items: center; width: 34px; height: 34px; padding: 0; border: 0; border-radius: 10px; background: none; color: inherit; opacity: 0.65; cursor: pointer; box-shadow: none; }
-.account-gate .pw-eye:hover, .account-gate .pw-eye[aria-pressed="true"] { opacity: 1; }
+.account-gate .pw-field, .players .pw-field { position: relative; display: block; flex: 1 1 220px; }
+.account-gate .pw-field input, .players .pw-field input { width: 100%; box-sizing: border-box; padding-right: 46px; }
+.account-gate .pw-eye, .players .pw-eye { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); display: grid; place-items: center; width: 34px; height: 34px; padding: 0; border: 0; border-radius: 10px; background: none; color: inherit; opacity: 0.65; cursor: pointer; box-shadow: none; }
+.account-gate .pw-eye:hover, .account-gate .pw-eye[aria-pressed="true"], .players .pw-eye:hover, .players .pw-eye[aria-pressed="true"] { opacity: 1; }
 
 /* Res 2: the strip showing which driver covers which part of the frequency range. */
 .res2-band { position: relative; display: flex; height: 30px; margin: 12px 0 2px; border: 2px solid var(--thread); border-radius: 10px; overflow: hidden; font-size: 0.78rem; font-weight: 700; }

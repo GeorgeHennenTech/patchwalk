@@ -60,6 +60,19 @@ export function SignInGate({ ownerSet, mail }: { ownerSet: boolean; mail: boolea
   );
 }
 
+/** A password box with an eye that shows what was typed. */
+function Secret({ value, onChange, label, autoComplete, minLength }: { value: string; onChange: (v: string) => void; label: string; autoComplete: string; minLength?: number }) {
+  const [shown, setShown] = useState(false);
+  return (
+    <span className="pw-field">
+      <input type={shown ? "text" : "password"} value={value} onChange={(e) => onChange(e.target.value)} placeholder={label} aria-label={label} autoComplete={autoComplete} minLength={minLength} />
+      <button type="button" className="pw-eye" aria-pressed={shown} aria-label={shown ? "Hide password" : "Show password"} title={shown ? "Hide password" : "Show password"} onClick={() => setShown(!shown)}>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" /><circle cx="12" cy="12" r="3" />{shown && <path d="M4 4l16 16" />}</svg>
+      </button>
+    </span>
+  );
+}
+
 /** How to get a key, in plain steps. The links open Anthropic's own site in a new tab. */
 function KeySteps() {
   return (
@@ -143,8 +156,8 @@ export function AccountBar({ session }: { session: Extract<Session, { state: "si
           <details className="who-key">
             <summary>Change my password</summary>
             <form className="who-add" onSubmit={(e) => { e.preventDefault(); void newPassword(); }}>
-              <input type="password" value={old} onChange={(e) => setOld(e.target.value)} placeholder="Current password" aria-label="Current password" autoComplete="current-password" />
-              <input type="password" value={next} onChange={(e) => setNext(e.target.value)} placeholder="New password (8 or more)" aria-label="New password" minLength={8} autoComplete="new-password" />
+              <Secret value={old} onChange={setOld} label="Current password" autoComplete="current-password" />
+              <Secret value={next} onChange={setNext} label="New password (8 or more)" autoComplete="new-password" minLength={8} />
               <button disabled={busy || !old || next.length < 8}>Change</button>
             </form>
           </details>

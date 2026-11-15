@@ -1691,7 +1691,7 @@ describe("the smooth drawn LFO shape", () => {
   });
 });
 
-import { cosinesA, formantWave, magnitudesA, MOOG_FRAME_HZ, moogRise, pdWave, phaseShape, TABLE_NOTES, TABLES } from "../src/synth/params";
+import { cosinesA, formantWave, pdSquareWave, tanhSaw, tanhSquare, magnitudesA, MOOG_FRAME_HZ, moogRise, pdWave, phaseShape, TABLE_NOTES, TABLES } from "../src/synth/params";
 describe("wavetables built from published formulas", () => {
   const mags = (table: (typeof TABLES)[number], position: number) => magnitudesA({ shape: "sine", table, position });
   const strongest = (m: Float32Array) => { let top = 1; for (let n = 1; n < m.length; n++) if (m[n]! > m[top]!) top = n; return top; };
@@ -1725,7 +1725,17 @@ describe("wavetables built from published formulas", () => {
     let last = 0; for (let p = 0; p <= 100; p += 10) { const top = strongest(mags("formant", p)); expect(top).toBeGreaterThanOrEqual(last); last = top; }
     expect(formantWave(0.3, 2.25)).toBeCloseTo(0.5 * pdWave(0.3, 0.5, 2) + 0.5 * pdWave(0.3, 0.5, 2.5), 9); // equations 9 and 10
   });
+  it("Phase square and Driven square have odd harmonics only, and grow brighter; Driven saw has the even ones back", () => {
+    for (const t of ["pdsquare", "tanhsquare"] as const) {
+      for (const p of [30, 70, 100]) { const m = mags(t, p); expect(m[2]!, t).toBeLessThan(1e-4); expect(m[4]!, t).toBeLessThan(1e-4); expect(m[3]!, t).toBeGreaterThan(0.02); }
+      expect(brightness(mags(t, 100))).toBeGreaterThan(brightness(mags(t, 20)));
+    }
+    const sq = mags("tanhsquare", 100); expect(sq[3]! / sq[1]!).toBeCloseTo(1 / 3, 1); // close to a square's 1, 1/3, 1/5
+    const saw = mags("tanhsaw", 100); expect(saw[2]!).toBeGreaterThan(0.2); expect(saw[3]!).toBeGreaterThan(0.1); expect(saw[4]!).toBeGreaterThan(0.08);
+    expect(tanhSquare(0.25, 0.25)).toBeCloseTo(1, 9); expect(tanhSaw(0, 5)).toBeCloseTo(0, 9); expect(pdSquareWave(0.5, 0.2)).toBeCloseTo(1, 9);
+  });
   it("every formula table says where it comes from, and no table is silent anywhere", () => {
+    for (const t of ["pdsquare", "tanhsquare", "tanhsaw"] as const) expect(TABLE_NOTES[t]!).toMatch(/20(09|10)/);
     for (const t of ["pdsaw", "moogsaw", "pdpulse", "formant"] as const) expect(TABLE_NOTES[t]!).toMatch(/20(09|11)/);
     for (const t of TABLES) if (t !== "none") for (const p of [0, 33, 66, 100]) expect(Math.max(...mags(t, p)), `${t} ${p}`).toBeGreaterThan(0.1);
   });

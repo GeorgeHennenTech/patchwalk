@@ -894,8 +894,11 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   carry cosine parts (`Frame`, `fromWave`, `cosinesA`, `magnitudesA`); `harmonicsA` is the sine parts only,
   so use `magnitudesA` for loudness or brightness. `TABLE_NOTES` says where each comes from and is shown
   under the wave picture. Measured on the engine: each harmonic within 0.7 dB of the calculated level (the
-  analyser's own error). Not done: the CZ's square and resonant shapes (formulas not yet read out of the
-  papers), the JP-8000 supersaw (the thesis link was dead), wavefolder curves from the Esqueda paper, and
+  analyser's own error). Three more were added the same day: `pdsquare` "Phase square" (two bends per cycle:
+  odd harmonics only), `tanhsquare` "Driven square" and `tanhsaw` "Driven saw" (a sine through a hyperbolic
+  tangent, and that times a raised cosine; Lazzarini and Timoney 2010, equations 16-17 and "sawtooth from
+  square"). The lesson "Shapes from classic synths" (C1.11) uses the first four. Not done: the CZ's
+  resonant shapes, the JP-8000 supersaw (the thesis link was dead), wavefolder curves from the Esqueda paper, and
   any lesson on the new tables. The Adventure Kid Waveforms collection (about 4,300 single cycles) is a
   possible bulk source; its licence is reported two ways and must be read first.
   A long list of **physical-modelling literature** (found by search, nothing opened) is in

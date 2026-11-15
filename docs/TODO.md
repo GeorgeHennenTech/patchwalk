@@ -29,7 +29,7 @@ it, and reports in a few lines. None of these needs the owner or spends credits.
 - [x] 20. A lesson on Fold, Steps and Flip; ear checks for attack and LFO speed
 - [x] 21. Five free papers on classic synth wave shapes taken into the library; four wavetables built from their formulas (Phase saw, Analogue saw, Phase pulse, Formant)
 - [x] 22. Physical-modelling literature: nine free texts taken into the library (two theses are scans with no text; the piano overview would not download)
-- [ ] 23. More formula wavetables: the CZ square and resonant shapes, a supersaw preset (the thesis link was dead), wavefolder curves from the Serge and Lockhart paper
+- [ ] 23. More formula wavetables (done 15 Nov: Phase square, Driven square, Driven saw). Still to do: the CZ resonant shapes, a supersaw preset (the thesis link was dead), wavefolder curves from the Serge and Lockhart paper
 - [x] 24. A lesson on the new wavetables ("Shapes from classic synths")
 - [x] 25. String lab: a plucked string built from the papers (the first physical-modelling instrument), as its own tab
 - [ ] 26. String lab next: make it an instrument the lesson engine can use (steps, checks, match by ear), then stiffness, two strings, a body, and a worklet for bends and bowing

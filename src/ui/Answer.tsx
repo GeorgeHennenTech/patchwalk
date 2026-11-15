@@ -4,7 +4,7 @@ import { relatedLessons } from "../course/related";
 import { askGuide, type AskOutcome } from "../guide/ask";
 import { pointAt, type PointOutcome } from "../guide/point";
 import { layoutMarks } from "../library/point";
-import { answerText, toParagraphs } from "../library/answer";
+import { answerText, layout } from "../library/answer";
 import { Badge } from "./Badge";
 
 /** The answer is shown as plain text, so any Markdown marks the model slips in are removed. */
@@ -13,7 +13,18 @@ export const plain = (text: string) => text.replace(/\*\*|__|^#{1,6} /gm, "");
 /** Lets an answer send the learner to a practice lesson. Provided by the app; absent in tests. */
 export const OpenLesson = createContext<(id: string) => void>(() => {});
 
-export function Answer({ outcome, question }: { outcome: AskOutcome; question?: string }) {
+/** One question to check understanding: the answer stays hidden until asked for. */
+function CheckYourself({ question, answer }: { question: string; answer: string }) {
+  const [shown, setShown] = useState(false);
+  return (
+    <div className="answer-check">
+      <p><strong>Check yourself:</strong> {plain(question)}</p>
+      {shown ? <p className="answer-check-a">{plain(answer)}</p> : <button className="link" onClick={() => setShown(true)}>Show the answer</button>}
+    </div>
+  );
+}
+
+export function Answer({ outcome, question, onAsk }: { outcome: AskOutcome; question?: string; /** asks a follow-up; without it the suggestions are not offered */ onAsk?: (q: string) => void }) {
   const open = useContext(OpenLesson);
   const lessons = question ? relatedLessons(question, LESSONS) : [];
   if (outcome.kind === "unavailable") return <p className="banner">{outcome.message}</p>;
@@ -24,22 +35,27 @@ export function Answer({ outcome, question }: { outcome: AskOutcome; question?: 
       {/* The steps go in the main column. A side note is not one of the steps, so it sits apart: a patch
           stitched on in the free space to the right (underneath on a narrow screen). */}
       {(() => {
-        const paragraphs = toParagraphs(a.segments);
+        const laid = layout(a.segments), paragraphs = laid.paragraphs;
         const text = (p: (typeof paragraphs)[number]) => p.parts.map((s, j) => (
           <span key={j} className={s.sources.length ? "" : "uncited"} title={s.sources.length ? undefined : "This part was not drawn from a library passage."}>
-            {plain(s.text)}{s.sources.map((n) => <sup key={n}>[{n}]</sup>)}
+            {plain(s.text)}{s.sources.map((n) => <sup key={n}>{n}</sup>)}
           </span>
         ));
         const notes = paragraphs.filter((p) => p.aside && p.parts.length > 0);
         return (
           <div className={`answer-body${notes.length ? " with-notes" : ""}`}>
             <div className="answer-main">
+              {laid.lead && <p className="answer answer-lead">{text(laid.lead)}</p>}
               {paragraphs.filter((p) => !p.aside).map((p, k) => (
                 <div key={k} className="answer-block">
                   {p.heading && <h5 className="answer-heading">{p.heading}</h5>}
                   {p.parts.length > 0 && <p className="answer">{text(p)}</p>}
                 </div>
               ))}
+              {laid.check && <CheckYourself key={laid.check.question} question={laid.check.question} answer={laid.check.answer} />}
+              {onAsk && laid.deeper.length > 0 && (
+                <div className="answer-deeper"><strong>Go deeper:</strong> {laid.deeper.map((q) => <button key={q} onClick={() => onAsk(q)}>{plain(q)}</button>)}</div>
+              )}
             </div>
             {notes.length > 0 && (
               <div className="answer-notes">
@@ -53,16 +69,23 @@ export function Answer({ outcome, question }: { outcome: AskOutcome; question?: 
           </div>
         );
       })()}
-      {a.segments.some((s) => !s.sources.length && s.text.trim().length > 40) && <p className="note">Greyed text is the guide’s own wording without a source passage. Treat it with more care than the cited parts.</p>}
-      <ol className="sources">
-        {a.sources.map((s) => (
-          <li key={s.n}><strong>{s.source}</strong>{s.page ? `, page ${s.page}` : ""} · {s.section}
-            {s.quotes.slice(0, 2).map((q) => <blockquote key={q}>{q.length > 260 ? q.slice(0, 260) + "…" : q}</blockquote>)}
-            {/* Every cited page that has pictures shows them: code decides this, not the model. */}
-            {s.images?.map((im) => <SourceImage key={im.file} im={im} from={`${s.source}${s.page ? `, page ${s.page}` : ""}`} question={question} answer={answerText(a)} />)}
-          </li>
-        ))}
-      </ol>
+      {(() => { const l = layout(a.segments); return [...(l.lead ? [l.lead] : []), ...l.paragraphs].some((p) => p.parts.some((s) => !s.sources.length && s.text.trim().length > 40)); })() && <p className="note">Greyed text is the guide’s own wording without a source passage. Treat it with more care than the cited parts.</p>}
+      {/* Every cited page that has pictures shows them, always in view: code decides this, not the model. */}
+      {a.sources.some((s) => s.images?.length) && (
+        <div className="answer-pictures">
+          {a.sources.flatMap((s) => (s.images ?? []).map((im) => <SourceImage key={`${s.n}-${im.file}`} im={im} from={`${s.source}${s.page ? `, page ${s.page}` : ""}`} question={question} answer={answerText(a)} />))}
+        </div>
+      )}
+      <details className="sources-fold">
+        <summary>Where this comes from ({a.sources.length} {a.sources.length === 1 ? "source" : "sources"})</summary>
+        <ol className="sources">
+          {a.sources.map((s) => (
+            <li key={s.n}><strong>{s.source}</strong>{s.page ? `, page ${s.page}` : ""} · {s.section}
+              {s.quotes.slice(0, 2).map((q) => <blockquote key={q}>{q.length > 260 ? q.slice(0, 260) + "…" : q}</blockquote>)}
+            </li>
+          ))}
+        </ol>
+      </details>
       {lessons.length > 0 && (
         <p className="related"><strong>Practise this:</strong>{" "}
           {lessons.map((l, i) => <span key={l.id}>{i > 0 && " or "}<button className="link" onClick={() => open(l.id)}>{l.title}</button> <span className="muted">({placeOf(l).chapter}, lesson {placeOf(l).number})</span></span>)}

@@ -78,7 +78,7 @@ export function AskView() {
           <h4>{t.question}</h4>
           {!t.outcome && <p className="muted">Looking through the library…</p>}
           {t.remembered && <p className="note">This question has been answered before, so this is the answer from then and no new call was made. <button className="link" disabled={busy} onClick={() => void ask(t.question, i)}>Ask again fresh</button></p>}
-          {t.outcome && <Answer outcome={t.outcome} question={t.question} />}
+          {t.outcome && <Answer outcome={t.outcome} question={t.question} onAsk={busy || i !== turns.length - 1 ? undefined : (q) => void ask(q)} />}
         </article>
       ))}
       <form onSubmit={(e) => { e.preventDefault(); void ask(question); }}>

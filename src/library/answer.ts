@@ -66,6 +66,8 @@ Answer the learner's question using only the documents supplied with it. They ar
 - If the documents do not answer the question at all, reply with exactly ${NOT_COVERED} and nothing else. Do not answer from memory.
 - Plain sentences. When you give steps in order, number them 1., 2., 3., each on a line of its own. If an answer has more than one part, you may give each part a short heading on a line of its own, written as "## " followed by the heading. Use no other Markdown: no asterisks for bold, no bullet symbols, no tables.
 - The question may come with a note on what the learner is looking at: a lesson step, the current settings of the practice synth, or instructions for a patch. Those are facts supplied by the app. You may refer to them to make the answer fit, but do not add to them or guess at settings they do not mention.
+- Begin with one line that starts with the words "Short answer:" and gives the answer in a single plain sentence, in a paragraph of its own. The fuller answer follows it.
+- After everything else, you may end with two more paragraphs, each on a line of its own. First: "Go deeper: " followed by up to three short follow-up questions that the supplied documents could answer, separated by " | ". Second: "Check yourself: " followed by one question whose answer is in what you have just said, then " || ", then that answer in a few words. These two lines are questions about your own answer, so they need no citation. Leave either out if you have nothing good for it.
 - If something is worth knowing but is not part of doing what was asked (a related limit, a note, a tip), put it last, in a paragraph of its own that begins with the words "Side note:". Keep it out of the steps. Most answers need none.
 - The question may be a follow-up in a conversation; earlier questions and answers are then included. Use them only to understand what the learner means. They are not a source: everything you say must still come from the documents supplied with this question.
 - When the documents come from different books, bring them together into one answer, and say which book each part comes from when that matters.
@@ -140,6 +142,29 @@ function withHeading(p: AnswerParagraph): AnswerParagraph {
   if (!m) return p;
   const rest = first.text.slice(m[0].length);
   return { ...p, heading: m[1]!.replace(/[.:]$/, "").trim(), parts: [{ ...first, text: rest }, ...p.parts.slice(1)].filter((x) => x.text.trim()) };
+}
+/** An answer laid out for the page: the one-line answer, the paragraphs, follow-up questions to offer, and one question to check understanding. */
+export interface AnswerLayout { lead?: AnswerParagraph; paragraphs: AnswerParagraph[]; deeper: string[]; check?: { question: string; answer: string } }
+const LEAD = /^\s*short answer:\s*/i, DEEPER = /^\s*go deeper:\s*/i, CHECK = /^\s*check yourself:\s*/i;
+/**
+ * Pulls the special paragraphs out of an answer. Every one of them is optional: an answer written without
+ * them is laid out exactly as before. Follow-up questions are kept only if they read as questions.
+ */
+export function layout(segments: AnswerSegment[]): AnswerLayout {
+  const out: AnswerLayout = { paragraphs: [], deeper: [] };
+  for (const p of toParagraphs(segments)) {
+    const whole = p.parts.map((x) => x.text).join("");
+    if (!p.aside && !p.heading && LEAD.test(whole) && !out.lead && out.paragraphs.length === 0) {
+      const parts = [{ ...p.parts[0]!, text: p.parts[0]!.text.replace(LEAD, "") }, ...p.parts.slice(1)].filter((x) => x.text.trim());
+      out.lead = { ...p, parts: parts.map((x, i) => (i === 0 ? { ...x, text: x.text.charAt(0).toUpperCase() + x.text.slice(1) } : x)) };
+    } else if (DEEPER.test(whole)) {
+      out.deeper = whole.replace(DEEPER, "").split("|").map((q) => q.trim()).filter((q) => q.length >= 8 && q.length <= 160 && q.endsWith("?")).slice(0, 3);
+    } else if (CHECK.test(whole)) {
+      const [question, answer] = whole.replace(CHECK, "").split("||").map((x) => x.trim());
+      if (question && answer && question.length <= 240 && answer.length <= 240) out.check = { question, answer };
+    } else out.paragraphs.push(p);
+  }
+  return out;
 }
 /** An answer as plain text, for sending back as conversation history. */
 export const answerText = (a: AskResponse) => (a.covered ? a.segments.map((s) => s.text).join("").trim() : "The library did not cover this.");

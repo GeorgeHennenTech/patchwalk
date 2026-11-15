@@ -297,7 +297,7 @@ describe("show me where", () => {
   });
 });
 
-import { answerText, MAX_HISTORY_TURNS, toParagraphs } from "../src/library/answer";
+import { answerText, layout, MAX_HISTORY_TURNS, toParagraphs } from "../src/library/answer";
 import { historyOf, type Turn } from "../src/guide/ask";
 import { deleteChat, loadChats, MAX_CHATS, saveChat } from "../src/guide/chats";
 describe("conversations with the guide", () => {
@@ -408,5 +408,26 @@ describe("placing the letters on a marked picture", () => {
     expect(tiny.arrow).toBeDefined();
     expect(tiny.arrow!.x).toBeGreaterThanOrEqual(0.7); expect(tiny.arrow!.x).toBeLessThanOrEqual(0.72);
     for (const p of [big, tiny]) { expect(p.bx).toBeGreaterThanOrEqual(0); expect(p.bx).toBeLessThanOrEqual(1); expect(p.by).toBeGreaterThanOrEqual(0); expect(p.by).toBeLessThanOrEqual(1); }
+  });
+});
+
+describe("the layout of a guide answer", () => {
+  it("lifts out the one-line answer, the follow-ups and the check question, and leaves the rest as it was", () => {
+    const l = layout([
+      { text: "Short answer: ", sources: [] }, { text: "drag the LFO's tab onto the knob.", sources: [1] },
+      { text: "\n\n1. Open LFO 2.\n2. Drag it.", sources: [1] },
+      { text: "\n\nSide note: only six LFOs show at first.", sources: [2] },
+      { text: "\n\nGo deeper: How do I change how far it moves the knob? | What is the matrix for? | nope | Is there a limit on LFOs?\n\nCheck yourself: Which tab do you drag? || The LFO's own tab", sources: [] },
+    ]);
+    expect(l.lead!.parts).toEqual([{ text: "Drag the LFO's tab onto the knob.", sources: [1] }]);
+    expect(l.paragraphs.map((p) => p.aside)).toEqual([false, true]);
+    expect(l.deeper).toEqual(["How do I change how far it moves the knob?", "What is the matrix for?", "Is there a limit on LFOs?"]);
+    expect(l.check).toEqual({ question: "Which tab do you drag?", answer: "The LFO's own tab" });
+  });
+  it("lays out an answer written the old way exactly as before", () => {
+    const segs = [{ text: "Drag the LFO onto a knob.\n\nThen check the tab.", sources: [1] }];
+    expect(layout(segs)).toEqual({ paragraphs: toParagraphs(segs), deeper: [] });
+    expect(layout([{ text: "Do it.\n\nCheck yourself: a question with no answer", sources: [] }]).check).toBeUndefined();
+    expect(layout([{ text: "First.\n\nShort answer: late", sources: [] }]).lead).toBeUndefined(); // only an opening line counts
   });
 });

@@ -156,6 +156,8 @@ export interface SynthState {
   glideMode: "always" | "legato";
   /** Extra connections added in the matrix, so one source can move several things. Replaced on every edit. */
   matrix: MatrixRow[];
+  /** The order the effects are joined in, first to last (names from fx.ts). */
+  fxOrder: string[];
   // ---- effects, in the order the sound passes through them (see fx.ts)
   distOn: boolean; distType: (typeof DIST_TYPES)[number];
   /** Distortion drive 0..100 (how hard the signal is pushed into the shaping) and how much of the result is mixed in. */
@@ -200,6 +202,7 @@ export const INITIAL: SynthState = {
   lfo3Sync: "hz", lfo3Div: "1", lfo3Trig: "retrig", lfo3Rise: 0, lfo3Steps: DEFAULT_STEPS,
   velDest: "none", velAmount: 60, keyDest: "none", keyAmount: 50, wheel: 0, wheelDest: "none", wheelAmount: 50, bendRange: 2,
   matrix: [],
+  fxOrder: ["dist", "eq", "comp", "chorus", "delay", "reverb"],
   voiceMode: "poly", legato: "off", glide: 0, glideMode: "always",
   distOn: false, distType: "soft", distDrive: 30, distMix: 100,
   eqOn: false, eqLow: 0, eqMid: 0, eqMidHz: 1000, eqHigh: 0,

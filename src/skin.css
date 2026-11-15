@@ -912,3 +912,8 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 .answer-deeper button:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
 .sources-fold { margin: 8px 0; font-size: 13px; } .sources-fold summary { cursor: pointer; color: var(--muted); font-weight: 700; } .sources-fold .sources { margin-top: 8px; }
 .answer-pictures { margin: 10px 0; display: grid; gap: 10px; }
+
+/* Effects: moving one earlier or later in the chain. */
+.fx-move { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 2px 0 6px; font-size: 0.74rem; font-weight: 700; opacity: 0.85; }
+.fx-move button { padding: 1px 9px; border: 1.5px solid currentColor; border-radius: 999px; background: transparent; color: inherit; font: inherit; cursor: pointer; box-shadow: none; }
+.fx-move button:disabled { opacity: 0.3; cursor: default; }

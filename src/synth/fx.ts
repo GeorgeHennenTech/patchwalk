@@ -1,5 +1,5 @@
-// The effects rack: distortion, EQ, compressor, chorus, delay and reverb, in that fixed order, between the
-// notes and the main volume. The first half of this file is pure maths (curves, times, the reverb's
+// The effects rack: distortion, EQ, compressor, chorus, delay and reverb, between the notes and the main
+// volume, in an order the learner can change (`fxOrder`; `FX_ORDER` is the order they start in). The first half of this file is pure maths (curves, times, the reverb's
 // impulse) that tests and pictures share; the second half is the Web Audio chain the engine drives.
 // Every effect is always in the path: "off" means its own signal is turned down, so switching one on or
 // off never restarts a note.
@@ -9,6 +9,19 @@ import type { SynthState } from "./params";
 export const FX_ORDER = ["dist", "eq", "comp", "chorus", "delay", "reverb"] as const;
 export type FxId = (typeof FX_ORDER)[number];
 export const FX_NAMES: Record<FxId, string> = { dist: "Distortion", eq: "EQ", comp: "Compressor", chorus: "Chorus", delay: "Delay", reverb: "Reverb" };
+
+/** A usable order from whatever is stored: every effect once, unknown names dropped, any missing ones added at the end. */
+export function fxOrderOf(order: readonly string[] | undefined): FxId[] {
+  const seen = (order ?? []).filter((id, i, a): id is FxId => (FX_ORDER as readonly string[]).includes(id) && a.indexOf(id) === i);
+  return [...seen, ...FX_ORDER.filter((id) => !seen.includes(id))];
+}
+/** The order with one effect moved a place earlier (-1) or later (+1). At either end it stays where it is. */
+export function moveFx(order: readonly string[] | undefined, id: FxId, by: -1 | 1): FxId[] {
+  const o = fxOrderOf(order), i = o.indexOf(id), j = i + by;
+  if (j < 0 || j >= o.length) return o;
+  [o[i], o[j]] = [o[j]!, o[i]!];
+  return o;
+}
 
 /** Drive of 0..100% is a boost of up to this many times before the shaping (about 30 dB). */
 export const DIST_MAX_GAIN = 32;
@@ -72,7 +85,7 @@ export const compReductionDb = (over: number, ratio: number) => (over <= 0 ? 0 :
 /** Centre frequencies of the EQ's three bands. The middle one can be moved. */
 export const EQ_LOW_HZ = 150, EQ_HIGH_HZ = 5000;
 
-type Fx = Pick<SynthState, "distOn" | "distType" | "distDrive" | "distMix" | "eqOn" | "eqLow" | "eqMid" | "eqMidHz" | "eqHigh" | "compOn" | "compThreshold" | "compRatio" | "compAttack" | "compRelease" | "compMakeup"
+type Fx = Pick<SynthState, "fxOrder" | "distOn" | "distType" | "distDrive" | "distMix" | "eqOn" | "eqLow" | "eqMid" | "eqMidHz" | "eqHigh" | "compOn" | "compThreshold" | "compRatio" | "compAttack" | "compRelease" | "compMakeup"
   | "chorusOn" | "chorusRate" | "chorusDepth" | "chorusMix" | "delayOn" | "delaySync" | "delayDiv" | "delayTime" | "delayFeedback" | "delayMix" | "reverbOn" | "reverbSize" | "reverbMix" | "bpm">;
 const RAMP = 0.015;
 
@@ -89,6 +102,9 @@ export class FxChain {
   private readonly delay: DelayNode; private readonly feedback: GainNode; private readonly delayWet: GainNode;
   private readonly convolver: ConvolverNode; private readonly reverbWet: GainNode;
   private last: Partial<Fx> = {};
+  /** Each effect's own way in and way out, so they can be joined in any order. */
+  private readonly units = {} as Record<FxId, { in: GainNode; out: GainNode }>;
+  private order: FxId[] = [];
 
   constructor(private readonly ctx: AudioContext, s: Fx) {
     const gain = (v = 1) => { const g = ctx.createGain(); g.gain.value = v; return g; };
@@ -96,43 +112,58 @@ export class FxChain {
     // distortion: dry and shaped side by side
     this.shaper = ctx.createWaveShaper(); this.shaper.oversample = "4x";
     this.distDry = gain(); this.distWet = gain(0);
-    const afterDist = gain();
-    this.input.connect(this.distDry).connect(afterDist);
-    this.input.connect(this.shaper).connect(this.distWet).connect(afterDist);
+    const unit = (id: FxId) => (this.units[id] = { in: gain(), out: gain() });
+    const dist = unit("dist");
+    dist.in.connect(this.distDry).connect(dist.out);
+    dist.in.connect(this.shaper).connect(this.distWet).connect(dist.out);
     // EQ: three bands in a row; at 0 dB each passes everything unchanged
     const band = (type: BiquadFilterType, hz: number) => { const f = ctx.createBiquadFilter(); f.type = type; f.frequency.value = hz; f.gain.value = 0; f.Q.value = 1; return f; };
     this.eq = [band("lowshelf", EQ_LOW_HZ), band("peaking", s.eqMidHz), band("highshelf", EQ_HIGH_HZ)];
-    afterDist.connect(this.eq[0]).connect(this.eq[1]).connect(this.eq[2]);
+    const eq = unit("eq");
+    eq.in.connect(this.eq[0]).connect(this.eq[1]).connect(this.eq[2]).connect(eq.out);
     // compressor
     this.comp = ctx.createDynamicsCompressor(); this.comp.knee.value = 0;
     this.compDry = gain(); this.compWet = gain(0);
-    const afterComp = gain();
-    this.eq[2].connect(this.compDry).connect(afterComp);
-    this.eq[2].connect(this.comp).connect(this.compWet).connect(afterComp);
+    const comp = unit("comp");
+    comp.in.connect(this.compDry).connect(comp.out);
+    comp.in.connect(this.comp).connect(this.compWet).connect(comp.out);
     // chorus: two short delays, one a side, whose lengths drift in opposite directions
     this.chorusLfo = ctx.createOscillator(); this.chorusLfo.frequency.value = s.chorusRate;
     this.chorusWet = gain(0);
-    const merge = ctx.createChannelMerger(2), afterChorus = gain();
+    const merge = ctx.createChannelMerger(2), chorus = unit("chorus");
     this.chorusDepths = [gain(0), gain(0)];
     [0, 1].forEach((side) => {
       const d = ctx.createDelay(0.1); d.delayTime.value = 0.018 + side * 0.004;
       this.chorusLfo.connect(this.chorusDepths[side as 0 | 1]).connect(d.delayTime);
-      afterComp.connect(d).connect(merge, 0, side);
+      chorus.in.connect(d).connect(merge, 0, side);
     });
-    merge.connect(this.chorusWet).connect(afterChorus);
-    afterComp.connect(afterChorus);
+    merge.connect(this.chorusWet).connect(chorus.out);
+    chorus.in.connect(chorus.out);
     this.chorusLfo.start();
     // delay: echoes that feed back into themselves
     this.delay = ctx.createDelay(4.5); this.feedback = gain(0); this.delayWet = gain(0);
-    const afterDelay = gain();
-    afterChorus.connect(afterDelay);
-    afterChorus.connect(this.delay).connect(this.delayWet).connect(afterDelay);
+    const delay = unit("delay");
+    delay.in.connect(delay.out);
+    delay.in.connect(this.delay).connect(this.delayWet).connect(delay.out);
     this.delay.connect(this.feedback).connect(this.delay);
     // reverb
     this.convolver = ctx.createConvolver(); this.convolver.normalize = false; this.reverbWet = gain(0);
-    afterDelay.connect(this.output);
-    afterDelay.connect(this.convolver).connect(this.reverbWet).connect(this.output);
+    const reverb = unit("reverb");
+    reverb.in.connect(reverb.out);
+    reverb.in.connect(this.convolver).connect(this.reverbWet).connect(reverb.out);
+    this.wire(fxOrderOf(s.fxOrder));
     this.apply(s, true);
+  }
+
+  /** Join the effects in this order: the notes into the first, each into the next, the last to the main volume. */
+  private wire(order: FxId[]): void {
+    if (order.join() === this.order.join()) return;
+    this.input.disconnect();
+    for (const id of FX_ORDER) this.units[id].out.disconnect();
+    let from: AudioNode = this.input;
+    for (const id of order) { from.connect(this.units[id].in); from = this.units[id].out; }
+    from.connect(this.output);
+    this.order = [...order];
   }
 
   /** How many dB the compressor is turning the signal down right now (0 or negative). */
@@ -141,6 +172,7 @@ export class FxChain {
   /** Make the chain match the settings. Only what changed is touched. */
   apply(s: Fx, jump = false): void {
     const t = this.ctx.currentTime, p = this.last;
+    this.wire(fxOrderOf(s.fxOrder));
     const set = (param: AudioParam, v: number) => (jump ? param.setValueAtTime(v, t) : param.setTargetAtTime(v, t, RAMP));
     if (s.distType !== p.distType || s.distDrive !== p.distDrive) this.shaper.curve = distCurve(s.distType, s.distDrive);
     const wet = s.distOn ? s.distMix / 100 : 0;

@@ -1489,3 +1489,18 @@ describe("the mixed by-ear checkpoint", () => {
     }
   });
 });
+
+import { fxOrderOf, moveFx } from "../src/synth/fx";
+describe("the order of the effects", () => {
+  it("starts in the usual order, and one effect can be moved a place earlier or later", () => {
+    expect(INITIAL.fxOrder).toEqual([...FX_ORDER]);
+    expect(moveFx(INITIAL.fxOrder, "reverb", -1)).toEqual(["dist", "eq", "comp", "chorus", "reverb", "delay"]);
+    expect(moveFx(INITIAL.fxOrder, "dist", 1)).toEqual(["eq", "dist", "comp", "chorus", "delay", "reverb"]);
+    expect(moveFx(INITIAL.fxOrder, "dist", -1)).toEqual([...FX_ORDER]); expect(moveFx(INITIAL.fxOrder, "reverb", 1)).toEqual([...FX_ORDER]); // the ends stay put
+    expect(INITIAL.fxOrder).toEqual([...FX_ORDER]); // moving makes a new list
+  });
+  it("always ends up with every effect exactly once, whatever was stored", () => {
+    expect(fxOrderOf(undefined)).toEqual([...FX_ORDER]);
+    expect(fxOrderOf(["reverb", "nonsense", "reverb", "dist"])).toEqual(["reverb", "dist", "eq", "comp", "chorus", "delay"]);
+  });
+});

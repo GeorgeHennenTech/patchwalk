@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { Panel, PlayableLesson } from "../../course/types";
 import { dragColor, dragName, endDrag, startDrag, type Draggable } from "../../synth/connect";
 import { MACRO_COLORS } from "../../synth/macros";
-import { FX_NAMES, FX_ORDER } from "../../synth/fx";
+import { FX_NAMES, FX_ORDER, fxOrderOf, moveFx, type FxId } from "../../synth/fx";
 import { adsr, ENV1_COLOR, envLevel, lfoHz, lfoStartPhase, lfoValue, routes, SOURCES, type Adsr, type ModSource } from "../../synth/mod";
 import { harmonic, spectrumA, HARMONICS, LFO_STEPS, MACRO_SLOTS, MACROS, PARAMS, type Group, type SynthState, harmonicsB } from "../../synth/params";
 import type { Synth } from "../../synth/useSynth";
@@ -187,6 +187,8 @@ export function Rack({ synth, show, all, lesson, note }: { synth: Synth; show: P
     );
   };
   const row = (modules: Module[], cls: string) => {
+    // effects are shown in the order the sound passes through them
+    if (cls === "fx") { const order = fxOrderOf(s.fxOrder); modules = [...modules].sort((a, b) => order.indexOf(a.id.slice(3) as FxId) - order.indexOf(b.id.slice(3) as FxId)); }
     const panels = modules.map((m) => ({ m, ids: idsOf(m), toggle: m.toggle && on(m.toggle) ? m.toggle : undefined, curve: m.id === "filter" && !all && show.includes("curve") }))
       .filter((x) => all || x.ids.length || x.toggle || x.curve);
     if (!panels.length) return null;
@@ -202,6 +204,13 @@ export function Rack({ synth, show, all, lesson, note }: { synth: Synth; show: P
                   <span>{m.name}</span><em>{s[toggle] ? "on" : "off"}</em>
                 </label>
               ) : <div className="mod-head">{m.source && <Grip id={m.source} />}<span>{m.name}</span></div>}
+              {all && cls === "fx" && (() => { const id = m.id.slice(3) as FxId, at = fxOrderOf(s.fxOrder).indexOf(id); return (
+                <div className="fx-move" role="group" aria-label={`Where ${m.name} sits in the chain`}>
+                  <button disabled={at === 0} aria-label={`Move ${m.name} earlier`} onClick={() => synth.setState({ fxOrder: moveFx(s.fxOrder, id, -1) })}>◀</button>
+                  <span>{at + 1} of {FX_ORDER.length}</span>
+                  <button disabled={at === FX_ORDER.length - 1} aria-label={`Move ${m.name} later`} onClick={() => synth.setState({ fxOrder: moveFx(s.fxOrder, id, 1) })}>▶</button>
+                </div>
+              ); })()}
               {body(m, ids, curve)}
             </section>
           );

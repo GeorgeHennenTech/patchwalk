@@ -5,7 +5,7 @@ import { applyMacros } from "./macros";
 import { adsr, fallConstant, isLevel, keyValue, lfoCoefficients, lfoHz, lfoStartPhase, modDepth, noteLevelBase, routeLayout, routes, slowModulate, velocityValue, type Adsr, type Route } from "./mod";
 import { FxChain } from "./fx";
 import { DRIVE_RANGE, driveCurve, filterStages, resonanceTrim, type Stage } from "./filter";
-import { dbToGain, fmIndex, FM_MAX_INDEX, harmonic, spectrumA, HARMONICS, playedHz, playedHzB, subHz, unisonOffsets, unisonPans, type Shape, type SynthState, harmonicsB } from "./params";
+import { dbToGain, fmIndex, FM_MAX_INDEX, harmonic, spectrumA, HARMONICS, playedHz, playedHzB, subHz, unisonOffsets, unisonPans, type Shape, type SynthState, spectrumB } from "./params";
 
 const RAMP = 0.012; // seconds; short ramps avoid clicks when a value jumps
 const OSC_GAIN = 0.4;
@@ -21,7 +21,8 @@ interface Voice {
   /** The whole note's level, after the envelope: where "Note level" routes land. */
   out: GainNode;
   a: { osc: OscillatorNode; gain: GainNode; pan: StereoPannerNode }[];
-  b?: { osc: OscillatorNode; gain: GainNode; pan: StereoPannerNode };
+  /** Oscillator B's voices: one, or several spread in pitch and across the two sides. */
+  b?: { osc: OscillatorNode; gain: GainNode; pan: StereoPannerNode }[];
   /**
    * A silent copy of oscillator B that every note has, whether or not B is heard. `fm` scales it into a
    * swing of A's frequency; `wet` is A multiplied by it (ring modulation) and `dry` is A left alone.
@@ -39,11 +40,15 @@ interface Voice {
 }
 
 /** Settings whose change means rebuilding the sounding notes (the set of sound sources changes). */
-const STRUCTURAL: (keyof SynthState)[] = ["voiceMode", "voices", "bOn", "subOn", "noiseOn", "noiseType", "randomPhase", "env2Dest", "lfo1Dest", "lfo2Dest", "lfo3Dest", "velDest", "keyDest", "wheelDest", "lfo1Trig", "lfo2Trig", "lfo3Trig"];
+const STRUCTURAL: (keyof SynthState)[] = ["voiceMode", "voices", "bVoices", "bOn", "subOn", "noiseOn", "noiseType", "randomPhase", "env2Dest", "lfo1Dest", "lfo2Dest", "lfo3Dest", "velDest", "keyDest", "wheelDest", "lfo1Trig", "lfo2Trig", "lfo3Trig"];
 /** Stop changing a value from `t` on, keeping whatever it has reached (older browsers: drop what was planned). */
 /** Cancel a slide: the pitch goes straight to the note. */
 const holdAtZero = (p: AudioParam, t: number) => { p.cancelScheduledValues(t); p.setValueAtTime(0, t); };
 /** A unison voice's place between the speakers, moved by the oscillator's own pan and kept within the two sides. */
+/** How far oscillator B's unison voices are spread across the two sides (it has no knob of its own). */
+const B_SPREAD = 70;
+/** Where in its cycle each of B's unison voices starts: spread over half a cycle, so they neither pile up into one loud start nor cancel each other out when the detune is zero. */
+const bStart = (i: number, voices: number) => (voices > 1 ? i / (2 * voices) : 0);
 const panOf = (spread: number, pan: number) => Math.min(1, Math.max(-1, spread + pan / 100));
 const holdAt = (p: AudioParam, t: number) => (p.cancelAndHoldAtTime ? p.cancelAndHoldAtTime(t) : p.cancelScheduledValues(t));
 
@@ -199,6 +204,8 @@ export class Engine {
     return s[`${id}Shape`] === "drawn" ? lfoCoefficients("drawn", s[`${id}Steps`], 2).mean : 0;
   }
 
+  /** Each of oscillator B's voices' level: several voices share the level of one. */
+  private bGain(s: SynthState): number { return (OSC_GAIN / Math.sqrt(s.bVoices)) * dbToGain(s.bLevelDb); }
   /** Each of oscillator A's voices' level: nothing when A is switched off. */
   private levelA(s: SynthState): number {
     return s.aOn ? (OSC_GAIN / Math.sqrt(s.voices)) * dbToGain(s.aLevelDb) : 0;
@@ -216,10 +223,10 @@ export class Engine {
     switch (dest) {
       case "cutoff": return [v.filter.one.detune, v.filter.two.detune];
       case "fine": case "aPitchWide": return v.a.map((x) => x.osc.detune);
-      case "bFine": return v.b ? [v.b.osc.detune, v.modB.osc.detune] : [v.modB.osc.detune];
+      case "bFine": return [...(v.b ?? []).map((x) => x.osc.detune), v.modB.osc.detune];
       case "fmAmount": return [v.modB.fm.gain];
       case "aLevelDb": return v.a.map((x) => x.gain.gain);
-      case "bLevelDb": return v.b ? [v.b.gain.gain] : [];
+      case "bLevelDb": return (v.b ?? []).map((x) => x.gain.gain);
       case "subLevelDb": return v.sub ? [v.sub.gain.gain] : [];
       case "noiseLevelDb": return v.noise ? [v.noise.gain.gain] : [];
       // an LFO's speed, moved in octaves through its detune setting
@@ -328,7 +335,7 @@ export class Engine {
     for (const m of v.mods) if (m.route.source.kind === "env" && m.src instanceof ConstantSourceNode) this.scheduleRelease(m.src.offset, adsr(s, 2), t);
     for (const m of v.mods) if (m.route.aux?.kind === "env" && m.aux?.src instanceof ConstantSourceNode) this.scheduleRelease(m.aux.src.offset, adsr(s, 2), t);
     for (const x of v.a) x.osc.stop(stopAt);
-    v.b?.osc.stop(stopAt);
+    v.b?.forEach((x) => x.osc.stop(stopAt));
     v.modB.osc.stop(stopAt);
     v.glide.stop(stopAt);
     v.sub?.osc.stop(stopAt);
@@ -358,7 +365,8 @@ export class Engine {
     const base = playedHz(s, note), hA = spectrumA(s);
     // Oscillator B again, unheard: the modulator for FM and ring modulation. It starts in step with the B you hear.
     const modOsc = this.ctx.createOscillator();
-    modOsc.setPeriodicWave(this.wave(harmonicsB(s), s.bPhase / 360));
+    const hB = spectrumB(s);
+    modOsc.setPeriodicWave(this.wave(hB.sin, s.bPhase / 360, hB.cos));
     modOsc.frequency.value = playedHzB(s, note);
     const modB = { osc: modOsc, fm: this.ctx.createGain(), dry: this.ctx.createGain(), wet: this.ctx.createGain() };
     modB.fm.gain.value = fmIndex(s.fmAmount) * playedHzB(s, note);
@@ -394,17 +402,20 @@ export class Engine {
     const voice: Voice = { note, phaseA, velocity, startedAt: t, out, a, modB, mods: [], filter, amp, glide };
     this.applyFilter(voice, s, true, t);
     if (s.bOn) {
-      const osc = this.ctx.createOscillator();
-      osc.setPeriodicWave(this.wave(harmonicsB(s), s.bPhase / 360));
-      osc.frequency.value = playedHzB(s, note);
-      const gain = this.ctx.createGain();
-      gain.gain.value = OSC_GAIN * dbToGain(s.bLevelDb);
-      const pan = this.ctx.createStereoPanner();
-      pan.pan.value = s.bPan / 100;
-      osc.connect(gain).connect(pan).connect(into);
-      glide.connect(osc.detune); this.bendSource().connect(osc.detune);
-      osc.start(t);
-      voice.b = { osc, gain, pan };
+      const off = unisonOffsets(s.bVoices, s.bDetune), bPans = unisonPans(s.bVoices, B_SPREAD), hz = playedHzB(s, note);
+      voice.b = off.map((cents, i) => {
+        const osc = this.ctx.createOscillator();
+        osc.setPeriodicWave(this.wave(hB.sin, s.bPhase / 360 + bStart(i, s.bVoices), hB.cos));
+        osc.frequency.value = hz * 2 ** (cents / 1200);
+        const gain = this.ctx.createGain();
+        gain.gain.value = this.bGain(s);
+        const pan = this.ctx.createStereoPanner();
+        pan.pan.value = panOf(bPans[i]!, s.bPan);
+        osc.connect(gain).connect(pan).connect(into);
+        glide.connect(osc.detune); this.bendSource().connect(osc.detune);
+        osc.start(t);
+        return { osc, gain, pan };
+      });
     }
     if (s.subOn) {
       const osc = this.ctx.createOscillator();
@@ -487,7 +498,7 @@ export class Engine {
   /** Make one sounding note match new settings, changing only what differs from the settings it had. */
   private applyVoice(v: Voice, next: SynthState, prev: SynthState): void {
     const t = this.ctx.currentTime;
-    const waveB = next.bShape !== prev.bShape || next.bPhase !== prev.bPhase || next.bTable !== prev.bTable || next.bPosition !== prev.bPosition;
+    const waveB = next.bShape !== prev.bShape || next.bPhase !== prev.bPhase || next.bTable !== prev.bTable || next.bPosition !== prev.bPosition || next.bWarp !== prev.bWarp || next.bWarpAmount !== prev.bWarpAmount;
     const waveA = next.shape !== prev.shape || next.table !== prev.table || next.position !== prev.position || next.phase !== prev.phase || next.warp !== prev.warp || next.warpAmount !== prev.warpAmount;
     const hA = waveA ? spectrumA(next) : undefined;
     const offsets = unisonOffsets(next.voices, next.detune), pans = unisonPans(next.voices, next.spread);
@@ -526,16 +537,20 @@ export class Engine {
       x.pan.pan.setTargetAtTime(panOf(pans[i]!, next.aPan), t, RAMP);
       if (next.aLevelDb !== prev.aLevelDb || next.aOn !== prev.aOn) x.gain.gain.setTargetAtTime(this.levelA(next), t, RAMP);
     });
-    if (waveB) v.modB.osc.setPeriodicWave(this.wave(harmonicsB(next), next.bPhase / 360));
+    const hB = waveB ? spectrumB(next) : undefined;
+    if (hB) v.modB.osc.setPeriodicWave(this.wave(hB.sin, next.bPhase / 360, hB.cos));
     v.modB.osc.frequency.setTargetAtTime(playedHzB(next, v.note), t, RAMP);
     v.modB.fm.gain.setTargetAtTime(fmIndex(next.fmAmount) * playedHzB(next, v.note), t, RAMP);
     v.modB.dry.gain.setTargetAtTime(1 - next.ringAmount / 100, t, RAMP);
     v.modB.wet.gain.setTargetAtTime(next.ringAmount / 100, t, RAMP);
     if (v.b) {
-      if (waveB) v.b.osc.setPeriodicWave(this.wave(harmonicsB(next), next.bPhase / 360));
-      v.b.osc.frequency.setTargetAtTime(playedHzB(next, v.note), t, RAMP);
-      v.b.gain.gain.setTargetAtTime(OSC_GAIN * dbToGain(next.bLevelDb), t, RAMP);
-      v.b.pan.pan.setTargetAtTime(next.bPan / 100, t, RAMP);
+      const off = unisonOffsets(next.bVoices, next.bDetune), bPans = unisonPans(next.bVoices, B_SPREAD), hz = playedHzB(next, v.note);
+      v.b.forEach((x, i) => {
+        if (hB) x.osc.setPeriodicWave(this.wave(hB.sin, next.bPhase / 360 + bStart(i, next.bVoices), hB.cos));
+        x.osc.frequency.setTargetAtTime(hz * 2 ** ((off[i] ?? 0) / 1200), t, RAMP);
+        x.gain.gain.setTargetAtTime(this.bGain(next), t, RAMP);
+        x.pan.pan.setTargetAtTime(panOf(bPans[i] ?? 0, next.bPan), t, RAMP);
+      });
     }
     if (v.sub) {
       v.sub.osc.frequency.setTargetAtTime(subHz(next, v.note), t, RAMP);
@@ -579,7 +594,7 @@ export class Engine {
     v.a.forEach((x, i) => x.osc.frequency.setValueAtTime(base * 2 ** (offsets[i]! / 1200), t));
     v.modB.osc.frequency.setValueAtTime(playedHzB(s, note), t);
     v.modB.fm.gain.setValueAtTime(fmIndex(s.fmAmount) * playedHzB(s, note), t);
-    v.b?.osc.frequency.setValueAtTime(playedHzB(s, note), t);
+    { const off = unisonOffsets(s.bVoices, s.bDetune); v.b?.forEach((x, i) => x.osc.frequency.setValueAtTime(playedHzB(s, note) * 2 ** ((off[i] ?? 0) / 1200), t)); }
     v.sub?.osc.frequency.setValueAtTime(subHz(s, note), t);
     this.applyFilter(v, s, true, t);
     // wherever the slide had got to, plus the new distance

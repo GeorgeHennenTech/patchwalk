@@ -19,7 +19,7 @@ it, and reports in a few lines. None of these needs the owner or spends credits.
 - [x] 7. A mixed by-ear checkpoint that draws on several chapters at once (filter, envelope, LFO)
 - [x] 8. Reorderable effects rack with a bypass per effect (needed before the processing-chains track)
 - [ ] 9. Second filter, with routing between the two, and two more filter types
-- [ ] 10. Osc B as a full oscillator: unison and warp
+- [x] 10. Osc B as a full oscillator: unison and warp
 - [x] 11. Vero: build your own column (choose cabinets and angles, see the coverage change)
 - [x] 12. Save and load your own patches on the practice synth
 

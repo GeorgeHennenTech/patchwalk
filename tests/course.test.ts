@@ -1552,3 +1552,19 @@ describe("building your own Vero column", () => {
     expect(zones([{ kind: "V315", angleBelow: 0 }], 11)).toEqual([]);
   });
 });
+
+import { BOX_IDS, MACRO_DESTS as MACRO_DESTS_B, spectrumB } from "../src/synth/params";
+describe("oscillator B as a fuller oscillator", () => {
+  it("warps exactly as oscillator A does, from its own settings", () => {
+    const a = spectrumA({ shape: "saw", table: "none", position: 0, warp: "mirror", warpAmount: 100 });
+    const b = spectrumB({ bShape: "saw", bTable: "none", bPosition: 0, bWarp: "mirror", bWarpAmount: 100 });
+    expect(Array.from(b.sin)).toEqual(Array.from(a.sin)); expect(Array.from(b.cos)).toEqual(Array.from(a.cos));
+    const plain = spectrumB({ bShape: "saw", bTable: "none", bPosition: 0, bWarp: "none", bWarpAmount: 80 });
+    expect(Array.from(plain.cos).every((v) => v === 0)).toBe(true); // warp off: the plain wave, whatever the amount says
+  });
+  it("has its own unison: voices is a whole-number box, detune and warp amount are ordinary knobs a macro can reach", () => {
+    expect(INITIAL).toMatchObject({ bWarp: "none", bWarpAmount: 0, bVoices: 1, bDetune: 0 });
+    expect(BOX_IDS).toContain("bVoices");
+    expect(MACRO_DESTS_B).toContain("bDetune"); expect(MACRO_DESTS_B).toContain("bWarpAmount"); expect(MACRO_DESTS_B).not.toContain("bVoices");
+  });
+});

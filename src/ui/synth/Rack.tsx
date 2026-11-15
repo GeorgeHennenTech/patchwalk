@@ -7,7 +7,7 @@ import { dragColor, dragName, endDrag, startDrag, type Draggable } from "../../s
 import { MACRO_COLORS } from "../../synth/macros";
 import { FX_NAMES, FX_ORDER, fxOrderOf, moveFx, type FxId } from "../../synth/fx";
 import { adsr, ENV1_COLOR, envLevel, lfoHz, lfoStartPhase, lfoValue, routes, SOURCES, type Adsr, type ModSource } from "../../synth/mod";
-import { harmonic, spectrumA, HARMONICS, LFO_STEPS, MACRO_SLOTS, MACROS, PARAMS, type Group, type SynthState, harmonicsB } from "../../synth/params";
+import { harmonic, spectrumA, HARMONICS, LFO_STEPS, MACRO_SLOTS, MACROS, PARAMS, type Group, type SynthState, spectrumB } from "../../synth/params";
 import type { Synth } from "../../synth/useSynth";
 import { Control, isBox } from "./Controls";
 import { FilterCurve, Matrix, Reduction } from "./Views";
@@ -66,7 +66,7 @@ function Display({ module, synth, note }: { module: Module; synth: Synth; note: 
   const s = synth.effective;
   const d = useMemo(() => {
     if (module.id === "a") { const sp = spectrumA(s); return wavePath(sp.sin, s.phase / 360, sp.cos); }
-    if (module.id === "b") return wavePath(harmonicsB(s), s.bPhase / 360);
+    if (module.id === "b") { const sp = spectrumB(s); return wavePath(sp.sin, s.bPhase / 360, sp.cos); }
     if (module.id === "sub") return wavePath(SINE, 0);
     if (module.id === "env1") return envPath(adsr(s, 1));
     if (module.id === "env2") return envPath(adsr(s, 2));
@@ -93,7 +93,7 @@ function Display({ module, synth, note }: { module: Module; synth: Synth; note: 
           shown = key;
           if (!l) el.setAttribute("d", rest);
           else if (module.id === "a") { const sp = spectrumA(l); el.setAttribute("d", wavePath(sp.sin, l.phase / 360, sp.cos)); }
-          else el.setAttribute("d", wavePath(harmonicsB(l), l.bPhase / 360));
+          else { const sp = spectrumB(l); el.setAttribute("d", wavePath(sp.sin, l.bPhase / 360, sp.cos)); }
         }
       }
       frame = requestAnimationFrame(loop);

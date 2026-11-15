@@ -75,6 +75,8 @@ export interface SynthState {
   fmAmount: number;
   /** Ring modulation from B: 0 is A alone, 100 is A multiplied by B. */
   ringAmount: number;
+  /** Oscillator B's own warp, unison voices (1 to 7) and their total detune in cents. */
+  bWarp: Warp; bWarpAmount: number; bVoices: number; bDetune: number;
   // ---- unison on oscillator A
   voices: number;
   /** Total spread of the unison voices in cents (outermost voices are +/- half of this). */
@@ -187,6 +189,7 @@ export const INITIAL: SynthState = {
   volumeDb: -12, aOn: true, shape: "saw", table: "none", position: 0, octave: 0, semitone: 0, fine: 0, phase: 0, randomPhase: 0, freeHz: null, aLevelDb: 0,
   warp: "none", warpAmount: 0, fmAmount: 0, ringAmount: 0,
   voices: 1, detune: 0, spread: 0,
+  bWarp: "none", bWarpAmount: 0, bVoices: 1, bDetune: 0,
   bOn: false, bShape: "saw", bTable: "none", bPosition: 0, aPan: 0, bPan: 0, bOctave: 0, bSemitone: 0, bFine: 0, bPhase: 0, bLevelDb: 0,
   subOn: false, subOctave: -1, subLevelDb: -6, noiseOn: false, noiseType: "white", noiseLevelDb: -18,
   filterOn: false, filterType: "low", cutoff: 20000, resonance: 0, slope: "12", drive: 0, keyTrack: 0,
@@ -266,6 +269,10 @@ const BASE_PARAMS: Record<string, ParamSpec> = {
   bSemitone: { id: "bSemitone", label: "B semitone", group: "Oscillator B", kind: "range", min: -12, max: 12, step: 1, unit: "st" },
   bTable: { id: "bTable", label: "B wavetable", group: "Oscillator B", kind: "choice", choices: TABLES, names: { none: "Off", basic: "Basic morph", bright: "Bright sweep", vowel: "Vowel" } },
   bPosition: { id: "bPosition", label: "B position", group: "Oscillator B", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
+  bWarp: { id: "bWarp", label: "B warp", group: "Oscillator B", kind: "menu", choices: WARPS, names: { none: "Off", bend: "Bend", mirror: "Mirror", sync: "Sync", pd: "Squeeze" } },
+  bWarpAmount: { id: "bWarpAmount", label: "B warp amount", group: "Oscillator B", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
+  bVoices: { id: "bVoices", label: "B voices", group: "Oscillator B", kind: "range", min: 1, max: 7, step: 1, unit: "" },
+  bDetune: { id: "bDetune", label: "B detune", group: "Oscillator B", kind: "range", min: 0, max: 100, step: 1, unit: "cents" },
   bPan: { id: "bPan", label: "B pan", group: "Oscillator B", kind: "range", min: -100, max: 100, step: 1, unit: "" },
   bFine: { id: "bFine", label: "B fine", group: "Oscillator B", kind: "range", min: -100, max: 100, step: 1, unit: "cents" },
   bPhase: { id: "bPhase", label: "B phase", group: "Oscillator B", kind: "range", min: 0, max: 360, step: 5, unit: "°" },
@@ -332,7 +339,7 @@ const BASE_PARAMS: Record<string, ParamSpec> = {
  */
 const NOT_DESTS = ["volumeDb", "bpm", "freeHz", "randomPhase", "reverbSize", "glide", "wheel", "bendRange"];
 /** Whole-step settings shown as number boxes. A macro cannot move these. */
-export const BOX_IDS = ["octave", "semitone", "bOctave", "bSemitone", "voices", "subOctave", "bendRange"] as const;
+export const BOX_IDS = ["octave", "semitone", "bOctave", "bSemitone", "voices", "bVoices", "subOctave", "bendRange"] as const;
 /** Every knob a macro can be sent to: all the continuous settings. "none" means the slot is empty. */
 export const MACRO_DESTS: string[] = ["none", ...Object.values(BASE_PARAMS).filter((p) => p.kind === "range" && !(BOX_IDS as readonly string[]).includes(p.id) && p.id !== "freeHz").map((p) => p.id as string)];
 /** Destinations moved at control rate: every continuous knob that is not already a fast destination. */
@@ -461,6 +468,8 @@ export const frameCount = (table: Table) => (table === "none" ? 0 : FRAMES[table
 
 /** Oscillator B's harmonics: its basic shape, or its own wavetable read at its own position. */
 export const harmonicsB = (s: Pick<SynthState, "bShape" | "bTable" | "bPosition">): Float32Array => harmonicsA({ shape: s.bShape, table: s.bTable, position: s.bPosition });
+/** Oscillator B's harmonics after its own warp: the same working as oscillator A's. */
+export const spectrumB = (s: Pick<SynthState, "bShape" | "bTable" | "bPosition" | "bWarp" | "bWarpAmount">): Spectrum => spectrumA({ shape: s.bShape, table: s.bTable, position: s.bPosition, warp: s.bWarp, warpAmount: s.bWarpAmount });
 
 /** Harmonic amplitudes (index 1..HARMONICS) for oscillator A, blending neighbouring frames by position. */
 export function harmonicsA(state: Pick<SynthState, "shape" | "table" | "position">): Float32Array {

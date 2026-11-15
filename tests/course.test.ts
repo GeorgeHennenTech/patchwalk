@@ -1292,7 +1292,7 @@ describe("the patented horn", () => {
   });
 });
 
-import { bandAt, noteNear, OPENINGS, RES2, RES2_PARTS, spread } from "../src/soundsystems/res2";
+import { bandAt, frontGap, noteNear, OPENINGS, RES2, RES2_PARTS, spread } from "../src/soundsystems/res2";
 describe("the Res 2 model", () => {
   it("sends each frequency to the part of the cabinet the maker's sheet gives it", () => {
     expect([30, 59, 60, 110, 249, 250, 1000, 18000, 19000].map(bandAt)).toEqual(["below", "below", "bass", "bass", "bass", "midhigh", "midhigh", "midhigh", "above"]);
@@ -1311,6 +1311,11 @@ describe("the Res 2 model", () => {
     expect(at10.tall).toBeCloseTo(2 * 10 * Math.tan((12.5 * Math.PI) / 180), 6);
     expect(spread(20).wide).toBeCloseTo(2 * at10.wide, 6);
     expect([440, 110, 55, 261.63].map(noteNear)).toEqual(["A4", "A2", "A1", "C4"]);
+    // wavefronts: one true wavelength apart; when that is too tight to draw, every nth one, never closer than 12 cm
+    expect(frontGap(343)).toEqual({ wavelength: 1, every: 1, shown: 1 });
+    expect(frontGap(110).wavelength).toBeCloseTo(3.118, 3);
+    for (const hz of [60, 250, 1000, 4000, 9000, 18000]) { const g = frontGap(hz); expect(g.wavelength).toBeCloseTo(343 / hz, 9); expect(g.shown).toBeCloseTo(g.wavelength * g.every, 9); expect(g.shown).toBeGreaterThanOrEqual(0.12 - 1e-9); expect(Number.isInteger(g.every)).toBe(true); }
+    expect(frontGap(9000).every).toBe(4);
   });
 });
 

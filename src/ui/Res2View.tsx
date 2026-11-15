@@ -3,16 +3,22 @@
 // so the drivers are shown only as stand-ins of the stated sizes.
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { BAND_TEXT, bandAt, LANDMARKS, noteNear, OPENINGS, RES2, RES2_PARTS, spread, type Res2Band } from "../soundsystems/res2";
+import { BAND_TEXT, bandAt, frontGap, LANDMARKS, noteNear, OPENINGS, RES2, RES2_PARTS, spread, type Res2Band } from "../soundsystems/res2";
 import { paint, paper, shadowed, sign, steel, studio } from "./three/look";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { makeStage, type Stage } from "./three/stage";
+import modelUrl from "../assets/diagrams/res2/res2.glb?url";
+import aoUrl from "../assets/diagrams/res2/ao.webp";
 
 const { front: W, back: WB, height: H, depth: D } = RES2;
 const BASE = 0.9;          // the cabinet stands on a plinth this high (illustrative)
 const T = 0.018;           // panel thickness (illustrative)
 const GLOW = "#ff2e93", GREY = "#b4b7bd";
+const WAVE_SPEED = 0.55;  // how fast the drawn wavefronts travel, metres a second (sound itself: 343)
+const WAVE_REACH = 4.5;   // how far they are drawn, metres
+const lengthText = (m: number) => (m >= 1 ? `${m.toFixed(m >= 10 ? 0 : 1)} m` : m >= 0.01 ? `${(m * 100).toFixed(m >= 0.1 ? 0 : 1)} cm` : `${(m * 1000).toFixed(0)} mm`);
 const toHz = (v: number) => 20 * Math.pow(1000, v), toV = (hz: number) => Math.log(hz / 20) / Math.log(1000);
-const hzText = (hz: number) => (hz >= 1000 ? `${(hz / 1000).toFixed(hz >= 10000 ? 0 : 1)} kHz` : `${Math.round(hz)} Hz`);
+const hzText = (hz: number) => (hz >= 999.5 ? `${(hz / 1000).toFixed(hz >= 10000 ? 0 : 1)} kHz` : `${Math.round(hz)} Hz`);
 /** A point on the front, from metres across and down the drawing, to model space (x right, y up, z towards the listener). */
 const px = (x: number) => x - W / 2, py = (y: number) => BASE + H - y;
 
@@ -32,17 +38,17 @@ export default function Res2View() {
   const mount = useRef<HTMLDivElement>(null), stage = useRef<Stage | undefined>(undefined);
   const [picked, setPicked] = useState<string>(), [hover, setHover] = useState<string>();
   const [v, setV] = useState(toV(110)), [playing, setPlaying] = useState(false);
-  const [inside, setInside] = useState(false), [cover, setCover] = useState(false), [sizes, setSizes] = useState(true), [far, setFar] = useState(8);
+  const [inside, setInside] = useState(false), [cover, setCover] = useState(false), [sizes, setSizes] = useState(false), [waves, setWaves] = useState(true), [far, setFar] = useState(8);
   const [failed, setFailed] = useState(false);
   const hz = toHz(v), band = bandAt(hz);
-  const live = useRef({ lit: undefined as string | undefined, band: band as Res2Band, playing: false, inside: false, cover: false, sizes: true, far: 8 });
-  Object.assign(live.current, { lit: hover ?? picked, band, playing, inside, cover, sizes, far });
+  const live = useRef({ lit: undefined as string | undefined, band: band as Res2Band, playing: false, inside: false, cover: false, sizes: false, waves: true, hz: 110, far: 8 });
+  Object.assign(live.current, { lit: hover ?? picked, band, playing, inside, cover, sizes, waves, hz, far });
 
   useEffect(() => {
     const groups: Record<string, THREE.MeshStandardMaterial[]> = {};
-    const walls: THREE.MeshStandardMaterial[] = [], drivers = new THREE.Group(), beam = new THREE.Group(), dims = new THREE.Group();
+    const walls: THREE.MeshStandardMaterial[] = [], inks: THREE.LineBasicMaterial[] = [], drivers = new THREE.Group(), beam = new THREE.Group(), dims = new THREE.Group();
     let beamFar = 0;
-    const st = makeStage(mount.current!, { camera: [0.95, 1.6, 1.85], target: [0, BASE + H / 2 - 0.05, -0.15], near: 0.05, far: 400, min: 0.9, max: 60, sun: [3, 5, 4], shadow: 3.2, exposure: 0.95, ratio: 0.62,
+    const st = makeStage(mount.current!, { camera: [2.25, 1.85, 1.35], target: [0, BASE + H / 2 - 0.02, 0.45], near: 0.05, far: 400, min: 0.9, max: 60, sun: [3, 5, 4], shadow: 3.2, exposure: 0.95, ratio: 0.62,
       onHover: setHover, onPick: setPicked,
       onFrame: (t) => {
         const s = live.current, pulse = s.playing ? 0.34 + 0.2 * Math.sin(t * 9) : 0.3;
@@ -50,42 +56,46 @@ export default function Res2View() {
         for (const id of ["bassDriver", "midDriver", "highDriver"]) for (const m of groups[id] ?? []) m.emissiveIntensity = (id === "bassDriver" ? s.band === "bass" : s.band === "midhigh") ? pulse : 0;
         drivers.visible = s.inside; for (const m of walls) { m.opacity = s.inside ? 0.16 : 1; m.transparent = s.inside; m.depthWrite = !s.inside; }
         beam.visible = s.cover; dims.visible = s.sizes && !s.cover;
+        // sound leaving the horn that is playing: fronts one wavelength apart (or every nth, when they would crowd), slowed right down
+        const src = s.band === "bass" ? MOUTH.bass : s.band === "midhigh" ? MOUTH.mid : undefined, gap = frontGap(s.hz);
+        fronts.forEach((f, k) => {
+          const r = (t * WAVE_SPEED + k * gap.shown) % (fronts.length * gap.shown);
+          f.g.visible = !!src && s.waves && r > 0.05 && r < WAVE_REACH; if (!f.g.visible) return;
+          const fade = 1 - r / WAVE_REACH;
+          f.g.position.set(0, src!, 0.02); f.g.scale.setScalar(r); f.fill.opacity = 0.1 * fade; f.line.opacity = 0.95 * fade;
+        });
         if (s.cover && beamFar !== s.far) { beamFar = s.far; drawBeam(s.far); }
       } });
     if (!st) { setFailed(true); return; }
     stage.current = st;
     studio(st.scene, 0, 6);
+    // a second, softer light from the other side, so the cabinet's dark paint does not go black in shadow
+    const fill = new THREE.DirectionalLight(0xdfe6ff, 1.1); fill.position.set(-3, 2.5, -2.5); st.scene.add(fill); st.scene.environmentIntensity = 0.9;
     const add = (id: string, mesh: THREE.Object3D, mats: THREE.MeshStandardMaterial[], parent: THREE.Object3D = st.scene) => { mesh.userData.id = id; parent.add(mesh); if (parent === st.scene) st.pickable.push(mesh); (groups[id] ??= []).push(...mats); for (const m of mats) m.emissive.set(GLOW); return mesh; };
-    const skin = () => { const m = paint("#242040"); walls.push(m); return m; }; // the deep blue-purple of the maker's photograph
-    // the body: a lid, a floor, two sides that close in towards the back, and a back; hollow, so the horns can be seen into
-    const outline = new THREE.Shape([new THREE.Vector2(-W / 2, 0), new THREE.Vector2(W / 2, 0), new THREE.Vector2(WB / 2, D), new THREE.Vector2(-WB / 2, D)]);
-    for (const y of [BASE + H - T, BASE]) { const m = skin(), lid = new THREE.Mesh(new THREE.ExtrudeGeometry(outline, { depth: T, bevelEnabled: false }), m); lid.rotation.x = -Math.PI / 2; lid.position.y = y; add("body", lid, [m]); }
-    const run = Math.hypot((W - WB) / 2, D), lean = Math.atan2((W - WB) / 2, D);
-    for (const side of [-1, 1]) { const m = skin(), wall = new THREE.Mesh(new THREE.BoxGeometry(T, H, run), m); wall.position.set(side * (W + WB) / 4, BASE + H / 2, -D / 2); wall.rotation.y = side * lean; add("body", wall, [m]); }
-    { const m = skin(), backPanel = new THREE.Mesh(new THREE.BoxGeometry(WB, H, T), m); backPanel.position.set(0, BASE + H / 2, -D); add("body", backPanel, [m]); }
-    // the front: one panel with the three openings cut out of it
-    const face = new THREE.Shape([new THREE.Vector2(-W / 2, BASE), new THREE.Vector2(W / 2, BASE), new THREE.Vector2(W / 2, BASE + H), new THREE.Vector2(-W / 2, BASE + H)]);
-    for (const o of Object.values(OPENINGS)) face.holes.push(new THREE.Path([new THREE.Vector2(px(o.x0), py(o.y0)), new THREE.Vector2(px(o.x0), py(o.y1)), new THREE.Vector2(px(o.x1), py(o.y1)), new THREE.Vector2(px(o.x1), py(o.y0))]));
-    { const m = skin(), panel = new THREE.Mesh(new THREE.ExtrudeGeometry(face, { depth: T, bevelEnabled: false }), m); panel.position.z = -T; add("body", panel, [m]); }
-    // the horns: walls running back from each opening to a smaller throat (throat sizes after the drawing; depths illustrative)
-    // the bass horn is the cabinet's own purple inside; the mid and high horns are one pale grey moulding
-    const lining = (color = "#1b1832") => { const m = paint(color, { roughness: color === GREY ? 0.55 : 0.85, side: THREE.DoubleSide }); walls.push(m); return m; };
-    { // the grey panel the two upper horns sit in: square at the top, cut in at the bottom corners (outline after the drawing)
-      const panel = new THREE.Shape([[0.03, 0.015], [0.492, 0.015], [0.492, 0.315], [0.35, 0.462], [0.172, 0.462], [0.03, 0.315]].map(([x, y]) => new THREE.Vector2(px(x!), py(y!))));
-      for (const o of [OPENINGS.mid, OPENINGS.high]) panel.holes.push(new THREE.Path([new THREE.Vector2(px(o.x0), py(o.y0)), new THREE.Vector2(px(o.x0), py(o.y1)), new THREE.Vector2(px(o.x1), py(o.y1)), new THREE.Vector2(px(o.x1), py(o.y0))]));
-      const m = lining(GREY), mesh = new THREE.Mesh(new THREE.ExtrudeGeometry(panel, { depth: 0.006, bevelEnabled: false }), m); mesh.position.z = 0.0005; add("body", mesh, [m]); }
-    const centre = (o: { x0: number; x1: number; y0: number; y1: number }, w: number, h: number) => ({ x0: (o.x0 + o.x1) / 2 - w / 2, x1: (o.x0 + o.x1) / 2 + w / 2, y0: (o.y0 + o.y1) / 2 - h / 2, y1: (o.y0 + o.y1) / 2 + h / 2 });
-    { const m = lining(); add("bassHorn", new THREE.Mesh(hornGeometry(OPENINGS.bass, { x0: 0.12, x1: 0.402, y0: 0.658, y1: 0.812 }, 0.27), m), [m]);
-      const d = lining(), divider = new THREE.Mesh(new THREE.BoxGeometry(T, OPENINGS.bass.y1 - 0.658, 0.27), d); divider.position.set(0, py((0.658 + OPENINGS.bass.y1) / 2), -0.135); add("bassHorn", divider, [d]); }
-    { const m = lining(GREY); add("midHorn", new THREE.Mesh(hornGeometry(OPENINGS.mid, centre(OPENINGS.mid, 0.2, 0.13), 0.15), m), [m]); }
-    { const m = lining(GREY); add("highHorn", new THREE.Mesh(hornGeometry(OPENINGS.high, centre(OPENINGS.high, 0.03, 0.03), 0.08), m), [m]); }
-    // the shaped piece the drawing shows in the mouth of the mid horn: wide, flat-fronted, pointed to left and right
-    { const m = paint("#0d0c11", { roughness: 0.45 }), g = new THREE.LatheGeometry([[0, 0.05], [0.035, 0.045], [0.068, 0], [0.035, -0.07], [0, -0.09]].map(([r, z]) => new THREE.Vector2(r!, z!)), 6);
-      g.rotateX(Math.PI / 2); g.scale(1.85, 1, 1); const plug = new THREE.Mesh(g, m); plug.position.set(0, py((OPENINGS.mid.y0 + OPENINGS.mid.y1) / 2), -0.055); add("plug", plug, [m]); }
-    // flypoints up each side, and the connector plate on the back
-    for (const side of [-1, 1]) for (const y of [BASE + H / 2 - RES2.flypointsApart / 2, BASE + H / 2 + RES2.flypointsApart / 2]) { const m = steel("#c9ccd1", 0.3) as THREE.MeshStandardMaterial, p = new THREE.Mesh(new THREE.CylinderGeometry(0.013, 0.013, 0.012, 16), m); p.rotation.z = Math.PI / 2; p.position.set(side * ((W + WB) / 4 + 0.012), y, -D / 2); p.rotation.y = side * lean; add("fly", p, [m]); }
-    { const m = steel("#8f9298", 0.5) as THREE.MeshStandardMaterial, plate = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.075, 0.006), m); plate.position.set(0, BASE + H - 0.2, -D - T / 2 - 0.003); add("plate", plate, [m]);
-      for (const x of [-0.026, 0.026]) { const s = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.008, 20), paint("#08080a")); s.rotation.x = Math.PI / 2; s.position.set(x, BASE + H - 0.2, -D - T / 2 - 0.008); s.userData.id = "plate"; st.scene.add(s); st.pickable.push(s); } }
+    // the cabinet itself: modelled in Blender from the maker's drawing (scripts/blender/res2.py), one object per part,
+    // with the soft shadowing where surfaces meet worked out there and laid over it here
+    const PART: Record<string, string> = { Body: "body", Handles: "body", Panel: "body", Bolts: "body", MidHorn: "midHorn", HighHorn: "highHorn", Plug: "plug", BassHorn: "bassHorn", Divider: "bassHorn", Strut: "bassHorn", Flypoints: "fly", Plate: "plate", Sockets: "plate" };
+    const FADES = ["Body", "Handles", "Panel", "MidHorn", "HighHorn", "BassHorn", "Divider", "Bolts"]; // what "See the drivers" makes see-through
+    const INK: Record<string, string> = { Panel: "#4b4d55", MidHorn: "#4b4d55", HighHorn: "#4b4d55", Plate: "#33343a", Flypoints: "#33343a" }; // edge lines: dark on the pale parts
+    const ao = new THREE.TextureLoader().load(aoUrl); ao.flipY = false; ao.colorSpace = THREE.NoColorSpace;
+    let gone = false;
+    new GLTFLoader().load(modelUrl, (gltf) => {
+      if (gone) return;
+      const model = gltf.scene; model.position.y = BASE;
+      model.traverse((o) => {
+        const mesh = o as THREE.Mesh; if (!mesh.isMesh) return;
+        const name = mesh.name.replace(/[._]\d+$/, ""), id = PART[name] ?? "body";
+        const m = (mesh.material as THREE.MeshStandardMaterial).clone(); mesh.material = m;
+        m.aoMap = ao; m.aoMapIntensity = 1; m.side = THREE.DoubleSide; m.emissive.set(GLOW); m.emissiveIntensity = 0;
+        if (name === "Body" || name === "BassHorn" || name === "Divider") { const grain = paint("#000"); m.bumpMap = grain.bumpMap; m.bumpScale = 0.5; }
+        mesh.userData.id = id; mesh.castShadow = mesh.receiveShadow = true; (groups[id] ??= []).push(m); if (FADES.includes(name)) walls.push(m);
+        // crisp lines along every real edge, as in a technical drawing
+        const ink = new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry, 28), new THREE.LineBasicMaterial({ color: INK[name] ?? "#7d74c9", transparent: true, opacity: name === "Body" || name === "Handles" ? 0.55 : 0.9 }));
+        ink.raycast = () => {}; mesh.add(ink); inks.push(ink.material as THREE.LineBasicMaterial);
+      });
+      st.scene.add(model); st.pickable.push(model);
+    }, undefined, () => setFailed(true));
+
     // stand-ins for the three drivers, at their stated sizes, behind their horns (where exactly they sit is not published)
     const cone = (id: string, inches: number, y: number, z: number) => {
       const r = (inches * 0.0254) / 2, m = paper("#3a3642"), mag = steel("#7d8087", 0.5) as THREE.MeshStandardMaterial, g = new THREE.Group();
@@ -108,6 +118,23 @@ export default function Res2View() {
     rule([-W / 2 - 0.07, BASE + H + 0.02, 0], [-W / 2 - 0.07, BASE + H + 0.02, -D], "445 mm");
     rule([-WB / 2, BASE + H + 0.07, -D], [WB / 2, BASE + H + 0.07, -D], "344 mm");
     st.scene.add(dims, beam);
+    // one wavefront: the piece of a sphere inside the cabinet's stated 50 by 25 degrees, facing the listener; drawn at size 1 and scaled
+    const rad = Math.PI / 180, { across, upDown } = RES2.coverage;
+    const cap = new THREE.SphereGeometry(1, 28, 10, (90 - across / 2) * rad, across * rad, (90 - upDown / 2) * rad, upDown * rad);
+    // each front is a bright outline with only a faint fill, so one seen face-on does not blot out the cabinet
+    const edge: THREE.Vector3[] = [], on = (phi: number, theta: number) => new THREE.Vector3(-Math.cos(phi) * Math.sin(theta), Math.cos(theta), Math.sin(phi) * Math.sin(theta));
+    const p0 = (90 - across / 2) * rad, p1 = (90 + across / 2) * rad, t0 = (90 - upDown / 2) * rad, t1 = (90 + upDown / 2) * rad, N = 24;
+    for (let i = 0; i <= N; i++) edge.push(on(p0 + ((p1 - p0) * i) / N, t0));
+    for (let i = 0; i <= N; i++) edge.push(on(p1, t0 + ((t1 - t0) * i) / N));
+    for (let i = 0; i <= N; i++) edge.push(on(p1 - ((p1 - p0) * i) / N, t1));
+    for (let i = 0; i <= N; i++) edge.push(on(p0, t1 - ((t1 - t0) * i) / N));
+    const rim = new THREE.BufferGeometry().setFromPoints(edge);
+    const fronts = Array.from({ length: 16 }, () => {
+      const g = new THREE.Group(), fill = new THREE.Mesh(cap, new THREE.MeshBasicMaterial({ color: GLOW, transparent: true, opacity: 0.08, side: THREE.DoubleSide, depthWrite: false }));
+      const line = new THREE.LineLoop(rim, new THREE.LineBasicMaterial({ color: GLOW, transparent: true, opacity: 0.9 }));
+      fill.raycast = () => {}; line.raycast = () => {}; g.add(fill, line); g.visible = false; st.scene.add(g); return { g, fill: fill.material, line: line.material };
+    });
+    const MOUTH = { bass: py((OPENINGS.bass.y0 + OPENINGS.bass.y1) / 2), mid: py((OPENINGS.mid.y0 + OPENINGS.high.y1) / 2) };
     // coverage: the stated 50 by 25 degrees as a wedge, with its width and height written at the far end
     const drawBeam = (reach: number) => {
       for (const o of [...beam.children]) { beam.remove(o); (o as THREE.Mesh).geometry?.dispose(); }
@@ -121,11 +148,11 @@ export default function Res2View() {
       a.position.set(0, y + tall / 2 + size, reach); b.position.set(wide / 2 + size * 2.4, y, reach); c.position.set(0, Math.max(0.2, y - tall / 2 - size), reach / 2);
       beam.add(wedge, edge, a, b, c);
     };
-    return () => { st.dispose(); stage.current = undefined; };
+    return () => { gone = true; st.dispose(); stage.current = undefined; };
   }, []);
 
   // when coverage is switched on or its distance changes, step back far enough to see the far end
-  useEffect(() => { const s = stage.current; if (!s) return; if (cover) s.lookFrom([-far * 0.9 - 2, BASE + H + far * 0.35, -far * 0.45], [0, BASE + H / 2, far * 0.5]); else s.lookFrom([0.95, 1.6, 1.85], [0, BASE + H / 2 - 0.05, -0.15]); }, [cover, far]);
+  useEffect(() => { const s = stage.current; if (!s) return; if (cover) s.lookFrom([-far * 0.9 - 2, BASE + H + far * 0.35, -far * 0.45], [0, BASE + H / 2, far * 0.5]); else s.lookFrom([2.25, 1.85, 1.35], [0, BASE + H / 2 - 0.02, 0.45]); }, [cover, far]);
 
   // the tone: a plain sine at the chosen frequency, quiet
   const audio = useRef<{ ctx: AudioContext; osc: OscillatorNode; gain: GainNode } | undefined>(undefined);
@@ -139,6 +166,7 @@ export default function Res2View() {
   useEffect(() => { audio.current?.osc.frequency.setTargetAtTime(hz, audio.current.ctx.currentTime, 0.02); }, [hz]);
   useEffect(() => () => { const a = audio.current; if (a) { a.osc.stop(); void a.ctx.close(); } }, []);
 
+  const gap = frontGap(hz);
   const part = RES2_PARTS.find((p) => p.id === (hover ?? picked)), now = BAND_TEXT[band], reach = spread(far);
   const mark = (f: number) => `${(toV(f) * 100).toFixed(1)}%`;
   return (
@@ -147,12 +175,19 @@ export default function Res2View() {
       <div className="driver-grid">
         <div className="driver-stage three" ref={mount} role="img" aria-label="A tall loudspeaker cabinet on a plinth, with a wide horn and a small horn in its upper half and a large divided horn mouth in its lower half">
           {failed && <p className="driver-failed">This browser could not start 3D drawing.</p>}
+          <div className="fig-card" aria-live="polite">
+            <span className="fig-kicker">Funktion-One · Res 2</span>
+            <strong className="fig-number">{hzText(hz)}</strong>
+            <span className="fig-line">{noteNear(hz)} · {{ below: "too low for this cabinet", bass: "bass horn · 15-inch", midhigh: "mid and high horns", above: "above its range" }[band]}</span>
+            <span className="fig-line dim">waves {lengthText(gap.wavelength)} apart{gap.every > 1 && (band === "bass" || band === "midhigh") ? ` · every ${gap.every}${gap.every === 2 ? "nd" : gap.every === 3 ? "rd" : "th"} one drawn` : ""}</span>
+          </div>
         </div>
         <div className="driver-side">
           <div className="driver-parts" role="group" aria-label="Views">
             <button aria-pressed={inside} className={inside ? "on" : ""} onClick={() => setInside((x) => !x)}>See the drivers</button>
             <button aria-pressed={cover} className={cover ? "on" : ""} onClick={() => setCover((x) => !x)}>Coverage</button>
             <button aria-pressed={sizes} className={sizes ? "on" : ""} onClick={() => setSizes((x) => !x)}>Sizes</button>
+            <button aria-pressed={waves} className={waves ? "on" : ""} onClick={() => setWaves((x) => !x)}>Sound waves</button>
           </div>
           <div className="driver-parts vero-key" role="group" aria-label="Parts">
             {RES2_PARTS.map((p) => <button key={p.id} className={(hover ?? picked) === p.id ? "on" : ""} aria-pressed={picked === p.id} onClick={() => setPicked(picked === p.id ? undefined : p.id)} onPointerEnter={() => setHover(p.id)} onPointerLeave={() => setHover(undefined)}>{p.name}</button>)}
@@ -196,7 +231,7 @@ export default function Res2View() {
           <p>So treat the outside, the sizes and the numbers as the maker’s, and everything behind the front panel as a sketch.</p>
         </div>
       </aside>
-      <p className="muted driver-draft">From the maker’s drawing: the cabinet’s sizes, its 28° taper, and where the three openings are on the front. From the maker’s spec sheet (Funktion-One documents, page {RES2.page}): the three drivers, 60 Hz to 18 kHz, the 250 Hz crossover, 50° by 25° coverage, 48 kg, two NL4 connectors, M10 flypoints. Colours follow the maker’s photograph by eye: a deep purple cabinet with a pale grey moulding for the two upper horns. Drawn for illustration: how deep each horn goes and its shape inside, the drivers’ positions, the plinth, and panel thickness. The landmark sounds are rough conventions, not measurements. Your own speakers or headphones are what you hear the tone through, so very low and very high tones may be faint or silent on them.</p>
+      <p className="muted driver-draft">From the maker’s drawing: the cabinet’s sizes, its 28° taper, and where the three openings are on the front. From the maker’s spec sheet (Funktion-One documents, page {RES2.page}): the three drivers, 60 Hz to 18 kHz, the 250 Hz crossover, 50° by 25° coverage, 48 kg, two NL4 connectors, M10 flypoints. Colours follow the maker’s photograph by eye: a deep purple cabinet with a pale grey moulding for the two upper horns. The model was built in Blender from that drawing, with rounded edges, hand slots, screws and the strut in the bass horn placed by eye from the photograph. Drawn for illustration: how deep each horn goes and its shape inside, the drivers’ positions, and the plinth. The pink wavefronts are a picture, not a measurement: they are spaced one true wavelength apart (sound travels 343 m a second, so the wavelength is 343 divided by the frequency), travel hundreds of times slower than sound so they can be seen, and are drawn inside the stated 50° by 25° at every frequency, although in life low notes spread wider than that. The landmark sounds are rough conventions, not measurements. Your own speakers or headphones are what you hear the tone through, so very low and very high tones may be faint or silent on them.</p>
     </>
   );
 }

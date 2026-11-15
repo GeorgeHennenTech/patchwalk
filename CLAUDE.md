@@ -796,6 +796,24 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   the handover frequency; the piece in the mid horn). The owner wants this kind of note on diagrams that
   leave things out. Its "why" lines are general acoustics; only the horn-shape one has a text in the
   library behind it (Kolbrek), so check the others when a loudspeaker text arrives.
+- **Definition pass, Res 2 first (15 Nov 2026).** The owner saw the "Anatomy" Claude Code skill (MIT,
+  github.com/wheresryan22/anatomy: dense isometric SVG machines with a big live readout), asked for a
+  survey of ways to make the diagrams better, said they only use the site in a computer browser, and
+  approved this plan: keep real 3D and our sourcing, and add (1) models built in Blender with baked
+  shading, (2) a technical-drawing finish, (3) sound drawn as a moving effect; judge it on the Res 2
+  before doing Vero, the horn and the driver. Built for the Res 2: `scripts/blender/res2.py` models the
+  cabinet from the maker's drawing (rounded edges; the three horns cut out of the body as real cavities;
+  the grey moulding; hand slots in top, sides and back; screws; flypoints; connector plate; the strut the
+  photograph shows in the bass horn), separates it into named parts, bakes ambient occlusion into one
+  shared picture, and exports `src/assets/diagrams/res2/res2.glb` (190 KB) and `ao.webp` (330 KB).
+  `Res2View.tsx` loads it, lays the shading over it (`aoMap`), draws an ink line along every real edge
+  (`EdgesGeometry`), shows a figure card over the view with one big live number (frequency, note, which
+  horn, wavelength), and sends pink wavefronts out of whichever horn is playing: outlines of the piece
+  of a sphere inside 50 by 25 degrees, one true wavelength apart (`frontGap` in `res2.ts`: every nth when
+  closer than 12 cm, and the card says so), travelling at 0.55 m/s. The page says the fronts are a
+  picture, not a measurement, and that low notes really spread wider. To rebuild: the Blender module is
+  in the scratchpad's `blender/venv` (`pip install bpy` if it is gone). Checked with software 3D only;
+  **the owner has not yet judged it. If approved: Vero cabinets and field next, then horn, then driver.**
 - **Realism pass on the 3D views (14 Nov 2026, owner's request).** `src/ui/three/look.ts`: surfaces drawn
   by code onto small canvases (textured speaker paint, a perforated grille, grass, plywood, paper pulp,
   steel), an open sky with haze, a studio table that shows only shadows, and `truss` (laced lighting

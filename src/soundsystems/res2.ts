@@ -51,3 +51,9 @@ export const LANDMARKS: { label: string; hz: number }[] = [
   { label: "Sub bass", hz: 45 }, { label: "Kick thump", hz: 80 }, { label: "Bass note", hz: 110 }, { label: "Snare body", hz: 200 },
   { label: "Voice", hz: 1000 }, { label: "Presence", hz: 4000 }, { label: "Hi-hat", hz: 9000 }, { label: "Air", hz: 16000 },
 ];
+
+/** How far apart to draw wavefronts: one wavelength, or every nth front when they would sit closer than 12 cm. */
+export function frontGap(hz: number): { wavelength: number; every: number; shown: number } {
+  const wavelength = 343 / hz, every = Math.max(1, Math.ceil(0.12 / wavelength));
+  return { wavelength, every, shown: wavelength * every };
+}

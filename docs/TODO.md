@@ -32,6 +32,8 @@ it, and reports in a few lines. None of these needs the owner or spends credits.
 - [ ] 23. More formula wavetables (done 15 Nov: Phase square, Driven square, Driven saw). Still to do: the CZ resonant shapes, a supersaw preset (the thesis link was dead), wavefolder curves from the Serge and Lockhart paper
 - [x] 24. A lesson on the new wavetables ("Shapes from classic synths")
 - [x] 25. String lab: a plucked string built from the papers (the first physical-modelling instrument), as its own tab
+- [x] 25b. String lab: a second string for beating, and match a hidden string by ear
+- [x] 25c. Drum lab: a drum head as ringing modes (round and square), click to hit it anywhere
 - [ ] 26. String lab next: make it an instrument the lesson engine can use (steps, checks, match by ear), then stiffness, two strings, a body, and a worklet for bends and bowing
 - [ ] 27. Genre lessons that use the new wavetables
 - [x] 10. Osc B as a full oscillator: unison and warp

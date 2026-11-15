@@ -979,3 +979,12 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 .strings-source p { margin: 0 0 8px; line-height: 1.55; font-size: 14.5px; }
 .strings-verdict { margin: 8px 0; padding-left: 1.2rem; display: grid; gap: 4px; }
 .strings-match { margin-bottom: 14px; }
+.drum-head { width: min(100%, 300px); display: block; margin: 0 auto 8px; cursor: crosshair; touch-action: none; }
+.drum-rim { fill: #8d7aa6; }
+.drum-skin { fill: #f1e6d2; }
+.drum-dot { fill: #ff4fa3; }
+.drum-hit { fill: none; stroke: #ff4fa3; stroke-width: 2; animation: drum-hit 0.5s ease-out forwards; transform-box: fill-box; transform-origin: center; }
+@keyframes drum-hit { from { transform: scale(1); opacity: 1; } to { transform: scale(6); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .drum-hit { animation: none; opacity: 0; } }
+.drum-grid { stroke: #4a3b5c; stroke-width: 0.6; }
+.drum-modes rect { fill: #ffe14f; }

@@ -925,6 +925,20 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   harmonics and at a third every third, highs die sooner on a dull string. Checked in a browser; **not yet
   heard by anyone.** Not built: the lesson engine does not know this instrument (the lab is a page of its
   own, not lessons), match by ear, stiffness, two strings, body, bowing.
+- **Physical models tab (15 Nov 2026, later).** The tab is now "Physical models" (`src/ui/ModelLabs.tsx`)
+  with two views. **Plucked string** gained a second string a few cents away (`pair`, `pairBeatHz`) and
+  **match by ear** (`stringTarget`, `judgeString`: a hidden string differing in brightness, decay time and
+  pluck position; the verdict says which way each is off, never the numbers). **Drum head**
+  (`src/modal/membrane.ts`, `src/ui/DrumLab.tsx`): a skin as a set of ringing modes. Round head: mode
+  frequencies from the zeros of Bessel functions (`BESSEL_ZEROS`, each checked by a test against `besselJ`),
+  and a hit at radius r excites mode (m, n) by J_m(zero x r), so a dead-centre hit excites only the m = 0
+  modes (source: Avanzini and Marogna 2010, in the library). Square head: frequencies as the root of m
+  squared plus n squared (Van Duyne and Smith 1993, in the library). **How fast each mode dies
+  (`modeDecay`) is our own rule, not sourced, and the page says so.** Click the head to hit it there; bars
+  show each mode's frequency and how strongly the hit excites it, against faint lines where harmonics would
+  be; five "Things to try". Like the string, a hit is rendered whole and played from a buffer. Tests in
+  `tests/membrane.test.ts`. Checked in a browser; not heard by anyone. Neither lab is known to the lesson
+  engine yet.
 - **Realism pass on the 3D views (14 Nov 2026, owner's request).** `src/ui/three/look.ts`: surfaces drawn
   by code onto small canvases (textured speaker paint, a perforated grille, grass, plywood, paper pulp,
   steel), an open sky with haze, a studio table that shows only shadows, and `truss` (laced lighting

@@ -16,6 +16,12 @@ const lastStep = (s: Snapshot) => (s.sequence.length >= 2 ? s.sequence[s.sequenc
 const ran = (s: Snapshot, steps: number[]) => { const tail = s.sequence.slice(-steps.length); return tail.length === steps.length && tail.every((n, i) => n - tail[0]! === steps[i]); };
 /** True when the notes sounding together are exactly these pitch classes (in any octave). */
 const sounding = (s: Snapshot, classes: number[]) => { const got = [...new Set(s.held.map((n) => ((n % 12) + 12) % 12))].sort((a, b) => a - b); return same(got, [...classes].sort((a, b) => a - b)); };
+/** True when the most recent notes played, taken three at a time, are these chords in order (each as pitch classes, in any octave). */
+const chordRun = (s: Snapshot, chords: number[][]) => {
+  const tail = s.sequence.slice(-3 * chords.length);
+  if (tail.length !== 3 * chords.length) return false;
+  return chords.every((want, i) => same([...new Set(tail.slice(i * 3, i * 3 + 3).map((n) => ((n % 12) + 12) % 12))].sort((a, b) => a - b), [...want].sort((a, b) => a - b)));
+};
 const tone = (note: number, at: number, seconds = 0.5): DemoTone => ({ patch: { ...SOFT }, note, at, seconds });
 const chord = (notes: number[], at: number, seconds = 1.2): DemoTone[] => notes.map((n) => tone(n, at, seconds));
 const MAJOR = [0, 2, 4, 5, 7, 9, 11, 12], MINOR = [0, 2, 3, 5, 7, 8, 10, 12];
@@ -106,5 +112,54 @@ export const THEORY_CHAPTER: PlayableLesson[] = [
       { do: "Go back home: hold A, D and G again.", show: [...K], hear: "After the others, C major sounds like an arrival.", target: "C, E and G sounding together", check: (s) => sounding(s, [0, 4, 7]) && s.sequence.length >= 3 },
     ],
     recap: ["Chords that belong to a scale are built by taking every other note of it.", "In C major the chords on C and F come out major, and those on D and E come out minor.", "The scale decides which chords are major and which are minor; the hand shape stays the same."],
+  },
+  {
+    id: "CN.6", title: "Inversions: the same chord, rearranged", buildsOn: ["CN.5"], minutes: 6, cardIds: [], initial: { ...SOFT },
+    outcome: "Play a chord with a different note at the bottom, and say why it is still the same chord.",
+    demo: { caption: "C major three ways: C at the bottom, then E at the bottom, then back.", tones: [...chord([60, 64, 67], 0, 1.1), ...chord([64, 67, 72], 1.4, 1.1), ...chord([60, 64, 67], 2.8, 1.1)] },
+    idea: [
+      "A chord is named by which notes are in it, not by the order they are stacked in. C, E and G make C major whether C is at the bottom, or E, or G. Putting a note other than the root at the bottom is called an inversion.",
+      "Inversions matter for two reasons. They change the chord’s colour a little: lighter, less settled. And they let you move from one chord to the next by shifting a finger or two, where jumping the whole hand would sound clumsy.",
+    ],
+    steps: [
+      { do: "Hold A, D and G: C major with C at the bottom.", show: [...K], hear: "The plain, settled form.", target: "C, E and G together, with C lowest", check: (s) => sounding(s, [0, 4, 7]) && Math.min(...s.held) % 12 === 0 },
+      { do: "Hold D, G and K: the same three notes with E at the bottom and C moved to the top.", show: [...K], hear: "Still C major, but lighter and less final.", target: "C, E and G together, with E lowest", check: (s) => sounding(s, [0, 4, 7]) && Math.min(...s.held) % 12 === 4 },
+      { do: "Hold F, H and K: F major with F at the bottom.", show: [...K], hear: "F major in its plain form.", target: "F, A and C together, with F lowest", check: (s) => sounding(s, [5, 9, 0]) && Math.min(...s.held) % 12 === 5 },
+      { do: "Hold A, F and H: F major again, with C at the bottom.", show: [...K], hear: "The same chord, sitting right next to where C major was. Only two fingers had to move.", target: "F, A and C together, with C lowest", check: (s) => sounding(s, [5, 9, 0]) && Math.min(...s.held) % 12 === 0 },
+    ],
+    recap: ["A chord is named by the notes in it, not by their order.", "An inversion puts a note other than the root at the bottom, which lightens the chord.", "Inversions let neighbouring chords sit close together, so the hand hardly moves."],
+  },
+  {
+    id: "CN.7", title: "A four-chord progression", buildsOn: ["CN.6"], minutes: 8, cardIds: [], initial: { ...SOFT },
+    outcome: "Play four chords from one scale in a row, close together under the hand, and loop them.",
+    demo: { caption: "C, G, A minor, F: four chords from the C major scale, each close to the last.", tones: [...chord([60, 64, 67], 0, 0.95), ...chord([62, 67, 71], 1.1, 0.95), ...chord([60, 64, 69], 2.2, 0.95), ...chord([60, 65, 69], 3.3, 0.95)] },
+    idea: [
+      "A progression is a row of chords played one after another. Music gets its sense of travelling and coming home from it. One of the most used takes four chords from a major scale: the chords on its first, fifth, sixth and fourth notes. In C that is C, G, A minor and F.",
+      "Played with every root at the bottom, the hand would leap about. With inversions each chord is a small move from the last, and the top notes make a little tune of their own.",
+    ],
+    steps: [
+      { do: "Hold A, D and G: C major.", show: [...K], hear: "Home.", target: "C, E and G together", check: (s) => sounding(s, [0, 4, 7]) },
+      { do: "Hold S, G and J: G major, with D at the bottom.", show: [...K], hear: "A lift away from home. It wants to go somewhere.", target: "G, B and D together", check: (s) => sounding(s, [7, 11, 2]) },
+      { do: "Hold A, D and H: A minor, with C at the bottom.", show: [...K], hear: "The dark one of the four. Only one finger moved from C major.", target: "A, C and E together", check: (s) => sounding(s, [9, 0, 4]) },
+      { do: "Hold A, F and H: F major, with C at the bottom.", show: [...K], hear: "Warm, and leaning back toward home.", target: "F, A and C together", check: (s) => sounding(s, [5, 9, 0]) },
+      { do: "Play all four in a row without stopping: C, G, A minor, F.", show: [...K], hear: "A loop you have heard in a great many songs. Go round again and it joins up.", target: "The four chords played one after another, in that order", check: (s) => chordRun(s, [[0, 4, 7], [7, 11, 2], [9, 0, 4], [5, 9, 0]]) },
+    ],
+    recap: ["A progression is a row of chords; it gives music its sense of leaving and coming home.", "The chords on the first, fifth, sixth and fourth notes of a major scale make a very widely used loop.", "Inversions keep each chord a small move from the one before."],
+  },
+  {
+    id: "CN.8", title: "Seventh chords", buildsOn: ["CN.5"], minutes: 7, cardIds: [], initial: { ...SOFT },
+    outcome: "Add a fourth note to a chord and hear how it softens or tightens it.",
+    demo: { caption: "C major, then with a seventh added on top two ways, then D minor with its seventh.", tones: [...chord([60, 64, 67], 0, 1), ...chord([60, 64, 67, 71], 1.3, 1), ...chord([60, 64, 67, 70], 2.6, 1), ...chord([62, 65, 69, 72], 3.9, 1)] },
+    idea: [
+      "Keep taking every other note of the scale past the fifth and you reach a fourth note, seven steps of the scale above the root: the seventh. A three-note chord states its mood plainly. Adding the seventh makes it richer and less blunt.",
+      "Which seventh matters. On C, the white-key seventh is B, eleven semitones up: a soft, dreamy major seventh chord. Lower it one semitone to A sharp and the chord tightens and wants to move on. A minor chord with its seventh sounds mellow.",
+    ],
+    steps: [
+      { do: "Hold A, D, G and J together (C, E, G and B).", show: [...K], hear: "C major with a soft glow on top: a major seventh chord.", target: "A major chord with the note eleven semitones above its root", check: (s) => same(shape(s), [0, 4, 7, 11]) },
+      { do: "Change the top note to the black key below it: hold A, D, G and U (C, E, G and A sharp).", show: [...K], hear: "Tighter and restless. It sounds as if it must lead somewhere.", target: "A major chord with the note ten semitones above its root", check: (s) => same(shape(s), [0, 4, 7, 10]) },
+      { do: "Hold S, F, H and K (D, F, A and C).", show: [...K], hear: "Mellow and smooth: D minor with its seventh.", target: "A minor chord with the note ten semitones above its root", check: (s) => same(shape(s), [0, 3, 7, 10]) },
+      { do: "Hold A, D, G and H (C, E, G and A).", show: [...K], hear: "Mellow again. These are the notes of A minor with its seventh, stacked with C at the bottom: an inversion.", target: "A, C, E and G together", check: (s) => sounding(s, [9, 0, 4, 7]) },
+    ],
+    recap: ["A seventh chord adds a fourth note by taking one more step of every-other-note up the scale.", "A major chord with a major seventh is soft and dreamy; with the seventh a semitone lower it is restless.", "A minor chord with its seventh sounds mellow."],
   },
 ];

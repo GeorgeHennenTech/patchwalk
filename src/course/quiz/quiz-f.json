@@ -1634,5 +1634,131 @@
    "why": "The gaps between the scale's notes are uneven, so the same shape gives major in some places and minor in others.",
    "point": 2
   }
+ ],
+ "CN.6": [
+  {
+   "q": "C, E and G are played with E at the bottom. What chord is it?",
+   "options": [
+    "E minor",
+    "Still C major",
+    "G major",
+    "No chord at all"
+   ],
+   "answer": 1,
+   "why": "A chord is named by the notes in it, not by which one is lowest.",
+   "point": 0
+  },
+  {
+   "q": "What is an inversion?",
+   "options": [
+    "A chord played backwards in time",
+    "A chord with a note other than the root at the bottom",
+    "A chord with a wrong note",
+    "A chord played quietly"
+   ],
+   "answer": 1,
+   "why": "Moving a different chord note to the bottom gives an inversion of the same chord.",
+   "point": 1
+  },
+  {
+   "q": "Why are inversions useful when changing chords?",
+   "options": [
+    "They make chords louder",
+    "They let neighbouring chords sit close together under the hand",
+    "They change the key",
+    "They remove a note"
+   ],
+   "answer": 1,
+   "why": "With inversions each chord is only a finger or two away from the last.",
+   "point": 2
+  }
+ ],
+ "CN.7": [
+  {
+   "q": "What is a progression?",
+   "options": [
+    "A single long chord",
+    "A row of chords played one after another",
+    "A scale played fast",
+    "A kind of filter sweep"
+   ],
+   "answer": 1,
+   "why": "Chords in a row give music its sense of leaving and coming home.",
+   "point": 0
+  },
+  {
+   "q": "In C major, which four chords make the widely used loop in this lesson?",
+   "options": [
+    "C, D, E, F",
+    "C, G, A minor, F",
+    "C, C minor, G, G minor",
+    "A, B, C, D"
+   ],
+   "answer": 1,
+   "why": "They are the chords on the first, fifth, sixth and fourth notes of the scale.",
+   "point": 1
+  },
+  {
+   "q": "Why play some of those chords as inversions?",
+   "options": [
+    "To make them minor",
+    "To keep each chord a small move from the one before",
+    "To make them louder",
+    "To leave the scale"
+   ],
+   "answer": 1,
+   "why": "Close shapes sound smoother than leaping the whole hand.",
+   "point": 2
+  }
+ ],
+ "CN.8": [
+  {
+   "q": "How is a seventh chord made from a three-note chord?",
+   "options": [
+    "By removing the fifth",
+    "By adding one more every-other-note step up the scale",
+    "By doubling the root",
+    "By lowering every note"
+   ],
+   "answer": 1,
+   "why": "Carry on past the fifth by the same rule and you reach the seventh.",
+   "point": 0
+  },
+  {
+   "q": "C, E, G and B together sound how?",
+   "options": [
+    "Harsh and clashing",
+    "Soft and dreamy",
+    "Exactly like C major",
+    "Like a minor chord"
+   ],
+   "answer": 1,
+   "why": "A major chord with a major seventh has a soft glow.",
+   "point": 1
+  },
+  {
+   "q": "Lowering that top note a semitone makes the chord:",
+   "options": [
+    "Restless, as if it must move on",
+    "Softer still",
+    "Silent",
+    "Minor"
+   ],
+   "answer": 0,
+   "why": "With the seventh a semitone lower the chord tightens and wants to lead somewhere.",
+   "point": 1
+  },
+  {
+   "q": "A minor chord with its seventh sounds:",
+   "options": [
+    "Mellow",
+    "Bright and hard",
+    "Out of tune",
+    "Like a single note"
+   ],
+   "answer": 0,
+   "why": "The added seventh smooths a minor chord.",
+   "point": 2
+  }
  ]
 }

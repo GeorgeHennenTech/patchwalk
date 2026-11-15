@@ -3,6 +3,8 @@
 // worked out whole by src/strings/string.ts and then played, so what is drawn is exactly what is heard.
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { noteToHz } from "../synth/params";
+import { STRING_LESSONS } from "../models/lessons";
+import { useModelLesson } from "./ModelLesson";
 import { EXCITERS, judgeString, loopFor, pairBeatHz, stringTarget, pluckHarmonics, pluckShape, renderString, STRING_INITIAL, STRING_RANGES, type StringState } from "../strings/string";
 
 const KEYS = "awsedftgyhujk"; // one octave of the computer keyboard, from C
@@ -14,7 +16,7 @@ const EXCITER_NAMES = { pluck: "Pluck", noise: "Burst of noise" } as const;
 interface Try { id: string; say: string; hear: string; done: (s: StringState, seen: Seen) => boolean }
 interface Seen { notes: Set<number>; bright: [number, number]; decay: [number, number] }
 const TRIES: Try[] = [
-  { id: "keys", say: "Play three different keys.", hear: "Each rings and fades by itself, like a string let go. Low notes last longer than high ones.", done: (_s, seen) => seen.notes.size >= 3 },
+  { id: "keys", say: "Play three different keys.", hear: "Each rings and fades by itself, like a string let go.", done: (_s, seen) => seen.notes.size >= 3 },
   { id: "noise", say: "Change “Set going by” to Burst of noise and play a key.", hear: "A rougher start, but the same note. The loop decides the pitch, not what is put into it.", done: (s) => s.exciter === "noise" },
   { id: "bright", say: "Play with Brightness near 0, then near 100.", hear: "Dull and short-lived on top, like nylon or an old string; then bright and ringing, like new steel.", done: (_s, seen) => seen.bright[0] <= 10 && seen.bright[1] >= 90 },
   { id: "decay", say: "Play with Decay time under 0.6 s, then over 5 s.", hear: "A muted, damped thud; then a note that hangs in the air.", done: (_s, seen) => seen.decay[0] <= 0.6 && seen.decay[1] >= 5 },
@@ -35,6 +37,8 @@ export default function StringLab() {
   const out = useRef<GainNode | undefined>(undefined);
   const state = useRef(s); state.current = s;
 
+  const course = useModelLesson(STRING_LESSONS, (settings) => setS({ ...STRING_INITIAL, ...settings }));
+  const coursePlay = useRef(course.onPlay); coursePlay.current = course.onPlay;
   const [target, setTarget] = useState<StringState>();
   const [verdict, setVerdict] = useState<ReturnType<typeof judgeString>>();
   const [wins, setWins] = useState(0);
@@ -46,6 +50,7 @@ export default function StringLab() {
     const buffer = c.createBuffer(1, samples.length, c.sampleRate); buffer.getChannelData(0).set(samples);
     const source = c.createBufferSource(); source.buffer = buffer; source.connect(out.current!); source.start();
     if (as) return; // the hidden target: play it and leave no trace on screen
+    coursePlay.current(now, note);
     setLast(note); setLit(note); window.setTimeout(() => setLit((n) => (n === note ? undefined : n)), 180);
     const k = seen.current; k.notes.add(note);
     k.bright = [Math.min(k.bright[0], now.bright), Math.max(k.bright[1], now.bright)]; k.decay = [Math.min(k.decay[0], now.decay), Math.max(k.decay[1], now.decay)];
@@ -77,7 +82,9 @@ export default function StringLab() {
   return (
     <section className="strings">
       <h2>String lab: a plucked string</h2>
-      <p className="strings-lead">This instrument has no oscillator and no stored wave. A short burst goes into a loop; one trip round the loop is one trip down the string and back, so the length of the loop is the note. Each trip the wave loses a little, the highs most of all, and that is the whole sound.</p>
+      {course.chooser}
+      {course.intro}
+      {!course.lesson && <p className="strings-lead">This instrument has no oscillator and no stored wave. A short burst goes into a loop; one trip round the loop is one trip down the string and back, so the length of the loop is the note. Each trip the wave loses a little, the highs most of all, and that is the whole sound.</p>}
       <div className="strings-grid">
         <div className="strings-panel">
           <svg className="strings-string" viewBox="0 0 400 110" role="img" aria-label={`The string just after the pluck: plucked ${s.pick}% of the way along${s.pickup ? `, listened to at ${s.pickup}%` : ""}`}>
@@ -124,7 +131,8 @@ export default function StringLab() {
         })}
       </div>
       <p className="muted">Click a key, or use the letter keys A to K (W, E, T, Y, U are the black keys). Change a setting, then pluck again: a note already ringing keeps the settings it was plucked with.</p>
-      <section className="exercise strings-match">
+      {course.steps}
+      {!course.lesson && <><section className="exercise strings-match">
         <h3>Match a string by ear <span className="badge">{wins} matched</span></h3>
         {!target ? (
           <><p>A hidden string is set up with its own brightness, decay time and pluck position. Listen to it, then set yours to sound the same. The picture and bars show only your string.</p>
@@ -149,7 +157,7 @@ export default function StringLab() {
       <section className="exercise strings-tries">
         <h3>Things to try <span className="badge">{done.length} of {TRIES.length}</span></h3>
         <ol>{TRIES.map((t) => <li key={t.id} className={done.includes(t.id) ? "done" : ""}><strong>{done.includes(t.id) ? "✓ " : ""}{t.say}</strong> <span>{t.hear}</span></li>)}</ol>
-      </section>
+      </section></>}
       <aside className="strings-source">
         <h3>Where this comes from</h3>
         <p>The loop with a two-sample average in it is the Karplus-Strong plucked-string method, built here as Julius O. Smith describes it in “Physical Modeling Using Digital Waveguides” (Computer Music Journal, 1992), which is in the library. The fine tuning follows Jaffe and Smith’s extension of that method.</p>

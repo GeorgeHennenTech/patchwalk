@@ -939,6 +939,18 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   be; five "Things to try". Like the string, a hit is rendered whole and played from a buffer. Tests in
   `tests/membrane.test.ts`. Checked in a browser; not heard by anyone. Neither lab is known to the lesson
   engine yet.
+- **Lessons on the physical models (15 Nov 2026, later still).** `src/models/lessons.ts` holds six lessons
+  as data (`ModelLesson<S>`: outcome, two idea paragraphs, steps with `check(settings, played)`, recap, and
+  their own quiz questions): string Q1.1 "A burst of noise becomes a note", Q1.2 "Loss is tone", Q1.3
+  "Where you pluck, and what with", Q1.4 "Where you listen, and a second string"; drum Q4.1 "Modes: why a
+  drum is not a string", Q4.2 "Damping and shape". `useModelLesson` in `src/ui/ModelLesson.tsx` runs them
+  inside each lab: a chooser ("Free play" or a lesson), the idea, one step at a time (a step is passed by
+  playing the model with the settings it asks for), then the same write / quiz / recap card as the synth
+  lessons (`RecallCard` now takes its questions through `items`). Finished model lessons are kept in the
+  browser (`patchwalk.models.v1`), not yet with the account, and they are **not** in `LESSONS`: they do
+  not count in the 99, do not appear in the Lessons tab, and have no "why this matters" line, Focus mode
+  or spaced return. `tests/models.test.ts` checks their shape. Run through in a browser; not yet tried by
+  the owner.
 - **Realism pass on the 3D views (14 Nov 2026, owner's request).** `src/ui/three/look.ts`: surfaces drawn
   by code onto small canvases (textured speaker paint, a perforated grille, grass, plywood, paper pulp,
   steel), an open sky with haze, a studio table that shows only shadows, and `truss` (laced lighting

@@ -1,11 +1,11 @@
 // The end of a lesson, in three parts: type what you remember; a short quiz on the lesson, checked only
 // once every question is answered; then the recap, with the points the quiz showed as shaky marked.
 import { useMemo, useState } from "react";
-import { pointsHad, QUIZ, shuffled } from "../course/quiz";
+import { pointsHad, QUIZ, shuffled, type QuizItem } from "../course/quiz";
 import { afterReturn, loadRecall, nextReturn, recallNote, saveRecall } from "../course/recall";
 
-export function RecallCard({ lessonId, outcome, recap, children }: { lessonId: string; outcome: string; recap: readonly string[]; children?: React.ReactNode }) {
-  const items = QUIZ[lessonId] ?? [];
+export function RecallCard({ lessonId, outcome, recap, children, items: given }: { lessonId: string; outcome: string; recap: readonly string[]; children?: React.ReactNode; /** questions for a lesson that is not one of the synth's (the physical models bring their own) */ items?: QuizItem[] }) {
+  const items = given ?? QUIZ[lessonId] ?? [];
   const [stage, setStage] = useState<"write" | "quiz" | "checked" | "recap">("write");
   const [notes, setNotes] = useState("");
   const [chosen, setChosen] = useState<(number | undefined)[]>(() => items.map(() => undefined));

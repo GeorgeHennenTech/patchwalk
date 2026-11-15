@@ -2,6 +2,8 @@
 // modes that hit sets going. Every hit is worked out whole by src/modal/membrane.ts and then played.
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { noteToHz } from "../synth/params";
+import { DRUM_LESSONS } from "../models/lessons";
+import { useModelLesson } from "./ModelLesson";
 import { DRUM_INITIAL, DRUM_RANGES, HEADS, modeDecay, modes, renderDrum, type DrumState } from "../modal/membrane";
 
 const NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
@@ -22,6 +24,8 @@ export default function DrumLab() {
   const [flash, setFlash] = useState(0);
   const ctx = useRef<AudioContext | undefined>(undefined);
   const state = useRef(s); state.current = s;
+  const course = useModelLesson(DRUM_LESSONS, (settings) => setS({ ...DRUM_INITIAL, ...settings }));
+  const coursePlay = useRef(course.onPlay); coursePlay.current = course.onPlay;
   const hit = useCallback((over?: Partial<DrumState>) => {
     const now = { ...state.current, ...over };
     if (over) setS(now);
@@ -30,6 +34,7 @@ export default function DrumLab() {
     const samples = renderDrum(now, c.sampleRate, Math.min(6, Math.max(0.5, now.decay * 1.3)));
     const buffer = c.createBuffer(1, samples.length, c.sampleRate); buffer.getChannelData(0).set(samples);
     const source = c.createBufferSource(); source.buffer = buffer; source.connect(c.destination); source.start();
+    coursePlay.current(now);
     setFlash((f) => f + 1);
     setDone((d) => { const more = TRIES.filter((t) => !d.includes(t.id) && t.done(now)).map((t) => t.id); return more.length ? [...d, ...more] : d; });
   }, []);
@@ -49,7 +54,9 @@ export default function DrumLab() {
   return (
     <section className="strings">
       <h2>Drum lab: a head made of modes</h2>
-      <p className="strings-lead">A stretched skin can only vibrate in certain patterns, called modes, and each has its own frequency. A hit sets several going at once. Unlike a string’s harmonics, a drum’s modes are not whole multiples of the lowest one, which is why a drum has a pitch you can only half name.</p>
+      {course.chooser}
+      {course.intro}
+      {!course.lesson && <p className="strings-lead">A stretched skin can only vibrate in certain patterns, called modes, and each has its own frequency. A hit sets several going at once. Unlike a string’s harmonics, a drum’s modes are not whole multiples of the lowest one, which is why a drum has a pitch you can only half name.</p>}
       <div className="strings-grid">
         <div className="strings-panel">
           <svg className="drum-head" viewBox="0 0 200 200" role="img" aria-label={`The drum head seen from above, hit ${s.strike}% of the way out from the centre. Click to hit it somewhere else.`} onPointerDown={strikeAt}>
@@ -81,10 +88,11 @@ export default function DrumLab() {
         </div>
       </div>
       <p className="muted">Click anywhere on the head to hit it there, or press the space bar to hit it again in the same place.</p>
-      <section className="exercise strings-tries">
+      {course.steps}
+      {!course.lesson && <section className="exercise strings-tries">
         <h3>Things to try <span className="badge">{done.length} of {TRIES.length}</span></h3>
         <ol>{TRIES.map((t) => <li key={t.id} className={done.includes(t.id) ? "done" : ""}><strong>{done.includes(t.id) ? "✓ " : ""}{t.say}</strong> <span>{t.hear}</span></li>)}</ol>
-      </section>
+      </section>}
       <aside className="strings-source">
         <h3>Where this comes from</h3>
         <p>For a round head the patterns and frequencies come from Bessel functions and their zeros, as set out in Avanzini and Marogna’s paper on membrane percussion (2010). For a square head the frequencies go as the square root of m squared plus n squared, as given in Van Duyne and Smith’s paper on the waveguide mesh (1993). Both are in the library.</p>

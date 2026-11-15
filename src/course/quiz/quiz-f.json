@@ -2012,5 +2012,43 @@
    "why": "Everything sounds two semitones higher, so the C major fingering gives D major.",
    "point": 2
   }
+ ],
+ "C1.12": [
+  {
+   "q": "Why does a square wave sound hollow, however it is made?",
+   "options": [
+    "It has no harmonics",
+    "It has odd harmonics only",
+    "It has even harmonics only",
+    "It is quieter"
+   ],
+   "answer": 1,
+   "why": "Every second harmonic is missing, and that gap is the hollow sound.",
+   "point": 0
+  },
+  {
+   "q": "Which is one of the roads from a sine to a square?",
+   "options": [
+    "Adding reverb",
+    "Driving the sine against a soft limit until it flattens",
+    "Lowering its pitch",
+    "Filtering out the bass"
+   ],
+   "answer": 1,
+   "why": "Turned up far enough, the sine's top and bottom flatten into a square.",
+   "point": 1
+  },
+  {
+   "q": "What turns a square-like wave into a saw-like one?",
+   "options": [
+    "Removing the odd harmonics",
+    "Putting the even harmonics back",
+    "Making it quieter",
+    "Shortening it"
+   ],
+   "answer": 1,
+   "why": "A saw has every harmonic, so restoring the even ones moves a square toward a saw.",
+   "point": 2
+  }
  ]
 }

@@ -1,6 +1,6 @@
 import { INITIAL, noteToHz, type SynthState } from "../../synth/params";
 import type { DemoTone, MatchRound, PlayableLesson, Snapshot } from "../types";
-import { FILTER_ADDITIONS, FX_ADDITIONS, IMPACT_ADDITIONS, OSC_ADDITIONS, TABLE_ADDITIONS, WARP_ADDITIONS } from "./additions";
+import { FILTER_ADDITIONS, FX_ADDITIONS, IMPACT_ADDITIONS, PLAY_ADDITIONS, OSC_ADDITIONS, TABLE_ADDITIONS, WARP_ADDITIONS } from "./additions";
 import { CHAPTER_1 } from "./chapter1";
 import { THEORY_CHAPTER } from "./theory";
 import { CHAPTER_2 } from "./chapter2";
@@ -186,7 +186,7 @@ const slot = (chapter: PlayableLesson[], extra: PlayableLesson[], checkpoint: st
   const at = chapter.findIndex((l) => l.id === checkpoint);
   return at < 0 ? [...chapter, ...extra] : [...chapter.slice(0, at), ...extra, ...chapter.slice(at)];
 };
-export const LESSONS: PlayableLesson[] = [...BASE, ...slot(CHAPTER_1, [...OSC_ADDITIONS, ...TABLE_ADDITIONS], "C1.C"), ...slot(CHAPTER_2, FILTER_ADDITIONS, "C2.C"), ...CHAPTER_3, ...CHAPTER_4, mixedCheckpoint(), ...CHAPTER_5, ...MACRO_CHAPTER, ...slot(CHAPTER_6, WARP_ADDITIONS, "C6.C"), ...slot(CHAPTER_7, FX_ADDITIONS, "C7.C"), ...CHAPTER_8, ...THEORY_CHAPTER, ...slot(IMPACT_CHAPTER, IMPACT_ADDITIONS, "CT.C")];
+export const LESSONS: PlayableLesson[] = [...BASE, ...slot(CHAPTER_1, [...OSC_ADDITIONS, ...TABLE_ADDITIONS], "C1.C"), ...slot(CHAPTER_2, FILTER_ADDITIONS, "C2.C"), ...CHAPTER_3, ...CHAPTER_4, mixedCheckpoint(), ...CHAPTER_5, ...MACRO_CHAPTER, ...slot(CHAPTER_6, WARP_ADDITIONS, "C6.C"), ...slot(CHAPTER_7, FX_ADDITIONS, "C7.C"), ...CHAPTER_8, ...PLAY_ADDITIONS, ...THEORY_CHAPTER, ...slot(IMPACT_CHAPTER, IMPACT_ADDITIONS, "CT.C")];
 
 /**
  * Chapter names, by the number in a lesson's id ("C2.5" is in chapter 2). Ids are for code, scripts and

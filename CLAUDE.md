@@ -174,7 +174,7 @@ Added after the first eight milestones (owner asked for all four in one go):
     "Effects" and "Impacts".
     C5.9 ("One source scaling another") was added to chapter 5 with the matrix's Scaled by column.
     C1.9 ("Left and right, and a second wavetable") was added to chapter 1 with pan and Osc B's wavetable.
-    **117 playable lessons** (15 Nov 2026: see "Batch of 15 Nov 2026" below for the ten added that day).
+    **118 playable lessons** (15 Nov 2026: see "Batch of 15 Nov 2026" below for the ten added that day).
   - `src/ui/PlayView.tsx` ("Lessons" tab) and `src/ui/synth/` — spotlighted controls per step, live targets,
     scope, spectrum, meter, on-screen keyboard, Hold, blind ear checks, recap, guide remarks and suggestion.
   - "Hear it first" demos (`demo` on a lesson), match-by-ear rounds (`rounds`, compared by `src/course/match.ts`:
@@ -647,7 +647,7 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   (2) A quiz on that lesson, options in a mixed order, checked only when all are
   answered: each then shows the right answer, the learner's own, and one line of why. (3) The recap,
   with each point the quiz asked about tagged "you had this" or "read this one again". A quiet "Skip to
-  the recap" link stays, so nobody is trapped. **562 questions over the 117 lessons (the ten lessons added on 15 Nov 2026 have questions the assistant wrote itself), from 3 to 8 a lesson, in
+  the recap" link stays, so nobody is trapped. **566 questions over the 118 lessons (the ten lessons added on 15 Nov 2026 have questions the assistant wrote itself), from 3 to 8 a lesson, in
   `src/course/quiz/quiz-a.json` to `quiz-f.json`: the owner asked that the number per lesson come from what
   that lesson teaches, not from a formula, so each lesson was audited (list every distinct thing worth
   remembering, one question per thing, duplicates dropped) and most have 4 to 6** (`{ q, options[4], answer, why, point }`, `point`
@@ -1007,6 +1007,17 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   its calculated lowest notch and matched the calculated level elsewhere to 0.1 dB. Lesson C7.8 "Flanger
   and phaser", and three macro recipes that use them (C5M.22 Jet, C5M.23 Swirl, C5M.24 Going under; 24 recipes now). Old saved orders and lesson orders that list six effects get the two new ones added at the
   end (`fxOrderOf`).
+- **Arpeggiator (15 Nov 2026).** `src/synth/arp.ts` (the rules: `arpCycle` for up, down, up and down, as
+  played, over one to three octaves; `arpStepSeconds`; `nextArpTime`) and the hook (`useSynth.ts`): with
+  `arpOn` "on", pressed keys are kept in `arpKeys` and not sounded; a 25 ms timer schedules each step about
+  a tenth of a second ahead on the audio clock with `engine.playAt(note, at, seconds, velocity)` (a voice of
+  the current sound at an exact time, kept in the engine's `auditions`, not in `held`), on the same grid as
+  the click. Settings are in the Voicing group (`arpOn`, `arpMode`, `arpDiv` steps per beat, `arpOctaves`,
+  `arpGate` note length). With Hold on the keys stay latched; a fresh press starts a new set. Measured in
+  a browser: three held keys at 120 bpm, two steps a beat, played C E G round and round with every step
+  exactly 0.2500 s apart, and stopped when the keys were let go. (A first version driven by timers alone
+  wandered between 0.19 and 0.50 s.) Because arpeggiated notes are not in `held`, a lesson step cannot
+  check which note is sounding, only the settings and the keys pressed. Lesson C8.4 "The arpeggiator".
 - **Guide search widened (15 Nov 2026).** The library now holds over twenty texts (2,242 passages). `search`
   in `src/library/search.ts` adds related technical words to a question at half weight (`RELATED`: drum to
   membrane and mode, pitch to frequency, echo to delay, speaker to loudspeaker and driver, and so on), so a

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { Snapshot } from "../course/types";
 import { modulated } from "./mod";
 import { Engine } from "./engine";
+import { arpCycle, arpStepSeconds, nextArpTime } from "./arp";
 import { applyMacros } from "./macros";
 import { INITIAL, type SynthState } from "./params";
 import { newTrack, snapshot, trackAllReleased, trackFlag, trackNoteOn, trackState, type Track } from "./tracker";
@@ -77,8 +78,52 @@ export function useSynth() {
     if (h.length === 0) track.current = trackAllReleased(track.current, now());
   };
 
+  // ---- arpeggiator: held keys are kept here and played one at a time on the tempo clock's grid.
+  // Steps are scheduled on the audio clock a little ahead of time, so they land exactly on the grid.
+  const arpKeys = useRef<number[]>([]);
+  const arp = useRef<{ timer?: ReturnType<typeof setInterval>; next: number; index: number; velocity: number; shows: ReturnType<typeof setTimeout>[] }>({ next: 0, index: 0, velocity: 100, shows: [] });
+  const arpStop = useCallback(() => {
+    const a = arp.current;
+    if (a.timer) clearInterval(a.timer);
+    a.shows.forEach(clearTimeout);
+    arp.current = { next: 0, index: 0, velocity: a.velocity, shows: [] };
+    setHeld(engine.current?.held ?? []);
+  }, []);
+  const arpTick = useCallback(() => {
+    const eng = engine.current, a = arp.current, st = stateRef.current;
+    if (!eng || st.arpOn !== "on" || !arpKeys.current.length) { if (st.arpOn !== "on") arpKeys.current = []; arpStop(); return; }
+    const step = arpStepSeconds(st.bpm, st.arpDiv), now = eng.ctx.currentTime;
+    if (a.next < now - step) a.next = nextArpTime(now, step); // fell behind (a background tab): pick the grid up again
+    while (a.next < now + 0.12) {
+      const cycle = arpCycle(arpKeys.current, st.arpMode, st.arpOctaves), note = cycle[a.index % cycle.length]!, at = a.next, length = step * (st.arpGate / 100);
+      eng.playAt(note, at, length, a.velocity);
+      // light the key while its note sounds
+      a.shows.push(setTimeout(() => setHeld([note]), Math.max(0, (at - now) * 1000)), setTimeout(() => setHeld((h) => (h.length === 1 && h[0] === note ? [] : h)), Math.max(0, (at + length - now) * 1000)));
+      if (a.shows.length > 64) a.shows.splice(0, a.shows.length - 64);
+      a.index = (a.index + 1) % cycle.length; a.next = at + step;
+    }
+  }, [arpStop]);
+  useEffect(() => () => { if (arp.current.timer) clearInterval(arp.current.timer); arp.current.shows.forEach(clearTimeout); }, []);
+  const arpStart = useCallback(() => {
+    const eng = engine.current, a = arp.current;
+    if (!eng || a.timer) return;
+    a.index = 0; a.next = nextArpTime(eng.ctx.currentTime + 0.01, arpStepSeconds(stateRef.current.bpm, stateRef.current.arpDiv));
+    a.timer = setInterval(arpTick, 25);
+    arpTick();
+  }, [arpTick]);
+
   const noteOn = useCallback((note: number, source: "mouse" | "keys" | "midi", velocity = 100) => {
     if (!engine.current?.running) return;
+    if (stateRef.current.arpOn === "on") {
+      // with Hold on, a fresh press (nothing else down) starts a new set of latched keys
+      if (holdRef.current && down.current.size === 0) arpKeys.current = [];
+      down.current.add(note);
+      if (!arpKeys.current.includes(note)) arpKeys.current = [...arpKeys.current, note];
+      arp.current.velocity = velocity;
+      track.current = trackNoteOn(track.current, source, note, now(), velocity);
+      arpStart();
+      return;
+    }
     down.current.add(note);
     // With Hold on, a new note replaces whatever was latched.
     // (in mono the engine does the replacing itself, so that legato and glide still work with Hold on)
@@ -92,6 +137,11 @@ export function useSynth() {
   const noteOff = useCallback((note: number) => {
     down.current.delete(note);
     if (holdRef.current) return;
+    if (stateRef.current.arpOn === "on" || arpKeys.current.length) {
+      arpKeys.current = arpKeys.current.filter((n) => n !== note);
+      if (!arpKeys.current.length) { arpStop(); sync(); }
+      return;
+    }
     engine.current?.noteOff(note);
     sync();
   }, []);
@@ -100,6 +150,8 @@ export function useSynth() {
     holdRef.current = on;
     setHoldOn(on);
     if (!on) {
+      arpKeys.current = arpKeys.current.filter((n) => down.current.has(n));
+      if (!arpKeys.current.length && arp.current.timer) arpStop();
       for (const n of engine.current?.held ?? []) if (!down.current.has(n)) engine.current?.noteOff(n);
       sync();
     }

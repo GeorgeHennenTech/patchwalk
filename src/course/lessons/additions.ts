@@ -290,3 +290,25 @@ export const IMPACT_ADDITIONS: PlayableLesson[] = [
     recap: ["A pluck starts full and dies away by itself; a stab stays full and is cut off dead.", "A growl is a held note whose filter keeps moving.", "Drive before the filter gives the moving filter more harmonics to work on."],
   },
 ];
+
+const PLUCKY = { shape: "saw", filterOn: true, cutoff: 2500, envA: 2, envD: 300, envS: 40, envR: 150 } as const;
+const ARP = ["keyboard", "arpOn", "arpMode", "arpDiv", "arpOctaves", "arpGate"] as const;
+export const PLAY_ADDITIONS: PlayableLesson[] = [
+  {
+    id: "C8.4", title: "The arpeggiator", buildsOn: ["C8.1", "C4.4"], minutes: 7, cardIds: [], initial: { ...PLUCKY },
+    outcome: "Turn a held chord into a running pattern, and shape the pattern with order, speed, range and note length.",
+    idea: [
+      "An arpeggiator does not play the keys you hold together. It plays them one at a time, in step with the tempo, round and round for as long as you hold them. A chord becomes a pattern, and you only have to hold your hand still.",
+      "Four choices shape the pattern: the order the notes are taken in, how many steps fit in a beat, how many octaves the pattern climbs through, and how long each note lasts within its step.",
+    ],
+    steps: [
+      { do: "Switch the Arpeggiator on, then hold three keys together: A, D and G.", show: [...ARP], hear: "The three notes one after another, lowest to highest, over and over, in even time.", target: "Arpeggiator on, three different keys held", check: (s) => s.state.arpOn === "on" && s.distinctNotes >= 3 },
+      { do: "Change the order to Down and hold the keys again.", show: [...ARP], hear: "The same notes, now falling.", target: "Order set to Down, a key played", check: (s) => s.state.arpOn === "on" && s.state.arpMode === "down" && struck(s) >= 1 },
+      { do: "Set Steps per beat to 4 and hold the keys.", show: [...ARP, "clickOn", "bpm"], hear: "Twice as fast: four notes to every beat. Switch the click on to hear how they sit against it.", target: "Four steps per beat, a key played", check: (s) => s.state.arpOn === "on" && s.state.arpDiv === "4" && struck(s) >= 1 },
+      { do: "Set Octaves to 2 and hold the keys.", show: [...ARP], hear: "The pattern runs through the chord, then again an octave higher, before it starts over.", target: "Two octaves or more, a key played", check: (s) => s.state.arpOn === "on" && s.state.arpOctaves >= 2 && struck(s) >= 1 },
+      { do: "Turn Note length down to 30% or less and hold the keys.", show: [...ARP], hear: "Short, separate plucks with air between them.", target: "Note length at 30% or less, a key played", check: (s) => s.state.arpOn === "on" && s.state.arpGate <= 30 && struck(s) >= 1 },
+    ],
+    recap: ["An arpeggiator plays held keys one at a time, in step with the tempo.", "Order, steps per beat and octaves turn one held chord into many different patterns.", "Short note lengths make the pattern plucky; long ones make it flow."],
+    inSerum: "Serum 2 has an arpeggiator of its own. Its controls have not been compared with these, so nothing is checked. Listening only.",
+  },
+];

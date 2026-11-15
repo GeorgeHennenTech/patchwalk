@@ -1109,7 +1109,7 @@ describe("mono, legato and glide", () => {
     expect(MOD_DESTS).not.toContain("glide");
   });
   it("the chapter sits between Effects and Impacts", () => {
-    expect(placeOf(CHAPTER_8[1]!)).toEqual({ chapter: "Playing a line", number: 2, of: 3 });
+    expect(placeOf(CHAPTER_8[1]!)).toEqual({ chapter: "Playing a line", number: 2, of: 4 });
   });
   it("mono is checked by what sounds, legato and glide by their switches and the notes played", () => {
     const [mono, glide] = CHAPTER_8 as [typeof CHAPTER_8[0], typeof CHAPTER_8[0]];
@@ -1805,6 +1805,7 @@ describe("the lessons added on 15 Nov can each be walked through", () => {
     "CN.7": [[{}, { held: [60, 64, 67] }], [{}, { held: [62, 67, 71] }], [{}, { held: [60, 64, 69] }], [{}, { held: [60, 65, 69] }], [{}, { sequence: [64, 60, 67, 62, 71, 67, 60, 69, 64, 69, 60, 65] }]],
     "CN.8": [[{}, { held: [60, 64, 67, 71] }], [{}, { held: [60, 64, 67, 70] }], [{}, { held: [62, 65, 69, 72] }], [{}, { held: [60, 64, 67, 69] }]],
     "C7.8": [[{ flangerOn: true }, { held: [45] }], [{ flangerDepth: 0 }], [{ flangerDepth: 70, flangerFeedback: 80 }], [{ flangerOn: false, phaserOn: true }], [{ phaserCentre: 2500 }, range("phaserCentre", 300, 2500)]],
+    "C8.4": [[{ arpOn: "on" }, played], [{ arpMode: "down" }, played], [{ arpDiv: "4" }, played], [{ arpOctaves: 2 }, played], [{ arpGate: 25 }, played]],
     "CT.12": [[{ envS: 0, envD: 220 }, played], [{ envS: 100, envR: 30 }, played], [{ lfo1Dest: "cutoff", lfo1Amount: 60, lfo1Rate: 7 }, { longestHeld: 2.5 }], [{ drive: 60 }, { longestHeld: 2.5 }]],
     "C1.11": [[{ table: "pdsaw" }, { held: [45] }], [{ position: 100 }, range("position", 0, 100)], [{ table: "moogsaw", position: 100 }], [{ position: 0 }], [{ table: "pdpulse", position: 95 }, range("position", 5, 95)], [{ table: "formant", position: 95 }, range("position", 5, 95)]],
     "C6.6": [[{}, { held: [57] }], [{ warpAmount: 50 }], [{ warpAmount: 95 }, range("warpAmount", 5, 95)], [{ warp: "steps", warpAmount: 60 }], [{ warpAmount: 80 }], [{ warp: "flip", warpAmount: 50 }]],
@@ -1842,5 +1843,21 @@ describe("flanger and phaser", () => {
     expect(at800.length).toBe(4); expect(at1600.length).toBe(4);  // four stages give four notches
     expect(at1600[0]! / at800[0]!).toBeCloseTo(2, 1);             // an octave up, the notches are an octave up
     expect(at800[0]!).toBeLessThan(800); expect(at800[3]!).toBeGreaterThan(800);
+  });
+});
+
+import { arpCycle, arpStepSeconds, nextArpTime } from "../src/synth/arp";
+describe("the arpeggiator's rules", () => {
+  it("orders the held keys up, down, up and down, or as they were pressed, over one to three octaves", () => {
+    const keys = [64, 60, 67];
+    expect(arpCycle(keys, "up", 1)).toEqual([60, 64, 67]); expect(arpCycle(keys, "down", 1)).toEqual([67, 64, 60]);
+    expect(arpCycle(keys, "played", 1)).toEqual([64, 60, 67]); expect(arpCycle(keys, "updown", 1)).toEqual([60, 64, 67, 64]); // no repeated top or bottom
+    expect(arpCycle(keys, "up", 2)).toEqual([60, 64, 67, 72, 76, 79]); expect(arpCycle(keys, "down", 2)[0]).toBe(79);
+    expect(arpCycle([60, 60, 64], "up", 1)).toEqual([60, 64]); expect(arpCycle([], "up", 2)).toEqual([]); expect(arpCycle([60], "updown", 1)).toEqual([60]);
+  });
+  it("steps on the tempo clock's grid", () => {
+    expect(arpStepSeconds(120, "2")).toBeCloseTo(0.25, 9); expect(arpStepSeconds(120, "4")).toBeCloseTo(0.125, 9); expect(arpStepSeconds(90, "3")).toBeCloseTo(60 / 90 / 3, 9);
+    expect(nextArpTime(1.01, 0.25)).toBeCloseTo(1.25, 9); expect(nextArpTime(1.25, 0.25)).toBeCloseTo(1.25, 9);
+    expect(INITIAL.arpOn).toBe("off");
   });
 });

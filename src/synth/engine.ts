@@ -683,6 +683,17 @@ export class Engine {
     osc.stop(t + seconds + 0.1);
   }
 
+  /**
+   * Play one note of the current sound at an exact time on the audio clock, for a set length. Used by the
+   * arpeggiator, whose steps must land on the tempo grid more exactly than a timer can manage.
+   */
+  playAt(note: number, at: number, seconds: number, velocity = 100): void {
+    const s = this.state, start = Math.max(at, this.ctx.currentTime);
+    const v = this.build(note, s.phase / 360, start, velocity);
+    this.releaseAt(v, s, start + seconds);
+    this.auditions.push({ voice: v, base: this.base, played: s, until: start + seconds + s.envR / 1000 + 0.5 });
+  }
+
   /** Play a whole patch for a moment, without disturbing held notes or the learner's settings. */
   auditionPatch(patch: SynthState, note: number, seconds = 1.2, when = 0, velocity = 100, slideFrom?: number): void {
     patch = applyMacros(patch);

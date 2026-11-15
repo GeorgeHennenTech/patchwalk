@@ -609,7 +609,7 @@ Already covered: nothing.
 
 | Feature | What it does | Page(s) | Status | Size |
 |---|---|---|---|---|
-| ARP module | Turns a held chord into a running pattern of single notes | 244-245 | Missing | Medium |
+| ARP module | Turns a held chord into a running pattern of single notes | 244-245 | Have a simple one (15 Nov 2026) | Medium |
 | 12 arp slots per bank; arp banks: load, Init, Save Arp Bank | Twelve arpeggiators to switch between, saved as a set | 245-248 | Missing | Small |
 | LAUNCH QUANT | A started arp waits for the beat | 246 | Missing | Small |
 | EDIT ALL | Changes apply to every slot | 246 | Missing | Small |

@@ -179,6 +179,8 @@ export interface SynthState {
   glide: number;
   /** Slide on every note ("always"), or only when the new key is pressed while another is still held ("legato"). */
   glideMode: "always" | "legato";
+  /** The arpeggiator: held keys are played one at a time, in step with the tempo (see arp.ts). */
+  arpOn: "off" | "on"; arpMode: "up" | "down" | "updown" | "played"; arpDiv: "1" | "2" | "3" | "4"; arpOctaves: number; arpGate: number;
   /** Extra connections added in the matrix, so one source can move several things. Replaced on every edit. */
   matrix: MatrixRow[];
   /** The order the effects are joined in, first to last (names from fx.ts). */
@@ -234,6 +236,7 @@ export const INITIAL: SynthState = {
   matrix: [],
   fxOrder: ["dist", "eq", "comp", "chorus", "flanger", "phaser", "delay", "reverb"],
   voiceMode: "poly", legato: "off", glide: 0, glideMode: "always",
+  arpOn: "off", arpMode: "up", arpDiv: "2", arpOctaves: 1, arpGate: 60,
   distOn: false, distType: "soft", distDrive: 30, distMix: 100,
   eqOn: false, eqLow: 0, eqMid: 0, eqMidHz: 1000, eqHigh: 0,
   compOn: false, compThreshold: -24, compRatio: 4, compAttack: 10, compRelease: 150, compMakeup: 0,
@@ -337,6 +340,11 @@ const BASE_PARAMS: Record<string, ParamSpec> = {
   legato: { id: "legato", label: "Legato", group: "Voicing", kind: "choice", choices: ["off", "on"], names: { off: "Off", on: "On" } },
   glideMode: { id: "glideMode", label: "Glide on", group: "Voicing", kind: "choice", choices: ["always", "legato"], names: { always: "Every note", legato: "Overlapped notes" } },
   glide: { id: "glide", label: "Glide", group: "Voicing", kind: "range", min: 0, max: 2000, step: 5, unit: "ms" },
+  arpOn: { id: "arpOn", label: "Arpeggiator", group: "Voicing", kind: "choice", choices: ["off", "on"], names: { off: "Off", on: "On" } },
+  arpMode: { id: "arpMode", label: "Arp order", group: "Voicing", kind: "choice", choices: ["up", "down", "updown", "played"], names: { up: "Up", down: "Down", updown: "Up and down", played: "As played" } },
+  arpDiv: { id: "arpDiv", label: "Arp steps per beat", group: "Voicing", kind: "choice", choices: ["1", "2", "3", "4"], names: { "1": "1", "2": "2", "3": "3", "4": "4" } },
+  arpOctaves: { id: "arpOctaves", label: "Arp octaves", group: "Voicing", kind: "range", min: 1, max: 3, step: 1, unit: "" },
+  arpGate: { id: "arpGate", label: "Arp note length", group: "Voicing", kind: "range", min: 10, max: 100, step: 5, unit: "%" },
   distOn: { id: "distOn", label: "Distortion", group: "Distortion", kind: "toggle" },
   distType: { id: "distType", label: "Distortion type", group: "Distortion", kind: "choice", choices: DIST_TYPES, names: { soft: "Soft clip", hard: "Hard clip", fold: "Fold", crush: "Crush" } },
   distDrive: { id: "distDrive", label: "Distortion drive", group: "Distortion", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
@@ -381,9 +389,9 @@ const BASE_PARAMS: Record<string, ParamSpec> = {
  * Knobs that cannot be destinations: the main volume and tempo; random phase and reverb size, because
  * changing them rebuilds something too heavy to do fifty times a second.
  */
-const NOT_DESTS = ["volumeDb", "bpm", "freeHz", "randomPhase", "reverbSize", "glide", "wheel", "bendRange"];
+const NOT_DESTS = ["volumeDb", "bpm", "freeHz", "randomPhase", "reverbSize", "glide", "wheel", "bendRange", "arpOctaves", "arpGate"];
 /** Whole-step settings shown as number boxes. A macro cannot move these. */
-export const BOX_IDS = ["octave", "semitone", "bOctave", "bSemitone", "voices", "bVoices", "subOctave", "bendRange"] as const;
+export const BOX_IDS = ["octave", "semitone", "bOctave", "bSemitone", "voices", "bVoices", "subOctave", "bendRange", "arpOctaves"] as const;
 /** Every knob a macro can be sent to: all the continuous settings. "none" means the slot is empty. */
 export const MACRO_DESTS: string[] = ["none", ...Object.values(BASE_PARAMS).filter((p) => p.kind === "range" && !(BOX_IDS as readonly string[]).includes(p.id) && p.id !== "freeHz").map((p) => p.id as string)];
 /** Destinations moved at control rate: every continuous knob that is not already a fast destination. */

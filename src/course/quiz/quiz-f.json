@@ -1924,5 +1924,55 @@
    "why": "Several changes made at the same moment fuse into one.",
    "point": 0
   }
+ ],
+ "C8.4": [
+  {
+   "q": "What does an arpeggiator do with the keys you hold?",
+   "options": [
+    "Plays them all together, louder",
+    "Plays them one at a time, in step with the tempo",
+    "Plays only the lowest",
+    "Holds them after you let go"
+   ],
+   "answer": 1,
+   "why": "A held chord becomes a pattern of single notes that repeats while you hold it.",
+   "point": 0
+  },
+  {
+   "q": "Which setting makes the pattern climb higher before it starts over?",
+   "options": [
+    "Note length",
+    "Steps per beat",
+    "Octaves",
+    "Order"
+   ],
+   "answer": 2,
+   "why": "More octaves repeat the chord higher up before the pattern begins again.",
+   "point": 1
+  },
+  {
+   "q": "You set Steps per beat from 2 to 4. What happens?",
+   "options": [
+    "The pattern is twice as fast",
+    "The notes get longer",
+    "The order reverses",
+    "It stops"
+   ],
+   "answer": 0,
+   "why": "Four notes now fit where two did.",
+   "point": 1
+  },
+  {
+   "q": "How do you make the pattern short and plucky?",
+   "options": [
+    "Raise the octaves",
+    "Turn the note length down",
+    "Change the order to Down",
+    "Hold more keys"
+   ],
+   "answer": 1,
+   "why": "A short note length leaves air between the steps.",
+   "point": 2
+  }
  ]
 }

@@ -205,7 +205,7 @@ export function Rack({ synth, show, all, lesson, note }: { synth: Synth; show: P
                   <span>{m.name}</span><em>{s[toggle] ? "on" : "off"}</em>
                 </label>
               ) : <div className="mod-head">{m.source && <Grip id={m.source} />}<span>{m.name}</span></div>}
-              {all && cls === "fx" && (() => { const id = m.id.slice(3) as FxId, at = fxOrderOf(s.fxOrder).indexOf(id); return (
+              {(all || show.includes("fxOrder")) && cls === "fx" && (() => { const id = m.id.slice(3) as FxId, at = fxOrderOf(s.fxOrder).indexOf(id); return (
                 <div className="fx-move" role="group" aria-label={`Where ${m.name} sits in the chain`}>
                   <button disabled={at === 0} aria-label={`Move ${m.name} earlier`} onClick={() => synth.setState({ fxOrder: moveFx(s.fxOrder, id, -1) })}>◀</button>
                   <span>{at + 1} of {FX_ORDER.length}</span>

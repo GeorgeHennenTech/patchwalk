@@ -1,5 +1,6 @@
 import { INITIAL, noteToHz, type SynthState } from "../../synth/params";
 import type { DemoTone, MatchRound, PlayableLesson, Snapshot } from "../types";
+import { FILTER_ADDITIONS, FX_ADDITIONS, OSC_ADDITIONS } from "./additions";
 import { CHAPTER_1 } from "./chapter1";
 import { CHAPTER_2 } from "./chapter2";
 import { CHAPTER_3 } from "./chapter3";
@@ -179,7 +180,12 @@ function mixedCheckpoint(): PlayableLesson {
   };
 }
 
-export const LESSONS: PlayableLesson[] = [...BASE, ...CHAPTER_1, ...CHAPTER_2, ...CHAPTER_3, ...CHAPTER_4, mixedCheckpoint(), ...CHAPTER_5, ...MACRO_CHAPTER, ...CHAPTER_6, ...CHAPTER_7, ...CHAPTER_8, ...IMPACT_CHAPTER];
+/** Later lessons go into their chapter just before its checkpoint (or at the end, if it has none). */
+const slot = (chapter: PlayableLesson[], extra: PlayableLesson[], checkpoint: string): PlayableLesson[] => {
+  const at = chapter.findIndex((l) => l.id === checkpoint);
+  return at < 0 ? [...chapter, ...extra] : [...chapter.slice(0, at), ...extra, ...chapter.slice(at)];
+};
+export const LESSONS: PlayableLesson[] = [...BASE, ...slot(CHAPTER_1, OSC_ADDITIONS, "C1.C"), ...slot(CHAPTER_2, FILTER_ADDITIONS, "C2.C"), ...CHAPTER_3, ...CHAPTER_4, mixedCheckpoint(), ...CHAPTER_5, ...MACRO_CHAPTER, ...CHAPTER_6, ...slot(CHAPTER_7, FX_ADDITIONS, "C7.C"), ...CHAPTER_8, ...IMPACT_CHAPTER];
 
 /**
  * Chapter names, by the number in a lesson's id ("C2.5" is in chapter 2). Ids are for code, scripts and

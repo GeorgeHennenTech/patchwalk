@@ -6,6 +6,8 @@ export interface Track {
   start: SynthState;
   played: { mouse: number; keys: number; midi: number };
   notes: number[];
+  /** Every note played since the step began, in order (the most recent 64). */
+  sequence: number[];
   range: Snapshot["range"];
   changes: Snapshot["changes"];
   flags: Record<string, boolean>;
@@ -18,7 +20,7 @@ export interface Track {
 }
 
 export const newTrack = (state: SynthState): Track => ({
-  start: state, played: { mouse: 0, keys: 0, midi: 0 }, notes: [], range: {}, changes: {}, flags: {}, heldSince: null, longest: 0, velocity: null, lastNote: null,
+  start: state, played: { mouse: 0, keys: 0, midi: 0 }, notes: [], sequence: [], range: {}, changes: {}, flags: {}, heldSince: null, longest: 0, velocity: null, lastNote: null,
 });
 
 export function trackState(t: Track, prev: SynthState, next: SynthState): Track {
@@ -42,6 +44,7 @@ export function trackNoteOn(t: Track, source: keyof Track["played"], note: numbe
     velocity: { min: Math.min(t.velocity?.min ?? velocity, velocity), max: Math.max(t.velocity?.max ?? velocity, velocity) },
     played: { ...t.played, [source]: t.played[source] + 1 },
     notes: t.notes.includes(note) ? t.notes : [...t.notes, note],
+    sequence: [...t.sequence, note].slice(-64),
     heldSince: t.heldSince ?? now,
     lastNote: note,
   };
@@ -53,7 +56,7 @@ export const trackFlag = (t: Track, flag: string): Track => ({ ...t, flags: { ..
 export function snapshot(t: Track, state: SynthState, live: { audioRunning: boolean; held: number[]; holdOn: boolean; now: number }): Snapshot {
   return {
     state, start: t.start, audioRunning: live.audioRunning, held: live.held, holdOn: live.holdOn,
-    played: t.played, distinctNotes: t.notes.length, velocity: t.velocity,
+    played: t.played, distinctNotes: t.notes.length, sequence: t.sequence, velocity: t.velocity,
     heldSeconds: t.heldSince !== null && live.held.length ? live.now - t.heldSince : 0,
     longestHeld: Math.max(t.longest, t.heldSince !== null && live.held.length ? live.now - t.heldSince : 0),
     range: t.range, changes: t.changes, flags: t.flags,

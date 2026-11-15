@@ -1,0 +1,110 @@
+// "Notes and chords": the first lessons of the theory track (track I in docs/CURRICULUM.md). They are
+// checked from what is played: the notes sounding together (`held`) and the notes played in order
+// (`sequence`). Everything can be done on the letter keys A to K, which run from one C to the next.
+import type { DemoTone, PlayableLesson, Snapshot } from "../types";
+
+const SOFT = { shape: "triangle", envA: 5, envD: 900, envS: 55, envR: 350 } as const;
+const K = ["keyboard"] as const;
+const NAMES = ["C", "C sharp", "D", "D sharp", "E", "F", "F sharp", "G", "G sharp", "A", "A sharp", "B"];
+const nameOf = (note: number) => NAMES[((note % 12) + 12) % 12]!;
+/** The notes sounding together, lowest first, as steps above the lowest. */
+const shape = (s: Snapshot) => { const h = [...new Set(s.held)].sort((a, b) => a - b); return h.map((n) => n - h[0]!); };
+const same = (a: number[], b: number[]) => a.length === b.length && a.every((v, i) => v === b[i]);
+/** The last two notes played, as the step from the first to the second. */
+const lastStep = (s: Snapshot) => (s.sequence.length >= 2 ? s.sequence[s.sequence.length - 1]! - s.sequence[s.sequence.length - 2]! : null);
+/** True when the most recent notes played, in order, follow `steps` from any starting note. */
+const ran = (s: Snapshot, steps: number[]) => { const tail = s.sequence.slice(-steps.length); return tail.length === steps.length && tail.every((n, i) => n - tail[0]! === steps[i]); };
+/** True when the notes sounding together are exactly these pitch classes (in any octave). */
+const sounding = (s: Snapshot, classes: number[]) => { const got = [...new Set(s.held.map((n) => ((n % 12) + 12) % 12))].sort((a, b) => a - b); return same(got, [...classes].sort((a, b) => a - b)); };
+const tone = (note: number, at: number, seconds = 0.5): DemoTone => ({ patch: { ...SOFT }, note, at, seconds });
+const chord = (notes: number[], at: number, seconds = 1.2): DemoTone[] => notes.map((n) => tone(n, at, seconds));
+const MAJOR = [0, 2, 4, 5, 7, 9, 11, 12], MINOR = [0, 2, 3, 5, 7, 8, 10, 12];
+
+export const THEORY_CHAPTER: PlayableLesson[] = [
+  {
+    id: "CN.1", title: "Notes, semitones and octaves", buildsOn: ["C0.2"], minutes: 6, cardIds: [], initial: { ...SOFT },
+    outcome: "Find any note’s neighbour a semitone away and its twin an octave away, and say why the twin sounds like the same note.",
+    demo: { caption: "A note, the note one semitone above it, then the note an octave above it.", tones: [tone(60, 0), tone(61, 0.7), tone(60, 1.8), tone(72, 2.5)] },
+    idea: [
+      "The keyboard is one pattern of twelve keys, repeated. The step from any key to the very next one, black or white, is a semitone: the smallest step most music uses. Twelve semitones up, the pattern starts again.",
+      "That twelfth key has the same name as the one you started on, because it vibrates exactly twice as fast and the two blend into one colour. The gap between them is an octave. On the letter keys, A is a C and K is the C an octave above it.",
+    ],
+    steps: [
+      { do: "Press the letter A (or click a C on the keyboard).", show: [...K], hear: "A single soft note. This one is called C.", target: "A C played", check: (s) => s.sequence.length >= 1 && s.sequence[s.sequence.length - 1]! % 12 === 0 },
+      { do: "Play any note, then the very next key above it (for example A then W).", show: [...K], hear: "Two notes as close as the keyboard allows. Played one after the other they sound tense, like a question.", target: "Two notes in a row, the second one semitone above the first", check: (s) => lastStep(s) === 1 },
+      { do: "Play any note, then the key two steps above it (for example A then S).", show: [...K], hear: "A wider, easier step: two semitones, called a tone. Most tunes move mainly by tones and semitones.", target: "Two notes in a row, the second two semitones above the first", check: (s) => lastStep(s) === 2 },
+      { do: "Play A and then K: the lowest and highest letter keys.", show: [...K], hear: "The same note, higher. Different pitch, same colour: an octave.", target: "Two notes in a row, the second twelve semitones above the first", check: (s) => lastStep(s) === 12,
+        remark: (s) => `You played ${nameOf(s.sequence[s.sequence.length - 2]!)} and then the ${nameOf(s.sequence[s.sequence.length - 1]!)} twelve semitones above it, which vibrates exactly twice as fast.` },
+      { do: "Hold A and K down together.", show: [...K, "scope"], hear: "They fuse into one fuller note. Nothing clashes.", target: "Two notes sounding together, an octave apart", check: (s) => same(shape(s), [0, 12]) },
+    ],
+    recap: ["A semitone is the step from one key to the very next; a tone is two of them.", "Twelve semitones make an octave, where the pattern of keys starts again.", "Notes an octave apart share a name because one vibrates exactly twice as fast as the other."],
+  },
+  {
+    id: "CN.2", title: "Intervals: fifths and thirds", buildsOn: ["CN.1"], minutes: 7, cardIds: [], initial: { ...SOFT },
+    outcome: "Play a fifth, a major third and a minor third from any note, and hear how each one feels.",
+    demo: { caption: "Two notes together: a fifth, a major third, then a minor third.", tones: [...chord([60, 67], 0), ...chord([60, 64], 1.5), ...chord([60, 63], 3)] },
+    idea: [
+      "An interval is the distance between two notes, counted in semitones. Each distance has its own character, whichever note you start from. That is why a tune is still the same tune when it is played higher or lower.",
+      "Three intervals do most of the work in chords. Seven semitones is a fifth: open and strong. Four is a major third: bright. Three is a minor third: darker. You count the gap, not the keys’ colours.",
+    ],
+    steps: [
+      { do: "Hold A and G together (C and the G above it).", show: [...K], hear: "Open, hollow and stable. This is a fifth: seven semitones.", target: "Two notes sounding together, seven semitones apart", check: (s) => same(shape(s), [0, 7]) },
+      { do: "Hold A and D together (C and E).", show: [...K], hear: "Sweet and bright. A major third: four semitones.", target: "Two notes sounding together, four semitones apart", check: (s) => same(shape(s), [0, 4]) },
+      { do: "Hold A and E together (C and the black key D sharp).", show: [...K], hear: "Close to the last one, but darker. A minor third: three semitones.", target: "Two notes sounding together, three semitones apart", check: (s) => same(shape(s), [0, 3]) },
+      { do: "Now start somewhere else: hold S and H together (D and A).", show: [...K], hear: "The same open sound as the first step, a little higher. Seven semitones is a fifth from any note.", target: "A fifth whose lower note is not C", check: (s) => same(shape(s), [0, 7]) && s.held.length >= 2 && Math.min(...s.held) % 12 !== 0,
+        remark: (s) => `That fifth runs from ${nameOf(Math.min(...s.held))} up to ${nameOf(Math.max(...s.held))}.` },
+      { do: "Find a minor third that starts on a note other than C, and hold it.", show: [...K], hear: "The same darker colour, wherever you put it.", target: "Two notes three semitones apart, the lower one not C", check: (s) => same(shape(s), [0, 3]) && Math.min(...s.held) % 12 !== 0 },
+    ],
+    recap: ["An interval is the distance between two notes, counted in semitones.", "A fifth is seven semitones; a major third is four; a minor third is three.", "An interval keeps its character from whichever note it starts."],
+  },
+  {
+    id: "CN.3", title: "Major and minor chords", buildsOn: ["CN.2"], minutes: 7, cardIds: [], initial: { ...SOFT },
+    outcome: "Build a major or a minor chord on any note, and say which single note makes the difference.",
+    demo: { caption: "C major, then C minor: only the middle note moves.", tones: [...chord([60, 64, 67], 0, 1.4), ...chord([60, 63, 67], 1.8, 1.4)] },
+    idea: [
+      "The basic chord is three notes: a starting note called the root, a third above it, and a fifth above it. The fifth makes it solid. The third gives it its mood.",
+      "With a major third (four semitones) the chord is major, which most people hear as bright. Lower that one note by a semitone to a minor third (three) and the chord is minor, heard as darker. The root and the fifth do not move.",
+    ],
+    steps: [
+      { do: "Hold A, D and G together (C, E and G).", show: [...K], hear: "A full, settled, bright chord: C major.", target: "Three notes together: a root, four semitones up, and seven up", check: (s) => same(shape(s), [0, 4, 7]) },
+      { do: "Hold A, E and G together (C, D sharp and G).", show: [...K], hear: "The same chord with its middle note lowered: C minor. Darker, with the same solid frame.", target: "Three notes together: a root, three semitones up, and seven up", check: (s) => same(shape(s), [0, 3, 7]) },
+      { do: "Build a major chord on F: hold F, H and K (F, A and C).", show: [...K], hear: "Bright again, on a different root. The recipe is the same: four semitones, then three more.", target: "A major chord whose root is not C", check: (s) => same(shape(s), [0, 4, 7]) && Math.min(...s.held) % 12 !== 0 },
+      { do: "Build a minor chord on D: hold S, F and H (D, F and A).", show: [...K], hear: "Dark, on D. Three semitones, then four more.", target: "A minor chord whose root is not C", check: (s) => same(shape(s), [0, 3, 7]) && Math.min(...s.held) % 12 !== 0,
+        remark: (s) => `That is ${nameOf(Math.min(...s.held))} minor: a root, a minor third above it and a fifth above it.` },
+    ],
+    recap: ["A basic chord is a root, a third above it and a fifth above it.", "A major third makes the chord major; a minor third makes it minor.", "Only the middle note changes between major and minor; the root and fifth stay."],
+  },
+  {
+    id: "CN.4", title: "Scales: major and minor", buildsOn: ["CN.1"], minutes: 8, cardIds: [], initial: { ...SOFT },
+    outcome: "Play a major scale and a natural minor scale from C, and describe each as a pattern of tones and semitones.",
+    demo: { caption: "The C major scale going up, then the C minor scale going up.", tones: [...MAJOR.map((n, i) => tone(60 + n, i * 0.38, 0.34)), ...MINOR.map((n, i) => tone(60 + n, 3.6 + i * 0.38, 0.34))] },
+    idea: [
+      "A scale is a chosen set of notes to make music from, played in order. The major scale takes seven of the twelve notes in each octave, spaced by a fixed pattern of steps: tone, tone, semitone, tone, tone, tone, semitone. From C that pattern lands on the white keys only.",
+      "The natural minor scale uses a different pattern: tone, semitone, tone, tone, semitone, tone, tone. Three of its notes sit a semitone lower than in the major scale, and those three give it its darker colour.",
+    ],
+    steps: [
+      { do: "Play the white keys upward from C to C, one at a time: A S D F G H J K.", show: [...K], hear: "The familiar “do re mi” climb. It sounds finished when it reaches the top C.", target: "Eight notes in a row following the major scale upward", check: (s) => ran(s, MAJOR) },
+      { do: "Play it back down: K J H G F D S A.", show: [...K], hear: "The same notes falling home.", target: "Eight notes in a row following the major scale downward", check: (s) => ran(s, [...MAJOR].reverse().map((n) => n - 12)) },
+      { do: "Now C minor, upward: A S E F G Y U K. Three of the notes are black keys.", show: [...K], hear: "The same climb with a darker, more serious colour.", target: "Eight notes in a row following the natural minor scale upward", check: (s) => ran(s, MINOR) },
+      { do: "Play just the first five notes of C major, then the first five of C minor: A S D F G, then A S E F G.", show: [...K], hear: "Only the third note differs, and it is enough to change the mood: the same note that separates a major chord from a minor one.", target: "The first five notes of the minor scale, played after trying the major", check: (s) => ran(s, MINOR.slice(0, 5)) && s.sequence.length >= 10 },
+    ],
+    recap: ["A scale is a set of notes chosen by a pattern of tones and semitones.", "The major scale’s pattern is tone, tone, semitone, tone, tone, tone, semitone; from C it is all white keys.", "The natural minor scale lowers three of those notes by a semitone, which darkens it."],
+  },
+  {
+    id: "CN.5", title: "Chords that belong to a scale", buildsOn: ["CN.3", "CN.4"], minutes: 8, cardIds: [], initial: { ...SOFT },
+    outcome: "Build chords using only the notes of C major, and hear which come out major and which minor.",
+    demo: { caption: "Four chords made only from white keys: C, D minor, E minor, F.", tones: [...chord([60, 64, 67], 0, 0.9), ...chord([62, 65, 69], 1.1, 0.9), ...chord([64, 67, 71], 2.2, 0.9), ...chord([65, 69, 72], 3.3, 0.9)] },
+    idea: [
+      "Songs mostly stay inside one scale, and so do their chords. To build a chord that belongs to a scale, start on any of its notes and take every other note: play one, skip one, play one, skip one, play one.",
+      "Do that on the white keys and you never choose major or minor: the scale chooses for you. Starting on C or F the chord comes out major. Starting on D or E it comes out minor. That mix of bright and dark chords is where a key gets its character.",
+    ],
+    steps: [
+      { do: "Hold A, D and G: start on C and take every other white key.", show: [...K], hear: "C major: bright, and it feels like home.", target: "C, E and G sounding together", check: (s) => sounding(s, [0, 4, 7]) },
+      { do: "Move every finger one white key up: hold S, F and H.", show: [...K], hear: "A darker chord. The same hand shape has given a minor chord: D minor.", target: "D, F and A sounding together", check: (s) => sounding(s, [2, 5, 9]) },
+      { do: "One more white key up: hold D, G and J.", show: [...K], hear: "Minor again: E minor.", target: "E, G and B sounding together", check: (s) => sounding(s, [4, 7, 11]) },
+      { do: "And once more: hold F, H and K.", show: [...K], hear: "Bright again: F major. The hand never changed shape; the scale decided.", target: "F, A and C sounding together", check: (s) => sounding(s, [5, 9, 0]) },
+      { do: "Go back home: hold A, D and G again.", show: [...K], hear: "After the others, C major sounds like an arrival.", target: "C, E and G sounding together", check: (s) => sounding(s, [0, 4, 7]) && s.sequence.length >= 3 },
+    ],
+    recap: ["Chords that belong to a scale are built by taking every other note of it.", "In C major the chords on C and F come out major, and those on D and E come out minor.", "The scale decides which chords are major and which are minor; the hand shape stays the same."],
+  },
+];

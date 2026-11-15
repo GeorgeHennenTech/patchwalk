@@ -6,7 +6,7 @@ import { newTrack, snapshot, trackAllReleased, trackFlag, trackNoteOn, trackStat
 
 const base = (over: Partial<Snapshot> = {}, state: Partial<SynthState> = {}, start: Partial<SynthState> = {}): Snapshot => ({
   state: { ...INITIAL, ...state }, start: { ...INITIAL, ...start }, audioRunning: true, held: [], played: { mouse: 0, keys: 0, midi: 0 },
-  distinctNotes: 0, holdOn: false, heldSeconds: 0, longestHeld: 0, velocity: null, range: {}, changes: {}, flags: {}, lastNote: null, ...over,
+  distinctNotes: 0, sequence: [], holdOn: false, heldSeconds: 0, longestHeld: 0, velocity: null, range: {}, changes: {}, flags: {}, lastNote: null, ...over,
 });
 const step = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
 
@@ -682,7 +682,7 @@ describe("macros", () => {
     expect(MACRO_DESTS[0]).toBe("none");
   });
   it("the macro chapter is listed after Modulation, and every recipe wires what it teaches", () => {
-    expect(CHAPTER_ORDER.map((c) => CHAPTERS[c])).toEqual(["Sound itself", "Oscillators", "Filters", "Envelopes", "LFOs", "Mixed practice", "Modulation", "Macros", "Reshaping the wave", "Effects", "Playing a line", "Impacts"]);
+    expect(CHAPTER_ORDER.map((c) => CHAPTERS[c])).toEqual(["Sound itself", "Oscillators", "Filters", "Envelopes", "LFOs", "Mixed practice", "Modulation", "Macros", "Reshaping the wave", "Effects", "Playing a line", "Notes and chords", "Impacts"]);
     expect(new Set(LESSONS.map((l) => chapterOf(l))).size).toBe(CHAPTER_ORDER.length);
     expect(MACRO_CHAPTER.map((l) => l.id)).toEqual(["C5M.1", "C5M.2", "C5M.3", "C5M.4", "C5M.5", "C5M.6", "C5M.7", "C5M.8", "C5M.9", "C5M.10", "C5M.11", "C5M.12", "C5M.13", "C5M.14", "C5M.15", "C5M.16", "C5M.17", "C5M.18", "C5M.19", "C5M.20", "C5M.21", "C5M.C"]);
     for (const l of MACRO_CHAPTER.slice(0, 7)) {
@@ -1757,6 +1757,29 @@ describe("wavetables built from published formulas", () => {
   });
 });
 
+describe("notes and chords: checks read what was played", () => {
+  const snap = (extra: Partial<Snapshot>) => ({ ...snapshot(newTrack(INITIAL), INITIAL, { audioRunning: true, held: [], holdOn: false, now: 0 }), ...extra }) as Snapshot;
+  const at = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
+  it("the tracker keeps the notes played in order", () => {
+    let t = newTrack(INITIAL);
+    for (const n of [60, 62, 60, 64]) t = trackNoteOn(t, "keys", n, 0);
+    expect(t.sequence).toEqual([60, 62, 60, 64]); expect(t.notes).toEqual([60, 62, 64]);
+  });
+  it("wrong notes do not pass: a tone is not a semitone, major is not minor, a scale with a slip is not a scale", () => {
+    expect(at("CN.1", 1).check(snap({ sequence: [60, 62] }))).toBe(false);
+    expect(at("CN.2", 0).check(snap({ held: [60, 66] }))).toBe(false);
+    expect(at("CN.3", 0).check(snap({ held: [60, 63, 67] }))).toBe(false); expect(at("CN.3", 1).check(snap({ held: [60, 64, 67] }))).toBe(false);
+    expect(at("CN.3", 2).check(snap({ held: [60, 64, 67] }))).toBe(false);             // must not be on C
+    expect(at("CN.4", 0).check(snap({ sequence: [60, 62, 64, 66, 67, 69, 71, 72] }))).toBe(false);
+    expect(at("CN.5", 1).check(snap({ held: [62, 66, 69] }))).toBe(false);             // D major is not in the scale
+  });
+  it("any octave and any starting note that fits is accepted", () => {
+    expect(at("CN.2", 3).check(snap({ held: [43, 50] }))).toBe(true);                  // a fifth on G
+    expect(at("CN.4", 0).check(snap({ sequence: [50, 52, 54, 55, 57, 59, 61, 62] }))).toBe(true); // D major, played with the mouse or a MIDI keyboard
+    expect(at("CN.5", 3).check(snap({ held: [53, 57, 60] }))).toBe(true);              // F major an octave lower
+  });
+});
+
 describe("the lessons added on 15 Nov can each be walked through", () => {
   // for every step: the settings a learner following the instruction would end up with, and what they did
   const played = { played: { mouse: 3, keys: 0, midi: 0 }, distinctNotes: 3, lastNote: 45 } as Partial<Snapshot>;
@@ -1767,6 +1790,11 @@ describe("the lessons added on 15 Nov can each be walked through", () => {
     "CT.9": [[{}, played], [{ env2Dest: "cutoff", env2Amount: 70 }, played], [{ env2D: 80 }, played], [{ env2D: 700 }, played], [{ env2D: 100, resonance: 60 }, played]],
     "CT.10": [[{}, { held: [33] }], [{ distOn: true, distDrive: 60 }], [{ distType: "hard" }], [{ distMix: 45 }], [{ eqOn: true, eqHigh: -9 }]],
     "CT.11": [[{}, { longestHeld: 2.5 }], [{ env2Dest: "aPitchWide", env2A: 3000, env2S: 100, env2Amount: 30 }, { longestHeld: 3.5 }], [{ matrix: [{ source: "env2", dest: "cutoff", amount: 60, way: "up" }] }, { longestHeld: 3.5 }], [{ env2A: 6000 }, { longestHeld: 5.5 }], [{ reverbOn: true, reverbMix: 30 }, { longestHeld: 3.5 }]],
+    "CN.1": [[{}, { sequence: [60] }], [{}, { sequence: [60, 61] }], [{}, { sequence: [60, 62] }], [{}, { sequence: [60, 72] }], [{}, { held: [60, 72], sequence: [60, 72] }]],
+    "CN.2": [[{}, { held: [60, 67] }], [{}, { held: [60, 64] }], [{}, { held: [60, 63] }], [{}, { held: [62, 69] }], [{}, { held: [64, 67] }]],
+    "CN.3": [[{}, { held: [60, 64, 67] }], [{}, { held: [60, 63, 67] }], [{}, { held: [65, 69, 72] }], [{}, { held: [62, 65, 69] }]],
+    "CN.4": [[{}, { sequence: [60, 62, 64, 65, 67, 69, 71, 72] }], [{}, { sequence: [72, 71, 69, 67, 65, 64, 62, 60] }], [{}, { sequence: [60, 62, 63, 65, 67, 68, 70, 72] }], [{}, { sequence: [60, 62, 64, 65, 67, 60, 62, 63, 65, 67] }]],
+    "CN.5": [[{}, { held: [60, 64, 67] }], [{}, { held: [62, 65, 69] }], [{}, { held: [64, 67, 71] }], [{}, { held: [65, 69, 72] }], [{}, { held: [48, 52, 55], sequence: [48, 52, 55] }]],
     "CT.12": [[{ envS: 0, envD: 220 }, played], [{ envS: 100, envR: 30 }, played], [{ lfo1Dest: "cutoff", lfo1Amount: 60, lfo1Rate: 7 }, { longestHeld: 2.5 }], [{ drive: 60 }, { longestHeld: 2.5 }]],
     "C1.11": [[{ table: "pdsaw" }, { held: [45] }], [{ position: 100 }, range("position", 0, 100)], [{ table: "moogsaw", position: 100 }], [{ position: 0 }], [{ table: "pdpulse", position: 95 }, range("position", 5, 95)], [{ table: "formant", position: 95 }, range("position", 5, 95)]],
     "C6.6": [[{}, { held: [57] }], [{ warpAmount: 50 }], [{ warpAmount: 95 }, range("warpAmount", 5, 95)], [{ warp: "steps", warpAmount: 60 }], [{ warpAmount: 80 }], [{ warp: "flip", warpAmount: 50 }]],

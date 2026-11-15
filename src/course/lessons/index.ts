@@ -2,6 +2,7 @@ import { INITIAL, noteToHz, type SynthState } from "../../synth/params";
 import type { DemoTone, MatchRound, PlayableLesson, Snapshot } from "../types";
 import { FILTER_ADDITIONS, FX_ADDITIONS, IMPACT_ADDITIONS, OSC_ADDITIONS, TABLE_ADDITIONS, WARP_ADDITIONS } from "./additions";
 import { CHAPTER_1 } from "./chapter1";
+import { THEORY_CHAPTER } from "./theory";
 import { CHAPTER_2 } from "./chapter2";
 import { CHAPTER_3 } from "./chapter3";
 import { CHAPTER_4 } from "./chapter4";
@@ -185,15 +186,15 @@ const slot = (chapter: PlayableLesson[], extra: PlayableLesson[], checkpoint: st
   const at = chapter.findIndex((l) => l.id === checkpoint);
   return at < 0 ? [...chapter, ...extra] : [...chapter.slice(0, at), ...extra, ...chapter.slice(at)];
 };
-export const LESSONS: PlayableLesson[] = [...BASE, ...slot(CHAPTER_1, [...OSC_ADDITIONS, ...TABLE_ADDITIONS], "C1.C"), ...slot(CHAPTER_2, FILTER_ADDITIONS, "C2.C"), ...CHAPTER_3, ...CHAPTER_4, mixedCheckpoint(), ...CHAPTER_5, ...MACRO_CHAPTER, ...slot(CHAPTER_6, WARP_ADDITIONS, "C6.C"), ...slot(CHAPTER_7, FX_ADDITIONS, "C7.C"), ...CHAPTER_8, ...slot(IMPACT_CHAPTER, IMPACT_ADDITIONS, "CT.C")];
+export const LESSONS: PlayableLesson[] = [...BASE, ...slot(CHAPTER_1, [...OSC_ADDITIONS, ...TABLE_ADDITIONS], "C1.C"), ...slot(CHAPTER_2, FILTER_ADDITIONS, "C2.C"), ...CHAPTER_3, ...CHAPTER_4, mixedCheckpoint(), ...CHAPTER_5, ...MACRO_CHAPTER, ...slot(CHAPTER_6, WARP_ADDITIONS, "C6.C"), ...slot(CHAPTER_7, FX_ADDITIONS, "C7.C"), ...CHAPTER_8, ...THEORY_CHAPTER, ...slot(IMPACT_CHAPTER, IMPACT_ADDITIONS, "CT.C")];
 
 /**
  * Chapter names, by the number in a lesson's id ("C2.5" is in chapter 2). Ids are for code, scripts and
  * plans; the learner sees the chapter name, the lesson's place in it, and its title.
  */
-export const CHAPTERS: Record<string, string> = { "0": "Sound itself", "1": "Oscillators", "2": "Filters", "3": "Envelopes", "4": "LFOs", "5": "Modulation", "5M": "Macros", "6": "Reshaping the wave", "7": "Effects", "X": "Mixed practice", "8": "Playing a line", "T": "Impacts" };
+export const CHAPTERS: Record<string, string> = { "0": "Sound itself", "1": "Oscillators", "2": "Filters", "3": "Envelopes", "4": "LFOs", "5": "Modulation", "5M": "Macros", "6": "Reshaping the wave", "7": "Effects", "X": "Mixed practice", "8": "Playing a line", "T": "Impacts" , N: "Notes and chords" };
 /** The order chapters are listed in. (An object's number-like keys sort themselves, which would misplace "5M".) */
-export const CHAPTER_ORDER = ["0", "1", "2", "3", "4", "X", "5", "5M", "6", "7", "8", "T"];
+export const CHAPTER_ORDER = ["0", "1", "2", "3", "4", "X", "5", "5M", "6", "7", "8", "N", "T"];
 export const chapterOf = (lesson: PlayableLesson) => lesson.id.slice(1, lesson.id.indexOf("."));
 /** Where a lesson sits: its chapter's name, its number within the chapter, and how many the chapter has. */
 export function placeOf(lesson: PlayableLesson, lessons: PlayableLesson[] = LESSONS): { chapter: string; number: number; of: number } {

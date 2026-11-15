@@ -1420,5 +1420,219 @@
    "why": "Drive adds harmonics, and the moving filter then sweeps through a richer sound.",
    "point": 2
   }
+ ],
+ "CN.1": [
+  {
+   "q": "What is a semitone?",
+   "options": [
+    "The step from one key to the very next",
+    "Two white keys apart",
+    "Twelve keys",
+    "The same as an octave"
+   ],
+   "answer": 0,
+   "why": "It is the smallest step on the keyboard: one key to its immediate neighbour, black or white.",
+   "point": 0
+  },
+  {
+   "q": "How many semitones make an octave?",
+   "options": [
+    "Seven",
+    "Eight",
+    "Ten",
+    "Twelve"
+   ],
+   "answer": 3,
+   "why": "The pattern of keys repeats every twelve semitones.",
+   "point": 1
+  },
+  {
+   "q": "Why do notes an octave apart share a name?",
+   "options": [
+    "They are the same loudness",
+    "One vibrates exactly twice as fast, so they blend",
+    "They are next to each other",
+    "They are both white keys"
+   ],
+   "answer": 1,
+   "why": "Twice the speed of vibration gives the same colour at a higher pitch.",
+   "point": 2
+  },
+  {
+   "q": "How big is a tone?",
+   "options": [
+    "One semitone",
+    "Two semitones",
+    "Three semitones",
+    "Twelve semitones"
+   ],
+   "answer": 1,
+   "why": "A tone is two semitones: skip one key and land on the next.",
+   "point": 0
+  }
+ ],
+ "CN.2": [
+  {
+   "q": "What is an interval?",
+   "options": [
+    "A kind of chord",
+    "The distance between two notes, counted in semitones",
+    "The length of a note",
+    "A black key"
+   ],
+   "answer": 1,
+   "why": "It measures how far apart two notes are.",
+   "point": 0
+  },
+  {
+   "q": "How many semitones is a fifth?",
+   "options": [
+    "Three",
+    "Four",
+    "Five",
+    "Seven"
+   ],
+   "answer": 3,
+   "why": "Seven semitones gives the open, strong sound of a fifth.",
+   "point": 1
+  },
+  {
+   "q": "Which is darker, a major third or a minor third?",
+   "options": [
+    "The major third",
+    "The minor third",
+    "They sound the same",
+    "It depends on the starting note"
+   ],
+   "answer": 1,
+   "why": "The minor third is three semitones, one less than the major third, and sounds darker.",
+   "point": 1
+  },
+  {
+   "q": "You play a fifth starting on D, not C. How does it sound?",
+   "options": [
+    "Completely different",
+    "The same character, a little higher",
+    "Like a minor third",
+    "Out of tune"
+   ],
+   "answer": 1,
+   "why": "An interval keeps its character from whichever note it starts.",
+   "point": 2
+  }
+ ],
+ "CN.3": [
+  {
+   "q": "Which three notes make a basic chord?",
+   "options": [
+    "Three notes next to each other",
+    "A root, a third above it and a fifth above it",
+    "Three octaves of one note",
+    "Any three black keys"
+   ],
+   "answer": 1,
+   "why": "The fifth makes the chord solid and the third gives it its mood.",
+   "point": 0
+  },
+  {
+   "q": "What makes a chord major and not minor?",
+   "options": [
+    "A higher root",
+    "A major third in the middle",
+    "A louder fifth",
+    "More notes"
+   ],
+   "answer": 1,
+   "why": "Four semitones from root to third gives a major chord; three gives a minor one.",
+   "point": 1
+  },
+  {
+   "q": "To turn C major into C minor, which note moves?",
+   "options": [
+    "The root",
+    "The fifth",
+    "The middle note, down a semitone",
+    "All three"
+   ],
+   "answer": 2,
+   "why": "Only the third changes. The root and fifth stay where they are.",
+   "point": 2
+  }
+ ],
+ "CN.4": [
+  {
+   "q": "What is a scale?",
+   "options": [
+    "A set of notes chosen by a pattern of tones and semitones",
+    "Every key on the keyboard",
+    "A kind of chord",
+    "A single note"
+   ],
+   "answer": 0,
+   "why": "A scale picks some of the twelve notes, spaced by a fixed pattern of steps.",
+   "point": 0
+  },
+  {
+   "q": "Which keys does the major scale from C use?",
+   "options": [
+    "Only black keys",
+    "Only white keys",
+    "Every key",
+    "White and black alternately"
+   ],
+   "answer": 1,
+   "why": "From C, the major scale's pattern of tones and semitones lands on the white keys only.",
+   "point": 1
+  },
+  {
+   "q": "How does the natural minor scale differ from the major?",
+   "options": [
+    "It has more notes",
+    "Three of its notes are a semitone lower",
+    "It starts on a different key",
+    "It has no semitones"
+   ],
+   "answer": 1,
+   "why": "Lowering those three notes is what gives it its darker colour.",
+   "point": 2
+  }
+ ],
+ "CN.5": [
+  {
+   "q": "How do you build a chord that belongs to a scale?",
+   "options": [
+    "Play three notes next to each other",
+    "Take every other note of the scale",
+    "Use only black keys",
+    "Play the root three times"
+   ],
+   "answer": 1,
+   "why": "Play one, skip one, play one, skip one, play one.",
+   "point": 0
+  },
+  {
+   "q": "In C major, which of these chords comes out minor?",
+   "options": [
+    "The chord on C",
+    "The chord on F",
+    "The chord on D",
+    "None of them"
+   ],
+   "answer": 2,
+   "why": "Starting on D or E the white keys give a minor chord; on C or F a major one.",
+   "point": 1
+  },
+  {
+   "q": "You keep the same hand shape and move up the white keys. Why do some chords turn minor?",
+   "options": [
+    "Your hand changed shape",
+    "The scale decides the size of each third",
+    "The keys are out of tune",
+    "Black keys are added"
+   ],
+   "answer": 1,
+   "why": "The gaps between the scale's notes are uneven, so the same shape gives major in some places and minor in others.",
+   "point": 2
+  }
  ]
 }

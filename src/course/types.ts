@@ -14,6 +14,8 @@ export interface Snapshot {
   played: { mouse: number; keys: number; midi: number };
   /** Distinct notes played since the step began. */
   distinctNotes: number;
+  /** Every note played since the step began, in order (MIDI numbers; the most recent 64). */
+  sequence: number[];
   holdOn: boolean;
   /** Seconds the current note has been held without a break. */
   heldSeconds: number;

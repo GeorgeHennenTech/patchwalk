@@ -1,5 +1,5 @@
 // Chapter 1, lessons C1.3 to C1.8 and the chapter checkpoint. Converted from docs/lessons/.
-import { beatHz, brightness, harmonicsA, PARAMS } from "../../synth/params";
+import { beatHz, brightness, magnitudesA, PARAMS } from "../../synth/params";
 import type { DemoTone, PlayableLesson, Snapshot } from "../types";
 
 const total = (s: Snapshot) => s.played.mouse + s.played.keys + s.played.midi;
@@ -9,7 +9,7 @@ const phaseApart = (s: Snapshot) => (((s.state.bPhase - s.state.phase) % 360) + 
 const samePitch = (s: Snapshot) => s.state.octave === s.state.bOctave && s.state.semitone === s.state.bSemitone && s.state.fine === s.state.bFine;
 const patches = (list: DemoTone["patch"][], len = 1.3, note = 57): DemoTone[] => list.map((patch, i) => ({ patch, note, at: i * (len + 0.2), seconds: len }));
 /** How bright the brightest frame of the current table is, for "find the brightest frame". */
-const peakBrightness = (s: Snapshot) => Math.max(...Array.from({ length: 101 }, (_, position) => brightness(harmonicsA({ ...s.state, position }))));
+const peakBrightness = (s: Snapshot) => Math.max(...Array.from({ length: 101 }, (_, position) => brightness(magnitudesA({ ...s.state, position }))));
 const K = ["keyboard", "hold"] as const;
 
 export const CHAPTER_1: PlayableLesson[] = [
@@ -29,7 +29,7 @@ export const CHAPTER_1: PlayableLesson[] = [
       { do: "Choose a different wavetable and sweep Position again.", show: [...K, "table", "position", "spectrum", "scope"], hear: "A different kind of change.", target: "Another table, position swept most of the way",
         check: (s) => s.state.table !== "basic" && s.state.table !== "none" && (s.range.position?.max ?? 0) - (s.range.position?.min ?? 0) >= 80 },
       { do: "Find the brightest frame in this table.", show: [...K, "position", "spectrum"], hear: "The buzziest colour the table has.", target: "Position at the brightest part of the table",
-        check: (s) => s.state.table !== "none" && (s.changes.position ?? 0) >= 1 && brightness(harmonicsA(s.state)) >= 0.95 * peakBrightness(s),
+        check: (s) => s.state.table !== "none" && (s.changes.position ?? 0) >= 1 && brightness(magnitudesA(s.state)) >= 0.95 * peakBrightness(s),
         remark: (s) => `The brightest part of ${PARAMS.table!.names![s.state.table]} is around ${s.state.position}%: that is where the most energy sits in the upper harmonics.` },
     ],
     recap: ["A wavetable is a row of shapes.", "Position picks one and blends between neighbours.", "Sweeping it changes colour without changing pitch."],

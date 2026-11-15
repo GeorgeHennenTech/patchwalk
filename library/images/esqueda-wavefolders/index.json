@@ -1,0 +1,196 @@
+{
+ "source": "Virtual Analog Models of the Lockhart and Serge Wavefolders (Esqueda, Pöntynen, Parker, Bilbao, Applied Sciences 2017)",
+ "note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text.",
+ "images": [
+  {
+   "file": "p001-1.webp",
+   "page": 1,
+   "chapter": "Lockhart and Serge wavefolders",
+   "width": 1181,
+   "height": 554,
+   "captions_on_page": [
+    "This is an electronic reprint of the original article.",
+    "This reprint may differ from the original in pagination and typographic detail."
+   ]
+  },
+  {
+   "file": "p002-1.webp",
+   "page": 2,
+   "chapter": "Lockhart and Serge wavefolders",
+   "width": 355,
+   "height": 234,
+   "captions_on_page": [
+    "Conference (SMC-17), Espoo, Finland, 5–8 July 2017."
+   ]
+  },
+  {
+   "file": "p002-2.webp",
+   "page": 2,
+   "chapter": "Lockhart and Serge wavefolders",
+   "width": 355,
+   "height": 234,
+   "captions_on_page": [
+    "Conference (SMC-17), Espoo, Finland, 5–8 July 2017."
+   ]
+  },
+  {
+   "file": "p002-3.webp",
+   "page": 2,
+   "chapter": "Lockhart and Serge wavefolders",
+   "width": 355,
+   "height": 234,
+   "captions_on_page": [
+    "Conference (SMC-17), Espoo, Finland, 5–8 July 2017."
+   ]
+  },
+  {
+   "file": "p015-1.webp",
+   "page": 15,
+   "chapter": "Lockhart and Serge wavefolders",
+   "width": 393,
+   "height": 1400,
+   "captions_on_page": []
+  },
+  {
+   "file": "p015-2.webp",
+   "page": 15,
+   "chapter": "Lockhart and Serge wavefolders",
+   "width": 1400,
+   "height": 1278,
+   "captions_on_page": []
+  },
+  {
+   "file": "p015-3.webp",
+   "page": 15,
+   "chapter": "Lockhart and Serge wavefolders",
+   "width": 1400,
+   "height": 1282,
+   "captions_on_page": []
+  },
+  {
+   "file": "p016-1.webp",
+   "page": 16,
+   "chapter": "Lockhart and Serge wavefolders",
+   "width": 860,
+   "height": 1378,
+   "captions_on_page": [
+    "A detailed account of this method can be found in [65]."
+   ]
+  },
+  {
+   "file": "p016-2.webp",
+   "page": 16,
+   "chapter": "Lockhart and Serge wavefolders",
+   "width": 860,
+   "height": 1378,
+   "captions_on_page": [
+    "A detailed account of this method can be found in [65]."
+   ]
+  },
+  {
+   "file": "p016-3.webp",
+   "page": 16,
+   "chapter": "Lockhart and Serge wavefolders",
+   "width": 1400,
+   "height": 1311,
+   "captions_on_page": [
+    "A detailed account of this method can be found in [65]."
+   ]
+  },
+  {
+   "file": "p016-4.webp",
+   "page": 16,
+   "chapter": "Lockhart and Serge wavefolders",
+   "width": 1400,
+   "height": 1121,
+   "captions_on_page": [
+    "A detailed account of this method can be found in [65]."
+   ]
+  },
+  {
+   "file": "p016-5.webp",
+   "page": 16,
+   "chapter": "Lockhart and Serge wavefolders",
+   "width": 1400,
+   "height": 1121,
+   "captions_on_page": [
+    "A detailed account of this method can be found in [65]."
+   ]
+  },
+  {
+   "file": "p016-6.webp",
+   "page": 16,
+   "chapter": "Lockhart and Serge wavefolders",
+   "width": 1400,
+   "height": 1121,
+   "captions_on_page": [
+    "A detailed account of this method can be found in [65]."
+   ]
+  },
+  {
+   "file": "p016-7.webp",
+   "page": 16,
+   "chapter": "Lockhart and Serge wavefolders",
+   "width": 1400,
+   "height": 1311,
+   "captions_on_page": [
+    "A detailed account of this method can be found in [65]."
+   ]
+  },
+  {
+   "file": "p016-8.webp",
+   "page": 16,
+   "chapter": "Lockhart and Serge wavefolders",
+   "width": 1400,
+   "height": 1121,
+   "captions_on_page": [
+    "A detailed account of this method can be found in [65]."
+   ]
+  },
+  {
+   "file": "p019-1.webp",
+   "page": 19,
+   "chapter": "Lockhart and Serge wavefolders",
+   "width": 429,
+   "height": 1365,
+   "captions_on_page": []
+  },
+  {
+   "file": "p019-2.webp",
+   "page": 19,
+   "chapter": "Lockhart and Serge wavefolders",
+   "width": 429,
+   "height": 1365,
+   "captions_on_page": []
+  },
+  {
+   "file": "p021-1.webp",
+   "page": 21,
+   "chapter": "Lockhart and Serge wavefolders",
+   "width": 429,
+   "height": 1369,
+   "captions_on_page": []
+  },
+  {
+   "file": "p021-2.webp",
+   "page": 21,
+   "chapter": "Lockhart and Serge wavefolders",
+   "width": 429,
+   "height": 1365,
+   "captions_on_page": []
+  },
+  {
+   "file": "p024-1.webp",
+   "page": 24,
+   "chapter": "Lockhart and Serge wavefolders",
+   "width": 500,
+   "height": 175,
+   "captions_on_page": [
+    "Conference on Digital Audio Effects (DAFx), York, UK, 17–21 September 2012.",
+    "Conference on Digital Audio Effects (DAFx), Brno, Czech Republic, 5–9 September 2016.",
+    "Czech Republic, 5–9 September 2016.",
+    "New York, NY, USA, 29 October–1 November 2015."
+   ]
+  }
+ ]
+}

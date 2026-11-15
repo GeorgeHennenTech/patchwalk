@@ -1,0 +1,130 @@
+{
+ "source": "New Perspectives on Distortion Synthesis for Virtual Analog Oscillators (Lazzarini, Timoney, Computer Music Journal 2010)",
+ "note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text.",
+ "images": [
+  {
+   "file": "p003-1.webp",
+   "page": 3,
+   "chapter": "Distortion synthesis",
+   "width": 500,
+   "height": 410,
+   "captions_on_page": []
+  },
+  {
+   "file": "p004-1.webp",
+   "page": 4,
+   "chapter": "Distortion synthesis",
+   "width": 490,
+   "height": 402,
+   "captions_on_page": []
+  },
+  {
+   "file": "p005-1.webp",
+   "page": 5,
+   "chapter": "Distortion synthesis",
+   "width": 498,
+   "height": 414,
+   "captions_on_page": []
+  },
+  {
+   "file": "p005-2.webp",
+   "page": 5,
+   "chapter": "Distortion synthesis",
+   "width": 500,
+   "height": 402,
+   "captions_on_page": []
+  },
+  {
+   "file": "p007-1.webp",
+   "page": 7,
+   "chapter": "Distortion synthesis",
+   "width": 499,
+   "height": 400,
+   "captions_on_page": []
+  },
+  {
+   "file": "p007-2.webp",
+   "page": 7,
+   "chapter": "Distortion synthesis",
+   "width": 486,
+   "height": 382,
+   "captions_on_page": []
+  },
+  {
+   "file": "p008-1.webp",
+   "page": 8,
+   "chapter": "Distortion synthesis",
+   "width": 484,
+   "height": 383,
+   "captions_on_page": [
+    "Equation 17, thus producing only odd harmonics."
+   ]
+  },
+  {
+   "file": "p008-2.webp",
+   "page": 8,
+   "chapter": "Distortion synthesis",
+   "width": 480,
+   "height": 356,
+   "captions_on_page": [
+    "Equation 17, thus producing only odd harmonics."
+   ]
+  },
+  {
+   "file": "p009-1.webp",
+   "page": 9,
+   "chapter": "Distortion synthesis",
+   "width": 497,
+   "height": 394,
+   "captions_on_page": []
+  },
+  {
+   "file": "p010-1.webp",
+   "page": 10,
+   "chapter": "Distortion synthesis",
+   "width": 497,
+   "height": 398,
+   "captions_on_page": [
+    "ModFM expression."
+   ]
+  },
+  {
+   "file": "p010-2.webp",
+   "page": 10,
+   "chapter": "Distortion synthesis",
+   "width": 482,
+   "height": 381,
+   "captions_on_page": [
+    "ModFM expression."
+   ]
+  },
+  {
+   "file": "p011-1.webp",
+   "page": 11,
+   "chapter": "Distortion synthesis",
+   "width": 292,
+   "height": 625,
+   "captions_on_page": []
+  },
+  {
+   "file": "p012-1.webp",
+   "page": 12,
+   "chapter": "Distortion synthesis",
+   "width": 497,
+   "height": 392,
+   "captions_on_page": [
+    "Audio Engineering Society."
+   ]
+  },
+  {
+   "file": "p012-2.webp",
+   "page": 12,
+   "chapter": "Distortion synthesis",
+   "width": 485,
+   "height": 381,
+   "captions_on_page": [
+    "Audio Engineering Society."
+   ]
+  }
+ ]
+}

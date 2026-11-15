@@ -1690,3 +1690,43 @@ describe("the smooth drawn LFO shape", () => {
     }
   });
 });
+
+import { cosinesA, formantWave, magnitudesA, MOOG_FRAME_HZ, moogRise, pdWave, phaseShape, TABLE_NOTES, TABLES } from "../src/synth/params";
+describe("wavetables built from published formulas", () => {
+  const mags = (table: (typeof TABLES)[number], position: number) => magnitudesA({ shape: "sine", table, position });
+  const strongest = (m: Float32Array) => { let top = 1; for (let n = 1; n < m.length; n++) if (m[n]! > m[top]!) top = n; return top; };
+  it("the phase-distortion function is the papers': linear at d = 0.5, bent at d, and it always ends where it began", () => {
+    for (const x of [0, 0.2, 0.5, 0.9]) expect(phaseShape(x, 0.5)).toBeCloseTo(x, 12);     // no distortion
+    expect(phaseShape(0.1, 0.1)).toBeCloseTo(0.5, 12);                                      // half the sine is reached at d
+    expect(phaseShape(0.55, 0.1)).toBeCloseTo(0.75, 12);                                    // equation 5, second piece
+    expect(phaseShape(0.25, 0.25, 1)).toBeCloseTo(1, 12);                                   // vector form: v = 1 reaches the whole sine at d
+    for (const d of [0.02, 0.3, 0.99]) { expect(pdWave(0, d)).toBeCloseTo(-1, 9); expect(pdWave(0.999999, d)).toBeCloseTo(-1, 3); }
+  });
+  it("Phase saw runs from a pure sine to a bright saw-like wave", () => {
+    const start = mags("pdsaw", 0), end = mags("pdsaw", 100);
+    expect(start[2]!).toBeLessThan(1e-6); expect(start[1]!).toBeGreaterThan(1.5);
+    for (let n = 2; n <= 12; n++) expect(end[n]!).toBeGreaterThan(0.05);
+    let last = 0; for (const p of [0, 25, 50, 75, 100]) { const b = brightness(mags("pdsaw", p)); expect(b).toBeGreaterThanOrEqual(last); last = b; }
+    expect(cosinesA({ shape: "sine", table: "pdsaw", position: 60 }).some((v) => Math.abs(v) > 0.05)).toBe(true); // it needs cosine parts
+    expect(cosinesA({ shape: "sine", table: "basic", position: 60 }).every((v) => v === 0)).toBe(true);
+  });
+  it("Analogue saw uses the fit to the recorded Minimoog Voyager: rounder for high notes, sharper for low", () => {
+    expect(moogRise(220.62)).toBeCloseTo(0.9877, 3); expect(moogRise(2096)).toBeCloseTo(0.9473, 3);
+    expect(MOOG_FRAME_HZ[0]).toBeGreaterThan(MOOG_FRAME_HZ[MOOG_FRAME_HZ.length - 1]!);
+    expect(brightness(mags("moogsaw", 100))).toBeGreaterThan(brightness(mags("moogsaw", 0)));
+  });
+  it("Phase pulse narrows: its harmonics level out as the position rises", () => {
+    const wide = mags("pdpulse", 0), narrow = mags("pdpulse", 100);
+    expect(wide[4]!).toBeLessThan(0.01);                         // a sine in half the cycle: the paper's rectified shape
+    expect(narrow[8]! / narrow[1]!).toBeGreaterThan(0.8);       // a narrow pulse has nearly equal harmonics
+  });
+  it("Formant puts one strong band on harmonic 2v - 1 and moves it smoothly", () => {
+    expect(strongest(mags("formant", 0))).toBe(2); expect(strongest(mags("formant", 100))).toBe(12);
+    let last = 0; for (let p = 0; p <= 100; p += 10) { const top = strongest(mags("formant", p)); expect(top).toBeGreaterThanOrEqual(last); last = top; }
+    expect(formantWave(0.3, 2.25)).toBeCloseTo(0.5 * pdWave(0.3, 0.5, 2) + 0.5 * pdWave(0.3, 0.5, 2.5), 9); // equations 9 and 10
+  });
+  it("every formula table says where it comes from, and no table is silent anywhere", () => {
+    for (const t of ["pdsaw", "moogsaw", "pdpulse", "formant"] as const) expect(TABLE_NOTES[t]!).toMatch(/20(09|11)/);
+    for (const t of TABLES) if (t !== "none") for (const p of [0, 33, 66, 100]) expect(Math.max(...mags(t, p)), `${t} ${p}`).toBeGreaterThan(0.1);
+  });
+});

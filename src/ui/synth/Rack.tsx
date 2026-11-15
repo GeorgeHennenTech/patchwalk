@@ -7,7 +7,7 @@ import { dragColor, dragName, endDrag, startDrag, type Draggable } from "../../s
 import { MACRO_COLORS } from "../../synth/macros";
 import { FX_NAMES, FX_ORDER, fxOrderOf, moveFx, type FxId } from "../../synth/fx";
 import { adsr, ENV1_COLOR, envLevel, lfoHz, lfoStartPhase, lfoValue, routes, SOURCES, type Adsr, type ModSource } from "../../synth/mod";
-import { harmonic, isDrawn, spectrumA, HARMONICS, LFO_STEPS, MACRO_SLOTS, MACROS, PARAMS, type Group, type SynthState, spectrumB } from "../../synth/params";
+import { harmonic, isDrawn, TABLE_NOTES, spectrumA, HARMONICS, LFO_STEPS, MACRO_SLOTS, MACROS, PARAMS, type Group, type SynthState, spectrumB } from "../../synth/params";
 import type { Synth } from "../../synth/useSynth";
 import { Control, isBox } from "./Controls";
 import { FilterCurve, Matrix, Reduction } from "./Views";
@@ -164,6 +164,9 @@ export function Rack({ synth, show, all, lesson, note }: { synth: Synth; show: P
       <div className="mod-body">
         {/* an LFO's shape is shown whenever its controls are, so a lesson can point at it */}
         {(all || m.source?.startsWith("lfo")) && <Display module={m} synth={synth} note={note} />}
+        {(m.id === "a" || m.id === "b") && TABLE_NOTES[s[m.id === "a" ? "table" : "bTable"]] && (all || show.includes(m.id === "a" ? "table" : "bTable")) && (
+          <p className="table-note">{TABLE_NOTES[s[m.id === "a" ? "table" : "bTable"]]}</p>
+        )}
         {m.source?.startsWith("lfo") && !isDrawn(s[`${m.source as "lfo1"}Shape`]) && (all || show.includes(`${m.source}Shape` as Panel)) && (
           <button className="link draw-own" title="Turns the current shape into sixteen bars you can drag to any height" onClick={() => {
             const id = m.source as "lfo1", shape = s[`${id}Shape`];

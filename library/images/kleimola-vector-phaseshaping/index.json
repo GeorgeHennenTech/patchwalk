@@ -1,0 +1,82 @@
+{
+ "source": "Vector Phaseshaping Synthesis (Kleimola, Lazzarini, Timoney, Välimäki, DAFx-11)",
+ "note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text.",
+ "images": [
+  {
+   "file": "p002-1.webp",
+   "page": 2,
+   "chapter": "Vector phaseshaping",
+   "width": 815,
+   "height": 482,
+   "captions_on_page": [
+    "Hz, as in all examples of this paper."
+   ]
+  },
+  {
+   "file": "p002-2.webp",
+   "page": 2,
+   "chapter": "Vector phaseshaping",
+   "width": 1072,
+   "height": 903,
+   "captions_on_page": [
+    "Hz, as in all examples of this paper."
+   ]
+  },
+  {
+   "file": "p002-3.webp",
+   "page": 2,
+   "chapter": "Vector phaseshaping",
+   "width": 1176,
+   "height": 780,
+   "captions_on_page": [
+    "Hz, as in all examples of this paper."
+   ]
+  },
+  {
+   "file": "p003-1.webp",
+   "page": 3,
+   "chapter": "Vector phaseshaping",
+   "width": 1015,
+   "height": 615,
+   "captions_on_page": []
+  },
+  {
+   "file": "p004-1.webp",
+   "page": 4,
+   "chapter": "Vector phaseshaping",
+   "width": 1015,
+   "height": 615,
+   "captions_on_page": [
+    "Figure 5: (a) trivial VPS timbre, and (b) its alias-suppressed form.",
+    "VPS synthesis provides rich harmonic spectra of various forms."
+   ]
+  },
+  {
+   "file": "p004-2.webp",
+   "page": 4,
+   "chapter": "Vector phaseshaping",
+   "width": 817,
+   "height": 617,
+   "captions_on_page": [
+    "Figure 5: (a) trivial VPS timbre, and (b) its alias-suppressed form.",
+    "VPS synthesis provides rich harmonic spectra of various forms."
+   ]
+  },
+  {
+   "file": "p006-1.webp",
+   "page": 6,
+   "chapter": "Vector phaseshaping",
+   "width": 1156,
+   "height": 446,
+   "captions_on_page": []
+  },
+  {
+   "file": "p007-1.webp",
+   "page": 7,
+   "chapter": "Vector phaseshaping",
+   "width": 1032,
+   "height": 518,
+   "captions_on_page": []
+  }
+ ]
+}

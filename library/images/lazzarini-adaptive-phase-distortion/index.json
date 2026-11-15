@@ -1,0 +1,162 @@
+{
+ "source": "Adaptive Phase Distortion Synthesis (Lazzarini, Timoney, Pekonen, Välimäki, DAFx-09)",
+ "note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text.",
+ "images": [
+  {
+   "file": "p001-1.webp",
+   "page": 1,
+   "chapter": "Adaptive phase distortion",
+   "width": 489,
+   "height": 369,
+   "captions_on_page": []
+  },
+  {
+   "file": "p002-1.webp",
+   "page": 2,
+   "chapter": "Adaptive phase distortion",
+   "width": 489,
+   "height": 369,
+   "captions_on_page": []
+  },
+  {
+   "file": "p002-2.webp",
+   "page": 2,
+   "chapter": "Adaptive phase distortion",
+   "width": 489,
+   "height": 369,
+   "captions_on_page": []
+  },
+  {
+   "file": "p004-1.webp",
+   "page": 4,
+   "chapter": "Adaptive phase distortion",
+   "width": 489,
+   "height": 369,
+   "captions_on_page": []
+  },
+  {
+   "file": "p004-2.webp",
+   "page": 4,
+   "chapter": "Adaptive phase distortion",
+   "width": 489,
+   "height": 369,
+   "captions_on_page": []
+  },
+  {
+   "file": "p004-3.webp",
+   "page": 4,
+   "chapter": "Adaptive phase distortion",
+   "width": 489,
+   "height": 369,
+   "captions_on_page": []
+  },
+  {
+   "file": "p004-4.webp",
+   "page": 4,
+   "chapter": "Adaptive phase distortion",
+   "width": 489,
+   "height": 369,
+   "captions_on_page": []
+  },
+  {
+   "file": "p005-1.webp",
+   "page": 5,
+   "chapter": "Adaptive phase distortion",
+   "width": 489,
+   "height": 369,
+   "captions_on_page": []
+  },
+  {
+   "file": "p005-2.webp",
+   "page": 5,
+   "chapter": "Adaptive phase distortion",
+   "width": 489,
+   "height": 369,
+   "captions_on_page": []
+  },
+  {
+   "file": "p005-3.webp",
+   "page": 5,
+   "chapter": "Adaptive phase distortion",
+   "width": 490,
+   "height": 289,
+   "captions_on_page": []
+  },
+  {
+   "file": "p006-1.webp",
+   "page": 6,
+   "chapter": "Adaptive phase distortion",
+   "width": 489,
+   "height": 369,
+   "captions_on_page": []
+  },
+  {
+   "file": "p006-2.webp",
+   "page": 6,
+   "chapter": "Adaptive phase distortion",
+   "width": 491,
+   "height": 371,
+   "captions_on_page": []
+  },
+  {
+   "file": "p006-3.webp",
+   "page": 6,
+   "chapter": "Adaptive phase distortion",
+   "width": 489,
+   "height": 369,
+   "captions_on_page": []
+  },
+  {
+   "file": "p006-4.webp",
+   "page": 6,
+   "chapter": "Adaptive phase distortion",
+   "width": 489,
+   "height": 369,
+   "captions_on_page": []
+  },
+  {
+   "file": "p007-1.webp",
+   "page": 7,
+   "chapter": "Adaptive phase distortion",
+   "width": 491,
+   "height": 371,
+   "captions_on_page": []
+  },
+  {
+   "file": "p007-2.webp",
+   "page": 7,
+   "chapter": "Adaptive phase distortion",
+   "width": 491,
+   "height": 371,
+   "captions_on_page": []
+  },
+  {
+   "file": "p007-3.webp",
+   "page": 7,
+   "chapter": "Adaptive phase distortion",
+   "width": 489,
+   "height": 369,
+   "captions_on_page": []
+  },
+  {
+   "file": "p007-4.webp",
+   "page": 7,
+   "chapter": "Adaptive phase distortion",
+   "width": 491,
+   "height": 371,
+   "captions_on_page": []
+  },
+  {
+   "file": "p008-1.webp",
+   "page": 8,
+   "chapter": "Adaptive phase distortion",
+   "width": 491,
+   "height": 371,
+   "captions_on_page": [
+    "States Patent 4018121, 1977.",
+    "Espoo, Finland, 2008.",
+    "Patent 4658691, 1985."
+   ]
+  }
+ ]
+}

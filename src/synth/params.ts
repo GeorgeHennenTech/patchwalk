@@ -4,7 +4,15 @@
 
 export const SHAPES = ["sine", "triangle", "square", "saw"] as const;
 export type Shape = (typeof SHAPES)[number];
-export const TABLES = ["none", "basic", "bright", "vowel"] as const;
+export const TABLES = ["none", "basic", "bright", "vowel", "pdsaw", "moogsaw", "pdpulse", "formant"] as const;
+const TABLE_NAMES = { none: "Off", basic: "Basic morph", bright: "Bright sweep", vowel: "Vowel", pdsaw: "Phase saw", moogsaw: "Analogue saw", pdpulse: "Phase pulse", formant: "Formant" };
+/** Where a table's shapes come from, for the tables built from a published formula. Shown under the wave picture. */
+export const TABLE_NOTES: Partial<Record<(typeof TABLES)[number], string>> = {
+  pdsaw: "A sine bent toward a saw by phase distortion, the method of the Casio CZ synths. Formula from Lazzarini and others, 2009.",
+  moogsaw: "The phase-distortion saw fitted to recordings of a Minimoog Voyager: rounder for high notes, sharper for low ones. Fit from Pekonen and others, 2011.",
+  pdpulse: "One cycle of a sine squeezed into part of the period, then held: a pulse whose width follows the position. Formula from Kleimola and others, 2011.",
+  formant: "A sine run several times per cycle to make one strong band that climbs with the position. Formula from Kleimola and others, 2011.",
+};
 export type Table = (typeof TABLES)[number];
 export const NOISES = ["white", "pink"] as const;
 // Kept here (not in filter.ts) so this file stays free of imports from the modules that depend on it.
@@ -259,7 +267,7 @@ const BASE_PARAMS: Record<string, ParamSpec> = {
   clickOn: { id: "clickOn", label: "Click", group: "Master", kind: "toggle" },
   aOn: { id: "aOn", label: "Osc A", group: "Oscillator A", kind: "toggle" },
   shape: { id: "shape", label: "Wave shape", group: "Oscillator A", kind: "choice", choices: SHAPES, names: SHAPE_NAMES },
-  table: { id: "table", label: "Wavetable", group: "Oscillator A", kind: "choice", choices: TABLES, names: { none: "Off", basic: "Basic morph", bright: "Bright sweep", vowel: "Vowel" } },
+  table: { id: "table", label: "Wavetable", group: "Oscillator A", kind: "choice", choices: TABLES, names: TABLE_NAMES },
   aPan: { id: "aPan", label: "A pan", group: "Oscillator A", kind: "range", min: -100, max: 100, step: 1, unit: "" },
   position: { id: "position", label: "Position", group: "Oscillator A", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
   octave: { id: "octave", label: "Octave", group: "Oscillator A", kind: "range", min: -3, max: 3, step: 1, unit: "oct" },
@@ -280,7 +288,7 @@ const BASE_PARAMS: Record<string, ParamSpec> = {
   bShape: { id: "bShape", label: "B shape", group: "Oscillator B", kind: "choice", choices: SHAPES, names: SHAPE_NAMES },
   bOctave: { id: "bOctave", label: "B octave", group: "Oscillator B", kind: "range", min: -3, max: 3, step: 1, unit: "oct" },
   bSemitone: { id: "bSemitone", label: "B semitone", group: "Oscillator B", kind: "range", min: -12, max: 12, step: 1, unit: "st" },
-  bTable: { id: "bTable", label: "B wavetable", group: "Oscillator B", kind: "choice", choices: TABLES, names: { none: "Off", basic: "Basic morph", bright: "Bright sweep", vowel: "Vowel" } },
+  bTable: { id: "bTable", label: "B wavetable", group: "Oscillator B", kind: "choice", choices: TABLES, names: TABLE_NAMES },
   bPosition: { id: "bPosition", label: "B position", group: "Oscillator B", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
   bWarp: { id: "bWarp", label: "B warp", group: "Oscillator B", kind: "menu", choices: WARPS, names: WARP_NAMES },
   bWarpAmount: { id: "bWarpAmount", label: "B warp amount", group: "Oscillator B", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
@@ -472,14 +480,63 @@ export function harmonic(shape: Shape, n: number): number {
 
 export const HARMONICS = 64;
 
+/** One frame of a wavetable: the size of each harmonic's sine part and, for shapes that need it, its cosine part. */
+interface Frame { sin: (n: number) => number; cos?: (n: number) => number }
+const plain = (sin: (n: number) => number): Frame => ({ sin });
+/** A frame from a drawn-out cycle: `wave(x)` for x from 0 to 1 is measured as harmonics (worked out once, on first use). */
+function fromWave(wave: (x: number) => number): Frame {
+  let done: { sin: Float32Array; cos: Float32Array } | undefined;
+  const measure = () => {
+    if (done) return done;
+    const M = 2048, y = Float32Array.from({ length: M }, (_, i) => wave(i / M)), sin = new Float32Array(HARMONICS + 1), cos = new Float32Array(HARMONICS + 1);
+    for (let n = 1; n <= HARMONICS; n++) {
+      let a = 0, b = 0;
+      for (let i = 0; i < M; i++) { const w = (2 * Math.PI * n * i) / M; a += y[i]! * Math.sin(w); b += y[i]! * Math.cos(w); }
+      // a wave that swings from -1 to 1 is scaled to sit at about the level of the basic saw (whose first harmonic is 1)
+      sin[n] = (Math.PI * a) / M; cos[n] = (Math.PI * b) / M;
+    }
+    return (done = { sin, cos });
+  };
+  return { sin: (n) => measure().sin[n]!, cos: (n) => measure().cos[n]! };
+}
+/**
+ * Phase distortion, the method of the Casio CZ synths: a sine is read at an uneven speed. The first `d` of
+ * the cycle is spent reaching the height `v` of the way through the sine, and the rest covers what is left.
+ * With v = 0.5 this is the classic form (Lazzarini, Timoney, Pekonen, Välimäki, DAFx-09, equation 5);
+ * with v free it is vector phaseshaping (Kleimola, Lazzarini, Timoney, Välimäki, DAFx-11, equation 6).
+ */
+export const phaseShape = (x: number, d: number, v = 0.5) => (x < d ? (v * x) / d : ((1 - v) * (x - d)) / (1 - d) + v);
+export const pdWave = (x: number, d: number, v = 0.5) => -Math.cos(2 * Math.PI * phaseShape(x, d, v));
+/**
+ * The fit of that saw to recordings of a Minimoog Voyager (Pekonen, Lazzarini, Timoney, Kleimola, Välimäki,
+ * EURASIP J. Adv. Signal Process. 2011, equation 6): the share of the cycle spent rising, for a note of `hz`.
+ */
+export const moogRise = (hz: number) => 0.9924 - 0.00002151 * hz;
+/** The notes the "Analogue saw" frames stand for, high to low, so that turning the position up sharpens the saw. */
+export const MOOG_FRAME_HZ = [8000, 4000, 2000, 1000, 500, 250, 125];
+/** Vector phaseshaping's formant: d = 0.5 and v from 1.5 up; two neighbours are crossfaded so the band moves smoothly (equations 9 and 10). */
+export function formantWave(x: number, v: number): number {
+  const k = 2 * v - 1, whole = Math.floor(k + 1e-9), a = k - whole, v1 = (whole + 1) / 2;
+  return (1 - a) * pdWave(x, 0.5, v1) + a * pdWave(x, 0.5, v1 + 0.5);
+}
+const spread = (count: number, from: number, to: number, geometric = false) => Array.from({ length: count }, (_, i) => (geometric ? from * (to / from) ** (i / (count - 1)) : from + ((to - from) * i) / (count - 1)));
+
 /** Wavetables generated by maths for this app (no third-party tables). Each frame is a harmonic recipe. */
-const FRAMES: Record<Exclude<Table, "none">, ((n: number) => number)[]> = {
+const FRAMES: Record<Exclude<Table, "none">, Frame[]> = {
   // sine -> triangle -> square -> saw
-  basic: SHAPES.map((s) => (n: number) => harmonic(s, n)),
+  basic: SHAPES.map((s) => plain((n: number) => harmonic(s, n))),
   // a saw with more and more of its harmonics let through: dull to bright
-  bright: [1, 2, 4, 8, 16, 32, 64].map((top) => (n: number) => (n <= top ? 1 / n : 0)),
+  bright: [1, 2, 4, 8, 16, 32, 64].map((top) => plain((n: number) => (n <= top ? 1 / n : 0))),
   // a saw with a resonant bump that climbs: a rough "oo" to "ee"
-  vowel: [3, 5, 8, 12, 18].map((peak) => (n: number) => (1 / n) * (1 + 4 * Math.exp(-((n - peak) ** 2) / (2 * (peak / 4 + 0.6) ** 2)))),
+  vowel: [3, 5, 8, 12, 18].map((peak) => plain((n: number) => (1 / n) * (1 + 4 * Math.exp(-((n - peak) ** 2) / (2 * (peak / 4 + 0.6) ** 2))))),
+  // phase distortion: a sine (d = 0.5) bent further and further toward a saw (d near 0)
+  pdsaw: spread(13, 0.5, 0.02, true).map((d) => fromWave((x) => pdWave(x, d))),
+  // the same saw, rising, with the share of the cycle spent rising that was measured on a Minimoog Voyager
+  moogsaw: MOOG_FRAME_HZ.map((hz) => fromWave((x) => pdWave(x, moogRise(hz)))),
+  // a whole sine squeezed into the first part of the cycle, then held: narrower and narrower
+  pdpulse: spread(11, 0.5, 0.05, true).map((d) => fromWave((x) => pdWave(x, d, 1))),
+  // one strong band, climbing from the 2nd harmonic to the 12th
+  formant: spread(21, 1.5, 6.5).map((v) => fromWave((x) => formantWave(x, v))),
 };
 
 export const frameCount = (table: Table) => (table === "none" ? 0 : FRAMES[table].length);
@@ -489,18 +546,26 @@ export const harmonicsB = (s: Pick<SynthState, "bShape" | "bTable" | "bPosition"
 /** Oscillator B's harmonics after its own warp: the same working as oscillator A's. */
 export const spectrumB = (s: Pick<SynthState, "bShape" | "bTable" | "bPosition" | "bWarp" | "bWarpAmount">): Spectrum => spectrumA({ shape: s.bShape, table: s.bTable, position: s.bPosition, warp: s.bWarp, warpAmount: s.bWarpAmount });
 
-/** Harmonic amplitudes (index 1..HARMONICS) for oscillator A, blending neighbouring frames by position. */
-export function harmonicsA(state: Pick<SynthState, "shape" | "table" | "position">): Float32Array {
+const blend = (state: Pick<SynthState, "shape" | "table" | "position">, part: "sin" | "cos"): Float32Array => {
   const out = new Float32Array(HARMONICS + 1);
   if (state.table === "none") {
-    for (let n = 1; n <= HARMONICS; n++) out[n] = harmonic(state.shape, n);
+    if (part === "sin") for (let n = 1; n <= HARMONICS; n++) out[n] = harmonic(state.shape, n);
     return out;
   }
   const frames = FRAMES[state.table];
   const at = (Math.min(100, Math.max(0, state.position)) / 100) * (frames.length - 1);
-  const i = Math.min(frames.length - 2, Math.floor(at)), mix = at - i;
-  for (let n = 1; n <= HARMONICS; n++) out[n] = frames[i]!(n) * (1 - mix) + frames[i + 1]!(n) * mix;
+  const i = Math.min(frames.length - 2, Math.floor(at)), mix = at - i, of = (f: Frame, n: number) => (part === "sin" ? f.sin(n) : f.cos ? f.cos(n) : 0);
+  for (let n = 1; n <= HARMONICS; n++) out[n] = of(frames[i]!, n) * (1 - mix) + of(frames[i + 1]!, n) * mix;
   return out;
+};
+/** Harmonic amplitudes (index 1..HARMONICS) for oscillator A, blending neighbouring frames by position: the sine parts. */
+export const harmonicsA = (state: Pick<SynthState, "shape" | "table" | "position">): Float32Array => blend(state, "sin");
+/** The cosine parts that go with `harmonicsA`: zero for the basic shapes and the first three tables. */
+export const cosinesA = (state: Pick<SynthState, "shape" | "table" | "position">): Float32Array => blend(state, "cos");
+/** The size of each harmonic, whatever its sine and cosine parts: what the ear and the spectrum go by. */
+export function magnitudesA(state: Pick<SynthState, "shape" | "table" | "position">): Float32Array {
+  const s = harmonicsA(state), c = cosinesA(state);
+  return s.map((v, n) => Math.hypot(v, c[n]!));
 }
 
 /** A simple brightness figure: the share of energy above the fifth harmonic. Used to check "find the brightest frame". */
@@ -562,15 +627,15 @@ const warpCache = new Map<string, Spectrum>();
  * `warpPhase`, and measured again as harmonics (the first HARMONICS of them, so nothing folds back).
  */
 export function spectrumA(state: Pick<SynthState, "shape" | "table" | "position" | "warp" | "warpAmount">): Spectrum {
-  const h = harmonicsA(state);
-  if (state.warp === "none" || state.warpAmount <= 0) return { sin: h, cos: new Float32Array(h.length) };
+  const h = harmonicsA(state), hc = cosinesA(state);
+  if (state.warp === "none" || state.warpAmount <= 0) return { sin: h, cos: hc };
   // rounded, so a source sweeping the amount lands on values that have been worked out before
   const amount = Math.round(state.warpAmount * 2) / 2, position = Math.round(state.position);
   const key = `${state.shape}|${state.table}|${position}|${state.warp}|${amount}`;
   const known = warpCache.get(key);
   if (known) return known;
   const base = new Float32Array(CYCLE + 1);
-  for (let i = 0; i <= CYCLE; i++) { let y = 0; for (let n = 1; n < h.length; n++) if (h[n]) y += h[n]! * Math.sin((2 * Math.PI * n * i) / CYCLE); base[i] = y; }
+  for (let i = 0; i <= CYCLE; i++) { let y = 0; for (let n = 1; n < h.length; n++) { if (h[n]) y += h[n]! * Math.sin((2 * Math.PI * n * i) / CYCLE); if (hc[n]) y += hc[n]! * Math.cos((2 * Math.PI * n * i) / CYCLE); } base[i] = y; }
   const warped = new Float32Array(CYCLE);
   const heights = state.warp === "flip" || state.warp === "fold";
   let peak = 1e-9;

@@ -588,6 +588,7 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 
 /* Drawn LFO shape, tempo and click */
 .mod-wave.lfo-draw { height: 96px; touch-action: none; cursor: crosshair; }
+.table-note { margin: 0.25rem 0 0.4rem; font-size: 0.74rem; line-height: 1.35; opacity: 0.85; max-width: 34ch; }
 .lfo-bar { fill: var(--accent); }
 .lfo-curve { stroke: var(--ink, currentColor); stroke-width: 1.6; vector-effect: non-scaling-stroke; pointer-events: none; }
 .lfo-draw:has(.lfo-curve) .lfo-bar { opacity: 0.35; }

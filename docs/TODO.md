@@ -26,6 +26,11 @@ it, and reports in a few lines. None of these needs the owner or spends credits.
 - [x] 17. Blind ear checks for cutoff, filter type, and tremolo against vibrato
 - [x] 18. Knowledge cards for FM, ring modulation and two filters
 - [x] 19. A smooth drawn LFO shape
+- [x] 20. A lesson on Fold, Steps and Flip; ear checks for attack and LFO speed
+- [x] 21. Five free papers on classic synth wave shapes taken into the library; four wavetables built from their formulas (Phase saw, Analogue saw, Phase pulse, Formant)
+- [ ] 22. Physical-modelling literature: the list is in `docs/LITERATURE.md` (found by search); take the free ones into the library once the owner approves the download sites
+- [ ] 23. More formula wavetables: the CZ square and resonant shapes, a supersaw preset (the thesis link was dead), wavefolder curves from the Serge and Lockhart paper
+- [ ] 24. Lessons on the new wavetables, and genre lessons that use them
 - [x] 10. Osc B as a full oscillator: unison and warp
 - [x] 11. Vero: build your own column (choose cabinets and angles, see the coverage change)
 - [x] 12. Save and load your own patches on the practice synth
@@ -46,18 +51,18 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [x] Macro chapter: seven macro recipes, two macros on one sound, and a by-ear checkpoint
 - [x] First impact lessons: note start, kick, fall size and speed, sub drop, bass note as a hit, pitch at the front, checkpoint
 - [x] Effects rack (distortion, EQ, compressor, chorus, delay, reverb) and seven effects lessons
-- [ ] Effects: reordering, ducking (sidechain), multiband, and effects as modulation destinations
+- [ ] Effects: ducking (sidechain), multiband, and effects as modulation destinations (reordering done 15 Nov)
 - [x] Editable matrix: change any connection in one table, add rows so one source moves several things; a lesson on it
 - [x] Eight more macro recipes using effects, warp, FM and the kick (16 recipes and lessons in the macro chapter now)
 - [x] Any knob can be a destination for any source; a handle on each knob sets a source's depth there; two lessons
 - [x] Drag a source onto a knob to connect it, with a lesson
 - [x] Whole synth made compact: Synth / FX / Matrix pages, tabbed envelopes and LFOs, a small macro block as in Serum
 - [x] List of every Serum 2 feature the practice synth is missing (docs/SERUM_GAPS.md, about 550 rows, with a suggested order)
-- [ ] Close the top Serum gaps (mono, legato and glide, the mod wheel, pitch bend and MIDI keyboard, and the matrix's "aux source" are done): Osc B as a full oscillator and pan; a second filter and routing; more filter types; more warp modes
-- [ ] More macro recipes (the owner wants many; each is a few lines of data in the macro lesson file)
-- [ ] Scaling a route with a second source (mod wheel) and its lesson
-- [ ] Blind ear checks for the filter, envelope, LFO and modulation lessons
-- [ ] Pulse-width lesson in the oscillator chapter
+- [ ] Close more Serum gaps (done so far: mono, legato and glide; wheels and MIDI; the matrix's "aux source"; Osc B's wavetable, pan, warp and unison; a second filter with routing; peak and shelf; Flip, Steps and Fold warps; reorderable effects; a smooth drawn LFO). Next in `docs/SERUM_GAPS.md`: per-source routing to each filter, an Osc C, more filter types, a second warp slot.
+- [ ] More macro recipes (21 so far; the owner wants many; each is a few lines of data in the macro lesson file)
+- [x] Scaling a route with a second source (mod wheel) and its lesson (done 14 Nov: the matrix's "Scaled by" column and its lesson)
+- [x] Blind ear checks for the filter, envelope, LFO and modulation lessons (done 15 Nov for filter, envelope and LFO lessons: five kinds; none yet for modulation)
+- [x] Pulse-width lesson in the oscillator chapter (covered by "Squeeze: pulse width and beyond" in Reshaping the wave)
 - [ ] Processing chains track (owner, 14 Nov 2026): after the synth material and our own effect courses, lessons on stacking stock plugins after the synth. Needs a reorderable effects rack with a bypass per effect first.
 - [ ] Sound systems track with high-definition diagrams (owner, 14 Nov 2026): needs a source text on loudspeakers; labelled diagrams drawn by code.
 - [ ] A spoken intro clip at the top of every lesson (owner, 14 Nov 2026): test one with Higgsfield first; it spends credits.
@@ -73,15 +78,15 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [x] Velvet-and-neon skin, with an on/off switch
 - [x] Z and X keys move the computer keyboard down and up an octave
 - [x] Sound views (scope, spectrum, spectrogram, level, filter curve) switchable at any step
-- [ ] Envelopes and LFOs can move wavetable position and resonance
+- [x] Envelopes and LFOs can move wavetable position and resonance (done: any knob can be a destination)
 - [x] Four macros with three slots each; any continuous knob can be a destination
 - [x] Matrix view: every connection listed (read-only)
-- [ ] A full Matrix tab you can edit, as in Serum (owner asked; also lifts the one-destination-per-source limit)
-- [ ] More than one destination per envelope or LFO
-- [ ] Drag a source onto a knob to connect it
+- [x] A full Matrix tab you can edit, as in Serum (owner asked; also lifts the one-destination-per-source limit)
+- [x] More than one destination per envelope or LFO (done: matrix rows)
+- [x] Drag a source onto a knob to connect it
 - [x] Tempo clock and click; LFOs can sync to the beat
-- [ ] Effects: distortion, chorus, delay, reverb, EQ, compressor
-- [ ] MIDI keyboard input
+- [x] Effects: distortion, chorus, delay, reverb, EQ, compressor
+- [x] MIDI keyboard input (built; not yet tried with a real keyboard)
 - [ ] More views: stereo, tuner, loudness meter
 - [x] LFO shapes now reach exactly full depth (the browser's built-in square was about 15% shallow)
 - [x] One-way or both-ways switch on each LFO; LFO 1 rate as a destination
@@ -137,6 +142,6 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [x] Upload the rest of the Ableton manual
 - [x] Upload the Rift manual
 - [ ] Find more books for the library (EPUB or text-based PDF)
-- [ ] Review the 32 knowledge cards and 43 lesson scripts (all drafts)
+- [ ] Review the 39 knowledge cards, 43 lesson scripts, 498 quiz questions and 98 "why this matters" lines (all drafts)
 - [ ] Probe presets: start with the ten most useful (the assistant has explained what to do)
 - [ ] Keep reporting how things sound and feel

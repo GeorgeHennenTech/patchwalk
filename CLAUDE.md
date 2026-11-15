@@ -882,6 +882,25 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   - **Saved sounds and lesson recall are stored with the account** (`patches`, `recall` on the account's
     data; `mergePatches`: newest of each name; `mergeRecall`: latest record of each lesson). Focus mode's
     switch and the saved place are still per browser.
+- **Wave shapes from papers (15 Nov 2026, owner's request).** The owner asked for research papers showing
+  classic synths' wavetables, to fill the synth and for genre lessons. No paper catalogues the stored
+  tables of the PPG, Korg DW, Prophet VS or Ensoniq machines, and those tables are the makers' data: **never
+  copy a maker's wavetable data in; build shapes by code from published formulas.** Five free papers were
+  taken into the library (`pekonen-moog-sawtooth`, `lazzarini-adaptive-phase-distortion`,
+  `kleimola-vector-phaseshaping`, `lazzarini-distortion-synthesis`, `esqueda-wavefolders`; each paper is one
+  chapter). Four wavetables were built from them (`pdsaw` "Phase saw", `moogsaw` "Analogue saw", `pdpulse`
+  "Phase pulse", `formant` "Formant"): `phaseShape`, `pdWave`, `moogRise` (the paper's fit of the rise time
+  to recordings of a Minimoog Voyager, equation 6) and `formantWave` in `params.ts`. A table frame can now
+  carry cosine parts (`Frame`, `fromWave`, `cosinesA`, `magnitudesA`); `harmonicsA` is the sine parts only,
+  so use `magnitudesA` for loudness or brightness. `TABLE_NOTES` says where each comes from and is shown
+  under the wave picture. Measured on the engine: each harmonic within 0.7 dB of the calculated level (the
+  analyser's own error). Not done: the CZ's square and resonant shapes (formulas not yet read out of the
+  papers), the JP-8000 supersaw (the thesis link was dead), wavefolder curves from the Esqueda paper, and
+  any lesson on the new tables. The Adventure Kid Waveforms collection (about 4,300 single cycles) is a
+  possible bulk source; its licence is reported two ways and must be read first.
+  A long list of **physical-modelling literature** (found by search, nothing opened) is in
+  `docs/LITERATURE.md`; most free copies are on ccrma.stanford.edu, which the session's network does not
+  yet allow.
 - **Realism pass on the 3D views (14 Nov 2026, owner's request).** `src/ui/three/look.ts`: surfaces drawn
   by code onto small canvases (textured speaker paint, a perforated grille, grass, plywood, paper pulp,
   steel), an open sky with haze, a studio table that shows only shadows, and `truss` (laced lighting

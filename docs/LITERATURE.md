@@ -73,7 +73,8 @@ home systems, and high-end in-ear monitors. Start with Toole, McCarthy and the F
 | Application notes from Knowles and Sonion (free from the makers) | The drivers inside in-ear monitors |
 
 
-## Classic synth wave shapes (owner asked 15 Nov 2026; found by search, none read or taken in yet)
+## Classic synth wave shapes (owner asked 15 Nov 2026)
+**Taken in on 15 Nov 2026 (text and pictures, in `library/`): the Moog sawtooth paper, Adaptive Phase Distortion, Vector Phaseshaping, New Perspectives on Distortion Synthesis, and the Lockhart and Serge wavefolders paper.** The supersaw thesis link was dead. Four wavetables were built from the first three (`TABLE_NOTES` in `src/synth/params.ts`).
 The owner wants many wave shapes from classic synths for the practice synth's wavetables and for genre
 lessons. There is no paper that catalogues classic synths' stored wavetables: those tables (PPG, Korg DW,
 Prophet VS, Ensoniq) are the makers' data and are not to be copied in. What exists is papers that measure
@@ -96,3 +97,57 @@ Not papers: the Adventure Kid Waveforms collection (about 4,300 single-cycle wav
 reported as CC0 by its GitHub copy and as CC BY 3.0 by one older article: read the licence file in the
 download before using it). No paper was found that measures the TB-303's oscillator; the Open303
 project's forum thread has measurements, which is a forum source, not a paper.
+
+## Physical modelling of instruments (owner asked 15 Nov 2026; found by search, none opened or taken in yet)
+"Free" means a copy on the author's or their university's own site, or an open-access journal. Check each
+before taking it in. The download sites are not yet allowed in the build session's network.
+
+**Start here (overviews)**
+| Text | What it covers | Where |
+|---|---|---|
+| Julius O. Smith, *Physical Audio Signal Processing* (online book) | The standard free textbook: strings, tubes, waveguides, pianos, guitars, winds | Free to read, https://ccrma.stanford.edu/~jos/pasp/ (no licence stated: read online, ask before copying in) |
+| Välimäki, Pakarinen, Erkut, Karjalainen, "Discrete-time modelling of musical instruments", Rep. Prog. Phys. 69, 2006 (78 pages) | The big review of every method | https://doi.org/10.1088/0034-4885/69/1/R01 ; a copy at https://www.ece.uvic.ca/~bctill/papers/numacoust/ (not the authors' site: check) |
+| Smith, "Virtual Acoustic Musical Instruments: Review and Update", J. New Music Research 2004 | Review by the inventor of waveguide synthesis | Free, https://ccrma.stanford.edu/~jos/jnmr/jnmr.pdf |
+| Smith, "Physical Modeling Using Digital Waveguides", Computer Music Journal 16(4), 1992 | The founding waveguide paper | Free, https://ccrma.stanford.edu/~jos/pmudw/pmudw.pdf |
+| Bilbao, Desvages, Ducceschi, Hamilton and others, "Physical Modeling, Algorithms, and Sound Synthesis: The NESS Project", Computer Music Journal 43(2-3), 2019 | Modern large-scale models: brass, strings, plates, drums, rooms | Free (author copy), https://www.pure.ed.ac.uk/ws/files/121715237/cmj_ness_aam.pdf |
+| "Four Decades of Digital Waveguides" (arXiv 2604.12878) | A recent history and survey | Free, https://arxiv.org/abs/2604.12878 (authors not checked) |
+
+**Strings**
+| Text | What it covers | Where |
+|---|---|---|
+| Karplus and Strong, "Digital Synthesis of Plucked-String and Drum Timbres", Computer Music Journal 7(2), 1983 | The plucked-string algorithm | Journal (paid); Karplus's own page describes it, https://users.soe.ucsc.edu/~karplus/digitar.html |
+| Jaffe and Smith, "Extensions of the Karplus-Strong Plucked-String Algorithm", Computer Music Journal 7(2), 1983 | Tuning, dynamics, pick position, decay | https://doi.org/10.2307/3680063 (paid; no working free copy found) |
+| Karjalainen, Välimäki, Tolonen, "Plucked-String Models: From the Karplus-Strong Algorithm to Digital Waveguides and Beyond", Computer Music Journal 1998 | The bridge from Karplus-Strong to full string models | Not located |
+| Serafin, Smith, Woodhouse, bowed-string friction models | Bowing | Free, https://ccrma.stanford.edu/~serafin/SerafinEtAl.pdf ; Serafin's thesis "The Sound of Friction" not located |
+| Bank, Avanzini, Borin, De Poli, Fontana, Rocchesso, "Physically Informed Signal Processing Methods for Piano Sound Synthesis: A Research Overview", EURASIP 2003 | Piano: hammer, string, soundboard | Open access, https://doi.org/10.1155/S1110865703304093 |
+
+**Winds and voice**
+| Text | What it covers | Where |
+|---|---|---|
+| McIntyre, Schumacher, Woodhouse, "On the Oscillations of Musical Instruments", JASA 74, 1983 | The classic account of self-sustained instruments (reeds, bows, flutes) | Reprint on McIntyre's own page, https://www.damtp.cam.ac.uk/user/mem2/papers/MUS-ACOUST/ |
+| Scavone, PhD thesis on single-reed woodwinds and waveguide modelling, Stanford 1997 | Clarinet and saxophone | Free, https://ccrma.stanford.edu/files/papers/stanm100.pdf |
+| Cook, PhD thesis on an articulatory vocal tract model, Stanford 1990 | Singing voice as tubes | Free, https://ccrma.stanford.edu/files/papers/stanm68.pdf |
+
+**Drums, bars, plates, modes**
+| Text | What it covers | Where |
+|---|---|---|
+| Van Duyne and Smith, "Physical Modeling with the 2-D Digital Waveguide Mesh", ICMC 1993 | Membranes and plates as a mesh | Free, https://ccrma.stanford.edu/~jos/pdf/mesh.pdf |
+| Fontana and Rocchesso, "Physical Modeling of Membranes for Percussion Instruments", Acustica 84, 1998 | Drum heads | A repository copy is listed at https://air.uniud.it/handle/11390/670150 (access not checked) |
+| Avanzini and Marogna, "A Modular Physically Based Approach to the Sound Synthesis of Membrane Percussion Instruments", IEEE TASLP 2010 | Drums built from parts | Author's copy, https://avanzini.di.unimi.it/downloads/publications/avanzini_taslp10.pdf |
+| Essl, Serafin, Cook, Smith, "Theory of Banded Waveguides" and "Musical Applications of Banded Waveguides", Computer Music Journal 28(1), 2004 | Bars, bowls, glasses | Journal (paid); no free copy found |
+| Cook, "Physically Informed Sonic Modeling (PhISM)", Computer Music Journal 21(3), 1997 | Shakers, maracas, particles | Linked from https://soundlab.cs.princeton.edu/research/phymod |
+| "Flexible Software Framework for Modal Synthesis" (arXiv cs/0103006) | Modal synthesis: a sound as a bank of ringing modes | Free, https://arxiv.org/abs/cs/0103006 |
+| Adrien, "The Missing Link: Modal Synthesis", in *Representations of Musical Signals*, MIT Press 1991 | The founding modal text | Book chapter (buy or borrow) |
+
+**Books to buy or borrow** (already wanted above): Cook, *Real Sound Synthesis for Interactive Applications*;
+Fletcher and Rossing, *The Physics of Musical Instruments*; Bilbao, *Numerical Sound Synthesis* (Wiley, about
+$230; no free copy).
+
+**Synthesizers that use these methods**
+| Text | What it covers | Where |
+|---|---|---|
+| Yamaha VL1 owner's manuals | The first physical-modelling synth (1993-94), as its maker explains it | Maker's manuals on manualslib (check Yamaha's own download site first) |
+| Mutable Instruments Elements and Rings | A 64-mode resonator with bow, blow and strike exciters; open-source code and manuals | The maker released both as open source (code licence to be read before use) |
+| Cook and Scavone, "The Synthesis ToolKit (STK)", ICMC 1999 | Open-source instrument models many synths borrow from | Linked from https://soundlab.cs.princeton.edu/research/phymod |
+| Chowning, "The Synthesis of Complex Audio Spectra by Means of Frequency Modulation", JAES 21(7), 1973 | FM (not physical modelling, but the owner listed it earlier) | Yamaha hosts a copy, https://www.yamahasynth.com/wp-content/uploads/images/fm_synthesispaper-2.pdf |
+| Stilson and Smith, "Alias-Free Digital Synthesis of Classic Analog Waveforms", ICMC 1996 | How digital synths make clean saws and squares | A copy on a third-party site only; look on CCRMA |

@@ -72,3 +72,27 @@ home systems, and high-end in-ear monitors. Start with Toole, McCarthy and the F
 | Harman research papers on in-ear listening targets (Olive and colleagues) | In-ear monitors |
 | Application notes from Knowles and Sonion (free from the makers) | The drivers inside in-ear monitors |
 
+
+## Classic synth wave shapes (owner asked 15 Nov 2026; found by search, none read or taken in yet)
+The owner wants many wave shapes from classic synths for the practice synth's wavetables and for genre
+lessons. There is no paper that catalogues classic synths' stored wavetables: those tables (PPG, Korg DW,
+Prophet VS, Ensoniq) are the makers' data and are not to be copied in. What exists is papers that measure
+or model one classic oscillator each, with figures and formulas, from which code can build the shape.
+Check each paper's text before using any figure from it in a lesson.
+
+| Paper | Classic sound it covers | Where | Use |
+|---|---|---|---|
+| Pekonen, Lazzarini, Timoney, Kleimola, Välimäki, "Discrete-Time Modelling of the Moog Sawtooth Oscillator Waveform", EURASIP J. Adv. Signal Process. 2011 | The Moog saw as recorded from a Minimoog Voyager, against the textbook saw | Open access, https://doi.org/10.1155/2011/785103 | A "rounded analogue saw" table |
+| Lazzarini, Timoney, Pekonen, Välimäki, "Adaptive Phase Distortion Synthesis", DAFx-09 | Casio CZ phase distortion, incl. the resonant shapes | https://mural.maynoothuniversity.ie/2335/1/VL_Adaptive_Phase_paper_12.pdf | The CZ family of shapes by formula |
+| Kleimola, Lazzarini, Timoney, Välimäki, "Vector Phaseshaping Synthesis", DAFx-11 | Extension of phase distortion; formant-like shapes | https://mural.maynoothuniversity.ie/4096/1/vps_dafx11.pdf | More warp rules and tables |
+| Lazzarini, Timoney, "New Perspectives on Distortion Synthesis for Virtual Analog Oscillators", Computer Music Journal 2010 | Saw, square, triangle by distortion methods | https://mural.maynoothuniversity.ie/4104/1/VL_New_perspectives.pdf | Background |
+| Välimäki, Huovilainen, "Oscillator and Filter Algorithms for Virtual Analog Synthesis", Computer Music Journal 2006 | The classic analogue shapes and the Moog filter | https://doi.org/10.1162/comj.2006.30.2.19 (may need a subscription) | Background |
+| Szabo, "How to Emulate the Super Saw", KTH thesis 2010 | Roland JP-8000 supersaw: seven saws, measured detune and mix curves | https://www.nada.kth.se/utbildning/grukth/exjobb/rapportlistor/2010/rapporter10/szabo_adam_10131.pdf (link not opened) | A unison preset and a trance lesson |
+| Esqueda, Pöntynen, Parker, Bilbao, "Virtual Analog Models of the Lockhart and Serge Wavefolders", Applied Sciences 2017 (CC BY) | Serge and Lockhart wavefolders | https://doi.org/10.3390/app7121328 | Fold curves closer to the real circuits |
+| Esqueda et al., "Virtual Analog Buchla 259 Wavefolder", DAFx-17 | Buchla 259 "west coast" timbre | DAFx paper archive (PDF not located) | A west-coast fold |
+| Horner, Beauchamp, Haken, "Methods for Multiple Wavetable Synthesis of Musical Instrument Tones", JAES 41(5), 1993 | Wavetables matched to trumpet, guitar, voice | AES E-Library (paid) | Method only |
+
+Not papers: the Adventure Kid Waveforms collection (about 4,300 single-cycle waves, adventurekid.se;
+reported as CC0 by its GitHub copy and as CC BY 3.0 by one older article: read the licence file in the
+download before using it). No paper was found that measures the TB-303's oscillator; the Open303
+project's forum thread has measurements, which is a forum source, not a paper.

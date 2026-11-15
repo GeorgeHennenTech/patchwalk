@@ -28,7 +28,9 @@ export type Warp = (typeof WARPS)[number];
 const WAYS = ["both", "up"] as const;
 /** How an envelope falls during its decay and release: at an even rate, easing off, or dropping fast then lingering. */
 /** LFO shapes: the four basic waves, or sixteen steps the learner draws. */
-export const LFO_SHAPES = ["sine", "triangle", "square", "saw", "drawn"] as const;
+export const LFO_SHAPES = ["sine", "triangle", "square", "saw", "drawn", "curve"] as const;
+/** The two shapes made from the sixteen drawn values: "drawn" holds each value as a flat step, "curve" joins them with straight lines. */
+export const isDrawn = (shape: string) => shape === "drawn" || shape === "curve";
 export type LfoShape = (typeof LFO_SHAPES)[number];
 export const LFO_STEPS = 16;
 /** An LFO synced to the tempo repeats once every this many beats. */
@@ -413,7 +415,7 @@ function source(prefix: "env2" | "lfo1" | "lfo2" | "lfo3" | "vel" | "key" | "whe
 function lfo(n: 1 | 2 | 3): Record<string, ParamSpec> {
   const prefix = `lfo${n}` as const, group = `LFO ${n}` as Group, name = `LFO ${n}`;
   return {
-    [`${prefix}Shape`]: { id: `${prefix}Shape`, label: `${name} shape`, group, kind: "choice", choices: LFO_SHAPES, names: { ...SHAPE_NAMES, drawn: "Drawn" } },
+    [`${prefix}Shape`]: { id: `${prefix}Shape`, label: `${name} shape`, group, kind: "choice", choices: LFO_SHAPES, names: { ...SHAPE_NAMES, drawn: "Drawn", curve: "Drawn, smooth" } },
     [`${prefix}Sync`]: { id: `${prefix}Sync`, label: `${name} speed in`, group, kind: "choice", choices: SYNCS, names: { hz: "Hz", beat: "Beats" } },
     [`${prefix}Div`]: { id: `${prefix}Div`, label: `${name} repeats every`, group, kind: "menu", choices: DIVISIONS, names: DIVISION_NAMES },
     [`${prefix}Trig`]: { id: `${prefix}Trig`, label: `${name} start`, group, kind: "choice", choices: TRIGS, names: { retrig: "Restart", free: "Free" } },

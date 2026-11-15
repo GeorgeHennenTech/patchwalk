@@ -1662,3 +1662,23 @@ describe("blind ear checks", () => {
   });
   it("lessons only ask for kinds that exist", () => { for (const l of LESSONS) if (l.earCheck) expect(Object.keys(EAR)).toContain(l.earCheck); });
 });
+
+import { lfoCoefficients as lfoCo, lfoValue as lfoV } from "../src/synth/mod";
+describe("the smooth drawn LFO shape", () => {
+  const steps = [1, 1, -1, -1, 0.5, -1, 1, -1, 1, 1, -1, 0, 0.5, -0.5, 1, -1];
+  it("passes through each drawn value at the middle of its step and runs straight between them, round the end too", () => {
+    steps.forEach((v, k) => expect(lfoV("curve", (k + 0.5) / 16, steps)).toBeCloseTo(v, 9));
+    expect(lfoV("curve", 2 / 16, steps)).toBeCloseTo(0, 9);       // half way between +1 and -1
+    expect(lfoV("curve", 0, steps)).toBeCloseTo(0, 9);            // between the last value (-1) and the first (+1)
+    expect(lfoV("curve", 0.9999, steps)).toBeCloseTo(lfoV("curve", 0, steps), 2); // no jump where the cycle repeats
+  });
+  it("its harmonics rebuild the same shape, and its average is the drawn values' average", () => {
+    const c = lfoCo("curve", steps), mean = steps.reduce((a, b) => a + b, 0) / 16;
+    expect(c.mean).toBeCloseTo(mean, 9);
+    for (const t of [0.03, 0.2, 0.41, 0.77]) {
+      let y = c.mean;
+      for (let n = 1; n < c.sin.length; n++) y += c.sin[n]! * Math.sin(2 * Math.PI * n * t) + c.cos[n]! * Math.cos(2 * Math.PI * n * t);
+      expect(y).toBeCloseTo(lfoV("curve", t, steps), 1);
+    }
+  });
+});

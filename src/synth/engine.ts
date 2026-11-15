@@ -5,7 +5,7 @@ import { applyMacros } from "./macros";
 import { adsr, fallConstant, isLevel, keyValue, lfoCoefficients, lfoHz, lfoStartPhase, modDepth, noteLevelBase, routeLayout, routes, slowModulate, velocityValue, type Adsr, type Route } from "./mod";
 import { FxChain } from "./fx";
 import { DRIVE_RANGE, driveCurve, filter2Stage, filterStages, resonanceTrim, sideBySide, type Stage } from "./filter";
-import { dbToGain, fmIndex, FM_MAX_INDEX, harmonic, spectrumA, HARMONICS, playedHz, playedHzB, subHz, unisonOffsets, unisonPans, type Shape, type SynthState, spectrumB } from "./params";
+import { dbToGain, isDrawn, fmIndex, FM_MAX_INDEX, harmonic, spectrumA, HARMONICS, playedHz, playedHzB, subHz, unisonOffsets, unisonPans, type Shape, type SynthState, spectrumB } from "./params";
 
 const RAMP = 0.012; // seconds; short ramps avoid clicks when a value jumps
 const OSC_GAIN = 0.4;
@@ -209,7 +209,7 @@ export class Engine {
   }
   /** The average of an LFO's shape: zero for the basic shapes, but a drawn shape may sit mostly above or below. */
   private lfoMean(s: SynthState, id: "lfo1" | "lfo2" | "lfo3"): number {
-    return s[`${id}Shape`] === "drawn" ? lfoCoefficients("drawn", s[`${id}Steps`], 2).mean : 0;
+    return isDrawn(s[`${id}Shape`]) ? lfoCoefficients("drawn", s[`${id}Steps`], 2).mean : 0;
   }
 
   /** Each of oscillator B's voices' level: several voices share the level of one. */

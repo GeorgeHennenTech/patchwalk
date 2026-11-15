@@ -7,7 +7,7 @@ import { dragColor, dragName, endDrag, startDrag, type Draggable } from "../../s
 import { MACRO_COLORS } from "../../synth/macros";
 import { FX_NAMES, FX_ORDER, fxOrderOf, moveFx, type FxId } from "../../synth/fx";
 import { adsr, ENV1_COLOR, envLevel, lfoHz, lfoStartPhase, lfoValue, routes, SOURCES, type Adsr, type ModSource } from "../../synth/mod";
-import { harmonic, spectrumA, HARMONICS, LFO_STEPS, MACRO_SLOTS, MACROS, PARAMS, type Group, type SynthState, spectrumB } from "../../synth/params";
+import { harmonic, isDrawn, spectrumA, HARMONICS, LFO_STEPS, MACRO_SLOTS, MACROS, PARAMS, type Group, type SynthState, spectrumB } from "../../synth/params";
 import type { Synth } from "../../synth/useSynth";
 import { Control, isBox } from "./Controls";
 import { FilterCurve, Matrix, Reduction } from "./Views";
@@ -104,7 +104,7 @@ function Display({ module, synth, note }: { module: Module; synth: Synth; note: 
   }, [moving, module.id]);
   if (module.id === "filter" || module.id === "filter2") return <FilterCurve synth={synth} note={note} compact />;
   if (!d) return null;
-  if (module.source?.startsWith("lfo") && synth.state[`${module.source as "lfo1"}Shape`] === "drawn") return <LfoDraw id={module.source as "lfo1"} synth={synth} />;
+  if (module.source?.startsWith("lfo") && isDrawn(synth.state[`${module.source as "lfo1"}Shape`])) return <LfoDraw id={module.source as "lfo1"} synth={synth} />;
   return <svg className="mod-wave" viewBox="0 0 200 64" preserveAspectRatio="none" role="img" aria-label={`${module.name} wave`}>{module.source?.startsWith("lfo") && <line className="mod-mid" x1="0" x2="200" y1="32" y2="32" />}<path ref={wave} d={d} />{module.source?.startsWith("lfo") && <Playhead id={module.source as "lfo1"} synth={synth} width={100} height={64} />}</svg>;
 }
 
@@ -164,7 +164,7 @@ export function Rack({ synth, show, all, lesson, note }: { synth: Synth; show: P
       <div className="mod-body">
         {/* an LFO's shape is shown whenever its controls are, so a lesson can point at it */}
         {(all || m.source?.startsWith("lfo")) && <Display module={m} synth={synth} note={note} />}
-        {m.source?.startsWith("lfo") && s[`${m.source as "lfo1"}Shape`] !== "drawn" && (all || show.includes(`${m.source}Shape` as Panel)) && (
+        {m.source?.startsWith("lfo") && !isDrawn(s[`${m.source as "lfo1"}Shape`]) && (all || show.includes(`${m.source}Shape` as Panel)) && (
           <button className="link draw-own" title="Turns the current shape into sixteen bars you can drag to any height" onClick={() => {
             const id = m.source as "lfo1", shape = s[`${id}Shape`];
             // start from the shape that is there, so drawing changes it instead of starting from nothing
@@ -352,6 +352,7 @@ function LfoDraw({ id, synth }: { id: "lfo1" | "lfo2" | "lfo3"; synth: Synth }) 
       onPointerMove={(e) => { if (drawing.current) paint(e); }} onPointerUp={() => { drawing.current = false; }} onPointerCancel={() => { drawing.current = false; }}>
       {steps.map((v, k) => <rect key={k} className="lfo-bar" x={k * bar + 0.8} width={bar - 1.6} y={v >= 0 ? H / 2 - (v * H) / 2 : H / 2} height={Math.max(1.5, (Math.abs(v) * H) / 2)} />)}
       <line className="mod-mid" x1="0" x2={W} y1={H / 2} y2={H / 2} />
+      {synth.state[`${id}Shape`] === "curve" && <polyline className="lfo-curve" fill="none" points={Array.from({ length: 129 }, (_, i) => `${(i / 128) * W},${H / 2 - (lfoValue("curve", Math.min(0.9999, i / 128), steps) * H) / 2}`).join(" ")} />}
       <Playhead id={id} synth={synth} width={W} height={H} />
     </svg>
   );

@@ -147,6 +147,12 @@ export function lfoValue(shape: SynthState["lfo1Shape"], t: number, steps?: numb
     case "saw": return x < 0.5 ? 2 * x : 2 * x - 2;
     case "square": return x < 0.5 ? 1 : -1;
     case "drawn": return steps?.length ? steps[Math.min(steps.length - 1, Math.floor(x * steps.length))]! : 0;
+    case "curve": {
+      // each drawn value sits at the middle of its step; straight lines join them, round the end of the cycle too
+      if (!steps?.length) return 0;
+      const K = steps.length, at = x * K - 0.5, i = Math.floor(at), f = at - i;
+      return steps[(i + K) % K]! * (1 - f) + steps[(i + 1) % K]! * f;
+    }
   }
 }
 
@@ -169,6 +175,17 @@ export function lfoCoefficients(shape: SynthState["lfo1Shape"], steps: number[] 
         b += steps[k]! * (Math.cos(from) - Math.cos(to));
       }
       cos[n] = a / (Math.PI * n); sin[n] = b / (Math.PI * n);
+    }
+    return { sin, cos, mean };
+  }
+  if (shape === "curve" && steps.length) {
+    // measured from the joined-up shape itself; straight lines need far fewer harmonics than steps do
+    const M = 1024, top = Math.min(harmonics, 96), wave = Float32Array.from({ length: M }, (_, i) => lfoValue("curve", i / M, steps));
+    mean = steps.reduce((a, b) => a + b, 0) / steps.length;
+    for (let n = 1; n < top; n++) {
+      let a = 0, b = 0;
+      for (let i = 0; i < M; i++) { const w = (2 * Math.PI * n * i) / M; a += wave[i]! * Math.cos(w); b += wave[i]! * Math.sin(w); }
+      cos[n] = (2 * a) / M; sin[n] = (2 * b) / M;
     }
     return { sin, cos, mean };
   }

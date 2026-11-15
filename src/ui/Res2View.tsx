@@ -4,6 +4,8 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { BAND_TEXT, bandAt, frontGap, LANDMARKS, noteNear, OPENINGS, RES2, RES2_PARTS, spread, type Res2Band } from "../soundsystems/res2";
+import { BANDS, bandNear, LEGEND, level, levelAt, levelColour, SOURCE } from "../soundsystems/directivity";
+import { BeamwidthChart, PolarPlot } from "./Directivity";
 import { paint, paper, shadowed, sign, steel, studio } from "./three/look";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { makeStage, type Stage } from "./three/stage";
@@ -40,9 +42,13 @@ export default function Res2View() {
   const [v, setV] = useState(toV(110)), [playing, setPlaying] = useState(false);
   const [inside, setInside] = useState(false), [cover, setCover] = useState(false), [sizes, setSizes] = useState(false), [waves, setWaves] = useState(true), [far, setFar] = useState(8);
   const [failed, setFailed] = useState(false);
-  const hz = toHz(v), band = bandAt(hz);
-  const live = useRef({ lit: undefined as string | undefined, band: band as Res2Band, playing: false, inside: false, cover: false, sizes: false, waves: true, hz: 110, far: 8 });
-  Object.assign(live.current, { lit: hover ?? picked, band, playing, inside, cover, sizes, waves, hz, far });
+  // two ways to look: the simple picture, or the maker's measurements drawn the way a system engineer reads them
+  const [pro, setProState] = useState(() => { try { return localStorage.getItem("patchwalk.res2.view") === "pro"; } catch { return false; } });
+  const setPro = (on: boolean) => { setProState(on); try { localStorage.setItem("patchwalk.res2.view", on ? "pro" : "simple"); } catch { /* not remembered */ } };
+  const [floor, setFloor] = useState(true);
+  const hz = toHz(v), band = bandAt(hz), measured = bandNear(hz);
+  const live = useRef({ lit: undefined as string | undefined, band: band as Res2Band, playing: false, inside: false, cover: false, sizes: false, waves: true, hz: 110, far: 8, pro: false, measured: undefined as number | undefined, floor: true });
+  Object.assign(live.current, { lit: hover ?? picked, band, playing, inside, cover, sizes, waves, hz, far, pro, measured, floor });
 
   useEffect(() => {
     const groups: Record<string, THREE.MeshStandardMaterial[]> = {};
@@ -57,10 +63,14 @@ export default function Res2View() {
         drivers.visible = s.inside; for (const m of walls) { m.opacity = s.inside ? 0.16 : 1; m.transparent = s.inside; m.depthWrite = !s.inside; }
         beam.visible = s.cover; dims.visible = s.sizes && !s.cover;
         // sound leaving the horn that is playing: fronts one wavelength apart (or every nth, when they would crowd), slowed right down
+        // the engineer's view: the measured "balloon" at the horn and the level map on the floor, redrawn when the band changes
+        const showing = s.pro && s.measured !== undefined ? s.measured : -1;
+        balloon.visible = showing >= 0; map.visible = marks.visible = showing >= 0 && s.floor;
+        if (showing >= 0 && showing !== drawn) { drawn = showing; drawMeasured(showing); }
         const src = s.band === "bass" ? MOUTH.bass : s.band === "midhigh" ? MOUTH.mid : undefined, gap = frontGap(s.hz);
         fronts.forEach((f, k) => {
           const r = (t * WAVE_SPEED + k * gap.shown) % (fronts.length * gap.shown);
-          f.g.visible = !!src && s.waves && r > 0.05 && r < WAVE_REACH; if (!f.g.visible) return;
+          f.g.visible = !!src && s.waves && !s.pro && r > 0.05 && r < WAVE_REACH; if (!f.g.visible) return;
           const fade = 1 - r / WAVE_REACH;
           f.g.position.set(0, src!, 0.02); f.g.scale.setScalar(r); f.fill.opacity = 0.1 * fade; f.line.opacity = 0.95 * fade;
         });
@@ -118,6 +128,33 @@ export default function Res2View() {
     rule([-W / 2 - 0.07, BASE + H + 0.02, 0], [-W / 2 - 0.07, BASE + H + 0.02, -D], "445 mm");
     rule([-WB / 2, BASE + H + 0.07, -D], [WB / 2, BASE + H + 0.07, -D], "344 mm");
     st.scene.add(dims, beam);
+    // measured directivity. The balloon: a surface whose distance from the horn in each direction is the level in that
+    // direction (36 dB from its skin to its centre), coloured in 3 dB steps. The map: level at ear height on the ground.
+    const BALLOON = 0.95, MAP = { wide: 16, deep: 16, cells: 128, ear: 1.7 }, rad5 = (5 * Math.PI) / 180;
+    const balloonGeo = new THREE.BufferGeometry(), bIdx: number[] = [];
+    for (let m = 0; m < 72; m++) for (let q = 0; q < 36; q++) { const a = m * 37 + q, b = ((m + 1) % 72) * 37 + q; bIdx.push(a, b, a + 1, b, b + 1, a + 1); }
+    balloonGeo.setIndex(bIdx); balloonGeo.setAttribute("position", new THREE.Float32BufferAttribute(new Float32Array(72 * 37 * 3), 3)); balloonGeo.setAttribute("color", new THREE.Float32BufferAttribute(new Float32Array(72 * 37 * 3), 3));
+    const balloon = new THREE.Mesh(balloonGeo, new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.82, side: THREE.DoubleSide })); balloon.raycast = () => {}; balloon.visible = false; balloon.frustumCulled = false;
+    const canvas = document.createElement("canvas"); canvas.width = canvas.height = MAP.cells; const ctx = canvas.getContext("2d")!, tex = new THREE.CanvasTexture(canvas); tex.colorSpace = THREE.SRGBColorSpace; tex.magFilter = THREE.LinearFilter;
+    const map = new THREE.Mesh(new THREE.PlaneGeometry(MAP.wide, MAP.deep), new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: 0.9, depthWrite: false })); map.rotation.x = -Math.PI / 2; map.position.set(0, 0.012, MAP.deep / 2 + 0.3); map.raycast = () => {}; map.visible = false;
+    const marks = new THREE.Group(); // distances along the map's edge
+    for (let d = 2; d <= 16; d += 2) { const sg = sign(`${d} m`, 0.36); sg.position.set(-MAP.wide / 2 - 0.8, 0.3, d); marks.add(sg); }
+    map.onBeforeRender = () => {}; st.scene.add(marks);
+    st.scene.add(balloon, map); let drawn = -1;
+    const drawMeasured = (b: number) => {
+      const srcY = BANDS[b]!.driver === "1-inch" ? MOUTH.high : MOUTH.midOnly, pos = balloonGeo.attributes.position as THREE.BufferAttribute, col = balloonGeo.attributes.color as THREE.BufferAttribute, c = new THREE.Color();
+      for (let m = 0; m < 72; m++) for (let q = 0; q < 37; q++) {
+        const db = level(b, q * 5, m * 5), r = BALLOON * Math.max(0.02, 1 + Math.max(-36, db) / 36), th = q * rad5, ph = m * rad5, i = m * 37 + q, [cr, cg, cb] = levelColour(db);
+        pos.setXYZ(i, r * Math.sin(th) * Math.sin(ph), r * Math.sin(th) * Math.cos(ph), r * Math.cos(th)); c.setRGB(cr / 255, cg / 255, cb / 255, THREE.SRGBColorSpace); col.setXYZ(i, c.r, c.g, c.b);
+      }
+      pos.needsUpdate = col.needsUpdate = true; balloon.position.set(0, srcY, 0.02);
+      const img = ctx.createImageData(MAP.cells, MAP.cells);
+      for (let j = 0; j < MAP.cells; j++) for (let i = 0; i < MAP.cells; i++) {
+        const x = ((i + 0.5) / MAP.cells - 0.5) * MAP.wide, z = 0.3 + (1 - (j + 0.5) / MAP.cells) * MAP.deep, [r, g, bl] = levelColour(levelAt(b, x, MAP.ear - srcY, z)), k = (j * MAP.cells + i) * 4;
+        img.data[k] = r; img.data[k + 1] = g; img.data[k + 2] = bl; img.data[k + 3] = 255;
+      }
+      ctx.putImageData(img, 0, 0); tex.needsUpdate = true;
+    };
     // one wavefront: the piece of a sphere inside the cabinet's stated 50 by 25 degrees, facing the listener; drawn at size 1 and scaled
     const rad = Math.PI / 180, { across, upDown } = RES2.coverage;
     const cap = new THREE.SphereGeometry(1, 28, 10, (90 - across / 2) * rad, across * rad, (90 - upDown / 2) * rad, upDown * rad);
@@ -134,7 +171,7 @@ export default function Res2View() {
       const line = new THREE.LineLoop(rim, new THREE.LineBasicMaterial({ color: GLOW, transparent: true, opacity: 0.9 }));
       fill.raycast = () => {}; line.raycast = () => {}; g.add(fill, line); g.visible = false; st.scene.add(g); return { g, fill: fill.material, line: line.material };
     });
-    const MOUTH = { bass: py((OPENINGS.bass.y0 + OPENINGS.bass.y1) / 2), mid: py((OPENINGS.mid.y0 + OPENINGS.high.y1) / 2) };
+    const MOUTH = { bass: py((OPENINGS.bass.y0 + OPENINGS.bass.y1) / 2), mid: py((OPENINGS.mid.y0 + OPENINGS.high.y1) / 2), midOnly: py((OPENINGS.mid.y0 + OPENINGS.mid.y1) / 2), high: py((OPENINGS.high.y0 + OPENINGS.high.y1) / 2) };
     // coverage: the stated 50 by 25 degrees as a wedge, with its width and height written at the far end
     const drawBeam = (reach: number) => {
       for (const o of [...beam.children]) { beam.remove(o); (o as THREE.Mesh).geometry?.dispose(); }
@@ -152,7 +189,13 @@ export default function Res2View() {
   }, []);
 
   // when coverage is switched on or its distance changes, step back far enough to see the far end
-  useEffect(() => { const s = stage.current; if (!s) return; if (cover) s.lookFrom([-far * 0.9 - 2, BASE + H + far * 0.35, -far * 0.45], [0, BASE + H / 2, far * 0.5]); else s.lookFrom([2.25, 1.85, 1.35], [0, BASE + H / 2 - 0.02, 0.45]); }, [cover, far]);
+  useEffect(() => {
+    const s = stage.current; if (!s) return;
+    if (pro && floor) s.lookFrom([9.5, 9, -4.5], [0, 0.4, 6.5]);
+    else if (pro) s.lookFrom([2.6, 2.3, 2.3], [0, BASE + H * 0.62, 0.35]);
+    else if (cover) s.lookFrom([-far * 0.9 - 2, BASE + H + far * 0.35, -far * 0.45], [0, BASE + H / 2, far * 0.5]);
+    else s.lookFrom([2.25, 1.85, 1.35], [0, BASE + H / 2 - 0.02, 0.45]);
+  }, [cover, far, pro, floor]);
 
   // the tone: a plain sine at the chosen frequency, quiet
   const audio = useRef<{ ctx: AudioContext; osc: OscillatorNode; gain: GainNode } | undefined>(undefined);
@@ -166,20 +209,36 @@ export default function Res2View() {
   useEffect(() => { audio.current?.osc.frequency.setTargetAtTime(hz, audio.current.ctx.currentTime, 0.02); }, [hz]);
   useEffect(() => () => { const a = audio.current; if (a) { a.osc.stop(); void a.ctx.close(); } }, []);
 
-  const gap = frontGap(hz);
+  const gap = frontGap(hz), mb = measured !== undefined ? BANDS[measured] : undefined;
   const part = RES2_PARTS.find((p) => p.id === (hover ?? picked)), now = BAND_TEXT[band], reach = spread(far);
   const mark = (f: number) => `${(toV(f) * 100).toFixed(1)}%`;
   return (
     <>
       <p className="muted">The maker’s sheet calls the Res 2 “the classic horn-loaded, full range Funktion-One loudspeaker”: one cabinet with a 15-inch for bass, an 8-inch for the middle and a 1-inch for the top, each playing through its own horn. Move the frequency and watch which horn the sound comes out of. Drag to turn it.</p>
+      <div className="seg res2-mode" role="tablist" aria-label="How to look at it">
+        <button role="tab" aria-selected={!pro} className={!pro ? "on" : ""} onClick={() => setPro(false)}>Simple view</button>
+        <button role="tab" aria-selected={pro} className={pro ? "on" : ""} onClick={() => setPro(true)}>How an engineer sees it</button>
+      </div>
+      {pro && <p className="muted">These are Funktion-One’s own measurements of the mid and high horns, the kind of data a system engineer loads into prediction software. The coloured shape at the horn is a “balloon”: the further its skin is from the horn in a direction, the louder the sound in that direction. The colours on the floor show how loud it would be at ear height, in open air. Move the frequency and watch the spread change: it is not one fixed angle.</p>}
       <div className="driver-grid">
         <div className="driver-stage three" ref={mount} role="img" aria-label="A tall loudspeaker cabinet on a plinth, with a wide horn and a small horn in its upper half and a large divided horn mouth in its lower half">
           {failed && <p className="driver-failed">This browser could not start 3D drawing.</p>}
           <div className="fig-card" aria-live="polite">
-            <span className="fig-kicker">Funktion-One · Res 2</span>
-            <strong className="fig-number">{hzText(hz)}</strong>
-            <span className="fig-line">{noteNear(hz)} · {{ below: "too low for this cabinet", bass: "bass horn · 15-inch", midhigh: "mid and high horns", above: "above its range" }[band]}</span>
-            <span className="fig-line dim">waves {lengthText(gap.wavelength)} apart{gap.every > 1 && (band === "bass" || band === "midhigh") ? ` · every ${gap.every}${gap.every === 2 ? "nd" : gap.every === 3 ? "rd" : "th"} one drawn` : ""}</span>
+            <span className="fig-kicker">Funktion-One · Res 2{pro ? " · measured" : ""}</span>
+            {pro && mb ? <>
+              <strong className="fig-number">{hzText(mb.hz)}</strong>
+              <span className="fig-line">band · {mb.driver} driver’s file</span>
+              <span className="fig-line">{mb.across >= 360 ? "everywhere" : `${Math.round(mb.across)}°`} across · {mb.upDown >= 360 ? "everywhere" : `${Math.round(mb.upDown)}°`} up and down</span>
+              <span className="fig-line dim">width where it is 6 dB down</span>
+            </> : pro ? <>
+              <strong className="fig-number">{hzText(hz)}</strong>
+              <span className="fig-line">{hz < 250 ? "no measurement here" : "above the measured bands"}</span>
+              <span className="fig-line dim">{hz < 250 ? "the files cover 250 Hz and up" : "the files stop at 20 kHz"}</span>
+            </> : <>
+              <strong className="fig-number">{hzText(hz)}</strong>
+              <span className="fig-line">{noteNear(hz)} · {{ below: "too low for this cabinet", bass: "bass horn · 15-inch", midhigh: "mid and high horns", above: "above its range" }[band]}</span>
+              <span className="fig-line dim">waves {lengthText(gap.wavelength)} apart{gap.every > 1 && (band === "bass" || band === "midhigh") ? ` · every ${gap.every}${gap.every === 2 ? "nd" : gap.every === 3 ? "rd" : "th"} one drawn` : ""}</span>
+            </>}
           </div>
         </div>
         <div className="driver-side">
@@ -187,18 +246,33 @@ export default function Res2View() {
             <button aria-pressed={inside} className={inside ? "on" : ""} onClick={() => setInside((x) => !x)}>See the drivers</button>
             <button aria-pressed={cover} className={cover ? "on" : ""} onClick={() => setCover((x) => !x)}>Coverage</button>
             <button aria-pressed={sizes} className={sizes ? "on" : ""} onClick={() => setSizes((x) => !x)}>Sizes</button>
-            <button aria-pressed={waves} className={waves ? "on" : ""} onClick={() => setWaves((x) => !x)}>Sound waves</button>
+            {!pro && <button aria-pressed={waves} className={waves ? "on" : ""} onClick={() => setWaves((x) => !x)}>Sound waves</button>}
+            {pro && <button aria-pressed={floor} className={floor ? "on" : ""} onClick={() => setFloor((x) => !x)}>Floor map</button>}
           </div>
           <div className="driver-parts vero-key" role="group" aria-label="Parts">
             {RES2_PARTS.map((p) => <button key={p.id} className={(hover ?? picked) === p.id ? "on" : ""} aria-pressed={picked === p.id} onClick={() => setPicked(picked === p.id ? undefined : p.id)} onPointerEnter={() => setHover(p.id)} onPointerLeave={() => setHover(undefined)}>{p.name}</button>)}
           </div>
           <div className="driver-info" role="status">
-            {part ? <><h3>{part.name}</h3><p>{part.job}</p></> : <><h3>{now.title}</h3><p>{now.text}</p></>}
+            {part ? <><h3>{part.name}</h3><p>{part.job}</p></> : pro && mb ? <>
+              <h3>{hzText(mb.hz)}: {mb.across >= 360 ? "going everywhere" : `${Math.round(mb.across)}° by ${Math.round(mb.upDown)}°`}</h3>
+              <p>{mb.across >= 180 || mb.upDown >= 180 ? "At this frequency the horn barely steers the sound: it spreads very widely." : mb.across < RES2.coverage.across * 0.8 ? "Narrower side to side than the sheet’s 50°: step off to the side and this part of the sound falls away sooner." : mb.across > RES2.coverage.across * 1.3 ? "Wider side to side than the sheet’s 50°." : "Close to the sheet’s stated 50° side to side."}</p>
+              <p className="muted">Straight ahead, this band is {mb.sensitivity} dB at 1 m by the file’s own figure. The sheet’s “50° by 25°” is one round number for the whole range; the measurements show how much it moves.</p>
+            </> : pro ? <><h3>No measurement at {hzText(hz)}</h3><p>{hz < 250 ? "The maker’s files here cover the mid and high horns only, from 250 Hz up. There is none for the bass horn, so nothing is drawn rather than guessed." : "The files stop at the 20 kHz band."}</p></> : <><h3>{now.title}</h3><p>{now.text}</p></>}
             {inside && <p className="muted">The drivers are stand-ins at their stated sizes (15, 8 and 1 inch). Funktion-One does not publish where they sit or how the horns are shaped inside, so that is not drawn.</p>}
             {cover && <p>By its stated coverage of 50° across and 25° up and down, at {far} m the sound has spread to about {reach.wide.toFixed(1)} m wide and {reach.tall.toFixed(1)} m tall.</p>}
           </div>
         </div>
       </div>
+      {pro && (
+        <>
+          <div className="dir-legend" aria-label="What the colours mean">
+            <span>Level against 1 m straight ahead:</span>
+            {LEGEND.map((db) => { const [r, g, b] = levelColour(db); return <i key={db} style={{ background: `rgb(${r},${g},${b})` }}>{db === 0 ? "0 dB" : db}</i>; })}
+            <span className="muted">each step is 3 dB quieter; 6 dB is half the sound pressure</span>
+          </div>
+          {measured !== undefined && <div className="dir-charts"><PolarPlot band={measured} /><BeamwidthChart band={measured} nominal={RES2.coverage} /></div>}
+        </>
+      )}
       <div className="res2-band" aria-hidden="true">
         <i className={`below${band === "below" ? " on" : ""}`} style={{ width: mark(RES2.lowest) }}>too low</i>
         <i className={`bass${band === "bass" ? " on" : ""}`} style={{ width: `${(toV(RES2.crossover) - toV(RES2.lowest)) * 100}%` }}>15-inch · bass horn</i>
@@ -218,6 +292,20 @@ export default function Res2View() {
       <div className="driver-parts" role="group" aria-label="Jump to a sound">
         {LANDMARKS.map((l) => <button key={l.label} onClick={() => setV(toV(l.hz))}>{l.label} · {hzText(l.hz)}</button>)}
       </div>
+      {pro && (
+        <aside className="side-note res2-missing" aria-label="How far to trust the measured view">
+          <div className="side-note-inner">
+            <span className="side-note-tag">Reading the measured view</span>
+            <ul>
+              <li><strong>What it is.</strong> {SOURCE}. Funktion-One publishes these for use in prediction software.</li>
+              <li><strong>Each driver alone.</strong> The 8-inch file covers 250 Hz to 5 kHz and the 1-inch file 6.3 kHz to 20 kHz. So the handover sits between those two bands in these files; the pair playing together around it is not shown.</li>
+              <li><strong>Open air only.</strong> The floor map takes away 6 dB for each doubling of distance and nothing else: no floor bounce, no walls, no second cabinet, no bass horn.</li>
+              <li><strong>Relative, not absolute.</strong> Colours compare each spot with 1 m straight ahead in the same band. How loud that is depends on the amplifier.</li>
+              <li><strong>Ears at 1.7 m.</strong> The map is for someone standing; the cabinet is on a plinth we chose.</li>
+            </ul>
+          </div>
+        </aside>
+      )}
       <aside className="side-note res2-missing" aria-label="What this diagram is missing">
         <div className="side-note-inner">
           <span className="side-note-tag">What’s missing here</span>
@@ -225,7 +313,7 @@ export default function Res2View() {
           <ul>
             <li><strong>The shape of each horn inside.</strong> A horn’s length and how fast it widens decide how low it can play and how it spreads the sound. Without it this diagram can show you <em>that</em> the cabinet stops at 60 Hz and covers 50° by 25°, but not <em>why</em>.</li>
             <li><strong>Where the three drivers sit.</strong> Each one is a different distance from your ear, so their sound sets off at different moments and has to be lined up. The stand-ins here are only the right sizes, so nothing about timing can be read off them.</li>
-            <li><strong>Where the 8-inch hands over to the 1-inch.</strong> Around a handover two drivers play the same notes together. Not knowing it means this diagram cannot tell you which horn a lead at, say, 3 kHz comes out of: only that it is one of the upper two.</li>
+            <li><strong>Where the 8-inch hands over to the 1-inch.</strong> Around a handover two drivers play the same notes together. The spec sheet does not give it. The maker’s measurement files (see “How an engineer sees it”) split between the 5 kHz and 6.3 kHz bands, which points to a handover there, so a lead at 3 kHz would be the 8-inch; but that is read off the files, not stated by Funktion-One.</li>
             <li><strong>What the shaped piece in the mid horn does.</strong> The drawing shows it and the sheet does not explain it. A Funktion One patent describes a centre piece in a different, lower horn, but nothing we have says this is the same idea, so the page does not guess.</li>
           </ul>
           <p>So treat the outside, the sizes and the numbers as the maker’s, and everything behind the front panel as a sketch.</p>

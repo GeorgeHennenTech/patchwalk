@@ -1409,3 +1409,29 @@ describe("end-of-lesson recall", () => {
     expect(pointsHad(items, [1, 0, 0], 3)).toEqual([false, undefined, true]);
   });
 });
+
+import { BANDS, bandNear, level, levelAt, levelColour, towards } from "../src/soundsystems/directivity";
+describe("the Res 2's measured directivity", () => {
+  it("holds twenty bands from 250 Hz to 20 kHz, the 8-inch file below the 1-inch file", () => {
+    expect(BANDS.map((b) => b.hz)).toEqual([250, 315, 400, 500, 630, 800, 1000, 1250, 1600, 2000, 2500, 3150, 4000, 5000, 6300, 8000, 10000, 12500, 16000, 20000]);
+    expect(BANDS.filter((b) => b.driver === "8-inch").length).toBe(14); expect(BANDS.slice(14).every((b) => b.driver === "1-inch")).toBe(true);
+  });
+  it("is 0 dB straight ahead, and the level data gives back the beamwidths stored beside it", () => {
+    const half = (band: number, phi: number) => { for (let a = 0; a <= 180; a += 0.25) if (level(band, a, phi) <= -6) return a; return 180; };
+    BANDS.forEach((b, i) => {
+      expect(Math.abs(level(i, 0, 0))).toBeLessThan(0.13);
+      if (b.across < 300) expect(Math.abs(half(i, 90) + half(i, 270) - b.across)).toBeLessThan(2.5); // within a couple of degrees: the stored data is in quarter-decibel steps
+      if (b.upDown < 300) expect(Math.abs(half(i, 0) + half(i, 180) - b.upDown)).toBeLessThan(2.5);
+    });
+    // the point of the engineer's view: the spread is not one angle. It narrows by more than half between 315 Hz and 2.5 kHz
+    expect(BANDS[1]!.across).toBeGreaterThan(2 * BANDS[10]!.across);
+  });
+  it("finds the band for a frequency, turns a point into angles, and loses 6 dB for each doubling of distance", () => {
+    expect([100, 250, 1100, 5600, 20000, 30000].map(bandNear)).toEqual([undefined, 0, 6, 13, 19, undefined]);
+    expect(towards(0, 0, 3)).toEqual({ theta: 0, phi: 0 });
+    expect(towards(2, 0, 0).theta).toBeCloseTo(90, 6); expect(towards(2, 0, 0).phi).toBeCloseTo(90, 6); expect(towards(0, 1, 0).phi).toBeCloseTo(0, 6);
+    expect(levelAt(6, 0, 0, 2) - levelAt(6, 0, 0, 4)).toBeCloseTo(6.02, 1);
+    expect(levelAt(6, 3, 0, 3)).toBeLessThan(levelAt(6, 0, 0, Math.hypot(3, 3))); // off to the side is quieter than the same distance straight ahead
+    expect(levelColour(0)).toEqual([215, 25, 28]); expect(levelColour(-50)).toEqual([37, 52, 148]); expect(levelColour(-1)).toEqual(levelColour(0));
+  });
+});

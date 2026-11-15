@@ -814,6 +814,29 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   picture, not a measurement, and that low notes really spread wider. To rebuild: the Blender module is
   in the scratchpad's `blender/venv` (`pip install bpy` if it is gone). Checked with software 3D only;
   **the owner has not yet judged it. If approved: Vero cabinets and field next, then horn, then driver.**
+- **Res 2, "How an engineer sees it" (15 Nov 2026).** The owner asked whether our way of drawing sound is
+  how a professional would do it. It is not: professionals read level maps, polar plots and beamwidth
+  charts made from measured cabinet data in prediction software (Funktion-One's is called Projection; the
+  Vero guide walks through it). The owner asked for both, with a switch. The Res 2 view now has "Simple
+  view" (the wavefronts) and "How an engineer sees it" (remembered in the browser), the second drawn
+  from **Funktion-One's own measurements**: `library/cad/funktion-one/RES2SH_EaseData.zip` holds EASE
+  "CF2" files for the Res 2SH, the mid-high section of a Res 2. `scripts/ease_cf2.py` documents the
+  layout (worked out by inspecting the files: 32-bit floats; a header table of 30 third-octave bands,
+  25 Hz to 20 kHz; then level in dB against straight ahead for 72 meridians by 37 points every 5 degrees)
+  and **proves the reading: the beamwidths computed from the level data equal the beamwidth table stored
+  in each file, for all 20 bands.** It writes `src/soundsystems/res2-directivity.json` (73 KB; a derived,
+  compact copy, one byte per value) read by `src/soundsystems/directivity.ts` (`level`, `levelAt`,
+  `bandNear`, `levelColour`; tested). The view shows a 3D "balloon" at the horn (distance from the horn =
+  level in that direction), a level map on the floor at ear height in 3 dB colour steps with a legend, a
+  polar plot and a beamwidth-against-frequency chart (`src/ui/Directivity.tsx`, SVG by code), and a card
+  with the band and its measured -6 dB width. What the data shows, and the simple view cannot: the spread
+  is not one angle (side to side about 150 degrees at 315 Hz, 33 at 2.5 kHz, 94 at 10 kHz, against the
+  sheet's nominal 50). The 8-inch file covers 250 Hz to 5 kHz and the 1-inch file 6.3 kHz to 20 kHz, so
+  the files place the handover between those bands (read off the files, not stated by the maker). Limits
+  the page states: each driver alone, no crossover region, no bass horn (no file), open air only (6 dB
+  per doubling of distance, no floor or walls), levels relative to 1 m straight ahead. The `.gll` file in
+  the same zip is a compiled format and was not opened. EASE files for the Res 4 are there too, unused.
+  **Vero has no such files in the library, so its field stays a geometry sketch.**
 - **Realism pass on the 3D views (14 Nov 2026, owner's request).** `src/ui/three/look.ts`: surfaces drawn
   by code onto small canvases (textured speaker paint, a perforated grille, grass, plywood, paper pulp,
   steel), an open sky with haze, a studio table that shows only shadows, and `truss` (laced lighting

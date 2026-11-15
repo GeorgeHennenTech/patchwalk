@@ -880,3 +880,19 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 .fig-kicker { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.09em; text-transform: uppercase; opacity: 0.6; }
 .fig-number { font-size: 2.3rem; line-height: 1.05; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
 .fig-line { font-size: 0.86rem; font-weight: 700; } .fig-line.dim { font-weight: 500; opacity: 0.7; }
+
+/* Res 2, the engineer's view: mode switch, colour legend, polar plot and beamwidth chart. */
+.res2-mode { margin: 6px 0 10px; }
+.dir-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 0; margin: 12px 0 4px; font-size: 0.82rem; }
+.dir-legend span { margin-right: 10px; } .dir-legend span.muted { margin-left: 10px; }
+.dir-legend i { font-style: normal; min-width: 38px; padding: 3px 0; text-align: center; font-weight: 700; color: #16121c; border: 1px solid #0003; margin-left: -1px; }
+.dir-legend i:nth-last-of-type(-n+4) { color: #fff; }
+.dir-charts { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 460px); gap: 18px; align-items: start; margin: 10px 0 4px; }
+.dir-chart { margin: 0; padding: 10px 12px; border: 2px solid var(--thread); border-radius: 14px; background: var(--panel); }
+.dir-chart svg { display: block; width: 100%; height: auto; }
+.dir-chart figcaption { font-size: 0.8rem; margin-top: 6px; }
+.dir-ring { fill: none; stroke: color-mix(in srgb, var(--thread) 28%, transparent); stroke-width: 1; }
+.dir-spoke { stroke: color-mix(in srgb, var(--thread) 16%, transparent); stroke-width: 1; }
+.dir-tick { font-size: 9.5px; fill: var(--muted); font-family: system-ui, sans-serif; }
+.dir-now { stroke: var(--accent); stroke-width: 2; }
+@media (max-width: 760px) { .dir-charts { grid-template-columns: 1fr; } }

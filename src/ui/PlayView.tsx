@@ -3,6 +3,7 @@ import { CHAPTER_ORDER, CHAPTERS, chapterOf, LESSONS, placeOf } from "../course/
 import { allMatch, compareToTarget, type MatchVerdict } from "../course/match";
 import { ago, focusOn, loadPlace, minutesLeft, savePlace, setFocus, stopNote, unitsIn, type Place } from "../course/focus";
 import { RecallCard, ReturnCard } from "./Recall";
+import { PatchBar } from "./synth/Patches";
 import { dueLessons, loadRecall } from "../course/recall";
 import { WHY } from "../course/why";
 import { guideContext, loadDone, saveDone, suggestNext } from "../course/progress";
@@ -416,6 +417,7 @@ export function PlayView({ cards, wanted }: { cards: Card[]; wanted?: { id: stri
           <div className="stage-box">
             <SynthPanel synth={synth} show={finishedSteps || !lesson.steps.length ? [] : step.show} lesson={lesson} all={all || finishedSteps} lastNote={snap.lastNote} extra={views} onExtra={toggleView} plain={plain} onSkin={toggleSkin} />
             <button className="link" onClick={() => setAll(!all)}>{all ? "Show only this step’s controls" : "Show the whole synth"}</button>
+            {(all || finishedSteps) && <PatchBar synth={synth} />}
           </div>
         )}
 

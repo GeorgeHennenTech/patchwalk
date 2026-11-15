@@ -917,3 +917,11 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 .fx-move { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 2px 0 6px; font-size: 0.74rem; font-weight: 700; opacity: 0.85; }
 .fx-move button { padding: 1px 9px; border: 1.5px solid currentColor; border-radius: 999px; background: transparent; color: inherit; font: inherit; cursor: pointer; box-shadow: none; }
 .fx-move button:disabled { opacity: 0.3; cursor: default; }
+
+/* Saved patches under the whole synth. */
+.patch-bar { margin: 10px 0 4px; padding: 8px 12px; border: 2px solid var(--thread); border-radius: 12px; }
+.patch-bar summary { cursor: pointer; font-weight: 700; }
+.patch-bar form { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 6px; }
+.patch-bar input[type="text"], .patch-bar form > input:not([type="file"]) { flex: 1 1 200px; padding: 7px 11px; border: 2px solid var(--thread); border-radius: 10px; background: var(--panel); color: var(--text); font: inherit; }
+.patch-bar ul { list-style: none; padding: 0; margin: 6px 0; display: grid; gap: 4px; }
+.patch-bar li { display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; }

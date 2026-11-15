@@ -1504,3 +1504,31 @@ describe("the order of the effects", () => {
     expect(fxOrderOf(["reverb", "nonsense", "reverb", "dist"])).toEqual(["reverb", "dist", "eq", "comp", "chorus", "delay"]);
   });
 });
+
+import { clean, deletePatch, fromFile, loadPatches, MAX_PATCHES, savePatch, toFile } from "../src/synth/patches";
+describe("saved patches", () => {
+  const store = () => { const m = new Map<string, string>(); return { getItem: (k: string) => m.get(k) ?? null, setItem: (k: string, v: string) => { m.set(k, v); } }; };
+  it("saves under a name, replaces the same name, lists newest first and keeps to a limit", () => {
+    const s = store();
+    savePatch("Wobble", { ...INITIAL, cutoff: 500 }, 1, s); savePatch("Pad", { ...INITIAL, envA: 900 }, 2, s);
+    expect(loadPatches(s).map((p) => p.name)).toEqual(["Pad", "Wobble"]);
+    savePatch("wobble", { ...INITIAL, cutoff: 800 }, 3, s);
+    expect(loadPatches(s).map((p) => [p.name, p.state.cutoff])).toEqual([["wobble", 800], ["Pad", 20000]]);
+    expect(deletePatch("Pad", s).map((p) => p.name)).toEqual(["wobble"]);
+    for (let i = 0; i < MAX_PATCHES + 5; i++) savePatch(`p${i}`, INITIAL, 10 + i, s);
+    expect(loadPatches(s).length).toBe(MAX_PATCHES);
+    expect(savePatch("   ", INITIAL, 99, store())[0]!.name).toBe("Untitled");
+  });
+  it("loads only settings the synth knows, each of the right kind, so an old or damaged patch cannot break it", () => {
+    const got = clean({ cutoff: 640, shape: "square", voices: "seven", nonsense: 1, matrix: "no", fxOrder: ["reverb", "dist"], detune: Infinity });
+    expect(got.cutoff).toBe(640); expect(got.shape).toBe("square");
+    expect(got.voices).toBe(INITIAL.voices); expect(got.matrix).toEqual(INITIAL.matrix); expect(got.detune).toBe(INITIAL.detune);
+    expect("nonsense" in got).toBe(false); expect(got.fxOrder).toEqual(["reverb", "dist"]);
+    expect(Object.keys(clean(null)).sort()).toEqual(Object.keys(INITIAL).sort());
+  });
+  it("goes out to a file and comes back the same, and refuses a file that is not a patch", () => {
+    const state = { ...INITIAL, cutoff: 1234, lfo1Dest: "cutoff" };
+    expect(fromFile(toFile({ name: "Growl", savedAt: 5, state }))).toEqual({ name: "Growl", state });
+    expect(fromFile("{}")).toBeUndefined(); expect(fromFile("not json")).toBeUndefined(); expect(fromFile(JSON.stringify({ patchwalkPatch: 1 }))).toBeUndefined();
+  });
+});

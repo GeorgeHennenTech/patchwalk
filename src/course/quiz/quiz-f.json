@@ -1974,5 +1974,43 @@
    "why": "A short note length leaves air between the steps.",
    "point": 2
   }
+ ],
+ "CN.9": [
+  {
+   "q": "What names the key of a scale?",
+   "options": [
+    "Its highest note",
+    "The note it starts on",
+    "How fast it is played",
+    "The number of black keys"
+   ],
+   "answer": 1,
+   "why": "Start the major pattern on D and it is D major; on G, G major.",
+   "point": 0
+  },
+  {
+   "q": "What is transposing?",
+   "options": [
+    "Playing louder",
+    "Moving music to another key with its shape unchanged",
+    "Changing major to minor",
+    "Playing backwards"
+   ],
+   "answer": 1,
+   "why": "The tune and chords keep their character and sit higher or lower.",
+   "point": 1
+  },
+  {
+   "q": "With Semitone set to 2, what do the white keys from A to K play?",
+   "options": [
+    "C major",
+    "C minor",
+    "D major",
+    "Nothing"
+   ],
+   "answer": 2,
+   "why": "Everything sounds two semitones higher, so the C major fingering gives D major.",
+   "point": 2
+  }
  ]
 }

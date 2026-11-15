@@ -1806,6 +1806,7 @@ describe("the lessons added on 15 Nov can each be walked through", () => {
     "CN.8": [[{}, { held: [60, 64, 67, 71] }], [{}, { held: [60, 64, 67, 70] }], [{}, { held: [62, 65, 69, 72] }], [{}, { held: [60, 64, 67, 69] }]],
     "C7.8": [[{ flangerOn: true }, { held: [45] }], [{ flangerDepth: 0 }], [{ flangerDepth: 70, flangerFeedback: 80 }], [{ flangerOn: false, phaserOn: true }], [{ phaserCentre: 2500 }, range("phaserCentre", 300, 2500)]],
     "C8.4": [[{ arpOn: "on" }, played], [{ arpMode: "down" }, played], [{ arpDiv: "4" }, played], [{ arpOctaves: 2 }, played], [{ arpGate: 25 }, played]],
+    "CN.9": [[{}, { sequence: [60, 62, 64, 65, 67, 69, 71, 72] }], [{ semitone: 2 }, { sequence: [60, 62, 64, 65, 67, 69, 71, 72] }], [{ semitone: 7 }, { held: [60, 64, 67] }], [{ semitone: 0, octave: -1 }, { held: [60, 64, 67] }]],
     "CT.12": [[{ envS: 0, envD: 220 }, played], [{ envS: 100, envR: 30 }, played], [{ lfo1Dest: "cutoff", lfo1Amount: 60, lfo1Rate: 7 }, { longestHeld: 2.5 }], [{ drive: 60 }, { longestHeld: 2.5 }]],
     "C1.11": [[{ table: "pdsaw" }, { held: [45] }], [{ position: 100 }, range("position", 0, 100)], [{ table: "moogsaw", position: 100 }], [{ position: 0 }], [{ table: "pdpulse", position: 95 }, range("position", 5, 95)], [{ table: "formant", position: 95 }, range("position", 5, 95)]],
     "C6.6": [[{}, { held: [57] }], [{ warpAmount: 50 }], [{ warpAmount: 95 }, range("warpAmount", 5, 95)], [{ warp: "steps", warpAmount: 60 }], [{ warpAmount: 80 }], [{ warp: "flip", warpAmount: 50 }]],

@@ -162,4 +162,21 @@ export const THEORY_CHAPTER: PlayableLesson[] = [
     ],
     recap: ["A seventh chord adds a fourth note by taking one more step of every-other-note up the scale.", "A major chord with a major seventh is soft and dreamy; with the seventh a semitone lower it is restless.", "A minor chord with its seventh sounds mellow."],
   },
+  {
+    id: "CN.9", title: "Changing key: the same shapes, somewhere else", buildsOn: ["CN.4", "C1.2"], minutes: 6, cardIds: [], initial: { ...SOFT },
+    outcome: "Move a scale or a chord to another key without learning new fingerings, using the oscillator’s Semitone setting.",
+    demo: { caption: "The start of a major scale from C, then the same pattern from D, then from G.", tones: [...[0, 2, 4, 5, 7].map((n, i) => tone(60 + n, i * 0.3, 0.27)), ...[0, 2, 4, 5, 7].map((n, i) => tone(62 + n, 1.9 + i * 0.3, 0.27)), ...[0, 2, 4, 5, 7].map((n, i) => tone(67 + n, 3.8 + i * 0.3, 0.27))] },
+    idea: [
+      "A scale is a pattern of steps, so it can start on any note. Start the major pattern on D and you have D major; on G, G major. The tune and the chords keep their shape and character and simply sit higher or lower. Moving music like this is called transposing, and the starting note names the key.",
+      "On a real keyboard each key has its own mix of black and white notes to learn. A synth offers a shortcut: shift the oscillator by some semitones and the white keys you already know now sound in the new key.",
+    ],
+    steps: [
+      { do: "Play the C major scale upward on the white keys: A S D F G H J K.", show: [...K, "semitone"], hear: "C major, as before.", target: "Eight notes in a row following the major scale upward", check: (s) => ran(s, MAJOR) },
+      { do: "Set Osc A’s Semitone to 2, and play exactly the same keys.", show: [...K, "semitone"], hear: "The same climb, a tone higher. You are now playing D major with the fingering of C major.", target: "Semitone at 2, and the same eight keys played", check: (s) => s.state.semitone === 2 && ran(s, MAJOR) },
+      { do: "Set Semitone to 7 and hold A, D and G together.", show: [...K, "semitone"], hear: "A major chord, bright as ever, but it is G major now: seven semitones above C.", target: "Semitone at 7, and a major chord held", check: (s) => s.state.semitone === 7 && same(shape(s), [0, 4, 7]),
+        remark: (s) => `With Semitone at ${s.state.semitone}, the keys for C major sound as ${nameOf(s.state.semitone)} major.` },
+      { do: "Set Semitone back to 0 and Octave to -1, and hold the same chord.", show: [...K, "semitone", "octave"], hear: "C major again, an octave lower: darker and heavier, but the same chord.", target: "Semitone at 0, octave at -1, and a major chord held", check: (s) => s.state.semitone === 0 && s.state.octave === -1 && same(shape(s), [0, 4, 7]) },
+    ],
+    recap: ["A scale or chord is a pattern, so it can start on any note; the starting note names the key.", "Moving music to another key is transposing: its shape and character stay the same.", "On a synth, shifting the oscillator by semitones puts the white keys in a new key."],
+  },
 ];

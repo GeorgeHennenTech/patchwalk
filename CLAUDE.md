@@ -174,7 +174,7 @@ Added after the first eight milestones (owner asked for all four in one go):
     "Effects" and "Impacts".
     C5.9 ("One source scaling another") was added to chapter 5 with the matrix's Scaled by column.
     C1.9 ("Left and right, and a second wavetable") was added to chapter 1 with pan and Osc B's wavetable.
-    **118 playable lessons** (15 Nov 2026: see "Batch of 15 Nov 2026" below for the ten added that day).
+    **119 playable lessons** (15 Nov 2026: see "Batch of 15 Nov 2026" below for the ten added that day).
   - `src/ui/PlayView.tsx` ("Lessons" tab) and `src/ui/synth/` — spotlighted controls per step, live targets,
     scope, spectrum, meter, on-screen keyboard, Hold, blind ear checks, recap, guide remarks and suggestion.
   - "Hear it first" demos (`demo` on a lesson), match-by-ear rounds (`rounds`, compared by `src/course/match.ts`:
@@ -647,7 +647,7 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   (2) A quiz on that lesson, options in a mixed order, checked only when all are
   answered: each then shows the right answer, the learner's own, and one line of why. (3) The recap,
   with each point the quiz asked about tagged "you had this" or "read this one again". A quiet "Skip to
-  the recap" link stays, so nobody is trapped. **566 questions over the 118 lessons (the ten lessons added on 15 Nov 2026 have questions the assistant wrote itself), from 3 to 8 a lesson, in
+  the recap" link stays, so nobody is trapped. **569 questions over the 119 lessons (the ten lessons added on 15 Nov 2026 have questions the assistant wrote itself), from 3 to 8 a lesson, in
   `src/course/quiz/quiz-a.json` to `quiz-f.json`: the owner asked that the number per lesson come from what
   that lesson teaches, not from a formula, so each lesson was audited (list every distinct thing worth
   remembering, one question per thing, duplicates dropped) and most have 4 to 6** (`{ q, options[4], answer, why, point }`, `point`
@@ -990,7 +990,7 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   for once a MIDI keyboard worked).** `lessons/theory.ts`, chapter "N", listed between "Playing a line" and
   "Impacts": CN.1 Notes, semitones and octaves; CN.2 Intervals: fifths and thirds; CN.3 Major and minor
   chords; CN.4 Scales: major and minor; CN.5 Chords that belong to a scale; CN.6 Inversions; CN.7 A four-chord
-  progression (`chordRun` reads the last twelve notes three at a time); CN.8 Seventh chords. They are checked from what is
+  progression (`chordRun` reads the last twelve notes three at a time); CN.8 Seventh chords; CN.9 Changing key (the Semitone box moves the letter keys to another key). They are checked from what is
   played, not from knobs: the notes sounding together (`s.held`, compared as steps above the lowest, or as
   pitch classes) and the notes played in order (`s.sequence`, new on the snapshot and the tracker: every
   note-on since the step began, the last 64). Everything can be done on the letter keys A to K (C to C);

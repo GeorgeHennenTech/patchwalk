@@ -4,10 +4,12 @@
 // up after a change and down at sign-in. Without a database none of this runs.
 import { loadDone, saveDone } from "../course/progress";
 import { loadChats, replaceChats, type SavedChat } from "./chats";
+import { loadRecall, mergeRecall, replaceRecall, type RecallLog } from "../course/recall";
+import { loadPatches, mergePatches, replacePatches, type Patch } from "../synth/patches";
 import { currentPlayer, setCurrentPlayer } from "./me";
 
 export interface AccountInfo { id: string; name: string; email: string; createdAt: string; owner: boolean }
-export interface Remote { lessons: string[]; chats: SavedChat[] }
+export interface Remote { lessons: string[]; chats: SavedChat[]; patches?: Patch[]; recall?: RecallLog }
 /**
  * open: no accounts here (a developer's machine with no database). signedOut / signedIn: as they say.
  * down: accounts cannot work right now (no database on the live site, or it cannot be reached).
@@ -41,10 +43,15 @@ export async function session(fetchImpl: typeof fetch = fetch): Promise<Session>
 export function merge(a: Remote, b: Remote): Remote {
   const chats = new Map<string, SavedChat>();
   for (const c of [...a.chats, ...b.chats]) { const had = chats.get(c.id); if (!had || had.savedAt < c.savedAt) chats.set(c.id, c); }
-  return { lessons: [...new Set([...a.lessons, ...b.lessons])], chats: [...chats.values()].sort((x, y) => (x.savedAt < y.savedAt ? 1 : -1)) };
+  return {
+    lessons: [...new Set([...a.lessons, ...b.lessons])], chats: [...chats.values()].sort((x, y) => (x.savedAt < y.savedAt ? 1 : -1)),
+    patches: mergePatches(a.patches ?? [], b.patches ?? []), recall: mergeRecall(a.recall ?? {}, b.recall ?? {}),
+  };
 }
 
-const here = (): Remote => ({ lessons: loadDone(), chats: loadChats() });
+const here = (): Remote => ({ lessons: loadDone(), chats: loadChats(), patches: loadPatches(), recall: loadRecall() });
+/** Put a joined copy into this browser: saved sounds and what was remembered of each lesson. */
+const keepExtras = (r: Remote) => { replacePatches(r.patches ?? []); replaceRecall(r.recall ?? {}); };
 const signedInHere = () => currentPlayer()?.account === true;
 /**
  * Copy this browser's lessons and chats up to the database for the signed-in person. Normally the database's
@@ -63,6 +70,7 @@ export async function pushNow(fetchImpl: typeof fetch = fetch, exact = false): P
       const joined = merge(body.data as Remote, mine);
       if (joined.lessons.length !== mine.lessons.length) saveDone(joined.lessons);
       if (joined.chats.length !== mine.chats.length) replaceChats(joined.chats);
+      keepExtras(joined);
       mine = joined;
     }
     return (await call(fetchImpl, post({ op: "save", ...mine }))).ok;
@@ -88,8 +96,8 @@ async function enter(account: AccountInfo, fetchImpl: typeof fetch): Promise<{ o
   const { ok, body } = await call(fetchImpl, undefined, "?data=1");
   if (!ok || !body?.data) return { ok: false, message: said(body, "Your saved things could not be loaded.") };
   const remote = body.data as Remote;
-  const next = keep ? merge(remote, here()) : { lessons: remote.lessons ?? [], chats: remote.chats ?? [] };
-  saveDone(next.lessons); replaceChats(next.chats);
+  const next: Remote = keep ? merge(remote, here()) : { lessons: remote.lessons ?? [], chats: remote.chats ?? [], patches: remote.patches ?? [], recall: remote.recall ?? {} };
+  saveDone(next.lessons); replaceChats(next.chats); keepExtras(next);
   setCurrentPlayer({ id: account.id, name: account.name, account: true });
   if (keep) await pushNow(fetchImpl, true);
   return { ok: true };

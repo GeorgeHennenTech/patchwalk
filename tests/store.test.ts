@@ -80,8 +80,8 @@ describe("accounts", () => {
     const seth = await join(kv, "Seth", "seth@example.com"), sam = await join(kv, "Sam", "sam@example.com");
     expect((await handle(kv, { op: "save", lessons: ["C0.1"], chats: [] }, ctx())).status).toBe(401);
     await handle(kv, { op: "save", lessons: ["C0.1", "C0.1", "C0.2"], chats: [chat("c1", "2026-11-14T00:00:00Z")] }, ctx(sam));
-    expect((await status(kv, sam, "seth@example.com", { data: true })).data).toEqual({ lessons: ["C0.1", "C0.2"], chats: [chat("c1", "2026-11-14T00:00:00Z")] });
-    expect((await status(kv, seth, "seth@example.com", { data: true })).data).toEqual({ lessons: [], chats: [] });
+    expect((await status(kv, sam, "seth@example.com", { data: true })).data).toEqual({ lessons: ["C0.1", "C0.2"], chats: [chat("c1", "2026-11-14T00:00:00Z")], patches: [], recall: {} });
+    expect((await status(kv, seth, "seth@example.com", { data: true })).data).toEqual({ lessons: [], chats: [], patches: [], recall: {} });
     expect(await status(kv, undefined, "seth@example.com", { data: true, people: true })).toEqual({ configured: true });
   });
   it("only the owner sees everyone, sets someone's password or removes them; anyone can change their own password or leave", async () => {
@@ -291,5 +291,16 @@ describe("shared memory and own keys", () => {
     expect(guideHeaders(store)).toEqual({ "content-type": "application/json", "x-anthropic-key": good });
     setOwnKey(undefined, store);
     expect(guideHeaders(store)).toEqual({ "content-type": "application/json" });
+  });
+  it("saved sounds and lesson recall are joined too: the newest sound of each name, the latest record of each lesson", () => {
+    const sound = (name: string, savedAt: number) => ({ name, savedAt, state: { cutoff: savedAt } as never });
+    const joined = merge(
+      { lessons: [], chats: [], patches: [sound("Bass", 5), sound("Pad", 1)], recall: { "C2.1": { at: 10, had: [true, false] } } },
+      { lessons: [], chats: [], patches: [sound("bass", 9), sound("Lead", 3)], recall: { "C2.1": { at: 20, had: [true, true], stage: 1 }, "C1.1": { at: 4, had: [false] } } },
+    );
+    expect(joined.patches!.map((p) => [p.name, p.savedAt])).toEqual([["bass", 9], ["Lead", 3], ["Pad", 1]]);
+    expect(joined.recall).toEqual({ "C2.1": { at: 20, had: [true, true], stage: 1 }, "C1.1": { at: 4, had: [false] } });
+    // an older copy from before these were stored (no patches, no recall) loses nothing
+    expect(merge({ lessons: [], chats: [] }, joined).patches).toHaveLength(3);
   });
 });

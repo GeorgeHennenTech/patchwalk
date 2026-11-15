@@ -17,7 +17,23 @@ export function loadRecall(s: Pick<Storage, "getItem"> | undefined = local()): R
   } catch { return {}; }
 }
 export function saveRecall(lessonId: string, record: RecallRecord, s: Store | undefined = local()): void {
-  try { s?.setItem(KEY, JSON.stringify({ ...loadRecall(s), [lessonId]: record })); } catch { /* not remembered */ }
+  try { s?.setItem(KEY, JSON.stringify({ ...loadRecall(s), [lessonId]: record })); if (s) changed(); } catch { /* not remembered */ }
+}
+let changed: () => void = () => {};
+/** Told after a lesson's recall is saved, so the account's copy can follow. */
+export const onRecallChanged = (fn: () => void) => { changed = fn; };
+/** Replace the whole log at once (when it arrives from the database). Does not report a change. */
+export function replaceRecall(log: RecallLog, s: Store | undefined = local()): void {
+  try { s?.setItem(KEY, JSON.stringify(log)); } catch { /* not kept */ }
+}
+/** Two copies of the log brought together: each lesson's most recent record. */
+export function mergeRecall(a: RecallLog, b: RecallLog): RecallLog {
+  const out: RecallLog = {};
+  for (const log of [a, b]) for (const [id, r] of Object.entries(log ?? {})) {
+    if (!r || typeof r.at !== "number" || !Array.isArray(r.had)) continue;
+    if (!out[id] || out[id]!.at < r.at) out[id] = r;
+  }
+  return out;
 }
 
 /** The recap points a learner marked as missed the last time they recalled this lesson. */

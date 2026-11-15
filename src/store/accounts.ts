@@ -13,10 +13,10 @@ import type { Kv } from "./kv.js";
 
 export interface Account { id: string; name: string; email: string; createdAt: string }
 export interface AccountView extends Account { owner: boolean }
-export interface AccountData { lessons: string[]; chats: unknown[] }
+export interface AccountData { lessons: string[]; chats: unknown[]; /** saved synth sounds */ patches?: unknown[]; /** what was remembered of each lesson, for the spaced return */ recall?: Record<string, unknown> }
 interface Secret { salt: string; hash: string }
 
-export const MAX_ACCOUNTS = 12, MAX_DATA_BYTES = 600_000, SESSION_SECONDS = 30 * 24 * 3600, MAX_FAILS = 8, LOCK_SECONDS = 15 * 60;
+export const MAX_ACCOUNTS = 12, MAX_DATA_BYTES = 900_000, SESSION_SECONDS = 30 * 24 * 3600, MAX_FAILS = 8, LOCK_SECONDS = 15 * 60;
 const LIST = "pw:accounts";
 const sha = (s: string) => createHash("sha256").update(s).digest("hex");
 const secretKey = (id: string) => `pw:acct:${id}`, dataKey = (id: string) => `pw:a:${id}`;
@@ -33,7 +33,7 @@ export const AccountRequestSchema = z.discriminatedUnion("op", [
   z.object({ op: z.literal("signout") }),
   z.object({ op: z.literal("forgot"), email: Email }),
   z.object({ op: z.literal("recover"), token: z.string().regex(/^[a-f0-9]{64}$/), next: Password }),
-  z.object({ op: z.literal("save"), lessons: z.array(z.string().max(20)).max(2000), chats: z.array(z.unknown()).max(60) }),
+  z.object({ op: z.literal("save"), lessons: z.array(z.string().max(20)).max(2000), chats: z.array(z.unknown()).max(60), patches: z.array(z.unknown()).max(40).optional(), recall: z.record(z.string().max(20), z.unknown()).optional() }),
   z.object({ op: z.literal("password"), old: z.string().max(200), next: Password }),
   z.object({ op: z.literal("reset"), account: Id, next: Password }),
   z.object({ op: z.literal("remove"), account: Id }),
@@ -67,7 +67,10 @@ export async function accountOf(kv: Kv, token: string | undefined): Promise<Acco
 }
 export async function loadData(kv: Kv, id: string): Promise<AccountData> {
   const d = await kv.get<Partial<AccountData>>(dataKey(id));
-  return { lessons: Array.isArray(d?.lessons) ? d!.lessons! : [], chats: Array.isArray(d?.chats) ? d!.chats! : [] };
+  return {
+    lessons: Array.isArray(d?.lessons) ? d!.lessons! : [], chats: Array.isArray(d?.chats) ? d!.chats! : [],
+    patches: Array.isArray(d?.patches) ? d!.patches! : [], recall: d?.recall && typeof d.recall === "object" ? d.recall : {},
+  };
 }
 
 /** What a browser is told about itself: who is signed in, and, on request, their saved things and (owner only) everyone. */
@@ -142,8 +145,8 @@ export async function handle(kv: Kv, req: AccountRequest, ctx: Ctx): Promise<Acc
   const me = await accountOf(kv, ctx.token);
   if (!me) return no(401, "signed-out", "Sign in first.");
   if (req.op === "save") {
-    const data: AccountData = { lessons: [...new Set(req.lessons)], chats: req.chats };
-    if (JSON.stringify(data).length > MAX_DATA_BYTES) return no(413, "too-large", "Too much to save. Delete some saved chats and try again.");
+    const data: AccountData = { lessons: [...new Set(req.lessons)], chats: req.chats, patches: req.patches ?? [], recall: req.recall ?? {} };
+    if (JSON.stringify(data).length > MAX_DATA_BYTES) return no(413, "too-large", "Too much to save. Delete some saved chats or saved sounds and try again.");
     await kv.set(dataKey(me.id), data);
     return { status: 200, body: { saved: true } };
   }

@@ -4,11 +4,15 @@ import { useState } from "react";
 import { onProgressChanged } from "../course/progress";
 import { onChatsChanged } from "../guide/chats";
 import { keyPromptSeen, looksLikeKey, markKeyPromptSeen, ownKey, setOwnKey } from "../guide/me";
+import { onRecallChanged } from "../course/recall";
+import { onPatchesChanged } from "../synth/patches";
 import { changePassword, forgotPassword, recover, removeAccount, resetPassword, schedulePush, signIn, signOut, signUp, type AccountInfo, type Session } from "../guide/sync";
 
 // Anything saved in this browser is copied up for the person signed in.
 onProgressChanged(() => schedulePush());
 onChatsChanged(schedulePush);
+onPatchesChanged(schedulePush);
+onRecallChanged(() => schedulePush());
 
 /** The first thing anyone sees: sign in, or make an account. */
 export function SignInGate({ ownerSet, mail }: { ownerSet: boolean; mail: boolean }) {

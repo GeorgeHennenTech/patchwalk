@@ -174,7 +174,7 @@ Added after the first eight milestones (owner asked for all four in one go):
     "Effects" and "Impacts".
     C5.9 ("One source scaling another") was added to chapter 5 with the matrix's Scaled by column.
     C1.9 ("Left and right, and a second wavetable") was added to chapter 1 with pan and Osc B's wavetable.
-    **Ninety-eight playable lessons** (15 Nov 2026: see "Batch of 15 Nov 2026" below for the ten added that day).
+    **Ninety-nine playable lessons** (15 Nov 2026: see "Batch of 15 Nov 2026" below for the ten added that day).
   - `src/ui/PlayView.tsx` ("Lessons" tab) and `src/ui/synth/` — spotlighted controls per step, live targets,
     scope, spectrum, meter, on-screen keyboard, Hold, blind ear checks, recap, guide remarks and suggestion.
   - "Hear it first" demos (`demo` on a lesson), match-by-ear rounds (`rounds`, compared by `src/course/match.ts`:
@@ -647,7 +647,7 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   (2) A quiz on that lesson, options in a mixed order, checked only when all are
   answered: each then shows the right answer, the learner's own, and one line of why. (3) The recap,
   with each point the quiz asked about tagged "you had this" or "read this one again". A quiet "Skip to
-  the recap" link stays, so nobody is trapped. **498 questions over the 98 lessons (the ten lessons added on 15 Nov 2026 have questions the assistant wrote itself), from 3 to 8 a lesson, in
+  the recap" link stays, so nobody is trapped. **502 questions over the 99 lessons (the ten lessons added on 15 Nov 2026 have questions the assistant wrote itself), from 3 to 8 a lesson, in
   `src/course/quiz/quiz-a.json` to `quiz-f.json`: the owner asked that the number per lesson come from what
   that lesson teaches, not from a formula, so each lesson was audited (list every distinct thing worth
   remembering, one question per thing, duplicates dropped) and most have 4 to 6** (`{ q, options[4], answer, why, point }`, `point`
@@ -901,6 +901,27 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   A long list of **physical-modelling literature** (found by search, nothing opened) is in
   `docs/LITERATURE.md`; most free copies are on ccrma.stanford.edu, which the session's network does not
   yet allow.
+- **Physical modelling begins: the String lab (15 Nov 2026).** Nine free texts on physical modelling were
+  taken into the library (Smith's 1992 waveguide paper and 2004 review, the 2-D waveguide mesh, a bowed-string
+  paper, the NESS project, "Four Decades of Digital Waveguides", modal synthesis, membrane percussion, and
+  McIntyre, Schumacher and Woodhouse's "On the Oscillations of Musical Instruments"; ids in
+  `docs/LITERATURE.md`). Not taken in: Scavone's and Cook's theses (scanned pages with no text; they would
+  need reading by picture), the piano overview (its site refused the download), and Smith's online book
+  (no licence stated). **`src/strings/string.ts`** is a plucked string as pure maths: a delay loop whose
+  length is the note, a two-sample weighted average as the loss filter (`lossWeight`: brightness), a
+  one-coefficient all-pass for fine tuning, a per-trip gain set from the decay time (`tripGain`), and an
+  excitation one period long (`excitation`: a pluck whose harmonics are sin(n pi position)/n, softened by
+  pick hardness and thinned again by the listening position; or a repeatable burst of noise). This is the
+  Karplus-Strong method as Smith's 1992 paper gives it (library page 18). **A note is worked out whole
+  (`renderString`) and played from a buffer: no AudioWorklet, so a ringing note cannot be changed** (no
+  bends, mutes or bowing yet; those need a worklet). `src/ui/StringLab.tsx` is the "String lab" tab: the
+  string's picture with pluck and listening points, the harmonics the pluck leaves in, the note's fade,
+  sliders, a two-and-a-half-octave keyboard (letter keys A to K), eight "Things to try" that tick
+  themselves, and a "What is missing here" note. Tests (`tests/strings.test.ts`): in tune within 3 cents
+  from note 28 to 96, the fundamental falls 60 dB in the decay time, plucking at a half removes even
+  harmonics and at a third every third, highs die sooner on a dull string. Checked in a browser; **not yet
+  heard by anyone.** Not built: the lesson engine does not know this instrument (the lab is a page of its
+  own, not lessons), match by ear, stiffness, two strings, body, bowing.
 - **Realism pass on the 3D views (14 Nov 2026, owner's request).** `src/ui/three/look.ts`: surfaces drawn
   by code onto small canvases (textured speaker paint, a perforated grille, grass, plywood, paper pulp,
   steel), an open sky with haze, a studio table that shows only shadows, and `truss` (laced lighting

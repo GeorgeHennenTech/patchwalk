@@ -28,9 +28,12 @@ it, and reports in a few lines. None of these needs the owner or spends credits.
 - [x] 19. A smooth drawn LFO shape
 - [x] 20. A lesson on Fold, Steps and Flip; ear checks for attack and LFO speed
 - [x] 21. Five free papers on classic synth wave shapes taken into the library; four wavetables built from their formulas (Phase saw, Analogue saw, Phase pulse, Formant)
-- [ ] 22. Physical-modelling literature: the list is in `docs/LITERATURE.md` (found by search); take the free ones into the library once the owner approves the download sites
+- [x] 22. Physical-modelling literature: nine free texts taken into the library (two theses are scans with no text; the piano overview would not download)
 - [ ] 23. More formula wavetables: the CZ square and resonant shapes, a supersaw preset (the thesis link was dead), wavefolder curves from the Serge and Lockhart paper
-- [ ] 24. Lessons on the new wavetables, and genre lessons that use them
+- [x] 24. A lesson on the new wavetables ("Shapes from classic synths")
+- [x] 25. String lab: a plucked string built from the papers (the first physical-modelling instrument), as its own tab
+- [ ] 26. String lab next: make it an instrument the lesson engine can use (steps, checks, match by ear), then stiffness, two strings, a body, and a worklet for bends and bowing
+- [ ] 27. Genre lessons that use the new wavetables
 - [x] 10. Osc B as a full oscillator: unison and warp
 - [x] 11. Vero: build your own column (choose cabinets and angles, see the coverage change)
 - [x] 12. Save and load your own patches on the practice synth
@@ -69,7 +72,7 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [ ] Music theory lessons that use the MIDI keyboard (owner, 14 Nov 2026): track I of the curriculum.
 - [ ] Source texts on sound systems for the owner to find: see `docs/LITERATURE.md`.
 - [ ] Build from `docs/LEARNING_RESEARCH.md` (owner, 14 Nov 2026): Focus mode for ADHD, end-of-lesson recall, spaced return, mixed by-ear checkpoints, "why this matters" lines, fading guidance, optional noise, the new answer layout.
-- [ ] Remaining synthesis chapters from the course plan (98 lessons built)
+- [ ] Remaining synthesis chapters from the course plan (99 lessons built)
 
 ## Synth
 - [x] Filter with a draggable curve
@@ -118,7 +121,7 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [ ] The full curriculum: about 475 lessons across 17 tracks
 
 ## New tracks the owner asked for (13 Nov 2026)
-- [ ] Physical modelling: string engine and the plucked-string chapter (plan in docs/PHYSICAL_MODELING.md, about 60 lessons)
+- [ ] (string engine built 15 Nov as the String lab; lessons not yet) Physical modelling: string engine and the plucked-string chapter (plan in docs/PHYSICAL_MODELING.md, about 60 lessons)
 - [ ] Physical modelling: bars, bells and plates (resonator bank)
 - [ ] Physical modelling: drums, tubes and breath, bodies and hybrids
 - [ ] Bioacoustics: formant filters on the synth, then "how animals make sound" (plan in docs/BIOACOUSTICS.md, about 45 lessons)

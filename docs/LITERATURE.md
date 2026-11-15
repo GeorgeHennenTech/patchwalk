@@ -98,7 +98,8 @@ reported as CC0 by its GitHub copy and as CC BY 3.0 by one older article: read t
 download before using it). No paper was found that measures the TB-303's oscillator; the Open303
 project's forum thread has measurements, which is a forum source, not a paper.
 
-## Physical modelling of instruments (owner asked 15 Nov 2026; found by search, none opened or taken in yet)
+## Physical modelling of instruments (owner asked 15 Nov 2026)
+**Taken into the library on 15 Nov 2026:** `smith-digital-waveguides`, `smith-virtual-acoustic-instruments`, `vanduyne-waveguide-mesh`, `serafin-bowed-string`, `bilbao-ness-project`, `four-decades-digital-waveguides` (by Tablas de Paula, Smith, Välimäki and Reiss; a draft), `modal-synthesis-framework`, `avanzini-membrane-percussion`, `mcintyre-oscillations-of-instruments`. Not taken in: the Scavone and Cook theses (scans with no text layer), the piano overview (download refused), Smith's online book (no licence stated), and everything marked paid or not located below.
 "Free" means a copy on the author's or their university's own site, or an open-access journal. Check each
 before taking it in. The download sites are not yet allowed in the build session's network.
 

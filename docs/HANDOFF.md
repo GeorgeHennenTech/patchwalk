@@ -199,6 +199,8 @@ than one instrument instead of being rewritten.
 
 ## 8. What to do next
 
+**Later the same day:** five papers on classic synth wave shapes and nine on physical modelling went into the library; four wavetables were built from formulas, with a lesson (99 lessons now); and the first physical-modelling instrument exists as the "String lab" tab (`src/strings/string.ts`, `src/ui/StringLab.tsx`; see CLAUDE.md). Next for it: make the lesson engine able to use it.
+
 **Latest (15 Nov 2026).** The owner asked for a long run of tasks that need no decision from them. Done and
 pushed: everything listed under "Batch of 15 Nov 2026" in `CLAUDE.md` (a second filter with routing, peak
 and shelf types, three more warp modes, a smooth drawn LFO shape, Osc B's own warp and unison, reorderable

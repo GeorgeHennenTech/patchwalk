@@ -897,9 +897,11 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   analyser's own error). Three more were added the same day: `pdsquare` "Phase square" (two bends per cycle:
   odd harmonics only), `tanhsquare` "Driven square" and `tanhsaw` "Driven saw" (a sine through a hyperbolic
   tangent, and that times a raised cosine; Lazzarini and Timoney 2010, equations 16-17 and "sawtooth from
-  square"). The lesson "Shapes from classic synths" (C1.11) uses the first four. Not done: the CZ's
-  resonant shapes, the JP-8000 supersaw (the thesis link was dead), wavefolder curves from the Esqueda paper, and
-  any lesson on the new tables. The Adventure Kid Waveforms collection (about 4,300 single cycles) is a
+  square"). The lesson "Shapes from classic synths" (C1.11) uses the first four. A ninth warp mode, `diode` "Circuit fold", is one stage
+  of the Lockhart wavefolder from the Esqueda paper's equation 28 (`lockhartFold`, `lambertW`, part values
+  from its table 2; the 7.5 kilohm load and the 0.15 to 1.5 volt drive range are our choices). Not done: the CZ's
+  resonant shapes, the JP-8000 supersaw (the thesis link was dead), the Serge folder and a chain of several Lockhart stages, and
+  lessons on the three later tables. The Adventure Kid Waveforms collection (about 4,300 single cycles) is a
   possible bulk source; its licence is reported two ways and must be read first.
   A long list of **physical-modelling literature** (found by search, nothing opened) is in
   `docs/LITERATURE.md`; most free copies are on ccrma.stanford.edu, which the session's network does not

@@ -815,7 +815,7 @@ describe("LFO tempo sync, start mode and drawn shapes", () => {
 });
 
 import { CHAPTER_6 } from "../src/course/lessons/chapter6";
-import { fmIndex, foldGain, MOD_DESTS, spectrumA, stepCount, warpPhase, warpValue, WARPS } from "../src/synth/params";
+import { fmIndex, lambertW, lockhartFold, lockhartPeak, foldGain, MOD_DESTS, spectrumA, stepCount, warpPhase, warpValue, WARPS } from "../src/synth/params";
 describe("warp, FM and ring modulation", () => {
   const power = (s: Partial<SynthState>) => { const sp = spectrumA({ ...INITIAL, ...s }); return Array.from(sp.sin, (x, n) => x * x + sp.cos[n]! ** 2); };
   it("every warp mode leaves the wave alone at an amount of zero and stays inside the cycle", () => {
@@ -1603,6 +1603,22 @@ describe("second filter, and the peak and shelf types", () => {
     expect(filterResponseDb(s, 15000, null)).toBeGreaterThan(-1.5); // the high-pass's part
     expect(filterResponseDb(s, 900, null)).toBeLessThan(-15);       // the hole between them
     expect(filterResponseDb({ ...s, filterRoute: "series" }, 900, null)).toBeLessThan(-35);
+  });
+});
+
+describe("warp: the circuit fold", () => {
+  it("Lambert W is right, and the Lockhart stage passes small signals and turns large ones back", () => {
+    for (const x of [1e-6, 0.3, 1, 10, 1e6, 1e30]) { const w = lambertW(x); expect((w * Math.exp(w)) / x).toBeCloseTo(1, 9); }
+    expect(lockhartFold(0.1)).toBeCloseTo(0.1, 3);                       // well below the corner: unchanged
+    expect(lockhartFold(-0.3)).toBeCloseTo(-lockhartFold(0.3), 12);      // the same either way up
+    expect(lockhartFold(1.2)).toBeLessThan(lockhartFold(0.6));           // past the corner it comes back down
+    const peak = lockhartPeak(1.5); expect(peak).toBeGreaterThan(0.4); expect(peak).toBeLessThan(0.75);
+  });
+  it("on a sine it adds odd harmonics only, more with more drive, and leaves the wave nearly alone at zero", () => {
+    const sine = { shape: "sine", table: "none", position: 0 } as const, level = (sp: { sin: Float32Array; cos: Float32Array }, n: number) => Math.hypot(sp.sin[n]!, sp.cos[n]!);
+    const none = spectrumA({ ...sine, warp: "diode", warpAmount: 0 }); expect(level(none, 3)).toBeLessThan(0.01);
+    const some = spectrumA({ ...sine, warp: "diode", warpAmount: 50 }), lots = spectrumA({ ...sine, warp: "diode", warpAmount: 100 });
+    expect(level(some, 3)).toBeGreaterThan(0.05); expect(level(some, 2)).toBeLessThan(1e-3); expect(level(lots, 5)).toBeGreaterThan(level(some, 5));
   });
 });
 

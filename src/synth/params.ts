@@ -33,8 +33,8 @@ export const FAST_DESTS = ["none", "cutoff", "fine", "bFine", "aLevelDb", "bLeve
 /** Every destination, fast ones first. Filled in below, once the knobs themselves are defined. */
 export const MOD_DESTS: string[] = [...FAST_DESTS];
 /** Ways of reshaping oscillator A's wave by reading it at an uneven speed. "none" leaves it alone. */
-export const WARPS = ["none", "bend", "mirror", "sync", "pd", "flip", "steps", "fold"] as const;
-const WARP_NAMES = { none: "Off", bend: "Bend", mirror: "Mirror", sync: "Sync", pd: "Squeeze", flip: "Flip", steps: "Steps", fold: "Fold" };
+export const WARPS = ["none", "bend", "mirror", "sync", "pd", "flip", "steps", "fold", "diode"] as const;
+const WARP_NAMES = { none: "Off", bend: "Bend", mirror: "Mirror", sync: "Sync", pd: "Squeeze", flip: "Flip", steps: "Steps", fold: "Fold", diode: "Circuit fold" };
 export type Warp = (typeof WARPS)[number];
 const WAYS = ["both", "up"] as const;
 /** How an envelope falls during its decay and release: at an even rate, easing off, or dropping fast then lingering. */
@@ -619,8 +619,36 @@ export function warpPhase(mode: Warp, amount: number, p: number): number {
     case "sync": { const x = p * (1 + (SYNC_MAX - 1) * a); return x - Math.floor(x); }
     case "pd": { const knee = 0.5 - 0.45 * a; return p < knee ? (0.5 * p) / knee : 0.5 + (0.5 * (p - knee)) / (1 - knee); }
     case "steps": { const n = stepCount(amount); return a <= 0 ? p : Math.floor(p * n) / n; }
-    case "flip": case "fold": return p; // these two change the wave's height, not where it is read: see warpValue
+    case "flip": case "fold": case "diode": return p; // these two change the wave's height, not where it is read: see warpValue
   }
+}
+/** The Lambert W function for x >= 0: the w for which w times e to the w is x. */
+export function lambertW(x: number): number {
+  if (x <= 0) return 0;
+  let w = x < 1 ? x : Math.log(x) - Math.log(Math.log(x) + 1e-12);
+  for (let i = 0; i < 40; i++) { const e = Math.exp(w), f = w * e - x, step = f / (e * (w + 1) - ((w + 2) * f) / (2 * w + 2)); w -= step; if (Math.abs(step) < 1e-13 * (1 + Math.abs(w))) break; }
+  return w;
+}
+/**
+ * One stage of the Lockhart wavefolder, a transistor circuit used in "west coast" synthesizers, from input
+ * volts to output volts: equation 28 of Esqueda, Pöntynen, Parker and Bilbao, "Virtual Analog Models of the
+ * Lockhart and Serge Wavefolders" (Applied Sciences, 2017), with the part values of its table 2 and a load
+ * of 7.5 kilohms. Below about 0.6 V it passes the signal; above that it turns it back, with a rounded corner.
+ */
+export function lockhartFold(volts: number): number {
+  const R = 15000, RL = 7500, Is = 1e-17, VT = 0.025864, sign = volts < 0 ? -1 : 1;
+  const alpha = (2 * RL) / R, beta = (2 * RL + R) / (VT * R), delta = (RL * Is) / VT;
+  return alpha * volts - sign * VT * lambertW(delta * Math.exp(sign * beta * volts));
+}
+const lockhartPeaks = new Map<number, number>();
+/** The largest output the fold gives for inputs up to `volts`, so the result can be kept at a steady size. */
+export function lockhartPeak(volts: number): number {
+  const key = Math.round(volts * 1000), known = lockhartPeaks.get(key);
+  if (known) return known;
+  let peak = 1e-9;
+  for (let i = 1; i <= 96; i++) peak = Math.max(peak, Math.abs(lockhartFold((volts * i) / 96)));
+  lockhartPeaks.set(key, peak);
+  return peak;
 }
 /** Steps: how many flat steps one cycle is cut into, from 64 (close to smooth) down to 2. */
 export const stepCount = (amount: number) => Math.max(2, Math.round(64 / 2 ** ((Math.min(100, Math.max(0, amount)) / 100) * 5)));
@@ -635,6 +663,7 @@ export const foldGain = (amount: number) => 1 + (Math.min(100, Math.max(0, amoun
 export function warpValue(mode: Warp, amount: number, p: number, y: number): number {
   const a = Math.min(100, Math.max(0, amount)) / 100;
   if (mode === "flip") return p >= 1 - a ? -y : y;
+  if (mode === "diode") { const volts = 0.15 + 1.35 * a; return lockhartFold(y * volts) / lockhartPeak(volts); }
   if (mode === "fold") { const x = (y * foldGain(amount) + 1) / 4, t = x - Math.floor(x); return 1 - 4 * Math.abs(t - 0.5); }
   return y;
 }
@@ -658,7 +687,7 @@ export function spectrumA(state: Pick<SynthState, "shape" | "table" | "position"
   const base = new Float32Array(CYCLE + 1);
   for (let i = 0; i <= CYCLE; i++) { let y = 0; for (let n = 1; n < h.length; n++) { if (h[n]) y += h[n]! * Math.sin((2 * Math.PI * n * i) / CYCLE); if (hc[n]) y += hc[n]! * Math.cos((2 * Math.PI * n * i) / CYCLE); } base[i] = y; }
   const warped = new Float32Array(CYCLE);
-  const heights = state.warp === "flip" || state.warp === "fold";
+  const heights = state.warp === "flip" || state.warp === "fold" || state.warp === "diode";
   let peak = 1e-9;
   if (heights) for (let i = 0; i < CYCLE; i++) peak = Math.max(peak, Math.abs(base[i]!));
   for (let i = 0; i < CYCLE; i++) {

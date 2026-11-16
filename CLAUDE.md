@@ -1094,6 +1094,23 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   drawing is kept with the step in the saved walkthrough and in the shared memory. Checked in a browser
   with a stand-in reply; **not yet run against the real API**. Not built: "try it on the practice synth"
   with the step's settings, and anything with a physical shape (the guide is told to answer `none`).
+- **Shared library of walkthroughs, and a "Walkthroughs" tab (16 Nov 2026, owner's request: whatever the owner
+  or their friends have generated is saved so everyone can use it, with a tab to go through it).**
+  `src/store/walks.ts`: one walkthrough per question (`walkId`, a hash of the tidied question), kept in the
+  database under `pw:walks:doc:<id>` with a list of summaries in `pw:walks:index` (newest first, 300 at
+  most, **no expiry**: unlike the 90-day answer memory these stay until the owner removes them).
+  `api/walk.ts` puts every outline (`savePlan`), written step (`saveStep`) and drawing (`saveDraw`) there
+  as it is made, under the first asker's account name; the same outline asked again keeps what was written,
+  a different outline replaces it. Three free requests: `list`, `open` and `remove`. **They need the
+  password and a signed-in account but no key; `remove` is the owner's only. Writing a step that nobody
+  has opened yet is still a paid call under the usual who-pays rule** (a friend without their own key gets
+  402), which a test checks against the real endpoint with a stand-in database. A database that fails
+  never stops an answer. `WalkLibrary` in `src/ui/Walkthrough.tsx` is the tab (search by title, question,
+  tool or person; steps written, drawings, who asked, when; the owner sees Remove); `WalkPlayer` is the
+  shared step-by-step viewer, used there and on the Ask tab. A plan's reply carries the shared `id`, which
+  the browser's copy uses as its own id; `joinShared` joins the library's copy with the browser's.
+  **A person's place and ticks are still kept per browser, not with the account.** With no database the
+  tab says so. Checked in a browser with a stand-in; **not yet run against the real database.**
 - **Long pages are searched in parts (16 Nov 2026).** `splitText` in `src/library/search.ts` cuts a page over
   2,400 characters into overlapping parts of about 1,500 (ids `book#page~1`, `~2`, with `of` naming the
   page); `pageOf` and `cite` count parts of one page as one source, and `search` takes at most two parts of

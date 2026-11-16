@@ -14,6 +14,8 @@ import { cite, toParagraphs, type AnswerSegment, type AnswerSource, type ModelBl
 import type { Hit, Passage } from "./search.js";
 
 export const MIN_STEPS = 2, MAX_STEPS = 7;
+/** The id of a walkthrough in the shared library. */
+export const SHARED_ID = /^[a-f0-9]{24}$/;
 /** How much of a written step is sent when asking for a drawing of it. */
 export const MAX_DRAW_TEXT = 6000;
 export const TOOLS = ["serum", "ableton", "both", "none"] as const;
@@ -39,16 +41,20 @@ export const PlanModelSchema = z.object({
 });
 export type PlanModel = z.infer<typeof PlanModelSchema>;
 
-export interface Plan { covered: boolean; title: string; tool: Tool; steps: PlanStep[]; remembered?: boolean }
+export interface Plan { covered: boolean; title: string; tool: Tool; steps: PlanStep[]; remembered?: boolean; /** Its id in the shared library, when the site has a database. */ id?: string }
 
 export const WalkRequestSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("plan"), question: z.string().trim().min(3).max(600), fresh: z.boolean().optional() }),
   z.object({
     kind: z.literal("step"), question: z.string().trim().min(3).max(600), title: z.string().max(160), tool: z.enum(TOOLS),
-    steps: z.array(StepSchema).min(1).max(MAX_STEPS + 1), index: z.number().int().min(0).max(MAX_STEPS), fresh: z.boolean().optional(),
+    steps: z.array(StepSchema).min(1).max(MAX_STEPS + 1), index: z.number().int().min(0).max(MAX_STEPS), fresh: z.boolean().optional(), id: z.string().regex(SHARED_ID).optional(),
   }),
+  // the shared library: every walkthrough made on the site, for everyone signed in. None of these is a paid call.
+  z.object({ kind: z.literal("list") }),
+  z.object({ kind: z.literal("open"), id: z.string().regex(SHARED_ID) }),
+  z.object({ kind: z.literal("remove"), id: z.string().regex(SHARED_ID) }),
   // "Draw this": the step as it was written (with its labels), so a drawing can be chosen for it
-  z.object({ kind: z.literal("draw"), question: z.string().trim().min(3).max(600), step: z.string().trim().min(3).max(160), text: z.string().trim().min(10).max(MAX_DRAW_TEXT), fresh: z.boolean().optional() }),
+  z.object({ kind: z.literal("draw"), question: z.string().trim().min(3).max(600), step: z.string().trim().min(3).max(160), text: z.string().trim().min(10).max(MAX_DRAW_TEXT), fresh: z.boolean().optional(), id: z.string().regex(SHARED_ID).optional() }),
 ]);
 export type WalkRequest = z.infer<typeof WalkRequestSchema>;
 

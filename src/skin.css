@@ -150,7 +150,8 @@ button.primary:not(:disabled):hover { transform: translate(-1px, -1px); }
 
 .modes button:nth-child(3) { background-image: url("./assets/skin/tiger.webp"); transform: rotate(-1deg); }
 .modes button:nth-child(4) { background-image: url("./assets/skin/shag.webp"); transform: rotate(1deg); }
-.modes button:nth-child(5) { background-color: #0b7c7c; transform: rotate(-1deg); }
+.modes button:nth-child(5) { background-color: #6a3fc4; transform: rotate(-1deg); }
+.modes button:nth-child(6) { background-color: #0b7c7c; transform: rotate(1deg); }
 .selftest h2 { margin: 0; }
 .selftest-result ul { margin: 6px 0 10px; padding-left: 18px; color: var(--muted); font-size: 14px; }
 
@@ -1108,3 +1109,14 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 .draw-chain { list-style: none; display: flex; flex-wrap: wrap; gap: 8px 26px; margin: 8px 0; padding: 0; }
 .draw-chain li { position: relative; padding: 8px 14px; border: 2px solid var(--thread); border-radius: 10px; font-weight: 700; }
 .draw-chain li + li::before { content: "→"; position: absolute; left: -22px; top: 50%; transform: translateY(-50%); font-weight: 900; }
+
+/* The shared library of walkthroughs. */
+.walk-find { width: 100%; max-width: 520px; margin: 4px 0 10px; }
+.walk-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; max-width: 80ch; }
+.walk-list li { display: flex; gap: 10px; align-items: center; }
+.walk-open { flex: 1; display: grid; gap: 2px; text-align: left; padding: 10px 14px; border: 2px solid var(--thread); border-radius: 12px; background: var(--panel); color: var(--text); font: inherit; cursor: pointer; }
+.walk-open:hover, .walk-open:focus-visible { border-color: var(--accent); }
+.walk-open strong { font-size: 1.05rem; }
+.walk-list-q { opacity: 0.85; }
+.walk-list-meta { font-size: 0.85rem; opacity: 0.75; }
+.walk-list-meta b { padding: 0 7px; border-radius: 999px; background: var(--accent); color: #fff; font-weight: 700; }

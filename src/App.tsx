@@ -6,6 +6,7 @@ import { parseCard, type Card } from "./lesson/cards";
 import { INIT_BASELINE } from "./patch/baseline";
 import { Badge } from "./ui/Badge";
 import { AskView } from "./ui/AskView";
+import { WalkLibrary } from "./ui/Walkthrough";
 import { DriverPage } from "./ui/DriverDiagram";
 import ModelLabs from "./ui/ModelLabs";
 import { CompareView } from "./ui/CompareView";
@@ -70,7 +71,7 @@ function SoundType({ analysis }: { analysis: Analysis }) {
 
 export function App() {
   const [state, setState] = useState<State>({ kind: "empty" });
-  const [mode, setMode] = useState<"rebuild" | "play" | "learn" | "ask" | "sound" | "strings" | "check">("rebuild");
+  const [mode, setMode] = useState<"rebuild" | "play" | "learn" | "ask" | "walks" | "sound" | "strings" | "check">("rebuild");
   const [tab, setTab] = useState<TabId>("lesson");
   // A lesson the guide has pointed to. The counter makes a second click on the same lesson count.
   const [wanted, setWanted] = useState<{ id: string; n: number }>();
@@ -116,6 +117,7 @@ export function App() {
           <button role="tab" aria-selected={mode === "play"} className={mode === "play" ? "on" : ""} onClick={() => setMode("play")}>Lessons</button>
           <button role="tab" aria-selected={mode === "learn"} className={mode === "learn" ? "on" : ""} onClick={() => setMode("learn")}>Serum tasks</button>
           <button role="tab" aria-selected={mode === "ask"} className={mode === "ask" ? "on" : ""} onClick={() => setMode("ask")}>Ask the guide</button>
+          <button role="tab" aria-selected={mode === "walks"} className={mode === "walks" ? "on" : ""} onClick={() => setMode("walks")}>Walkthroughs</button>
           <button role="tab" aria-selected={mode === "sound"} className={mode === "sound" ? "on" : ""} onClick={() => setMode("sound")}>Sound systems</button>
           <button role="tab" aria-selected={mode === "strings"} className={mode === "strings" ? "on" : ""} onClick={() => setMode("strings")}>Physical models</button>
           <button role="tab" aria-selected={mode === "check"} className={mode === "check" ? "on" : ""} onClick={() => setMode("check")}>System check</button>
@@ -140,6 +142,7 @@ export function App() {
       )}
 
       {mode === "ask" && <AskView />}
+      {mode === "walks" && <WalkLibrary />}
       {mode === "sound" && <DriverPage />}
       {mode === "strings" && <ModelLabs />}
       {mode === "check" && <><SelfTest cards={CARDS} /><DatabaseCheck /></>}

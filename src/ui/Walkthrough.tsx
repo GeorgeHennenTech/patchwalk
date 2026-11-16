@@ -8,6 +8,8 @@ import { stepText, TOOL_NAMES, type BlockKind, type StepBlock, type StepBody } f
 import { plain, SourceImage } from "./Answer";
 import { Badge } from "./Badge";
 import { DrawingView } from "./Drawing";
+import { Threads } from "./Threads";
+import { stepsWithThreads } from "../guide/threads";
 
 const EXAMPLES = ["How do I make a plucked sound with a filter envelope?", "How do I set up sidechain compression on a bass?", "How do I make a vibrato that fades in?", "How do I use FM to make a bell-like tone?"];
 
@@ -58,6 +60,8 @@ export function WalkPlayer({ walk, keep }: { walk: Walk; keep: (w: Walk) => void
   latest.current = walk;
   const put = (id: string, at: number, change: (s: Walk["steps"][number]) => Walk["steps"][number]) => { const w = latest.current; if (w.id === id) keep({ ...w, steps: w.steps.map((s, i) => (i === at ? change(s) : s)) }); };
   const current = walk.steps[walk.at]!;
+  const stepBox = useRef<HTMLElement>(null);
+  const threaded = stepsWithThreads(walk.threads ?? []);
 
   useEffect(() => {
     if (current.body) return;
@@ -98,16 +102,16 @@ export function WalkPlayer({ walk, keep }: { walk: Walk; keep: (w: Walk) => void
         <h3>{walk.title}</h3>
         <ol className="walk-track" aria-label="Steps">
           {walk.steps.map((s, i) => (
-            <li key={i}><button className={`${i === walk.at ? "now" : ""}${s.done ? " had" : ""}`} aria-current={i === walk.at ? "step" : undefined} onClick={() => go(i)} title={s.title}>{s.done ? "✓" : i + 1}</button></li>
+            <li key={i}><button className={`${i === walk.at ? "now" : ""}${s.done ? " had" : ""}`} aria-current={i === walk.at ? "step" : undefined} onClick={() => go(i)} title={`${s.title}${threaded.has(i) ? " (has side threads)" : ""}`}>{s.done ? "✓" : i + 1}{threaded.has(i) && <i className="walk-dot" aria-hidden="true" />}</button></li>
           ))}
         </ol>
       </header>
-      <section className="walk-step" aria-live="polite">
+      <section className="walk-step" aria-live="polite" ref={stepBox}>
         <p className="walk-count">Step {walk.at + 1} of {walk.steps.length}{current.kind === "recipe" && tool ? ` · in ${tool}` : current.kind === "maths" ? " · the maths" : ""}</p>
         <h4>{current.title}</h4>
         {!body && busy && <p className="muted">Looking through the library for this step…</p>}
         {body && body.blocks.length === 0 && <p><Badge kind="unknown">not in the library</Badge> The library has nothing for this step{current.kind === "recipe" && tool ? `: no page of the ${tool} manual matched` : ""}, so the guide will not guess.</p>}
-        {body && body.blocks.map((b, k) => <Block key={k} block={b} body={body} tool={current.kind === "recipe" ? tool : ""} />)}
+        {body && body.blocks.length > 0 && <div data-anchor="step">{body.blocks.map((b, k) => <Block key={k} block={b} body={body} tool={current.kind === "recipe" ? tool : ""} />)}</div>}
         {body && body.sources.some((s) => s.images?.length) && (
           <div className="answer-pictures">
             {body.sources.flatMap((s) => (s.images ?? []).map((im) => <SourceImage key={`${s.n}-${im.file}`} im={im} from={`${s.source}${s.page ? `, page ${s.page}` : ""}`} question={`${walk.question} (step: ${current.title})`} answer={stepText(body)} />))}
@@ -134,7 +138,8 @@ export function WalkPlayer({ walk, keep }: { walk: Walk; keep: (w: Walk) => void
           <button disabled={walk.at === 0} onClick={() => go(walk.at - 1)}>Back</button>
           <button className="primary" disabled={!body} onClick={tick}>{walk.at === walk.steps.length - 1 ? (current.done ? "Done" : "Done: finish") : current.done ? "Next step" : "Done, next step"}</button>
         </p>
-        {finished && <p className="note">That is every step. This walkthrough stays under “Your walkthroughs”, so you can come back to it without paying again.</p>}
+        {body && body.blocks.length > 0 && <Threads key={`${walk.id}:${walk.at}`} within={stepBox} walkTitle={walk.title} stepTitle={current.title} step={walk.at} stepWords={stepText(body)} threads={walk.threads ?? []} change={(fn) => { const next = { ...latest.current, threads: fn(latest.current.threads ?? []) }; latest.current = next; keep(next); }} />}
+            {finished && <p className="note">That is every step. This walkthrough stays under “Your walkthroughs”, so you can come back to it without paying again.</p>}
       </section>
       <details className="walk-outline">
         <summary>All steps</summary>

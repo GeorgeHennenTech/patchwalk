@@ -118,7 +118,8 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [x] Guide: "Draw this" on a walkthrough step: a formula as a graph with sliders, or a ready-made picture, chosen by the guide and drawn by the app (16 Nov; owner to try it live)
 - [ ] Guide: "Try it on the practice synth" from a walkthrough step, with the step's settings loaded
 - [x] Guide: shared library of walkthroughs in the database and a "Walkthroughs" tab to browse it; everything anyone generates is kept for all (16 Nov; owner to try it live)
-- [ ] Guide: keep each person's place and ticks in a walkthrough with their account (today per browser)
+- [x] Guide: side threads on a walkthrough: highlight any words to ask about them; branches off answers, three deep, colour-coded, collapsible, with a way back (16 Nov; owner to try it live)
+- [ ] Guide: keep each person's place, ticks and side threads in a walkthrough with their account (today per browser)
 - [ ] Place library pictures inside lessons where they help
 - [ ] Voice for the guide using Higgsfield (owner's choice): test quality, then generate each narration once and store it
 - [ ] Remember what the learner found hard, not only what they finished

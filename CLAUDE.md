@@ -1117,6 +1117,27 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   keeps the browser's place and ticks; one the site no longer remembers is offered once and left alone.
   **A person's place and ticks are still kept per browser, not with the account.** With no database the
   tab says so. Checked in a browser with a stand-in; **not yet run against the real database.**
+- **Side threads on a walkthrough, by highlighting (16 Nov 2026, owner's request and design choice).** The
+  owner wants to turn a walkthrough into a conversation and split off into side topics when rabbit-holing,
+  with it obvious where each one stems from and everything collapsible; they chose **highlighting text**
+  as the way in. Highlight any words in a step, or in an answer inside a thread, and an "Ask about this"
+  button appears; asking starts a thread that hangs off those words. `src/guide/threads.ts` is the data and
+  rules (tested in `tests/threads.test.ts`): a `Thread` has its step, the `quote` it stems from, an optional
+  `parent` (thread and which answer), its turns and a colour; three levels deep at most (`MAX_DEPTH`), 40 a
+  walkthrough; **`historyFor` sends only a branch's own path** (each thread above it up to the answer it
+  left from, then its own turns), never a neighbour's; `contextFor` puts the step's title and the quote in
+  the first line, which is what steers the search. Questions go through the ordinary `api/ask.ts`, so the
+  same citation rules and who-pays rule apply; one paid call each. `src/ui/Threads.tsx` draws them: indented
+  under what they came from with a dashed line in the branch's colour, the header showing the quote and the
+  first question; only the branch being read is open, the rest fold to one line; a trail ("Step 1 › … › …")
+  with "Back to the walkthrough" folds everything; a dot marks steps that have threads. **The quoted words
+  are coloured in place with the browser's highlight layer** (`CSS.highlights`, `paintQuotes`; matched with
+  all spacing removed, so a quote across several pieces of text still marks; browsers without it mark
+  nothing). Elements whose text can be asked about carry `data-anchor` (`step`, or `t:<thread>:<turn>`).
+  Threads are the learner's own: kept on the walkthrough in the browser (`walk.threads`), **never put in the
+  shared library**, and kept by `joinShared` only while the steps are the same. Checked in a browser with
+  stand-in replies. Not built: threads stored with the account, sharing a thread, asking about the whole
+  walkthrough without highlighting, highlighting on touch screens.
 - **Long pages are searched in parts (16 Nov 2026).** `splitText` in `src/library/search.ts` cuts a page over
   2,400 characters into overlapping parts of about 1,500 (ids `book#page~1`, `~2`, with `of` naming the
   page); `pageOf` and `cite` count parts of one page as one source, and `search` takes at most two parts of

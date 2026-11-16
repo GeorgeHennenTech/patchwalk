@@ -3,6 +3,7 @@
 // steps already read and the ticks already made.
 import { guideHeaders } from "./me";
 import type { Drawing } from "../library/draw";
+import type { Thread } from "./threads";
 import { SHARED_ID, stepForDrawing, type Plan, type PlanStep, type StepBody, type Tool } from "../library/walk";
 
 export type WalkOutcome<T> = { kind: "ok"; value: T } | { kind: "unavailable"; message: string };
@@ -38,7 +39,7 @@ export const drawStep = (question: string, step: string, body: StepBody, fresh =
 
 /** One step of a saved walkthrough: the plan's step, what the guide wrote for it once opened, and the learner's tick. */
 export interface WalkStep extends PlanStep { body?: StepBody; done?: boolean; /** The drawing chosen for this step, once asked for. */ draw?: Drawing }
-export interface Walk { id: string; question: string; title: string; tool: Tool; steps: WalkStep[]; at: number; savedAt: string }
+export interface Walk { id: string; question: string; title: string; tool: Tool; steps: WalkStep[]; at: number; savedAt: string; /** The learner's own side threads: questions asked about highlighted words. Kept in this browser, never shared. */ threads?: Thread[] }
 
 const KEY = "patchwalk.walks.v1";
 export const MAX_WALKS = 30;
@@ -86,6 +87,8 @@ export function joinShared(doc: SharedDoc, local?: Walk): Walk {
   const sameSteps = !!local && local.steps.length === doc.steps.length && local.steps.every((s, i) => s.title === doc.steps[i]!.title);
   return {
     id: doc.id, question: doc.question, title: doc.title, tool: doc.tool, savedAt: doc.updated,
+    // side threads are the learner's own and hang off the steps, so they come along only while the steps are the same
+    ...(sameSteps && local!.threads?.length ? { threads: local!.threads } : {}),
     at: sameSteps ? Math.min(local!.at, doc.steps.length - 1) : 0,
     steps: doc.steps.map((s, i) => { const l = sameSteps ? local!.steps[i]! : undefined; return { title: s.title, find: s.find, kind: s.kind, ...(s.body ?? l?.body ? { body: s.body ?? l!.body } : {}), ...(s.draw ?? l?.draw ? { draw: s.draw ?? l!.draw } : {}), ...(l?.done ? { done: true } : {}) }; }),
   };

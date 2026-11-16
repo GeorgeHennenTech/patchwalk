@@ -1120,3 +1120,37 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 .walk-list-q { opacity: 0.85; }
 .walk-list-meta { font-size: 0.85rem; opacity: 0.75; }
 .walk-list-meta b { padding: 0 7px; border-radius: 999px; background: var(--accent); color: #fff; font-weight: 700; }
+
+/* Side threads on a walkthrough: branches that hang off highlighted words. */
+.thread.c0 { --branch: #e0409a; }
+.thread.c1 { --branch: #1f9d9d; } .thread.c2 { --branch: #d98a1a; } .thread.c3 { --branch: #6a5fe0; } .thread.c4 { --branch: #3fa34d; } .thread.c5 { --branch: #d0453f; }
+::highlight(branch-0) { background-color: rgba(224, 64, 154, 0.32); }
+::highlight(branch-1) { background-color: rgba(31, 157, 157, 0.32); }
+::highlight(branch-2) { background-color: rgba(217, 138, 26, 0.36); }
+::highlight(branch-3) { background-color: rgba(106, 95, 224, 0.32); }
+::highlight(branch-4) { background-color: rgba(63, 163, 77, 0.32); }
+::highlight(branch-5) { background-color: rgba(208, 69, 63, 0.3); }
+.thread-pick { position: fixed; z-index: 60; padding: 4px; border-radius: 999px; background: #2a1533; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35); color: #fff6e6; font-size: 0.85rem; max-width: 260px; }
+.thread-pick span { display: block; padding: 4px 10px; }
+.thread-pick button { border: 2px dashed #fff6e6; border-radius: 999px; padding: 5px 14px; background: var(--accent); color: #fff; font: inherit; font-weight: 800; cursor: pointer; white-space: nowrap; }
+.threads { margin: 18px 0 6px; padding-top: 12px; border-top: 2px dashed var(--thread); }
+.threads-title { margin: 0 0 8px; font-size: 1rem; }
+.threads-title .muted { font-weight: 400; font-size: 0.85rem; }
+.thread-trail { position: sticky; top: 6px; z-index: 20; margin: 0 0 10px; padding: 6px 12px; border: 2px solid var(--accent); border-radius: 12px; background: var(--panel); font-size: 0.9rem; }
+.thread { margin: 8px 0 8px 6px; padding-left: 14px; border-left: 4px dashed var(--branch); }
+.thread .thread { margin-left: 2px; }
+.thread-head { display: grid; grid-template-columns: auto 1fr; gap: 0 8px; width: 100%; text-align: left; padding: 6px 10px; border: 2px solid var(--branch); border-radius: 10px; background: var(--panel); color: var(--text); font: inherit; cursor: pointer; }
+.thread.active > .thread-head { box-shadow: 0 0 0 3px color-mix(in srgb, var(--branch) 35%, transparent); }
+.thread-knot { grid-row: 1 / 3; align-self: center; width: 12px; height: 12px; border-radius: 50%; background: var(--branch); margin-left: -2px; }
+.thread-from { font-style: italic; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; background: color-mix(in srgb, var(--branch) 22%, transparent); border-radius: 4px; padding: 0 4px; justify-self: start; max-width: 100%; }
+.thread-sum { font-size: 0.88rem; opacity: 0.85; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.thread.open > .thread-head .thread-sum { font-weight: 700; opacity: 1; }
+.thread-body { padding: 8px 0 2px 2px; }
+.thread-q { margin: 10px 0 4px; font-weight: 700; }
+.thread-q::before { content: "You: "; color: var(--branch); }
+.thread-ask { display: flex; gap: 8px; margin: 10px 0 4px; }
+.thread-ask input { flex: 1; min-width: 0; }
+.thread-hint { margin: 8px 0 2px; font-size: 0.88rem; }
+.thread-tools { margin: 2px 0 0; font-size: 0.85rem; text-align: right; }
+.walk-track button { position: relative; }
+.walk-dot { position: absolute; top: -3px; right: -3px; width: 10px; height: 10px; border-radius: 50%; background: #d98a1a; border: 2px solid var(--panel); }

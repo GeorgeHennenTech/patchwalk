@@ -22,6 +22,7 @@ export default function DrumLab() {
   const [s, setS] = useState<DrumState>(DRUM_INITIAL);
   const [done, setDone] = useState<string[]>([]);
   const [flash, setFlash] = useState(0);
+  const [way, setWay] = useState({ x: 1, y: 0 });
   const ctx = useRef<AudioContext | undefined>(undefined);
   const state = useRef(s); state.current = s;
   const course = useModelLesson(DRUM_LESSONS, (settings) => setS({ ...DRUM_INITIAL, ...settings }));
@@ -49,9 +50,10 @@ export default function DrumLab() {
   const strikeAt = (e: React.PointerEvent<SVGSVGElement>) => {
     const box = e.currentTarget.getBoundingClientRect(), x = ((e.clientX - box.left) / box.width) * 2 - 1, y = ((e.clientY - box.top) / box.height) * 2 - 1;
     const r = s.head === "round" ? Math.hypot(x, y) : Math.max(Math.abs(x), Math.abs(y));
-    hit({ strike: Math.round(Math.min(0.95, r / 0.9) * 100) });
+    if (r > 0.001) setWay({ x: x / r, y: y / r });   // which way from the centre the hit was, so the dot lands under the pointer
+    hit({ strike: Math.round(Math.min(0.95, r / 0.86) * 100) });
   };
-  const dot = s.head === "round" ? { x: 100 + (s.strike / 100) * 81, y: 100 } : { x: 100 + (s.strike / 100) * 81, y: 100 - (s.strike / 100) * 81 };
+  const dot = { x: 100 + way.x * (s.strike / 100) * 86, y: 100 + way.y * (s.strike / 100) * 86 };
   return (
     <section className="strings">
       <h2>Drum lab: a head made of modes</h2>

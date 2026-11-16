@@ -954,6 +954,11 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   breath swells in and eases off, wanders a few percent, and its noise has the top taken off. **All these
   numbers are our own choices and each lab's "What is missing here" says so. Checked by measurement and
   tests only: the assistant cannot hear, so the owner's ear is the judge.** The bowed string was not changed.
+- **Physical models tab is on hold (owner, 16 Nov 2026).** The owner does not think the page earns its place
+  as it is and would rather have lessons built on the literature once they have uploaded it; the page may be
+  kept only if it can then be made genuinely good. **Do no further work on the four labs until the texts
+  arrive** (first of all Fletcher and Rossing). Then: write the lessons from the texts, and keep a model only
+  where a lesson needs something to play and its numbers can come from a source. Not removed meanwhile.
 - **Lessons on the physical models (15 Nov 2026, later still).** `src/models/lessons.ts` holds six lessons
   as data (`ModelLesson<S>`: outcome, two idea paragraphs, steps with `check(settings, played)`, recap, and
   their own quiz questions): string Q1.1 "A burst of noise becomes a note", Q1.2 "Loss is tone", Q1.3

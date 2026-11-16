@@ -413,3 +413,12 @@ The owner reported the drum, string and tube sound electronic or awful. Drum, st
 (see "Realism pass on the physical models" in `CLAUDE.md`). Waiting for the owner to say whether they now sound
 better; if not, ask which instrument and what is wrong (too bright, too dull, too short, too clean). The bowed
 string has not been touched.
+
+## 16 Nov 2026: "Walk me through it" and the physical models on hold
+- The guide has a second mode, step-by-step walkthroughs (see `CLAUDE.md`, "Walk me through it"). It has only
+  been checked with a stand-in reply. **First thing to ask the owner: did a real walkthrough keep its labels
+  ("the text says" / "my synthesis"), and was the outline sensible?** Fix the prompts in `src/library/walk.ts`
+  from what they report.
+- The Physical models tab is on hold until the owner uploads the literature (list given to them on 16 Nov;
+  `docs/LITERATURE.md`). Then lessons come first, written from the texts.
+

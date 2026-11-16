@@ -2,7 +2,7 @@
 // tested offline. The model is told to answer only from the passages; every sentence it writes carries the
 // passages it was drawn from, and text with no source is flagged for the reader.
 import { z } from "zod";
-import type { Hit, Passage, PassageImage } from "./search.js";
+import { pageOf, type Hit, type Passage, type PassageImage } from "./search.js";
 
 /** How much of a conversation is sent back with a follow-up question. */
 export const MAX_HISTORY_TURNS = 4, MAX_HISTORY_ANSWER = 1500;
@@ -71,6 +71,8 @@ Answer the learner's question using only the documents supplied with it. They ar
 - If something is worth knowing but is not part of doing what was asked (a related limit, a note, a tip), put it last, in a paragraph of its own that begins with the words "Side note:". Keep it out of the steps. Most answers need none.
 - The question may be a follow-up in a conversation; earlier questions and answers are then included. Use them only to understand what the learner means. They are not a source: everything you say must still come from the documents supplied with this question.
 - When the documents come from different books, bring them together into one answer, and say which book each part comes from when that matters.
+- Where two documents disagree, or use different names, conventions or units for the same thing, say so plainly and say what each one says. Do not blend them into one statement.
+- Keep what a document says apart from your own joining-up: when you draw a conclusion that no document states, begin that sentence with "My reading:".
 - Knowledge cards are drafts written for this app; a product's own manual is the authority on how that product behaves. Do not carry a statement from one product's manual over to another product: say which one you are describing when it could be unclear.`;
 
 export async function answerQuestion(req: AskRequest, hits: Hit[], model: GuideModel): Promise<AskResponse> {
@@ -82,18 +84,28 @@ export async function answerQuestion(req: AskRequest, hits: Hit[], model: GuideM
   const whole = blocks.map((b) => b.text).join("").trim();
   if (!whole || whole.includes(NOT_COVERED)) return { covered: false, segments: [], sources: [] };
 
-  const numbers = new Map<number, AnswerSource>();
+  return { covered: true, ...cite(blocks, passages) };
+}
+
+/**
+ * Turns what the model wrote into pieces that each carry the numbers of their sources, and the list of
+ * sources in order of first use. Parts of one long page count as one source. A citation that points
+ * outside the passages that were supplied is dropped, not trusted.
+ */
+export function cite(blocks: ModelBlock[], passages: Passage[]): { segments: AnswerSegment[]; sources: AnswerSource[] } {
+  const numbers = new Map<string, AnswerSource>();
   const segments: AnswerSegment[] = [];
   for (const block of blocks) {
     if (!block.text) continue;
     const used: number[] = [];
     for (const c of block.citations) {
       const p = passages[c.passageIndex];
-      if (!p) continue; // a citation that points outside what was supplied is dropped, not trusted
-      let src = numbers.get(c.passageIndex);
+      if (!p) continue;
+      const page = pageOf(p);
+      let src = numbers.get(page);
       if (!src) {
-        src = { n: numbers.size + 1, id: p.id, source: p.source, section: p.section, page: p.page, quotes: [], ...(p.images?.length ? { images: [...p.images].sort((a, b) => b.width * b.height - a.width * a.height).slice(0, MAX_IMAGES_PER_SOURCE) } : {}) };
-        numbers.set(c.passageIndex, src);
+        src = { n: numbers.size + 1, id: page, source: p.source, section: p.section, page: p.page, quotes: [], ...(p.images?.length ? { images: [...p.images].sort((a, b) => b.width * b.height - a.width * a.height).slice(0, MAX_IMAGES_PER_SOURCE) } : {}) };
+        numbers.set(page, src);
       }
       const quote = c.quote.replace(/\s+/g, " ").trim();
       if (quote && !src.quotes.includes(quote)) src.quotes.push(quote);
@@ -101,7 +113,7 @@ export async function answerQuestion(req: AskRequest, hits: Hit[], model: GuideM
     }
     segments.push({ text: block.text, sources: used });
   }
-  return { covered: true, segments, sources: [...numbers.values()].sort((a, b) => a.n - b.n) };
+  return { segments, sources: [...numbers.values()].sort((x, y) => x.n - y.n) };
 }
 
 /** One paragraph of an answer, ready to show: its pieces in order, and whether it is a side note. */

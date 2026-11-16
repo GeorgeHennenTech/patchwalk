@@ -101,7 +101,7 @@ export function Answer({ outcome, question, onAsk }: { outcome: AskOutcome; ques
  * are lettered, because manuals often print numbers of their own on a picture. They are the guide's
  * pointing, not the manual's, and are labelled as such.
  */
-function SourceImage({ im, from, question, answer }: { im: { book: string; file: string; width: number; height: number }; from: string; question?: string; answer?: string }) {
+export function SourceImage({ im, from, question, answer }: { im: { book: string; file: string; width: number; height: number }; from: string; question?: string; answer?: string }) {
   const [state, setState] = useState<PointOutcome | "busy">();
   // a picture that is no longer in the library (an answer remembered from before it was removed) is not shown
   const [gone, setGone] = useState(false);

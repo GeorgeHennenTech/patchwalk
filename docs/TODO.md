@@ -113,7 +113,9 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [x] Database: "Who's playing?" with each person's lessons and chats on any device, answers and marked pictures shared, optional own Claude key
 - [ ] Guide: an "this answer is good" button for the owner, so approved answers join the library
 - [ ] Guide: mark up a walkthrough's pictures automatically, step by step (today it is one click per picture)
-- [ ] Guide: better search across many books (done 15 Nov: related technical words added to a question at half weight; still to do: split long pages into passages, have a small model pick the best)
+- [x] Guide: "Walk me through it": step-by-step walkthroughs written across all the texts, each part labelled "the text says" or "my synthesis", differences between texts stated, book maths explained, ending in a Serum 2 or Ableton recipe (16 Nov; owner to try it live)
+- [ ] Guide: better search across many books (done 15 Nov: related technical words; done 16 Nov: long pages split into passages; still to do: have a small model pick the best)
+- [ ] Guide: keep walkthroughs with the account, not only the browser
 - [ ] Place library pictures inside lessons where they help
 - [ ] Voice for the guide using Higgsfield (owner's choice): test quality, then generate each narration once and store it
 - [ ] Remember what the learner found hard, not only what they finished

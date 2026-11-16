@@ -1038,3 +1038,40 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 .score-here { fill: rgba(216, 27, 119, 0.1); stroke: #d81b77; stroke-width: 1.5; stroke-dasharray: 4 3; }
 .score-note.wrong .score-here { fill: rgba(198, 40, 40, 0.12); stroke: #c62828; }
 .score-help { margin: 4px 0 0; font-size: 13px; }
+
+/* "Walk me through it": steps one at a time; every paragraph labelled as a text's words or the guide's own. */
+.ask-mode { display: inline-flex; margin: 0 0 12px; overflow: hidden; }
+.ask-mode button { border: 0; background: var(--panel); color: var(--text); padding: 6px 14px; font: inherit; cursor: pointer; }
+.walk { margin: 14px 0; }
+.walk-head h3 { margin: 2px 0 10px; }
+.walk-q { margin: 0; }
+.walk-track { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 14px; padding: 0; }
+.walk-track button { min-width: 34px; height: 34px; border: 2px solid var(--thread); border-radius: 999px; background: var(--panel); color: var(--text); font: inherit; font-weight: 700; cursor: pointer; }
+.walk-track button.had { border-style: dashed; opacity: 0.85; }
+.walk-track button.now { background: var(--accent); border-color: var(--accent); color: #fff; opacity: 1; }
+.walk-step { border: 2px solid var(--thread); border-radius: 14px; background: var(--panel); color: var(--text); padding: 14px 18px 12px; max-width: 78ch; }
+.walk-count { margin: 0; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; opacity: 0.75; }
+.walk-step h4 { margin: 4px 0 12px; font-size: 1.25rem; }
+.walk-block { margin: 0 0 14px; padding: 2px 0 2px 14px; border-left: 4px solid var(--thread); }
+.walk-block p { margin: 0; }
+.walk-words { white-space: pre-line; line-height: 1.6; }
+.walk-label { margin-bottom: 4px !important; font-size: 0.85rem; }
+.walk-tag { display: inline-block; padding: 1px 9px; border-radius: 999px; font-weight: 800; letter-spacing: 0.03em; background: var(--thread); color: var(--panel); }
+.walk-from { opacity: 0.8; }
+.walk-do { border-left: 0; padding-left: 0; font-size: 1.08rem; font-weight: 600; }
+.walk-words .uncited { opacity: 0.6; }
+.walk-block.walk-text { border-left-color: #1f9d6b; }
+.walk-block.walk-text .walk-tag { background: #1f9d6b; color: #fff; }
+.walk-block.walk-synthesis { border-left-color: #c9871a; border-left-style: dashed; }
+.walk-block.walk-synthesis .walk-tag { background: #c9871a; color: #fff; }
+.walk-block.walk-disagree { border-left-color: #d0453f; }
+.walk-block.walk-disagree .walk-tag { background: #d0453f; color: #fff; }
+.walk-block.walk-maths { border-left-color: #5b6ee0; }
+.walk-block.walk-maths .walk-tag { background: #5b6ee0; color: #fff; }
+.walk-block.walk-maths .walk-words { font-variant-numeric: tabular-nums; }
+.walk-block.walk-recipe { border-left-color: var(--accent); }
+.walk-block.walk-recipe .walk-tag { background: var(--accent); color: #fff; }
+.walk-block.walk-missing { border-left-style: dotted; opacity: 0.9; }
+.walk-nav { display: flex; gap: 10px; margin: 14px 0 4px; }
+.walk-outline { margin: 10px 0; }
+.walk-words sup + sup { margin-left: 3px; }

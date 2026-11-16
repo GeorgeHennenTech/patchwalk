@@ -1053,6 +1053,36 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   exactly 0.2500 s apart, and stopped when the keys were let go. (A first version driven by timers alone
   wandered between 0.19 and 0.50 s.) Because arpeggiated notes are not in `held`, a lesson step cannot
   check which note is sounding, only the settings and the keys pressed. Lesson C8.4 "The arpeggiator".
+- **"Walk me through it" (16 Nov 2026, owner's go-ahead with two rules of their own).** A second mode on the
+  Ask tab (a switch, remembered): a how-to question becomes a walkthrough of steps shown one at a time.
+  `api/walk.ts` answers two kinds of request: `plan` (one call with structured output over ten passages:
+  title, tool, two to seven steps each with search words and a kind of `idea`, `maths` or `recipe`) and
+  `step` (one call with citations over five passages found for that step alone). The browser asks for a
+  step only when the learner reaches it, so a step never opened is never paid for. `src/library/walk.ts`
+  holds the rules, all tested offline (`tests/walk.test.ts`):
+  **(1) Sources apart from inference.** The model writes each paragraph under a label (DO, TEXT, SYNTHESIS,
+  DISAGREE, MATHS, RECIPE, MISSING); **`labelBlocks` then decides the label shown from the citations, not
+  from the model's word**: a "TEXT" paragraph with no citation is shown as "My synthesis" and marked as
+  moved; an unlabelled paragraph is the guide's own; a formula, recipe or disagreement with no citation is
+  flagged. The page shows "The text says" with the book and page, "My synthesis", "The texts differ" (for
+  different claims, names, conventions or units: never blended), "The maths", "In Serum 2", "Not in the
+  library". **(2) It ends in the learner's tools.** `cleanPlan` forces the last step to be a recipe in
+  Serum 2 or Ableton Live (added if the model left it out, moved if misplaced; none only when the subject
+  is not done in either), and `stepSearch` gives a recipe step **only that product's manual**
+  (`TOOL_BOOKS`). A maths step keeps the book's formula as written and explains every symbol and unit.
+  Walkthroughs are kept in the browser (`patchwalk.walks.v1`, `src/guide/walk.ts`, 30 at most, with the
+  steps read and ticked; not yet stored with the account) and outlines and steps are also remembered for
+  everyone in the database (`walkKey`). Ordinary answers were told the same two things in words ("My
+  reading:" for a conclusion no document states; say where documents differ). Same password and who-pays
+  rules as the rest of the guide. Checked in a browser with a stand-in reply. **Not yet run against the
+  real API: whether the model keeps to the labels, and how good its plans are, is unknown until the owner
+  tries it.** Not built: marks drawn on a step's pictures automatically, Rift as a recipe tool, a check
+  that the learner really did a step.
+- **Long pages are searched in parts (16 Nov 2026).** `splitText` in `src/library/search.ts` cuts a page over
+  2,400 characters into overlapping parts of about 1,500 (ids `book#page~1`, `~2`, with `of` naming the
+  page); `pageOf` and `cite` count parts of one page as one source, and `search` takes at most two parts of
+  a page (`perPage`) and can be kept to chosen books (`only`). The library loader moved to
+  `api/_library.ts` (the underscore keeps it from being a route; nothing under `src/` may read files).
 - **Guide search widened (15 Nov 2026).** The library now holds over twenty texts (2,242 passages). `search`
   in `src/library/search.ts` adds related technical words to a question at half weight (`RELATED`: drum to
   membrane and mode, pitch to frequency, echo to delay, speaker to loudspeaker and driver, and so on), so a

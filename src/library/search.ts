@@ -11,10 +11,46 @@ export interface Passage {
   /** Chapter or card title. */
   section: string;
   text: string;
+  /** For one part of a long page: the id of the whole page, so parts of one page count as one source. */
+  of?: string;
   /** Pictures that belong to this passage (a manual page's screenshots). Shown whenever the passage is cited. */
   images?: PassageImage[];
 }
 export interface PassageImage { book: string; file: string; width: number; height: number }
+
+/** The page a passage belongs to: itself, or the page it is a part of. */
+export const pageOf = (p: Passage) => p.of ?? p.id;
+
+/** Pages longer than this are searched in parts, so a long page about many things does not bury the one that was asked about. */
+export const SPLIT_OVER = 2400, PART_SIZE = 1500, PART_OVERLAP = 220;
+/**
+ * A long text as overlapping parts of about `PART_SIZE` characters, each ending at the end of a paragraph or
+ * sentence where there is one, and each starting a little before the last one ended so that nothing is cut
+ * off from its context. A text of `SPLIT_OVER` characters or fewer is returned whole.
+ */
+export function splitText(text: string, over = SPLIT_OVER, size = PART_SIZE, overlap = PART_OVERLAP): string[] {
+  if (text.length <= over) return [text];
+  const parts: string[] = [];
+  let from = 0;
+  while (from < text.length) {
+    let to = Math.min(text.length, from + size);
+    if (text.length - to < size / 3) to = text.length;       // no tiny last part
+    else {
+      const window = text.slice(from + size * 0.6, to);
+      const para = window.lastIndexOf("\n\n"), sentence = Math.max(window.lastIndexOf(". "), window.lastIndexOf(".\n"));
+      const cut = para >= 0 ? para : sentence >= 0 ? sentence + 1 : window.lastIndexOf(" ");
+      if (cut > 0) to = Math.floor(from + size * 0.6) + cut;
+    }
+    parts.push(text.slice(from, to).trim());
+    if (to >= text.length) break;
+    // start the next part a little back, at the start of a word
+    let back = Math.max(from + 1, to - overlap);
+    const space = text.indexOf(" ", back);
+    if (space >= 0 && space < to) back = space + 1;
+    from = back;
+  }
+  return parts.filter(Boolean);
+}
 
 const STOP = new Set("a an and are as at be by can do does for from how i in is it of on or the this to what when where which why with you your my me".split(" "));
 
@@ -76,7 +112,13 @@ const RELATED: Record<string, string[]> = {
 };
 const RELATED_WEIGHT = 0.5;
 
-export function search(index: Index, query: string, limit = 6): Hit[] {
+export interface SearchOptions {
+  /** Only passages this accepts are returned (for example, only one product's manual). */
+  only?: (p: Passage) => boolean;
+  /** At most this many parts of any one page, so one long page cannot fill the list. */
+  perPage?: number;
+}
+export function search(index: Index, query: string, limit = 6, options: SearchOptions = {}): Hit[] {
   const scores = new Map<number, number>();
   const N = index.passages.length;
   const asked = new Set(tokenize(query)), weights = new Map<string, number>();
@@ -91,5 +133,15 @@ export function search(index: Index, query: string, limit = 6): Hit[] {
       scores.set(i, (scores.get(i) ?? 0) + weight * idf * ((tf * (K1 + 1)) / norm));
     }
   }
-  return [...scores].sort((a, b) => b[1] - a[1]).slice(0, limit).map(([i, score]) => ({ passage: index.passages[i]!, score }));
+  const perPage = options.perPage ?? 2, taken = new Map<string, number>(), out: Hit[] = [];
+  for (const [i, score] of [...scores].sort((a, b) => b[1] - a[1])) {
+    const passage = index.passages[i]!;
+    if (options.only && !options.only(passage)) continue;
+    const page = pageOf(passage), n = taken.get(page) ?? 0;
+    if (n >= perPage) continue;
+    taken.set(page, n + 1);
+    out.push({ passage, score });
+    if (out.length >= limit) break;
+  }
+  return out;
 }

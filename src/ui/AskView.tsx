@@ -4,6 +4,9 @@ import { ANSWERS, recall, remember, sameQuestionKey } from "../guide/cache";
 import { deleteChat, loadChats, saveChat, type SavedChat } from "../guide/chats";
 import type { AskResponse } from "../library/answer";
 import { Answer } from "./Answer";
+import { WalkView } from "./Walkthrough";
+
+const MODE = "patchwalk.askmode.v1";
 
 const EXAMPLES = ["What does the FAT knob do on the filter?", "How do I assign an LFO to a knob?", "What is the difference between FREE and RETRIG?", "Why do detuned oscillators sound like they are moving?", "How do I warp an audio clip in Live?"];
 
@@ -14,6 +17,8 @@ const EXAMPLES = ["What does the FAT knob do on the filter?", "How do I assign a
  */
 export function AskView() {
   const [question, setQuestion] = useState("");
+  const [mode, setModeState] = useState<"answer" | "walk">(() => { try { return globalThis.localStorage?.getItem(MODE) === "walk" ? "walk" : "answer"; } catch { return "answer"; } });
+  const setMode = (m: "answer" | "walk") => { setModeState(m); try { globalThis.localStorage?.setItem(MODE, m); } catch { /* not kept */ } };
   const [turns, setTurns] = useState<Turn[]>([]);
   const [chatId, setChatId] = useState<string>();
   const [saved, setSaved] = useState<SavedChat[]>(() => loadChats());
@@ -50,8 +55,13 @@ export function AskView() {
   return (
     <section className="panel ask">
       <h2>Ask the guide</h2>
+      <p className="seg ask-mode" role="group" aria-label="What kind of help">
+        <button className={mode === "answer" ? "on" : ""} aria-pressed={mode === "answer"} onClick={() => setMode("answer")}>Answer a question</button>
+        <button className={mode === "walk" ? "on" : ""} aria-pressed={mode === "walk"} onClick={() => setMode("walk")}>Walk me through it</button>
+      </p>
+      {mode === "walk" ? <WalkView question={question} setQuestion={setQuestion} /> : <>
       <p className="muted">
-        Answers come from the library: the Serum 2 User Guide, the Ableton Live 11 manual, the Rift manual and this app’s knowledge cards. Every claim shows the page it came from, with that page’s pictures.
+        Answers come from the library: the manuals, books and papers taken in so far, and this app’s knowledge cards. Every claim shows the page it came from, with that page’s pictures.
         If the library does not cover something, the guide says so instead of guessing. Ask a follow-up to go deeper: the guide remembers the conversation. Each question is one paid Claude call.
       </p>
       {saved.length > 0 && (
@@ -92,6 +102,7 @@ export function AskView() {
           {note && <span className="muted" role="status"> {note}</span>}
         </p>
       )}
+      </>}
     </section>
   );
 }

@@ -23,7 +23,7 @@ export interface TubeState {
   /** Breath noise mixed into the blowing, 0..100. */
   noise: number;
 }
-export const TUBE_INITIAL: TubeState = { breath: 65, reed: 50, bright: 60, attack: 40, noise: 10 };
+export const TUBE_INITIAL: TubeState = { breath: 65, reed: 50, bright: 45, attack: 80, noise: 12 };
 export const TUBE_RANGES: Record<keyof TubeState, { min: number; max: number; step: number; unit: string; label: string }> = {
   breath: { min: 0, max: 100, step: 1, unit: "%", label: "Breath" },
   reed: { min: 0, max: 100, step: 1, unit: "%", label: "Reed stiffness" },
@@ -42,32 +42,46 @@ export function reedReflection(d: number, reed: number): number {
   const rest = 0.72 - 0.22 * (clamp(reed, 0, 100) / 100);
   return clamp(rest - 0.45 * d, -1, 1);
 }
-/** The open end's loss filter weight (as in the string): 0.5 is dullest. */
-const bellWeight = (bright: number) => 0.5 * (1 - clamp(bright, 0, 100) / 100) ** 1.2 + 0.02;
-const BELL = 0.95; // how much of the wave the open end sends back
+/**
+ * The highest frequency the open end still sends back well, in Hz. A real tube's open end and finger holes
+ * reflect the lows and let the highs out, so the highs are not fed round the loop again: that is why a reed
+ * instrument is mellow and not a buzz. From about 900 Hz (dull) to about 4.4 kHz (bright), and never less than
+ * four times the note, or a high note could not sound. (This app's own numbers.)
+ */
+export const bellHz = (bright: number, hz: number, sampleRate: number) =>
+  Math.min(sampleRate * 0.4, Math.max(900 * 2 ** (2.3 * clamp(bright, 0, 100) / 100), 4 * hz));
+const BELL = 0.95; // how much of the lows the open end sends back
+/** The breath is never perfectly steady: a slow wander of a few percent. (This app's own numbers.) */
+const WANDER = 0.025, WANDER_HZ = 4.3;
 
 /** A note blown for `blown` seconds and then let go, as samples. */
 export function renderTube(s: TubeState, note: number, sampleRate: number, blown: number, tail = 0.25): Float32Array {
-  const hz = noteToHz(note), weight = bellWeight(s.bright), half = sampleRate / (2 * hz) - weight;
+  const hz = noteToHz(note), pole = Math.exp((-2 * Math.PI * bellHz(s.bright, hz, sampleRate)) / sampleRate);
+  const w = (2 * Math.PI * hz) / sampleRate, lag = (2 * Math.atan2(pole * Math.sin(w), 1 - pole * Math.cos(w))) / w; // the open end's filter (two stages) holds the note back by this many samples
+  const half = sampleRate / (2 * hz) - lag;
   // the wave comes back upside down, so the loop repeats every two trips: its length is half a period
   let delay = Math.floor(half - 0.1), fraction = half - delay;
   if (fraction < 0.1) { delay -= 1; fraction += 1; }
   delay = Math.max(1, delay);
   const allpass = (1 - fraction) / (1 + fraction), total = Math.round((blown + tail) * sampleRate), out = new Float32Array(total), line = new Float32Array(delay + 1);
-  const rise = Math.max(1, (s.attack / 1000) * sampleRate), full = clamp(s.breath, 0, 100) / 100, hiss = (clamp(s.noise, 0, 100) / 100) * 0.25;
-  let seed = 22222, at = 0, older = 0, apIn = 0, apOut = 0, dcIn = 0, dcOut = 0;
+  const rise = Math.max(1, (s.attack / 1000) * sampleRate), full = clamp(s.breath, 0, 100) / 100, hiss = (clamp(s.noise, 0, 100) / 100) * 0.6;
+  const fade = 0.09 * sampleRate, air = Math.exp((-2 * Math.PI * 2500) / sampleRate);
+  let seed = 22222, at = 0, l1 = 0, l2 = 0, apIn = 0, apOut = 0, dcIn = 0, dcOut = 0, wind = 0;
   const rand = () => { seed ^= seed << 13; seed >>>= 0; seed ^= seed >>> 17; seed ^= seed << 5; seed >>>= 0; return seed / 2147483648 - 1; };
   for (let n = 0; n < total; n++) {
-    const blowing = n < blown * sampleRate ? Math.min(1, n / rise) : Math.max(0, 1 - (n - blown * sampleRate) / (0.03 * sampleRate));
-    const mouth = full * blowing * (1 + hiss * rand());
+    const since = n - blown * sampleRate;
+    const blowing = since < 0 ? 0.5 - 0.5 * Math.cos(Math.PI * Math.min(1, n / rise)) : since < fade ? 0.5 + 0.5 * Math.cos((Math.PI * since) / fade) : 0; // the breath swells in and eases off
+    wind = (1 - air) * rand() + air * wind;                      // breath noise is a rush of air, not a hiss: its top is taken off
+    const mouth = full * blowing * (1 + hiss * 4 * wind + WANDER * Math.sin((2 * Math.PI * WANDER_HZ * n) / sampleRate));
     const arrived = line[at]!;                                   // the wave reaching the open end
-    const lost = (1 - weight) * arrived + weight * older; older = arrived;
-    const tuned = allpass * lost + apIn - allpass * apOut; apIn = lost; apOut = tuned;
+    l1 = (1 - pole) * arrived + pole * l1; l2 = (1 - pole) * l1 + pole * l2; // the open end sends the lows back and lets the highs out
+    const tuned = allpass * l2 + apIn - allpass * apOut; apIn = l2; apOut = tuned;
     const back = -BELL * tuned;                                  // sent back upside down, a little smaller
     const d = back - mouth;                                      // what the reed feels
     line[at] = mouth + d * reedReflection(d, s.reed);            // mouth pressure plus the reflected part of the difference
     at = (at + 1) % delay;
-    const y = arrived - dcIn + 0.995 * dcOut; dcIn = arrived; dcOut = y; // take out the steady push of the breath
+    const heard = 0.5 * (arrived + l1);                          // what is heard: the wave in the tube with its sharpest edge taken off
+    const y = heard - dcIn + 0.995 * dcOut; dcIn = heard; dcOut = y; // take out the steady push of the breath
     out[n] = y;
   }
   return out;

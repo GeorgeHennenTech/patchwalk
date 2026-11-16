@@ -941,6 +941,19 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   be; five "Things to try". Like the string, a hit is rendered whole and played from a buffer. Tests in
   `tests/membrane.test.ts`. Checked in a browser; not heard by anyone. Neither lab is known to the lesson
   engine yet.
+- **Realism pass on the physical models (16 Nov 2026; the owner said the drum "sounds super electronic" and the
+  tube and string "sound awful").** Drum (`membrane.ts`): 84 modes for the round head (zeros found by
+  `besselZeros`) and 64 for the square; `stick` (a softer stick lets fewer high modes through, `stickShare`),
+  `force` (a hard hit starts up to 7% sharp and settles in `STRETCH_TIME`, `stretch`), `second` (a copy of
+  every mode `SECOND_HEAD` times higher); the bars show what the stick lets through. String (`string.ts`):
+  the loop's loss is now a one-pole low-pass set so that a harmonic near `highHz` lasts `highsLast(bright)`
+  of the fundamental's time (`lossPole`; before, a low note's highs rang for seconds), and the note is heard
+  through `throughBody` (`BODY_MODES`, four broad resonances; `body` 0 is the bare string). Tube (`tube.ts`):
+  the open end is a two-stage low-pass at `bellHz` (900 Hz to 4.4 kHz, never under four times the note), so
+  the harmonics fall away instead of a square-wave buzz (ninth harmonic over 20 dB under the third); the
+  breath swells in and eases off, wanders a few percent, and its noise has the top taken off. **All these
+  numbers are our own choices and each lab's "What is missing here" says so. Checked by measurement and
+  tests only: the assistant cannot hear, so the owner's ear is the judge.** The bowed string was not changed.
 - **Lessons on the physical models (15 Nov 2026, later still).** `src/models/lessons.ts` holds six lessons
   as data (`ModelLesson<S>`: outcome, two idea paragraphs, steps with `check(settings, played)`, recap, and
   their own quiz questions): string Q1.1 "A burst of noise becomes a note", Q1.2 "Loss is tone", Q1.3

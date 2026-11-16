@@ -103,7 +103,7 @@ export default function TubeLab() {
       <aside className="strings-source">
         <h3>Where this comes from</h3>
         <p>The layout (a straight tube as a delay line, an open end that sends the low part of the wave back, and a reed worked as one look-up from the pressure difference to how much is reflected) follows the section on single-reed instruments in Julius O. Smith’s “Physical Modeling Using Digital Waveguides” (1992), which is in the library. That paper notes that a clarinet’s tube is only a quarter of a wavelength of its lowest note.</p>
-        <p><strong>What is missing here.</strong> The reed’s curve and every number in it are this app’s own choices, so where exactly the tube starts and stops speaking is a property of this model, not a measurement of a clarinet. There are no finger holes, no flared bell, no player’s mouth, and the breath cannot change during a note. How it sounds has not yet been judged by a person.</p>
+        <p><strong>What is missing here.</strong> The reed’s curve and every number in it are this app’s own choices, so where exactly the tube starts and stops speaking is a property of this model, not a measurement of a clarinet. How much of the highs the open end sends back, and the small wander in the breath, are this app’s numbers too. There are no finger holes, no flared bell and no player’s mouth, and you cannot change the breath during a note. The assistant that built this cannot hear: it was checked by measurement only.</p>
       </aside>
     </section>
   );

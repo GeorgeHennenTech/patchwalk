@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { noteToHz } from "../src/synth/params";
-import { measuredHarmonics, reedReflection, renderTube, speakingRange, speaks, TUBE_INITIAL, type TubeState } from "../src/modal/tube";
+import { bellHz, measuredHarmonics, reedReflection, renderTube, speakingRange, speaks, TUBE_INITIAL, type TubeState } from "../src/modal/tube";
 
 const SR = 48000;
 const T = (over: Partial<TubeState> = {}): TubeState => ({ ...TUBE_INITIAL, ...over });
@@ -23,8 +23,15 @@ describe("the blown tube", () => {
   });
   it("sounds hollow: the odd harmonics are there and the even ones are all but missing", () => {
     const y = renderTube(T({ noise: 0 }), 57, SR, 1.2), h = measuredHarmonics(y, noteToHz(57), SR);
-    expect(h[0]).toBe(1); expect(h[2]!).toBeGreaterThan(0.15); expect(h[4]!).toBeGreaterThan(0.08);
+    expect(h[0]).toBe(1); expect(h[2]!).toBeGreaterThan(0.1); expect(h[4]!).toBeGreaterThan(0.02);
     expect(h[1]!).toBeLessThan(0.02); expect(h[3]!).toBeLessThan(0.02);
+  });
+  it("is mellow, not a buzz: the harmonics fall away going up, sooner on a dull tube, and never less than four times the note is sent back", () => {
+    const h = (bright: number) => measuredHarmonics(renderTube(T({ bright, noise: 0 }), 57, SR, 1.2), noteToHz(57), SR);
+    const mid = h(45), dull = h(0), bright = h(100);
+    expect(mid[8]!).toBeLessThan(mid[2]! * 0.1);       // the ninth is more than 20 dB under the third (in a square wave it is under 10)
+    expect(dull[6]!).toBeLessThan(mid[6]! * 0.5); expect(bright[6]!).toBeGreaterThan(mid[6]! * 2);
+    expect(bellHz(0, 110, SR)).toBeCloseTo(900, 6); expect(bellHz(0, 1000, SR)).toBeCloseTo(4000, 6); expect(bellHz(100, 110, SR)).toBeGreaterThan(4000);
   });
   it("needs enough breath to speak, and too much blows the reed shut", () => {
     expect(speaks(T(), 10)).toBe(false); expect(speaks(T(), 65)).toBe(true);

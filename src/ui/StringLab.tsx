@@ -102,7 +102,7 @@ export default function StringLab() {
             {(Object.keys(STRING_RANGES) as (keyof typeof STRING_RANGES)[]).map((id) => { const r = STRING_RANGES[id]; return (
               <label key={id} className="strings-range">{r.label}
                 <input type="range" min={r.min} max={r.max} step={r.step} value={s[id]} onChange={(e) => set(id, Number(e.target.value))} aria-label={r.label} />
-                <span className="strings-value">{id === "pickup" && s.pickup === 0 ? "at the bridge" : id === "pair" && s.pair === 0 ? "off" : `${s[id]} ${r.unit}`}</span>
+                <span className="strings-value">{id === "pickup" && s.pickup === 0 ? "at the bridge" : id === "pair" && s.pair === 0 ? "off" : id === "body" && s.body === 0 ? "bare string" : `${s[id]} ${r.unit}`}</span>
               </label>
             ); })}
           </div>
@@ -161,7 +161,7 @@ export default function StringLab() {
       <aside className="strings-source">
         <h3>Where this comes from</h3>
         <p>The loop with a two-sample average in it is the Karplus-Strong plucked-string method, built here as Julius O. Smith describes it in “Physical Modeling Using Digital Waveguides” (Computer Music Journal, 1992), which is in the library. The fine tuning follows Jaffe and Smith’s extension of that method.</p>
-        <p><strong>What is missing here.</strong> This is one ideal string and nothing else. There is no body to colour it, no stiffness (which pulls a piano’s harmonics sharp), no sympathetic strings, and no bow. A note cannot be bent or muted once it is ringing, because each note is worked out before it plays. Those come with later parts of this track. How it sounds has not yet been judged by a person.</p>
+        <p><strong>What is missing here.</strong> This is one ideal string. The wooden body is four broad resonances of this app’s own choosing, not a measured guitar. There is no stiffness (which pulls a piano’s harmonics sharp), no sympathetic strings, and no bow. A note cannot be bent or muted once it is ringing, because each note is worked out before it plays. Those come with later parts of this track. The assistant that built this cannot hear: it was checked by measurement only.</p>
       </aside>
     </section>
   );

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { noteToHz } from "../synth/params";
 import { DRUM_LESSONS } from "../models/lessons";
 import { useModelLesson } from "./ModelLesson";
-import { DRUM_INITIAL, DRUM_RANGES, HEADS, modeDecay, modes, renderDrum, type DrumState } from "../modal/membrane";
+import { DRUM_INITIAL, DRUM_RANGES, HEADS, modeDecay, modes, renderDrum, stickShare, type DrumState } from "../modal/membrane";
 
 const NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const nameOf = (note: number) => `${NAMES[note % 12]}${Math.floor(note / 12) - 1}`;
@@ -45,6 +45,7 @@ export default function DrumLab() {
   }, [hit]);
   const list = useMemo(() => modes(s), [s]);
   const top = list[list.length - 1]!.ratio, f0 = noteToHz(s.note);
+  const heard = list.map((m) => Math.abs(m.amount) * stickShare(s.stick, f0 * m.ratio)), most = Math.max(1e-9, ...heard); // what the stick lets through, the largest drawn full height
   const strikeAt = (e: React.PointerEvent<SVGSVGElement>) => {
     const box = e.currentTarget.getBoundingClientRect(), x = ((e.clientX - box.left) / box.width) * 2 - 1, y = ((e.clientY - box.top) / box.height) * 2 - 1;
     const r = s.head === "round" ? Math.hypot(x, y) : Math.max(Math.abs(x), Math.abs(y));
@@ -80,10 +81,10 @@ export default function DrumLab() {
           <h3>The modes this hit sets going</h3>
           <svg className="strings-bars drum-modes" viewBox="0 0 240 96" role="img" aria-label="Each mode's frequency (left to right) and how strongly this hit excites it (height)">
             {Array.from({ length: Math.floor(top) }, (_, i) => <line key={i} x1={((i + 1) / top) * 236 + 2} x2={((i + 1) / top) * 236 + 2} y1="0" y2="84" className="drum-grid" />)}
-            {list.map((m) => { const v = Math.abs(m.amount); return <rect key={m.label} x={(m.ratio / top) * 236} width="3" y={84 - v * 80} height={Math.max(1, v * 80)} className={v < 0.03 ? "gone" : ""}><title>{`${m.label}: ${m.ratio.toFixed(2)} times the lowest, ${(f0 * m.ratio).toFixed(0)} Hz, rings ${modeDecay(s, m.ratio).toFixed(2)} s`}</title></rect>; })}
+            {list.map((m, i) => { const v = heard[i]! / most; return <rect key={m.label} x={(m.ratio / top) * 236} width="1.6" y={84 - v * 80} height={Math.max(1, v * 80)} className={v < 0.03 ? "gone" : ""}><title>{`${m.label}: ${m.ratio.toFixed(2)} times the lowest, ${(f0 * m.ratio).toFixed(0)} Hz, rings ${modeDecay(s, m.ratio).toFixed(2)} s`}</title></rect>; })}
             <line x1="0" x2="240" y1="84.5" y2="84.5" className="strings-rest" />
           </svg>
-          <p className="strings-caption">Left to right is frequency; the faint lines mark whole multiples of the lowest mode ({nameOf(s.note)}, {f0.toFixed(0)} Hz), where a string’s harmonics would sit. The bars fall between them. A grey stub is a mode whose pattern stands still where you hit. Point at a bar for its numbers.</p>
+          <p className="strings-caption">Left to right is frequency; the faint lines mark whole multiples of the lowest mode ({nameOf(s.note)}, {f0.toFixed(0)} Hz), where a string’s harmonics would sit. The bars fall between them, and a softer stick leaves fewer of the high ones. A grey stub is a mode whose pattern stands still where you hit. Point at a bar for its numbers.</p>
           <p className="strings-caption">The first five modes of a round head sit at {modes({ head: "round", strike: 50 }).slice(0, 5).map((m) => m.ratio.toFixed(2)).join(", ")} times the lowest.</p>
         </div>
       </div>
@@ -96,7 +97,7 @@ export default function DrumLab() {
       <aside className="strings-source">
         <h3>Where this comes from</h3>
         <p>For a round head the patterns and frequencies come from Bessel functions and their zeros, as set out in Avanzini and Marogna’s paper on membrane percussion (2010). For a square head the frequencies go as the square root of m squared plus n squared, as given in Van Duyne and Smith’s paper on the waveguide mesh (1993). Both are in the library.</p>
-        <p><strong>What is missing here.</strong> This is an ideal skin by itself. There is no air inside the drum, no shell, no second head and no stick with a size of its own, and the skin’s pitch does not dip after a hard hit as a real one’s does. How quickly each mode dies away is this app’s own simple rule, not a measurement. How it sounds has not yet been judged by a person.</p>
+        <p><strong>What is missing here.</strong> There is no air inside the drum and no shell. The stick, the dip in pitch after a hard hit and the second head are simple stand-ins: a harder stick lets more of the high modes through, a hard hit starts up to 7% sharp and settles in about a tenth of a second, and the second head is a copy of every mode a little higher. Those numbers, and how quickly each mode dies away, are this app’s own choices, not measurements. The assistant that built this cannot hear: it was checked by measurement only.</p>
       </aside>
     </section>
   );

@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { noteToHz } from "../src/synth/params";
-import { excitation, judgeString, stringTarget, loopFor, pairBeatHz, lossGain, lossWeight, pluckHarmonics, pluckShape, renderString, STRING_INITIAL, tripGain, type StringState } from "../src/strings/string";
+import { excitation, judgeString, stringTarget, loopFor, pairBeatHz, highsLast, lossGain, lossPole, throughBody, pluckHarmonics, pluckShape, renderString, STRING_INITIAL, tripGain, type StringState } from "../src/strings/string";
 
 const SR = 48000;
-const S = (over: Partial<StringState> = {}): StringState => ({ ...STRING_INITIAL, ...over });
+// the bare string (no body) for exact checks
+const S = (over: Partial<StringState> = {}): StringState => ({ ...STRING_INITIAL, body: 0, bright: 60, hard: 60, ...over });
 /** How strongly a list of samples contains a sine at `hz` (between `from` and `to` seconds). */
 function strength(y: Float32Array, hz: number, from = 0, to = y.length / SR): number {
   let a = 0, b = 0; const i0 = Math.round(from * SR), i1 = Math.round(to * SR);
@@ -32,11 +33,12 @@ describe("the plucked string", () => {
     }
   });
   it("the highs die sooner than the lows, and sooner still on a dull string", () => {
-    const fall = (bright: number, n: number) => { const y = renderString(S({ bright, decay: 4, pick: 13 }), 45, SR, 1.2), hz = noteToHz(45) * n; return 20 * Math.log10(strength(y, hz, 0.8, 1.1) / strength(y, hz, 0.05, 0.35)); };
-    expect(fall(0, 30)).toBeLessThan(fall(0, 1) - 6);
-    expect(fall(0, 30)).toBeLessThan(fall(90, 30) - 6);
-    expect(lossWeight(0)).toBeCloseTo(0.504, 3); expect(lossWeight(100)).toBeLessThan(0.01);
-    expect(lossGain(50, 0, SR)).toBeCloseTo(1, 9); expect(lossGain(0, 12000, SR)).toBeLessThan(lossGain(0, 200, SR));
+    const fall = (bright: number, n: number) => { const y = renderString(S({ bright, decay: 4, pick: 13 }), 45, SR, 0.6), hz = noteToHz(45) * n; return 20 * Math.log10(strength(y, hz, 0.25, 0.45) / strength(y, hz, 0.02, 0.22)); };
+    expect(fall(30, 10)).toBeLessThan(fall(30, 1) - 6);
+    expect(fall(30, 10)).toBeLessThan(fall(90, 10) - 6);
+    expect(highsLast(0)).toBeCloseTo(0.02, 9); expect(highsLast(100)).toBeCloseTo(0.52, 9);
+    expect(lossGain(0.5, 0, SR)).toBeCloseTo(1, 9); expect(lossGain(0.5, 12000, SR)).toBeLessThan(lossGain(0.5, 200, SR));
+    expect(lossPole(S({ bright: 0 }), 110, SR)).toBeGreaterThan(lossPole(S({ bright: 100 }), 110, SR));
     expect(tripGain(110, 3)).toBeCloseTo(10 ** (-3 / 330), 12);
   });
   it("plucking at a half leaves out every second harmonic, and at a third every third", () => {
@@ -83,5 +85,21 @@ describe("the plucked string", () => {
     const seen = new Set<string>();
     for (let i = 0; i < 80; i++) { const x = stringTarget(); seen.add(`${x.bright}|${x.decay}|${x.pick}`); expect(x.hard).toBe(STRING_INITIAL.hard); expect(x.pair).toBe(0); expect(judgeString(x, x).all).toBe(true); }
     expect(seen.size).toBeGreaterThan(20); // plenty of different targets
+  });
+  it("the highs last the share of the note that the brightness says: far shorter than the fundamental", () => {
+    for (const bright of [20, 60, 100]) {
+      const decay = 4, hz = noteToHz(45), y = renderString(S({ bright, decay, pick: 7, hard: 100 }), 45, SR, 1.3), n = 18; // harmonic 18 is 1980 Hz, where the highs are judged
+      const fell = 20 * Math.log10(strength(y, hz * n, 0.35, 0.55) / strength(y, hz * n, 0.05, 0.25)); // over 0.3 s
+      const want = (-60 * 0.3) / (decay * highsLast(bright));
+      expect(fell, `bright ${bright}`).toBeGreaterThan(want * 1.35); expect(fell, `bright ${bright}`).toBeLessThan(want * 0.65);
+    }
+  });
+  it("the body adds its own resonances whatever the note, softens the top, and leaves the bare string alone at 0", () => {
+    const bare = renderString(S({ body: 0 }), 64, SR, 0.5), boxed = renderString(S({ body: 100 }), 64, SR, 0.5);
+    expect(Array.from(throughBody(bare, 0, SR).slice(0, 50))).toEqual(Array.from(bare.slice(0, 50)));
+    const rel = (y: Float32Array, hz: number) => strength(y, hz, 0, 0.12) / strength(y, noteToHz(64), 0, 0.12);
+    expect(rel(boxed, 205)).toBeGreaterThan(rel(bare, 205) * 3);            // a body resonance well below the note is now ringing
+    expect(rel(boxed, noteToHz(64) * 20)).toBeLessThan(rel(bare, noteToHz(64) * 20)); // and the far top is softer
+    let peak = 0; for (const v of boxed) peak = Math.max(peak, Math.abs(v)); expect(peak).toBeLessThan(1.6);
   });
 });

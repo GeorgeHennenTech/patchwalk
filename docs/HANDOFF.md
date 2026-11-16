@@ -407,3 +407,9 @@ they own. Not yet supplied.
    in context. Later extended the synth and completed chapter 1 (fourteen lessons).
 8. Added the filter, its draggable curve and chapter 2 (twenty-two lessons in all).
 7. Fixed knowledge-card text that rendered as one block of capitals, and wrote this handoff.
+
+## 16 Nov 2026: physical models made less electronic
+The owner reported the drum, string and tube sound electronic or awful. Drum, string and tube were reworked
+(see "Realism pass on the physical models" in `CLAUDE.md`). Waiting for the owner to say whether they now sound
+better; if not, ask which instrument and what is wrong (too bright, too dull, too short, too clean). The bowed
+string has not been touched.

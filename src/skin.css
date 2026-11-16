@@ -1163,3 +1163,6 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 .duck-bass { fill: var(--accent); opacity: 0.9; }
 .duck-ghost { fill: none; stroke: var(--thread); stroke-width: 1.2; stroke-dasharray: 5 4; opacity: 0.6; }
 .duck-head { stroke: var(--text); stroke-width: 2; }
+.model-before { fill: none; stroke: var(--thread); stroke-width: 1.4; stroke-dasharray: 4 3; }
+.model-first { fill: var(--text); }
+.model-mark { stroke-dasharray: 3 3; opacity: 0.7; }

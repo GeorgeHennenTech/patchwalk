@@ -116,6 +116,7 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [x] Guide: "Walk me through it": step-by-step walkthroughs written across all the texts, each part labelled "the text says" or "my synthesis", differences between texts stated, book maths explained, ending in a Serum 2 or Ableton recipe (16 Nov; owner to try it live)
 - [ ] Guide: better search across many books (done 15 Nov: related technical words; done 16 Nov: long pages split into passages; still to do: have a small model pick the best)
 - [x] Guide: "Draw this" on a walkthrough step: a formula as a graph with sliders, or a ready-made picture, chosen by the guide and drawn by the app (16 Nov; owner to try it live)
+- [x] Guide: playable models for "Draw this": sidechain ducking, compressor, delay, beating, FM, wavefolding; boxes-and-arrows retired (16 Nov; owner to judge look and sound)
 - [ ] Guide: "Try it on the practice synth" from a walkthrough step, with the step's settings loaded
 - [x] Guide: shared library of walkthroughs in the database and a "Walkthroughs" tab to browse it; everything anyone generates is kept for all (16 Nov; owner to try it live)
 - [x] Guide: side threads on a walkthrough: highlight any words to ask about them; branches off answers, three deep, colour-coded, collapsible, with a way back (16 Nov; owner to try it live)

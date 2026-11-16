@@ -1112,6 +1112,22 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   `stepSearch` now keeps the loudspeaker books (`SYSTEM_BOOKS`) out of any walkthrough that ends in a synth
   or a DAW. Checked in a browser (drew, played, the play line moved, the switch changed the picture); the
   sound was not measured and has not been heard by anyone.
+- **Five more playable models for "Draw this" (16 Nov 2026, owner said "build").** `src/ui/Models.tsx`
+  (`MODELS`, by drawing kind) with the maths in `src/synth/models.ts` (tested in
+  `tests/models-maths.test.ts`): **compressor** (input-against-output curve with the threshold marked, and
+  four hits, loud and quiet, shown and heard before and after; `compOutDb`, a sharp corner with no attack
+  or release, which the page says), **delay** (one sound and its echoes on a three-second timeline;
+  `echoes`), **beating** (two saws a few cents apart; the picture is the pair's loudness swelling;
+  `beatsPerSecond`), **fm** (the partials FM adds either side of the note, from Bessel functions;
+  `fmPartials`), **fold** (a sine folded back, its cycle and its harmonics; `foldBack`, `foldDrive`: the
+  plain triangle fold, not a circuit). Two ways of sounding: `useLoop` works a fixed pattern out whole with
+  an `OfflineAudioContext` and loops it with a play line (compressor, delay, and the ducking model's own
+  copy of the same idea); `useLive` holds a note on live audio nodes so the sliders change it as it sounds
+  (beating, FM, fold). Shared drawing pieces moved to `src/ui/drawkit.tsx`. Sliders now show a chip only
+  when a value comes from the step's text ("starts at the text's value"); the "guide's choice" chip on
+  every slider was clutter. Checked in a browser: each drew, played without errors, and its picture
+  followed its slider. **The sound was not measured and nobody has heard them.** Eleven kinds of drawing
+  now: formula, envelope, filter, harmonics, lfo, duck and these five.
 - **Shared library of walkthroughs, and a "Walkthroughs" tab (16 Nov 2026, owner's request: whatever the owner
   or their friends have generated is saved so everyone can use it, with a tab to go through it).**
   `src/store/walks.ts`: one walkthrough per question (`walkId`, a hash of the tidied question), kept in the

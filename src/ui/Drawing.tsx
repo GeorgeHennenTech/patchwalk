@@ -2,60 +2,13 @@
 // the app from those settings, and the sliders let the learner move them. Nothing on this page is a picture
 // from a book, and it says so.
 import { useEffect, useMemo, useRef, useState } from "react";
-import { duckGainLooped, place, sweep, waveHarmonics, type DrawVar, type Drawing } from "../library/draw";
+import { duckGainLooped, place, sweep, waveHarmonics, type Drawing } from "../library/draw";
+import { Frame, H, L, PH, PW, Sliders, T, W, path, short, withUnit } from "./drawkit";
+import { MODELS } from "./Models";
 import { compile } from "../library/formula";
 import { filterResponseDb } from "../synth/filter";
 import { lfoValue } from "../synth/mod";
 import { INITIAL, type SynthState } from "../synth/params";
-
-const W = 520, H = 240, L = 54, R = 12, T = 12, B = 34, PW = W - L - R, PH = H - T - B;
-/** A number short enough to read at a glance. */
-export function short(v: number): string {
-  if (!Number.isFinite(v)) return "–";
-  const a = Math.abs(v);
-  if (a === 0) return "0";
-  if (a >= 100000 || a < 0.001) return v.toExponential(2);
-  return String(Number(v.toPrecision(a >= 100 ? 4 : 3)));
-}
-const withUnit = (v: number, unit: string) => `${short(v)}${unit ? ` ${unit}` : ""}`;
-
-function Sliders({ vars, values, set }: { vars: DrawVar[]; values: Record<string, number>; set: (name: string, v: number) => void }) {
-  return (
-    <div className="draw-sliders">
-      {vars.map((v) => (
-        <label key={v.name}>
-          <span className="draw-var"><b>{v.label}</b>{v.name !== v.label.toLowerCase() && <i> {v.name}</i>} <span className={`draw-origin${v.stated ? " stated" : ""}`}>{v.stated ? "starts at the text’s value" : "starts at the guide’s choice"}</span></span>
-          <input type="range" min={0} max={1000} value={Math.round(place(v, values[v.name]!) * 1000)} onChange={(e) => set(v.name, sweep(v, Number(e.target.value) / 1000))} aria-label={`${v.label}${v.unit ? `, in ${v.unit}` : ""}`} />
-          <output>{withUnit(values[v.name]!, v.unit)}</output>
-        </label>
-      ))}
-    </div>
-  );
-}
-
-/** A curve inside the plot area, from points given as fractions (x 0..1 across, y 0..1 up); gaps where y is not a number. */
-function path(points: [number, number][]): string {
-  let d = "", pen = false;
-  for (const [x, y] of points) {
-    if (!Number.isFinite(y)) { pen = false; continue; }
-    d += `${pen ? "L" : "M"}${(L + x * PW).toFixed(1)} ${(T + (1 - Math.min(1.05, Math.max(-0.05, y))) * PH).toFixed(1)} `;
-    pen = true;
-  }
-  return d;
-}
-function Frame({ children, xLabel, yLabel, x0, x1, y0, y1, label }: { children: React.ReactNode; xLabel: string; yLabel: string; x0: string; x1: string; y0: string; y1: string; label: string }) {
-  return (
-    <svg className="draw-plot" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={label}>
-      <rect x={L} y={T} width={PW} height={PH} className="draw-area" />
-      {[0.25, 0.5, 0.75].map((f) => <g key={f}><line x1={L + f * PW} x2={L + f * PW} y1={T} y2={T + PH} className="draw-grid" /><line x1={L} x2={L + PW} y1={T + f * PH} y2={T + f * PH} className="draw-grid" /></g>)}
-      {children}
-      <text x={L} y={H - 18} className="draw-tick">{x0}</text><text x={L + PW} y={H - 18} textAnchor="end" className="draw-tick">{x1}</text>
-      <text x={L + PW / 2} y={H - 4} textAnchor="middle" className="draw-axis">{xLabel}</text>
-      <text x={L - 6} y={T + PH} textAnchor="end" className="draw-tick">{y0}</text><text x={L - 6} y={T + 9} textAnchor="end" className="draw-tick">{y1}</text>
-      <text x={12} y={T + PH / 2} textAnchor="middle" transform={`rotate(-90 12 ${T + PH / 2})`} className="draw-axis">{yLabel}</text>
-    </svg>
-  );
-}
 
 function FormulaPlot({ d }: { d: Drawing }) {
   const [values, setValues] = useState(() => Object.fromEntries(d.variables.map((v) => [v.name, v.value])));
@@ -79,7 +32,7 @@ function FormulaPlot({ d }: { d: Drawing }) {
       {d.variables.length > 1 && (
         <p className="draw-across">Along the bottom: {d.variables.map((v) => <button key={v.name} className={v.name === x ? "on" : ""} aria-pressed={v.name === x} onClick={() => setX(v.name)}>{v.label}</button>)}</p>
       )}
-      <Sliders vars={d.variables} values={values} set={(name, v) => setValues((o) => ({ ...o, [name]: v }))} />
+      <Sliders symbols vars={d.variables} values={values} set={(name, v) => setValues((o) => ({ ...o, [name]: v }))} />
     </>
   );
 }
@@ -215,9 +168,9 @@ export function DrawingView({ drawing }: { drawing: Drawing }) {
   return (
     <figure className="drawing">
       <figcaption className="draw-head"><span className="draw-tag">The guide’s drawing</span> <strong>{drawing.title}</strong></figcaption>
-      {drawing.kind === "formula" ? <FormulaPlot d={drawing} /> : drawing.kind === "duck" ? <DuckModel d={drawing} /> : <Ready d={drawing} />}
+      {(() => { const Model = MODELS[drawing.kind]; return drawing.kind === "formula" ? <FormulaPlot d={drawing} /> : drawing.kind === "duck" ? <DuckModel d={drawing} /> : Model ? <Model d={drawing} /> : <Ready d={drawing} />; })()}
       {drawing.caption && <p className="draw-caption">{drawing.caption}</p>}
-      <p className="note">Drawn by the app, not taken from a book. {drawing.kind === "formula" && "Slider ranges are the guide’s choice. "}{drawing.remembered && "Shown from the site’s memory, with no new call."}</p>
+      <p className="note">Drawn by the app, not taken from a book. {drawing.kind === "formula" && "Values not marked as the text’s, and every slider’s range, are the guide’s choice. "}{drawing.remembered && "Shown from the site’s memory, with no new call."}</p>
     </figure>
   );
 }

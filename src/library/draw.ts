@@ -8,7 +8,7 @@
 import { z } from "zod";
 import { compile, RESERVED } from "./formula.js";
 
-export const DRAW_KINDS = ["formula", "envelope", "filter", "harmonics", "lfo", "duck", "none"] as const;
+export const DRAW_KINDS = ["formula", "envelope", "filter", "harmonics", "lfo", "duck", "compressor", "delay", "beating", "fm", "fold", "none"] as const;
 /** "chain" (boxes joined by arrows) was retired: it only repeated a step's words. It stays as a type so walkthroughs saved with one still open. */
 export type DrawKind = (typeof DRAW_KINDS)[number] | "chain";
 
@@ -55,6 +55,11 @@ const SETTINGS: Partial<Record<DrawKind, [string, string, string, number, number
   filter: [["cutoff", "Cutoff", "Hz", 20, 20000, 1000, true], ["resonance", "Resonance", "%", 0, 100, 20]],
   lfo: [["rate", "Rate", "Hz", 0.1, 20, 2, true]],
   harmonics: [],
+  compressor: [["threshold", "Threshold", "dB", -48, 0, -18], ["ratio", "Ratio", ": 1", 1, 20, 4], ["makeup", "Make-up", "dB", 0, 24, 0]],
+  delay: [["time", "Time between echoes", "ms", 50, 1000, 300], ["feedback", "Feedback", "%", 0, 90, 50], ["mix", "Mix", "%", 0, 100, 50]],
+  beating: [["detune", "Detune", "cents", 0, 50, 12], ["note", "Note", "Hz", 110, 880, 220, true]],
+  fm: [["amount", "FM amount (index)", "", 0, 8, 2], ["ratio", "Modulator, times the note", "x", 0.5, 8, 1], ["note", "Note", "Hz", 110, 880, 220, true]],
+  fold: [["amount", "Fold amount", "%", 0, 100, 40]],
   duck: [["amount", "How far the bass is turned down", "dB", 0, 24, 12], ["attack", "Attack", "ms", 0, 60, 5], ["release", "Release", "ms", 20, 600, 180], ["tempo", "Tempo", "bpm", 80, 170, 120]],
 };
 const CHOICES: Partial<Record<DrawKind, string[]>> = { filter: ["low", "high", "band", "notch"], harmonics: ["saw", "square", "triangle", "sine"], lfo: ["sine", "triangle", "square", "saw"] };
@@ -69,6 +74,11 @@ The catalogue:
 - harmonics: the harmonics of a basic wave. "choice" is sine, triangle, square or saw.
 - lfo: a slow repeating movement. "choice" is its shape; a variable named rate (Hz).
 - duck: a working model of sidechain compression (ducking): a kick drum turning a bass down on every hit, shown moving and playable so the learner hears it with the ducking on and off. Use it for sidechain compression, ducking or pumping. Variables named amount (dB the bass is turned down), attack (ms), release (ms) and tempo (bpm).
+- compressor: a playable model of a compressor: its input-against-output curve, and a loud and a quiet hit heard before and after. Variables named threshold (dB), ratio and makeup (dB). Use it for compression, threshold, ratio, taming peaks.
+- delay: a playable model of a delay: one sound and its echoes on a timeline. Variables named time (ms), feedback (%) and mix (%).
+- beating: a playable model of two notes slightly out of tune swelling and fading against each other. Variables named detune (cents) and note (Hz). Use it for detune, unison, chorus-like thickness, beating.
+- fm: a playable model of frequency modulation: the partials it adds on either side of the note as the amount goes up. Variables named amount (the index, 0 to 8), ratio (the modulator's frequency as a multiple of the note) and note (Hz).
+- fold: a playable model of wavefolding: a sine pushed past its limits and folded back, with the harmonics that appear. A variable named amount (%).
 - none: nothing in the catalogue fits. Choose this for anything with a physical shape (an instrument, a loudspeaker, a room), for a screen layout, and whenever a drawing would add nothing. Say why in the caption.
 
 Rules:

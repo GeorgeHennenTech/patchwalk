@@ -7,6 +7,10 @@ import { joinShared, walkStepOnce, type Walk } from "../src/guide/walk";
 import type { Plan, StepBody } from "../src/library/walk";
 import { WalkRequestSchema } from "../src/library/walk";
 import { POST } from "../api/walk";
+import { libraryVersion, loadLibrary } from "../api/_library";
+import { walkKey } from "../src/store/shared";
+import { stepForDrawing } from "../src/library/walk";
+import { loadWalks, saveWalk, shareLocal } from "../src/guide/walk";
 
 const plan = (over: Partial<Plan> = {}): Plan => ({ covered: true, title: "A pluck", tool: "serum", steps: [{ title: "What a pluck is", find: "pluck", kind: "idea" }, { title: "Build it", find: "envelope", kind: "recipe" }], ...over });
 const body = (text: string): StepBody => ({ covered: true, sources: [], blocks: [{ kind: "do", parts: [{ text, sources: [] }], sources: [] }] });
@@ -116,5 +120,33 @@ describe("who may use the shared library, against the real endpoint with a stand
     expect((await post({ kind: "step", question: "How do I make a pluck?", title: "A pluck", tool: "serum", steps: plan().steps, index: 1, id }, friend)).status).toBe(402);
     const after = await (await post({ kind: "remove", id }, owner)).json() as { walks: unknown[]; owner: boolean };
     expect(after).toMatchObject({ walks: [], owner: true });
+
+    // A walkthrough made before the library existed: the browser offers it, and the server fills it from its own memory of what it wrote.
+    loadLibrary();
+    const q = "How do I make a bell?", p2 = plan({ title: "A bell" }), b0 = body("The site's own words.");
+    await kv.set(walkKey(libraryVersion, q, "plan"), p2);
+    await kv.set(walkKey(libraryVersion, q, `step 0 of 2: ${p2.steps[0]!.title} | ${p2.steps[0]!.find} | ${p2.steps[0]!.kind} | serum`), b0);
+    await kv.set(walkKey(libraryVersion, q, `draw: ${p2.steps[0]!.title} | ${stepForDrawing(b0)}`), { kind: "harmonics", title: "Saw", caption: "", variables: [], choice: "saw" });
+    const offer = { kind: "share", question: q, title: "A bell", tool: "serum", steps: p2.steps };
+    expect((await post(offer)).status).toBe(401);
+    const took = await (await post(offer, friend)).json() as { shared: boolean; id: string; written: number };
+    expect(took).toMatchObject({ shared: true, written: 1 });
+    const kept = await (await post({ kind: "open", id: took.id }, friend)).json() as { by: string; steps: { body?: { blocks: { parts: { text: string }[] }[] }; draw?: { kind: string } }[] };
+    expect(kept.by).toBe("Finn"); expect(kept.steps[0]!.body!.blocks[0]!.parts[0]!.text).toBe("The site's own words."); expect(kept.steps[0]!.draw!.kind).toBe("harmonics"); expect(kept.steps[1]!.body).toBeUndefined();
+    // an outline the site never made for that question is not taken in, whatever the browser says it contains
+    expect(await (await post({ ...offer, steps: [{ title: "Made up", find: "xx", kind: "idea" }, p2.steps[1]!] }, friend)).json()).toEqual({ shared: false, reason: "not-remembered" });
+    expect(await (await post({ ...offer, question: "A question nobody asked?" }, friend)).json()).toEqual({ shared: false, reason: "not-remembered" });
+
+    // the browser side: an old walkthrough takes the library's id and keeps its ticks; one the site does not remember is offered only once
+    const mem = (() => { const m = new Map<string, string>(); return { getItem: (k: string) => m.get(k) ?? null, setItem: (k: string, v: string) => void m.set(k, v) }; })();
+    saveWalk({ id: "wold1", question: q, title: "A bell", tool: "serum", at: 1, savedAt: "x", steps: [{ ...p2.steps[0]!, done: true }, { ...p2.steps[1]! }] }, new Date(1), mem);
+    saveWalk({ id: "wold2", question: "A question nobody asked?", title: "T", tool: "serum", at: 0, savedAt: "x", steps: p2.steps }, new Date(2), mem);
+    let sent = 0;
+    const viaEndpoint = (async (_u: string, init: { body: string }) => { sent++; return post(JSON.parse(init.body), friend); }) as unknown as typeof fetch;
+    expect(await shareLocal(mem, viaEndpoint)).toBe(1);
+    const mineNow = loadWalks(mem);
+    expect(mineNow.find((w) => w.title === "A bell")).toMatchObject({ id: took.id, at: 1 }); expect(mineNow.find((w) => w.title === "A bell")!.steps[0]!.done).toBe(true);
+    expect(mineNow.find((w) => w.title === "T")!.id).toBe("wold2");
+    expect(await shareLocal(mem, viaEndpoint)).toBe(0); expect(sent).toBe(2);
   });
 });

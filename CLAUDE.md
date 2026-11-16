@@ -1109,6 +1109,12 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   tool or person; steps written, drawings, who asked, when; the owner sees Remove); `WalkPlayer` is the
   shared step-by-step viewer, used there and on the Ask tab. A plan's reply carries the shared `id`, which
   the browser's copy uses as its own id; `joinShared` joins the library's copy with the browser's.
+  **Older walkthroughs are taken in automatically** (owner asked how to save one made before the library):
+  on opening the Ask or Walkthroughs tab the browser offers each walkthrough it holds that has no library
+  id (`shareLocal`, request kind `share`). **The server trusts nothing the browser sends as content**: the
+  outline must equal the one the site remembers making for that question, and each step and drawing is
+  taken from the site's own 90-day memory (`walkKey`). No paid call. One taken in gets the library's id and
+  keeps the browser's place and ticks; one the site no longer remembers is offered once and left alone.
   **A person's place and ticks are still kept per browser, not with the account.** With no database the
   tab says so. Checked in a browser with a stand-in; **not yet run against the real database.**
 - **Long pages are searched in parts (16 Nov 2026).** `splitText` in `src/library/search.ts` cuts a page over

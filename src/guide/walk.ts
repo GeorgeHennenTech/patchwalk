@@ -90,3 +90,28 @@ export function joinShared(doc: SharedDoc, local?: Walk): Walk {
     steps: doc.steps.map((s, i) => { const l = sameSteps ? local!.steps[i]! : undefined; return { title: s.title, find: s.find, kind: s.kind, ...(s.body ?? l?.body ? { body: s.body ?? l!.body } : {}), ...(s.draw ?? l?.draw ? { draw: s.draw ?? l!.draw } : {}), ...(l?.done ? { done: true } : {}) }; }),
   };
 }
+
+/**
+ * Walkthroughs made before the shared library existed live only in the browser that made them. This offers
+ * each of them to the library, once. The server takes the words from its own memory of what it wrote (it
+ * never trusts a browser's copy), so nothing is paid for. One that is taken in gets the library's id, and
+ * keeps this browser's place and ticks. Returns how many were added.
+ */
+export async function shareLocal(storage: Store | undefined = globalThis.localStorage, fetchImpl: typeof fetch = fetch): Promise<number> {
+  let tried: string[] = [];
+  try { tried = JSON.parse(storage?.getItem(TRIED) ?? "[]") as string[]; } catch { /* start again */ }
+  let added = 0;
+  for (const w of loadWalks(storage).filter((x) => !SHARED_ID.test(x.id) && !tried.includes(x.id))) {
+    const out = await post<{ shared: boolean; id?: string; reason?: string }>({ kind: "share", question: w.question, title: w.title, tool: w.tool, steps: w.steps.map(({ title, find, kind }) => ({ title, find, kind })) }, fetchImpl);
+    if (out.kind === "unavailable") continue;                 // signed out, or the database is down: try again another time
+    if (out.value.reason === "no-database") return added;
+    if (out.value.shared && out.value.id) {
+      const walks = loadWalks(storage).filter((x) => x.id !== out.value.id).map((x) => (x.id === w.id ? { ...x, id: out.value.id! } : x));
+      try { storage?.setItem(KEY, JSON.stringify(walks)); } catch { /* not kept */ }
+      added++;
+    } else tried.push(w.id);                                  // the site no longer remembers writing it: do not keep asking
+  }
+  try { storage?.setItem(TRIED, JSON.stringify(tried.slice(-100))); } catch { /* not kept */ }
+  return added;
+}
+const TRIED = "patchwalk.walks.offered.v1";

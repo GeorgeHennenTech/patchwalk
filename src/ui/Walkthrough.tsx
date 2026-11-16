@@ -3,7 +3,7 @@
 // decides the label from the citations, not the guide. Formulas are kept as a reference and explained, and
 // the last step is a recipe in the learner's own tool.
 import { useEffect, useRef, useState } from "react";
-import { deleteWalk, doneCount, drawStep, listShared, loadWalks, newWalk, openShared, planWalk, removeShared, saveWalk, walkStepOnce, type SharedList, type Walk } from "../guide/walk";
+import { deleteWalk, doneCount, drawStep, listShared, loadWalks, newWalk, openShared, planWalk, removeShared, saveWalk, shareLocal, walkStepOnce, type SharedList, type Walk } from "../guide/walk";
 import { stepText, TOOL_NAMES, type BlockKind, type StepBlock, type StepBody } from "../library/walk";
 import { plain, SourceImage } from "./Answer";
 import { Badge } from "./Badge";
@@ -151,6 +151,7 @@ export function WalkView({ question, setQuestion }: { question: string; setQuest
   const [note, setNote] = useState<string>();
 
   const keep = (w: Walk) => { setWalk(w); setWalks(saveWalk(w)); };
+  useEffect(() => { void shareLocal().then((n) => { if (n) setWalks(loadWalks()); }); }, []);
   async function start(q: string, fresh = false) {
     const text = q.trim();
     if (text.length < 3 || busy) return;
@@ -208,8 +209,10 @@ export function WalkLibrary() {
   const [note, setNote] = useState<string>();
   const [find, setFind] = useState("");
   const [opening, setOpening] = useState<string>();
+  const [added, setAdded] = useState(0);
   const load = () => void listShared().then((out) => (out.kind === "ok" ? setList(out.value) : setNote(out.message)));
-  useEffect(load, []);
+  // walkthroughs this browser made before the library existed are put into it first, then the list is read
+  useEffect(() => { void shareLocal().then((n) => { setAdded(n); load(); }); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const keep = (w: Walk) => { setWalk(w); saveWalk(w); };
   async function open(id: string) {
     setOpening(id); setNote(undefined);
@@ -226,6 +229,7 @@ export function WalkLibrary() {
       <h2>Walkthroughs</h2>
       <p className="muted">Every walkthrough the guide has made on this site, for you or anyone else signed in. Opening one costs nothing for the steps already written. A step nobody has opened yet is written when you reach it, which is one paid call. Your place and your ticks are your own, kept in this browser.</p>
       {note && <p className="banner">{note}</p>}
+      {added > 0 && !walk && <p className="note" role="status">{added === 1 ? "A walkthrough" : `${added} walkthroughs`} this browser made earlier {added === 1 ? "has" : "have"} been added to the library.</p>}
       {walk ? (
         <>
           <p><button className="link" onClick={() => { setWalk(undefined); load(); }}>← All walkthroughs</button></p>

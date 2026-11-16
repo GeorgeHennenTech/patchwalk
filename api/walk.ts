@@ -10,7 +10,7 @@ import { gate } from "../src/lesson/auth.js";
 import { kvFromEnv } from "../src/store/kv.js";
 import { ownKey, recallShared, rememberShared, walkKey } from "../src/store/shared.js";
 import { search, type Index } from "../src/library/search.js";
-import { makePlan, PLAN_SYSTEM, PlanModelSchema, STEP_SYSTEM, stepPrompt, stepSearch, WalkRequestSchema, writeStep, type Plan, type PlanCall, type StepBody, type StepCall } from "../src/library/walk.js";
+import { makePlan, PLAN_SYSTEM, PlanModelSchema, STEP_SYSTEM, stepForDrawing, stepPrompt, stepSearch, WalkRequestSchema, writeStep, type Plan, type PlanCall, type StepBody, type StepCall } from "../src/library/walk.js";
 import { cleanDrawing, DRAW_SYSTEM, DrawModelSchema, type Drawing } from "../src/library/draw.js";
 import { libraryVersion, loadLibrary } from "./_library.js";
 
@@ -47,6 +47,34 @@ export async function POST(request: Request): Promise<Response> {
       if (!owner) return json(403, { error: "owner-only", message: "Only the owner can remove a walkthrough from the library." });
       await removeWalk(kv, req.id);
       return json(200, { walks: await listWalks(kv), database: true, owner });
+    } catch (e) { console.error(e); return json(502, { error: "database", message: "The site's database could not be reached. Try again." }); }
+  }
+
+  // A walkthrough made before the shared library existed, still held in someone's browser, is added to it
+  // here. Nothing the browser sends is trusted as content: the outline must match the one this site made
+  // for that question, and each step's words and drawing are taken from the site's own memory. No paid call.
+  if (req.kind === "share") {
+    if (!kv) return json(200, { shared: false, reason: "no-database" });
+    try {
+      const me = await accountOf(kv, tokenOf(request.headers));
+      if (!me) return json(401, { error: "signed-out", message: "Sign in first (reload the page)." });
+      loadLibrary();
+      const known = await recallShared<Plan>(kv, walkKey(libraryVersion, req.question, "plan"));
+      const matches = !!known?.covered && known.tool === req.tool && known.steps.length === req.steps.length && known.steps.every((s, i) => s.title === req.steps[i]!.title && s.find === req.steps[i]!.find && s.kind === req.steps[i]!.kind);
+      if (!matches) return json(200, { shared: false, reason: "not-remembered" });
+      const id = await savePlan(kv, req.question, known!, me.name);
+      const had = await openWalk(kv, id);
+      let written = 0;
+      for (let i = 0; i < known!.steps.length; i++) {
+        const step = known!.steps[i]!;
+        if (had?.steps[i]?.body) { written++; continue; }
+        const body = await recallShared<StepBody>(kv, walkKey(libraryVersion, req.question, `step ${i} of ${known!.steps.length}: ${step.title} | ${step.find} | ${step.kind} | ${known!.tool}`));
+        if (!body || !Array.isArray(body.blocks) || !body.blocks.length) continue;
+        if (await saveStep(kv, id, i, step, body)) written++;
+        const drawing = await recallShared<Drawing>(kv, walkKey(libraryVersion, req.question, `draw: ${step.title} | ${stepForDrawing(body)}`));
+        if (drawing && typeof drawing.kind === "string") await saveDraw(kv, id, step.title, drawing);
+      }
+      return json(200, { shared: true, id, written });
     } catch (e) { console.error(e); return json(502, { error: "database", message: "The site's database could not be reached. Try again." }); }
   }
 

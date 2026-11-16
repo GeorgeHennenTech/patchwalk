@@ -115,6 +115,8 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [ ] Guide: mark up a walkthrough's pictures automatically, step by step (today it is one click per picture)
 - [x] Guide: "Walk me through it": step-by-step walkthroughs written across all the texts, each part labelled "the text says" or "my synthesis", differences between texts stated, book maths explained, ending in a Serum 2 or Ableton recipe (16 Nov; owner to try it live)
 - [ ] Guide: better search across many books (done 15 Nov: related technical words; done 16 Nov: long pages split into passages; still to do: have a small model pick the best)
+- [x] Guide: "Draw this" on a walkthrough step: a formula as a graph with sliders, or a ready-made picture, chosen by the guide and drawn by the app (16 Nov; owner to try it live)
+- [ ] Guide: "Try it on the practice synth" from a walkthrough step, with the step's settings loaded
 - [ ] Guide: keep walkthroughs with the account, not only the browser
 - [ ] Place library pictures inside lessons where they help
 - [ ] Voice for the guide using Higgsfield (owner's choice): test quality, then generate each narration once and store it

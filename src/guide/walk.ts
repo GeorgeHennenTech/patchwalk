@@ -2,7 +2,8 @@
 // reaches it, and keeps walkthroughs in this browser so one that was paid for is there next time, with the
 // steps already read and the ticks already made.
 import { guideHeaders } from "./me";
-import type { Plan, PlanStep, StepBody, Tool } from "../library/walk";
+import type { Drawing } from "../library/draw";
+import { stepForDrawing, type Plan, type PlanStep, type StepBody, type Tool } from "../library/walk";
 
 export type WalkOutcome<T> = { kind: "ok"; value: T } | { kind: "unavailable"; message: string };
 
@@ -17,8 +18,12 @@ export const planWalk = (question: string, fresh = false, fetchImpl: typeof fetc
 export const walkStep = (walk: Pick<Walk, "question" | "title" | "tool" | "steps">, index: number, fresh = false, fetchImpl: typeof fetch = fetch) =>
   post<StepBody>({ kind: "step", question: walk.question, title: walk.title, tool: walk.tool, steps: walk.steps.map(({ title, find, kind }) => ({ title, find, kind })), index, ...(fresh ? { fresh: true } : {}) }, fetchImpl);
 
+/** Ask the guide to choose a drawing for a step that has been written. One paid call; the app does the drawing. */
+export const drawStep = (question: string, step: string, body: StepBody, fresh = false, fetchImpl: typeof fetch = fetch) =>
+  post<Drawing>({ kind: "draw", question, step, text: stepForDrawing(body), ...(fresh ? { fresh: true } : {}) }, fetchImpl);
+
 /** One step of a saved walkthrough: the plan's step, what the guide wrote for it once opened, and the learner's tick. */
-export interface WalkStep extends PlanStep { body?: StepBody; done?: boolean }
+export interface WalkStep extends PlanStep { body?: StepBody; done?: boolean; /** The drawing chosen for this step, once asked for. */ draw?: Drawing }
 export interface Walk { id: string; question: string; title: string; tool: Tool; steps: WalkStep[]; at: number; savedAt: string }
 
 const KEY = "patchwalk.walks.v1";

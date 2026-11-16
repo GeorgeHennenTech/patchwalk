@@ -1078,6 +1078,22 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   real API: whether the model keeps to the labels, and how good its plans are, is unknown until the owner
   tries it.** Not built: marks drawn on a step's pictures automatically, Rift as a recipe tool, a check
   that the learner really did a step.
+- **"Draw this" on a walkthrough step (16 Nov 2026, owner's go-ahead).** A button under any written step
+  asks the guide, in one paid call with structured output (`kind: "draw"` on `api/walk.ts`), to **choose** a
+  drawing from a fixed catalogue and give its settings; **the app draws it, the guide never writes a
+  picture or code** (the standing diagram rule). `src/library/draw.ts`: the catalogue (`formula`,
+  `envelope`, `filter`, `harmonics`, `lfo`, `chain`, `none`), the instructions, and `cleanDrawing`, which
+  makes the choice safe or turns it into "nothing to draw" with the reason. `src/library/formula.ts` is a
+  small calculator that reads plain arithmetic into a function (`compile`): nothing is ever handed to the
+  JavaScript engine, and names such as `constructor` are refused. `src/ui/Drawing.tsx` draws: a formula as
+  a graph with a slider per symbol, a readout of the result, and a choice of which symbol runs along the
+  bottom; the ready-made pictures from the synth's own maths (`filterResponseDb`, `lfoValue`), also with
+  sliders. Every drawing is tagged "The guide's drawing" and says it is not from a book; each slider says
+  whether it starts at a value the step's text states or at the guide's choice, and a value pulled into
+  range stops counting as the text's. The model is sent the step as labelled text (`stepForDrawing`). The
+  drawing is kept with the step in the saved walkthrough and in the shared memory. Checked in a browser
+  with a stand-in reply; **not yet run against the real API**. Not built: "try it on the practice synth"
+  with the step's settings, and anything with a physical shape (the guide is told to answer `none`).
 - **Long pages are searched in parts (16 Nov 2026).** `splitText` in `src/library/search.ts` cuts a page over
   2,400 characters into overlapping parts of about 1,500 (ids `book#page~1`, `~2`, with `of` naming the
   page); `pageOf` and `cite` count parts of one page as one source, and `search` takes at most two parts of

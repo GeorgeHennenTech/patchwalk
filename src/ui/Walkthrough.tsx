@@ -3,10 +3,11 @@
 // decides the label from the citations, not the guide. Formulas are kept as a reference and explained, and
 // the last step is a recipe in the learner's own tool.
 import { useEffect, useRef, useState } from "react";
-import { deleteWalk, doneCount, loadWalks, newWalk, planWalk, saveWalk, walkStep, type Walk } from "../guide/walk";
+import { deleteWalk, doneCount, drawStep, loadWalks, newWalk, planWalk, saveWalk, walkStep, type Walk } from "../guide/walk";
 import { stepText, TOOL_NAMES, type BlockKind, type StepBlock, type StepBody } from "../library/walk";
 import { plain, SourceImage } from "./Answer";
 import { Badge } from "./Badge";
+import { DrawingView } from "./Drawing";
 
 const EXAMPLES = ["How do I make a plucked sound with a filter envelope?", "How do I set up sidechain compression on a bass?", "How do I make a vibrato that fades in?", "How do I use FM to make a bell-like tone?"];
 
@@ -79,6 +80,17 @@ export function WalkView({ question, setQuestion }: { question: string; setQuest
     return () => { gone = true; asked.current.delete(key); setBusy(undefined); };
   }, [walk?.id, walk?.at, current?.body]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // "Draw this": one paid call in which the guide only chooses a drawing; it is kept with the step.
+  const [drawing, setDrawing] = useState<string>();
+  async function draw(fresh = false) {
+    if (!walk || !current?.body || drawing) return;
+    const id = walk.id, at = walk.at;
+    setDrawing(`${id}:${at}`); setNote(undefined);
+    const out = await drawStep(walk.question, current.title, current.body, fresh);
+    setDrawing(undefined);
+    if (out.kind === "unavailable") { setNote(out.message); return; }
+    setWalk((w) => { if (!w || w.id !== id) return w; const next = { ...w, steps: w.steps.map((s, i) => (i === at ? { ...s, draw: out.value } : s)) }; setWalks(saveWalk(next)); return next; });
+  }
   const go = (at: number) => walk && keep({ ...walk, at: Math.max(0, Math.min(walk.steps.length - 1, at)) });
   const tick = () => { if (!walk) return; const steps = walk.steps.map((s, i) => (i === walk.at ? { ...s, done: true } : s)); keep({ ...walk, steps, at: Math.min(walk.steps.length - 1, walk.at + 1) }); };
   const body = current?.body, tool = walk ? TOOL_NAMES[walk.tool] : "";
@@ -143,6 +155,10 @@ export function WalkView({ question, setQuestion }: { question: string; setQuest
                 </ol>
               </details>
             )}
+            {body && body.blocks.length > 0 && !current.draw && (
+              <p className="point-row"><button className="point-button" disabled={!!drawing} onClick={() => void draw()}>{drawing ? "Choosing a drawing…" : "Draw this"}</button> <span className="muted">A graph or diagram of this step that you can move, drawn by the app. One paid call.</span></p>
+            )}
+            {current.draw && <><DrawingView key={`${walk.id}:${walk.at}:${current.draw.title}`} drawing={current.draw} /><p className="point-row"><button className="link" disabled={!!drawing} onClick={() => void draw(true)}>{drawing ? "Choosing…" : "Choose a different drawing"}</button></p></>}
             {body?.remembered && <p className="note">This step was written before, so it is shown again with no new call.</p>}
             <p className="walk-nav">
               <button disabled={walk.at === 0} onClick={() => go(walk.at - 1)}>Back</button>

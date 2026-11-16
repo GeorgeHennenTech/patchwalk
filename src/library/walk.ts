@@ -14,6 +14,8 @@ import { cite, toParagraphs, type AnswerSegment, type AnswerSource, type ModelBl
 import type { Hit, Passage } from "./search.js";
 
 export const MIN_STEPS = 2, MAX_STEPS = 7;
+/** How much of a written step is sent when asking for a drawing of it. */
+export const MAX_DRAW_TEXT = 6000;
 export const TOOLS = ["serum", "ableton", "both", "none"] as const;
 export type Tool = (typeof TOOLS)[number];
 export const TOOL_NAMES: Record<Tool, string> = { serum: "Serum 2", ableton: "Ableton Live", both: "Serum 2 and Ableton Live", none: "" };
@@ -45,6 +47,8 @@ export const WalkRequestSchema = z.discriminatedUnion("kind", [
     kind: z.literal("step"), question: z.string().trim().min(3).max(600), title: z.string().max(160), tool: z.enum(TOOLS),
     steps: z.array(StepSchema).min(1).max(MAX_STEPS + 1), index: z.number().int().min(0).max(MAX_STEPS), fresh: z.boolean().optional(),
   }),
+  // "Draw this": the step as it was written (with its labels), so a drawing can be chosen for it
+  z.object({ kind: z.literal("draw"), question: z.string().trim().min(3).max(600), step: z.string().trim().min(3).max(160), text: z.string().trim().min(10).max(MAX_DRAW_TEXT), fresh: z.boolean().optional() }),
 ]);
 export type WalkRequest = z.infer<typeof WalkRequestSchema>;
 
@@ -184,3 +188,8 @@ export async function writeStep(prompt: string, hits: Hit[], call: StepCall): Pr
 
 /** A step as plain text (for "Show me where", which wants to know what the learner was told). */
 export const stepText = (body: StepBody) => body.blocks.map((b) => b.parts.map((p) => p.text).join("")).join("\n\n").trim();
+
+const SAID: Record<BlockKind, string> = { do: "This step", text: "A text says", synthesis: "The guide's own synthesis", disagree: "The texts differ", maths: "The maths, from a text", recipe: "Recipe", missing: "Not in the library" };
+/** A step as labelled plain text, for choosing a drawing: every paragraph says whose words it is. */
+export const stepForDrawing = (body: StepBody) =>
+  body.blocks.map((b) => `[${b.kind === "maths" && b.unsourced ? "The maths, with no text behind it" : SAID[b.kind]}] ${b.parts.map((p) => p.text).join("").trim()}`).join("\n\n").slice(0, MAX_DRAW_TEXT);

@@ -10,6 +10,7 @@ import { kvFromEnv } from "../src/store/kv.js";
 import { ownKey, recallShared, rememberShared, walkKey } from "../src/store/shared.js";
 import { search, type Index } from "../src/library/search.js";
 import { makePlan, PLAN_SYSTEM, PlanModelSchema, STEP_SYSTEM, stepPrompt, stepSearch, WalkRequestSchema, writeStep, type Plan, type PlanCall, type StepBody, type StepCall } from "../src/library/walk.js";
+import { cleanDrawing, DRAW_SYSTEM, DrawModelSchema, type Drawing } from "../src/library/draw.js";
 import { libraryVersion, loadLibrary } from "./_library.js";
 
 const MODEL = "claude-opus-5-5";
@@ -61,6 +62,24 @@ export async function POST(request: Request): Promise<Response> {
       const plan = await makePlan(req.question, search(index, req.question, PLAN_PASSAGES, { perPage: 1 }), call);
       if (plan.covered) await rememberShared(kv, key, plan);
       return json(200, plan);
+    }
+
+    if (req.kind === "draw") {
+      // one call that only chooses a drawing and its settings; the app draws it. A drawing already chosen for this step is given again.
+      const key = walkKey(libraryVersion, req.question, `draw: ${req.step} | ${req.text}`);
+      if (!req.fresh) { const known = await recallShared<Drawing>(kv, key); if (known && typeof known.kind === "string") return json(200, { ...known, remembered: true }); }
+      const response = await client.messages.parse({
+        model: MODEL,
+        max_tokens: 3000,
+        system: DRAW_SYSTEM,
+        output_config: { effort: "medium", format: zodOutputFormat(DrawModelSchema) },
+        messages: [{ role: "user", content: `The learner asked: ${req.question}\n\nThe step: ${req.step}\n\nThe step as written:\n${req.text}` }],
+      });
+      if (response.stop_reason === "refusal") return json(502, { error: "upstream", message: "The guide declined to choose a drawing." });
+      if (!response.parsed_output) return json(502, { error: "upstream", message: "The guide's reply could not be read. Try again." });
+      const drawing = cleanDrawing(response.parsed_output);
+      await rememberShared(kv, key, drawing);
+      return json(200, drawing);
     }
 
     const step = req.steps[req.index]!;

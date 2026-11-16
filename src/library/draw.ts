@@ -8,8 +8,9 @@
 import { z } from "zod";
 import { compile, RESERVED } from "./formula.js";
 
-export const DRAW_KINDS = ["formula", "envelope", "filter", "harmonics", "lfo", "chain", "none"] as const;
-export type DrawKind = (typeof DRAW_KINDS)[number];
+export const DRAW_KINDS = ["formula", "envelope", "filter", "harmonics", "lfo", "duck", "none"] as const;
+/** "chain" (boxes joined by arrows) was retired: it only repeated a step's words. It stays as a type so walkthroughs saved with one still open. */
+export type DrawKind = (typeof DRAW_KINDS)[number] | "chain";
 
 /** What the model returns. Every field is always present; the ones a kind does not use are left empty. */
 export const DrawModelSchema = z.object({
@@ -27,7 +28,7 @@ export const DrawModelSchema = z.object({
     stated: z.boolean().describe("true only if this value is stated in the step's text"),
   })).describe("formula: every symbol in the expression. Other kinds: the settings named in the instructions"),
   choice: z.string().describe("filter: low, high, band or notch. harmonics and lfo: sine, triangle, square or saw. Empty otherwise"),
-  stages: z.array(z.string()).describe("chain only: the stages in order, a few words each"),
+  stages: z.array(z.string()).describe("not used: leave empty"),
 });
 export type DrawModel = z.infer<typeof DrawModelSchema>;
 
@@ -53,7 +54,8 @@ const SETTINGS: Partial<Record<DrawKind, [string, string, string, number, number
   envelope: [["attack", "Attack", "ms", 0, 4000, 10], ["decay", "Decay", "ms", 0, 4000, 300], ["sustain", "Sustain", "%", 0, 100, 60], ["release", "Release", "ms", 0, 4000, 400]],
   filter: [["cutoff", "Cutoff", "Hz", 20, 20000, 1000, true], ["resonance", "Resonance", "%", 0, 100, 20]],
   lfo: [["rate", "Rate", "Hz", 0.1, 20, 2, true]],
-  harmonics: [], chain: [],
+  harmonics: [],
+  duck: [["amount", "How far the bass is turned down", "dB", 0, 24, 12], ["attack", "Attack", "ms", 0, 60, 5], ["release", "Release", "ms", 20, 600, 180], ["tempo", "Tempo", "bpm", 80, 170, 120]],
 };
 const CHOICES: Partial<Record<DrawKind, string[]>> = { filter: ["low", "high", "band", "notch"], harmonics: ["saw", "square", "triangle", "sine"], lfo: ["sine", "triangle", "square", "saw"] };
 export const MAX_VARIABLES = 6, MAX_STAGES = 8;
@@ -66,12 +68,13 @@ The catalogue:
 - filter: a filter's curve. "choice" is low, high, band or notch. Variables named cutoff (Hz) and resonance (%).
 - harmonics: the harmonics of a basic wave. "choice" is sine, triangle, square or saw.
 - lfo: a slow repeating movement. "choice" is its shape; a variable named rate (Hz).
-- chain: the order sound passes through things. "stages" lists them in order, at most ${MAX_STAGES}.
+- duck: a working model of sidechain compression (ducking): a kick drum turning a bass down on every hit, shown moving and playable so the learner hears it with the ducking on and off. Use it for sidechain compression, ducking or pumping. Variables named amount (dB the bass is turned down), attack (ms), release (ms) and tempo (bpm).
 - none: nothing in the catalogue fits. Choose this for anything with a physical shape (an instrument, a loudspeaker, a room), for a screen layout, and whenever a drawing would add nothing. Say why in the caption.
 
 Rules:
 - Set "stated" to true only for a value the step's text states. Every other value, and every range, is your own choice; do not present it as the book's.
 - The caption says what to look for in the drawing, in one or two plain sentences. Add no fact the step does not contain.
+- A drawing must show something the words cannot: a shape, a movement, a sound. Never choose one that would only repeat the step in other words. When in doubt, choose none: no drawing is better than a pointless one.
 - Fill every field; leave the ones this drawing does not use empty.`;
 
 const tidy = (text: string, max: number) => text.replace(/\*\*|^#{1,6} /gm, "").replace(/\s+/g, " ").trim().slice(0, max);
@@ -115,11 +118,6 @@ export function cleanDrawing(raw: DrawModel): Drawing {
   const allowed = CHOICES[raw.kind];
   const choice = allowed ? (allowed.includes(raw.choice.trim().toLowerCase()) ? raw.choice.trim().toLowerCase() : undefined) : undefined;
   if (allowed && !choice) return none(`The drawing could not be made: "${tidy(raw.choice, 20)}" is not one of ${allowed.join(", ")}.`);
-  if (raw.kind === "chain") {
-    const stages = raw.stages.map((s) => tidy(s, 40)).filter(Boolean).slice(0, MAX_STAGES);
-    if (stages.length < 2) return none("The drawing could not be made: a chain needs at least two stages.");
-    return { kind: "chain", title: title || "Signal chain", caption, variables: [], stages };
-  }
   return { kind: raw.kind, title: title || raw.kind, caption, variables, ...(choice ? { choice } : {}) };
 }
 
@@ -131,4 +129,24 @@ export const place = (v: Pick<DrawVar, "min" | "max" | "log">, value: number) =>
 /** The levels of the first `count` harmonics of a basic wave (the largest is 1). */
 export function waveHarmonics(shape: string, count = 16): number[] {
   return Array.from({ length: count }, (_, i) => { const n = i + 1; return shape === "saw" ? 1 / n : shape === "square" ? (n % 2 ? 1 / n : 0) : shape === "triangle" ? (n % 2 ? 1 / (n * n) : 0) : n === 1 ? 1 : 0; });
+}
+
+/**
+ * Ducking, as the working model draws and plays it: how much of the bass is let through, `t` seconds after a
+ * kick lands. It is turned down by `amountDb` over the attack time, held there while the kick's thump lasts,
+ * then let back up over the release time (to within a hair of full after about three release times). This is
+ * a simplified picture of a sidechain compressor, not a model of any product's detector circuit.
+ */
+export const KICK_HOLD = 0.05;
+export function duckGain(t: number, amountDb: number, attackMs: number, releaseMs: number): number {
+  if (!(t >= 0) || !(amountDb > 0)) return 1;
+  const floor = 10 ** (-amountDb / 20), attack = Math.max(0.0005, attackMs / 1000), release = Math.max(0.005, releaseMs / 1000);
+  if (t < attack) return 1 - (1 - floor) * (t / attack);
+  if (t < attack + KICK_HOLD) return floor;
+  return 1 - (1 - floor) * Math.exp((-(t - attack - KICK_HOLD) * 3) / release);
+}
+/** The same over a repeating beat: the gain at time `t` when a kick lands every `beat` seconds (the last two kicks count). */
+export function duckGainLooped(t: number, beat: number, amountDb: number, attackMs: number, releaseMs: number): number {
+  const since = ((t % beat) + beat) % beat;
+  return Math.min(duckGain(since, amountDb, attackMs, releaseMs), duckGain(since + beat, amountDb, attackMs, releaseMs));
 }

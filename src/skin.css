@@ -1154,3 +1154,12 @@ body.dragging-source .knob { outline: 2px dashed var(--line); outline-offset: -2
 .thread-tools { margin: 2px 0 0; font-size: 0.85rem; text-align: right; }
 .walk-track button { position: relative; }
 .walk-dot { position: absolute; top: -3px; right: -3px; width: 10px; height: 10px; border-radius: 50%; background: #d98a1a; border: 2px solid var(--panel); }
+
+/* The ducking model: a kick turning a bass down, drawn from the curve the sound is made with. */
+.draw-play { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 0 0 8px; }
+.draw-play .seg { display: inline-flex; overflow: hidden; }
+.draw-play .seg button { border: 0; background: var(--panel); color: var(--text); padding: 5px 12px; font: inherit; cursor: pointer; }
+.duck-kick { fill: #d98a1a; }
+.duck-bass { fill: var(--accent); opacity: 0.9; }
+.duck-ghost { fill: none; stroke: var(--thread); stroke-width: 1.2; stroke-dasharray: 5 4; opacity: 0.6; }
+.duck-head { stroke: var(--text); stroke-width: 2; }

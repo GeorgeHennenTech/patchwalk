@@ -70,7 +70,10 @@ describe("a walkthrough's plan", () => {
     expect(only!({ id: "ableton-live-11-manual#4", source: "", section: "", text: "" })).toBe(true);
     expect(only!({ id: "serum-2-user-guide#9", source: "", section: "", text: "" })).toBe(false);
     expect(only!({ id: "smith-digital-waveguides#3", source: "", section: "", text: "" })).toBe(false);
-    expect(stepSearch("q?", p, 0).only).toBeUndefined();
+    // a step that is not the recipe may use any book except the loudspeaker ones, whose "bass" and "sub" pages are about cabinets
+    const any = stepSearch("q?", p, 0).only!;
+    expect(any({ id: "smith-digital-waveguides#3", source: "", section: "", text: "" })).toBe(true); expect(any({ id: "funktion-one-documents#512", source: "", section: "", text: "" })).toBe(false); expect(any({ id: "kolbrek-horn-theory#2", source: "", section: "", text: "" })).toBe(false);
+    expect(stepSearch("q?", { ...p, tool: "none" }, 0).only).toBeUndefined(); // a walkthrough about sound systems themselves searches everything
     expect(stepPrompt("How do I make a pluck?", p, p.steps.length - 1)).toContain("The tool is Ableton Live.");
   });
 });

@@ -119,9 +119,13 @@ export function cleanPlan(question: string, raw: PlanModel): Plan {
 }
 
 /** The search for one step: its own words, and for a recipe only the tool's own manual. */
+/** Books about loudspeakers and sound systems. A walkthrough that ends in a synth or a DAW is not about those, so they are kept out of its search. */
+export const SYSTEM_BOOKS = ["funktion-one", "kolbrek"];
 export function stepSearch(question: string, plan: { tool: Tool; steps: PlanStep[] }, index: number): { query: string; only?: (p: Passage) => boolean } {
   const step = plan.steps[index]!;
-  if (step.kind !== "recipe" || plan.tool === "none") return { query: `${step.find} ${step.title}` };
+  if (plan.tool === "none") return { query: `${step.find} ${step.title}` };
+  // "bass", "sub" and "level" are loudspeaker words too: without this a step on sidechaining a bass was given a bass cabinet's spec sheet and its photograph
+  if (step.kind !== "recipe") return { query: `${step.find} ${step.title}`, only: (p) => !SYSTEM_BOOKS.some((b) => p.id.startsWith(b)) };
   const books = TOOL_BOOKS[plan.tool];
   return { query: `${step.find} ${step.title} ${question}`, only: (p) => books.some((b) => p.id.startsWith(`${b}#`)) };
 }

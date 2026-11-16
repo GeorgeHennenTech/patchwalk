@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { compile } from "../src/library/formula";
-import { cleanDrawing, DRAW_SYSTEM, place, sweep, waveHarmonics, type DrawModel } from "../src/library/draw";
+import { cleanDrawing, DRAW_SYSTEM, DrawModelSchema, duckGain, duckGainLooped, KICK_HOLD, place, sweep, waveHarmonics, type DrawModel } from "../src/library/draw";
 import { stepForDrawing, WalkRequestSchema } from "../src/library/walk";
 
 describe("the formula reader", () => {
@@ -42,9 +42,23 @@ describe("a drawing the guide chose is cleaned before anything is drawn", () => 
     expect(cleanDrawing(raw({ kind: "filter", choice: " Low ", variables: [] }))).toMatchObject({ kind: "filter", choice: "low" });
     expect(cleanDrawing(raw({ kind: "filter", choice: "comb" })).kind).toBe("none");
     expect(cleanDrawing(raw({ kind: "harmonics", choice: "square" }))).toMatchObject({ kind: "harmonics", choice: "square", variables: [] });
-    expect(cleanDrawing(raw({ kind: "chain", stages: ["Oscillator", " Filter ", "", "Reverb"] })).stages).toEqual(["Oscillator", "Filter", "Reverb"]);
-    expect(cleanDrawing(raw({ kind: "chain", stages: ["one"] })).kind).toBe("none");
+    // boxes joined by arrows were retired: the guide can no longer choose them
+    expect(DrawModelSchema.safeParse({ ...raw(), kind: "chain" }).success).toBe(false);
+    expect(DRAW_SYSTEM).not.toContain("chain:"); expect(DRAW_SYSTEM).toContain("no drawing is better than a pointless one");
+    const duck = cleanDrawing(raw({ kind: "duck", expression: "", variables: [{ name: "amount", label: "", unit: "", min: 0, max: 1, value: 9, stated: true }, { name: "release", label: "", unit: "", min: 0, max: 1, value: 5000, stated: false }] }));
+    expect(duck.variables.map((v) => [v.name, v.value, v.stated])).toEqual([["amount", 9, true], ["attack", 5, false], ["release", 600, false], ["tempo", 120, false]]);
     expect(cleanDrawing(raw({ kind: "none", caption: "A loudspeaker has a shape." }))).toMatchObject({ kind: "none", caption: "A loudspeaker has a shape." });
+  });
+  it("ducking: full before the kick, down by the set amount while it lasts, back up over the release, and never above full", () => {
+    expect(duckGain(-1, 12, 5, 180)).toBe(1); expect(duckGain(0, 12, 5, 180)).toBe(1); expect(duckGain(0.1, 0, 5, 180)).toBe(1);
+    expect(20 * Math.log10(duckGain(0.005 + KICK_HOLD / 2, 12, 5, 180))).toBeCloseTo(-12, 6);
+    expect(duckGain(0.0025, 12, 5, 180)).toBeCloseTo((1 + 10 ** (-12 / 20)) / 2, 6);                       // half way down, half way through the attack
+    const after = (ms: number, release: number) => duckGain(0.005 + KICK_HOLD + ms / 1000, 12, 5, release);
+    expect(after(180, 180)).toBeGreaterThan(0.96); expect(after(60, 180)).toBeLessThan(after(60, 60));   // a longer release comes back later
+    for (let t = 0; t < 1; t += 0.01) { const g = duckGain(t, 24, 10, 300); expect(g).toBeGreaterThan(0); expect(g).toBeLessThanOrEqual(1); }
+    // on a fast beat with a long release the bass has not recovered when the next kick lands, so it starts the beat already low
+    expect(duckGainLooped(0, 0.35, 12, 5, 600)).toBeLessThan(0.9); expect(duckGainLooped(0, 0.5, 12, 5, 60)).toBeGreaterThan(0.99);
+    expect(duckGainLooped(0.52, 0.5, 12, 5, 180)).toBeCloseTo(duckGainLooped(0.02, 0.5, 12, 5, 180), 9);
   });
   it("ranges are swept evenly or by ratio, and the basic waves have the right harmonics", () => {
     expect(sweep({ min: 0, max: 10 }, 0.5)).toBe(5); expect(sweep({ min: 20, max: 20000, log: true }, 0.5)).toBeCloseTo(632.46, 1);

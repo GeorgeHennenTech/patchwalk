@@ -1094,6 +1094,24 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   drawing is kept with the step in the saved walkthrough and in the shared memory. Checked in a browser
   with a stand-in reply; **not yet run against the real API**. Not built: "try it on the practice synth"
   with the step's settings, and anything with a physical shape (the guide is told to answer `none`).
+- **Drawings must be real models, not words in boxes (owner, 16 Nov 2026).** The owner saw a "chain" drawing
+  (boxes joined by arrows) on a sidechain step and called it "text slop": they want an actual picture or an
+  interactive model. **The `chain` kind was retired**: the guide can no longer choose it, the instructions
+  now say a drawing must show something the words cannot and that none is better than a pointless one, and
+  a walkthrough saved with one shows a note and "Choose a different drawing". In its place for that case:
+  **`duck`, a working model of sidechain ducking** (`DuckModel` in `Drawing.tsx`): a kick on each beat and a
+  held bass, the bass's level drawn from `duckGainLooped` (`draw.ts`: down by a set amount over the attack,
+  held for the kick, back up over the release; a simplified picture, and the page says so), **played as
+  sound** from the same curve (rendered with an `OfflineAudioContext` and looped), a line showing where the
+  sound has got to, a switch to hear it with the ducking off, and sliders for amount, attack, release and
+  tempo. **The rule for new drawing kinds: each is a hand-built model that moves or sounds; if none fits,
+  the guide draws nothing. Generated images are still not used for technical drawings.** Candidates not
+  built: a compressor's input-against-output curve, echoes on a timeline, FM sidebands, detuned voices
+  beating, wavefolding. Also fixed from the same screenshot: a step on sidechaining a bass had been given a
+  Funktion-One bass cabinet's spec sheet and photograph, because "bass" and "sub" are loudspeaker words;
+  `stepSearch` now keeps the loudspeaker books (`SYSTEM_BOOKS`) out of any walkthrough that ends in a synth
+  or a DAW. Checked in a browser (drew, played, the play line moved, the switch changed the picture); the
+  sound was not measured and has not been heard by anyone.
 - **Shared library of walkthroughs, and a "Walkthroughs" tab (16 Nov 2026, owner's request: whatever the owner
   or their friends have generated is saved so everyone can use it, with a tab to go through it).**
   `src/store/walks.ts`: one walkthrough per question (`walkId`, a hash of the tidied question), kept in the

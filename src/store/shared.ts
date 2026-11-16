@@ -13,6 +13,8 @@ export const fingerprint = (parts: (string | number)[]) => short(parts.join("|")
 export const answerKey = (libraryVersion: string, question: string) => `pw:ans:${libraryVersion}:${short(sameQuestionKey(question))}`;
 /** A walkthrough's outline, or one of its steps (named by its place and its title, so a changed outline is not mixed up with an old one). */
 export const walkKey = (libraryVersion: string, question: string, part: string) => `pw:walk:${libraryVersion}:${short(sameQuestionKey(question))}:${short(part)}`;
+/** A lesson rewritten for Serum 2: one per lesson and per wording of that lesson, kept with no end date. */
+export const serumKey = (lesson: string, lessonText: string) => `pw:serum:${lesson}:${short(lessonText)}`;
 export const marksKey = (pictureVersion: string, book: string, file: string, question: string) => `pw:pt:${pictureVersion}:${book}/${file}:${short(sameQuestionKey(question))}`;
 
 /** Look something up in the shared memory. A database that is missing or failing just means "not remembered". */

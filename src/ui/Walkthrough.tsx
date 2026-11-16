@@ -21,7 +21,7 @@ function from(block: StepBlock, body: StepBody): string {
   return [...new Set(named)].join("; ");
 }
 
-function Block({ block, body, tool }: { block: StepBlock; body: StepBody; tool: string }) {
+export function Block({ block, body, tool }: { block: StepBlock; body: StepBody; tool: string }) {
   const where = from(block, body);
   const label = block.kind === "recipe" && tool ? `In ${tool}` : LABEL[block.kind];
   return (

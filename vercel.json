@@ -21,6 +21,10 @@
     "api/walk.ts": {
       "maxDuration": 120,
       "includeFiles": "{library/*.json,library/images/*/index.json,knowledge-cards/*.md}"
+    },
+    "api/serum.ts": {
+      "maxDuration": 120,
+      "includeFiles": "{library/*.json,library/images/*/index.json,knowledge-cards/*.md}"
     }
   },
   "headers": [

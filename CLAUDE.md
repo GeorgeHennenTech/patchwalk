@@ -1128,6 +1128,26 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   every slider was clutter. Checked in a browser: each drew, played without errors, and its picture
   followed its slider. **The sound was not measured and nobody has heard them.** Eleven kinds of drawing
   now: formula, envelope, filter, harmonics, lfo, duck and these five.
+- **"Build this lesson in Serum 2" (16 Nov 2026, owner's request).** A button on every practice lesson that
+  has steps (not the "Notes and chords" chapter, and not lessons that are only by-ear rounds) rewrites the
+  lesson as steps to follow in Serum 2, so the learner can mimic it there. The owner asked whether to build
+  on demand with a database or all at once; **chosen: on demand, built once, kept in the database with no
+  end date** (the build session has no API key, so it cannot pre-build them; an owner-only "build them all"
+  could be added). `api/serum.ts` + `src/library/serum.ts` + `src/guide/serum.ts` + `src/ui/SerumVersion.tsx`.
+  The browser sends only the lesson's title, chapter, outcome and each step's `do` text (`lessonForSerum`;
+  the server cannot import lesson files). The server makes one search per step **in the Serum 2 User Guide
+  only** (up to 14 passages) and one call with citations; the reply is labelled and checked by the same
+  `writeStep`/`labelBlocks` as a walkthrough step (DO "Step N: ...", RECIPE, TEXT, SYNTHESIS for the guide's
+  own mapping of our controls onto Serum's and for any value, MISSING when the pages do not cover a step or
+  Serum has no such control). Stored under `serumKey(lesson, the exact wording sent)`, so a reworded lesson
+  is built afresh and nobody can overwrite what honest browsers are served. **Opening a lesson asks, for
+  free, whether it is built (`peek`); a built one is given to anyone signed in; building is one paid call
+  under the usual who-pays rule** (a friend without a key gets 402 until the owner or a key-holder has
+  built it), tested against the real endpoint with a stand-in database. The panel says it was written from
+  the manual and not checked in Serum 2 by a person, and offers "Build it again". Checked in a browser with
+  a stand-in reply. **Not yet run against the real API: how well the guide maps our synth's steps onto
+  Serum's controls is unknown.** Lessons using things Serum may not have under our names (our generated
+  wavetables, our own warp modes) should come back with MISSING or SYNTHESIS notes; watch for invention.
 - **Shared library of walkthroughs, and a "Walkthroughs" tab (16 Nov 2026, owner's request: whatever the owner
   or their friends have generated is saved so everyone can use it, with a tab to go through it).**
   `src/store/walks.ts`: one walkthrough per question (`walkId`, a hash of the tidied question), kept in the

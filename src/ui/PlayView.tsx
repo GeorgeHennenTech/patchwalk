@@ -16,6 +16,7 @@ import { ScoreView } from "./Score";
 import { beatHz, destName, INITIAL, noteToHz, PARAMS, SHAPES, type Shape, type SynthState } from "../synth/params";
 import { useSynth, type Synth } from "../synth/useSynth";
 import { AskBox } from "./Answer";
+import { SerumVersion } from "./SerumVersion";
 import { Badge } from "./Badge";
 import { Markdown } from "./Markdown";
 import { Control, Keyboard } from "./synth/Controls";
@@ -400,6 +401,8 @@ export function PlayView({ cards, wanted }: { cards: Card[]; wanted?: { id: stri
           <p className="intro-clip"><span className="muted">Hear what this lesson covers:</span> <audio key={lesson.id} controls preload="none" src={INTRO_CLIPS[lesson.id]} aria-label="Spoken introduction to this lesson" /></p>
         )}
         {WHY[lesson.id] && <p className="why-matters"><strong>Why this matters:</strong> {WHY[lesson.id]}</p>}
+        {/* the theory lessons are about notes, not a synth's controls, so there is nothing to rebuild in Serum */}
+        {placeOf(lesson).chapter !== "Notes and chords" && lesson.steps.length > 0 && <SerumVersion lesson={lesson} chapter={placeOf(lesson).chapter} />}
         <p><strong>You will be able to:</strong> {lesson.outcome}</p>
         {lesson.demo && (
           <p className="hear-first"><button className="primary" onClick={() => void playDemo()}>Hear it first</button> <span className="muted">{lesson.demo.caption}</span></p>

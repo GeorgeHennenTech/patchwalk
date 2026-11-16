@@ -17,6 +17,18 @@ async function post<T>(body: unknown, fetchImpl: typeof fetch): Promise<WalkOutc
 export const planWalk = (question: string, fresh = false, fetchImpl: typeof fetch = fetch) => post<Plan>({ kind: "plan", question, ...(fresh ? { fresh: true } : {}) }, fetchImpl);
 export const walkStep = (walk: Pick<Walk, "question" | "title" | "tool" | "steps"> & { id?: string }, index: number, fresh = false, fetchImpl: typeof fetch = fetch) =>
   post<StepBody>({ kind: "step", question: walk.question, title: walk.title, tool: walk.tool, steps: walk.steps.map(({ title, find, kind }) => ({ title, find, kind })), index, ...shared(walk.id), ...(fresh ? { fresh: true } : {}) }, fetchImpl);
+/**
+ * The same step asked for twice at once (the page drew itself again, or the learner left and came straight
+ * back) is one request, not two: a step is a paid call, so it must never be sent twice for nothing.
+ */
+const writing = new Map<string, Promise<WalkOutcome<StepBody>>>();
+export function walkStepOnce(walk: Parameters<typeof walkStep>[0] & { id: string }, index: number, fetchImpl: typeof fetch = fetch): Promise<WalkOutcome<StepBody>> {
+  const key = `${walk.id}:${index}:${walk.steps[index]?.title ?? ""}`, going = writing.get(key);
+  if (going) return going;
+  const made = walkStep(walk, index, false, fetchImpl).finally(() => writing.delete(key));
+  writing.set(key, made);
+  return made;
+}
 /** A walkthrough that is in the shared library says so, so what is written for it is kept there for everyone. */
 const shared = (id: string | undefined) => (id && SHARED_ID.test(id) ? { id } : {});
 

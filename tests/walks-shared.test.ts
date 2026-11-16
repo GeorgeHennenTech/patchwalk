@@ -3,7 +3,7 @@ import { handle } from "../src/store/accounts";
 import { kvFromEnv } from "../src/store/kv";
 import { memoryKv } from "../src/store/kv";
 import { listWalks, MAX_SHARED_WALKS, openWalk, removeWalk, saveDraw, savePlan, saveStep, walkId, WALK_ID } from "../src/store/walks";
-import { joinShared, type Walk } from "../src/guide/walk";
+import { joinShared, walkStepOnce, type Walk } from "../src/guide/walk";
 import type { Plan, StepBody } from "../src/library/walk";
 import { WalkRequestSchema } from "../src/library/walk";
 import { POST } from "../api/walk";
@@ -59,6 +59,17 @@ describe("the shared library of walkthroughs", () => {
     expect(fresh.at).toBe(0); expect(fresh.steps.some((s) => s.done)).toBe(false);
     // a different outline under the same id: the old place and ticks do not carry over
     expect(joinShared(doc, { ...local, steps: [{ title: "Other", find: "x", kind: "idea", done: true }, local.steps[1]!] }).steps[0]!.done).toBeUndefined();
+  });
+  it("a step asked for twice at the same moment is sent once", async () => {
+    let sent = 0, release!: () => void;
+    const wait = new Promise<void>((r) => { release = r; });
+    const fake = (async () => { sent++; await wait; return new Response(JSON.stringify({ covered: true, blocks: [], sources: [] }), { status: 200 }); }) as unknown as typeof fetch;
+    const w = { id: "a".repeat(24), question: "q?", title: "T", tool: "serum" as const, steps: plan().steps };
+    const one = walkStepOnce(w, 0, fake), two = walkStepOnce(w, 0, fake), other = walkStepOnce(w, 1, fake);
+    release();
+    expect((await one).kind).toBe("ok"); expect(await two).toBe(await one); await other;
+    expect(sent).toBe(2);                       // step 0 once, step 1 once
+    await walkStepOnce(w, 0, fake); expect(sent).toBe(3); // and it can be asked for again afterwards
   });
   it("the library can only be read with the password, and has nothing to show without a database", async () => {
     expect(WalkRequestSchema.safeParse({ kind: "open", id: "../etc" }).success).toBe(false);

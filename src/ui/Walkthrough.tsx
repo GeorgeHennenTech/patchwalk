@@ -3,7 +3,7 @@
 // decides the label from the citations, not the guide. Formulas are kept as a reference and explained, and
 // the last step is a recipe in the learner's own tool.
 import { useEffect, useRef, useState } from "react";
-import { deleteWalk, doneCount, drawStep, listShared, loadWalks, newWalk, openShared, planWalk, removeShared, saveWalk, walkStep, type SharedList, type Walk } from "../guide/walk";
+import { deleteWalk, doneCount, drawStep, listShared, loadWalks, newWalk, openShared, planWalk, removeShared, saveWalk, walkStepOnce, type SharedList, type Walk } from "../guide/walk";
 import { stepText, TOOL_NAMES, type BlockKind, type StepBlock, type StepBody } from "../library/walk";
 import { plain, SourceImage } from "./Answer";
 import { Badge } from "./Badge";
@@ -66,7 +66,7 @@ export function WalkPlayer({ walk, keep }: { walk: Walk; keep: (w: Walk) => void
     asked.current.add(key);
     let gone = false;
     setBusy(true); setNote(undefined);
-    void walkStep(walk, at).then((out) => {
+    void walkStepOnce(walk, at).then((out) => {
       if (gone) return;
       setBusy(false);
       if (out.kind === "unavailable") { setNote(out.message); asked.current.delete(key); return; }

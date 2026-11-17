@@ -461,3 +461,7 @@ Every lesson's script and card is a draft until the owner has reviewed it.
   app.** A "Club pop" starting pattern and a "Big saw chords" starting sound exist as a first step.
 - **Drum-pattern lessons from literature.** Wait for the texts in `docs/LITERATURE.md` (Hockman's thesis
   first), then write lessons in the Studio from them.
+- **Automation (owner, 17 Nov 2026).** Lessons on automation in the Studio once it has automation lanes:
+  what a lane is, drawing and recording one, and many combinations (filter opening over a build, level
+  and reverb swapping places, pitch and delay throws, two lanes working against each other), written
+  as short recipes like the macro chapter's. Needs the lanes first.

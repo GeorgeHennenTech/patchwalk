@@ -138,6 +138,9 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [x] Studio: undo/redo, record from keys and pads, saved breaks and racks, MIDI files in and out (17 Nov 2026)
 - [x] Library tab; Studio sounds, breaks, racks and songs kept in the database; nine more built-in drums (17 Nov 2026)
 - [x] Studio laid out like Ableton's Arrangement View, with its shortcuts; note selection and draw mode; metronome (17 Nov 2026)
+- [ ] **Automation (owner asked 17 Nov 2026):** automation lanes in the Studio (a line per track that moves a
+  setting over time: a synth knob, a track's level, an effect), then lessons on automation with many
+  different combinations of automations to try, in the way the macro chapter has many recipes
 - [ ] Studio, Ableton-like, still missing: drag clips with the mouse, split and consolidate, zoom, grid sizes, Session View, per-track effects
 - [ ] Owner to try: drop a sample in the Studio and check it shows in Library > Sounds on the live site
 - [ ] Studio next: note loudness, copy/paste, per-track effects, export to a sound file, a kit as a zip of sound files, lessons that use it; earlier list: one clock shared with the synth, piano roll, chaining patterns, mixer, per-drum sound, a lesson using the grid

@@ -146,7 +146,45 @@ export class CrushDsp implements Dsp {
   }
 }
 
-export const DSP_KINDS = ["comp", "glue", "limiter", "gate", "crush"] as const;
+export const RESONATORS = 5, RES_NAMES = ["I", "II", "III", "IV", "V"];
+/** The frequency of each of the five resonators: the first sits on the note, the others a number of semitones from it. */
+export const resonatorHz = (p: P): number[] => RES_NAMES.map((_, i) => 440 * 2 ** (((p.note ?? 48) + (i ? p[`r${i + 1}pitch`] ?? 0 : 0) - 69) / 12));
+/** How much of a trip round a resonator's loop is kept, so that it rings down 60 dB in `decay` seconds. */
+export const resonatorKeep = (hz: number, decay: number) => 10 ** (-3 / (hz * Math.max(0.01, decay)));
+/**
+ * Resonators: five tuned loops (a delay one period long that feeds itself), each ringing at its own note
+ * when the sound passing through excites it. Colour takes the top off each trip, so high partials die first.
+ */
+export class ResonatorDsp implements Dsp {
+  private readonly size: number; private readonly buf: Float32Array[]; private at = 0; private readonly lp = new Float32Array(RESONATORS * 2);
+  private p = { len: [1, 1, 1, 1, 1], keep: [0, 0, 0, 0, 0], gain: [0, 0, 0, 0, 0], open: 1, dry: 0, wet: 1 };
+  constructor(private readonly sampleRate: number) { this.size = Math.ceil(sampleRate / 20) + 4; this.buf = Array.from({ length: RESONATORS * 2 }, () => new Float32Array(this.size)); }
+  set(p: P): void {
+    const hz = resonatorHz(p), mix = Math.min(1, Math.max(0, (p.mix ?? 100) / 100));
+    this.p = { len: hz.map((f) => Math.min(this.size - 3, Math.max(2, this.sampleRate / f))), keep: hz.map((f) => resonatorKeep(f, p.decay ?? 1.5)),
+      gain: RES_NAMES.map((_, i) => ((p[`r${i + 1}on`] ?? 1) ? dbToGain(p[`r${i + 1}gain`] ?? 0) : 0)), open: 0.05 + 0.95 * Math.min(1, Math.max(0, (p.colour ?? 100) / 100)) ** 2, dry: 1 - mix, wet: mix };
+  }
+  run(inL: Float32Array, inR: Float32Array, outL: Float32Array, outR: Float32Array): void {
+    const { size, buf, lp } = this, p = this.p; let at = this.at;
+    for (let i = 0; i < inL.length; i++) {
+      for (let side = 0; side < 2; side++) {
+        const x = side ? inR[i]! : inL[i]!; let sum = 0;
+        for (let k = 0; k < RESONATORS; k++) {
+          if (!p.gain[k]) continue;
+          const b = buf[k * 2 + side]!, n = k * 2 + side, where = at - p.len[k]! + size, i0 = Math.floor(where), f = where - i0, back = b[i0 % size]! * (1 - f) + b[(i0 + 1) % size]! * f;
+          lp[n] = lp[n]! + (back - lp[n]!) * p.open;                 // the loop's loss: a little off the top each trip
+          const y = x + lp[n]! * p.keep[k]!;
+          b[at] = y; sum += y * (1 - p.keep[k]!) * p.gain[k]!;
+        }
+        (side ? outR : outL)[i] = x * p.dry + sum * p.wet;
+      }
+      at = (at + 1) % size;
+    }
+    this.at = at;
+  }
+}
+
+export const DSP_KINDS = ["comp", "glue", "limiter", "gate", "crush", "resonators"] as const;
 export function makeDsp(kind: string, sampleRate: number): Dsp | undefined {
-  return kind === "comp" ? new CompDsp(sampleRate) : kind === "glue" ? new CompDsp(sampleRate, true) : kind === "limiter" ? new LimiterDsp(sampleRate) : kind === "gate" ? new GateDsp(sampleRate) : kind === "crush" ? new CrushDsp(sampleRate) : undefined;
+  return kind === "comp" ? new CompDsp(sampleRate) : kind === "glue" ? new CompDsp(sampleRate, true) : kind === "limiter" ? new LimiterDsp(sampleRate) : kind === "gate" ? new GateDsp(sampleRate) : kind === "crush" ? new CrushDsp(sampleRate) : kind === "resonators" ? new ResonatorDsp(sampleRate) : undefined;
 }

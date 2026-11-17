@@ -1,8 +1,8 @@
 // The audio of each device, built from the settings and maths in `devices.ts`. Every device is wrapped the
 // same way: the sound goes both through the effect and straight past it, and switching the device on or off
 // crossfades between the two, so nothing clicks and nothing restarts.
-import { CHANNEL_CUT_HZ, CHANNEL_HIGH_HZ, CHANNEL_LOW_HZ, CHANNEL_MID_Q, DELAY_MAX_SECONDS, CHORUS_SWING, dbToGain, delayRouting, delayTimes, eq3Gains, eq8Band, lfoRateHz, mixGains, octavesToQ, overdriveGain, overdriveToneHz, panHarmonics, satTable, utilityMatrix, type Device } from "./devices";
-import { reverbImpulse } from "../synth/fx";
+import { ECHO_WOBBLE, FILTER_DELAY_LINES, autoFilterKind, echoDriveGain, echoSeconds, filterDelayLine, CHANNEL_CUT_HZ, CHANNEL_HIGH_HZ, CHANNEL_LOW_HZ, CHANNEL_MID_Q, DELAY_MAX_SECONDS, CHORUS_SWING, dbToGain, delayRouting, delayTimes, eq3Gains, eq8Band, lfoRateHz, mixGains, octavesToQ, overdriveGain, overdriveToneHz, panHarmonics, satTable, utilityMatrix, type Device } from "./devices";
+import { FLANGER_BASE, FLANGER_SWING, PHASER_Q, PHASER_STAGES, PHASER_SWING_CENTS, reverbImpulse } from "../synth/fx";
 import { DSP_KINDS } from "./dsp";
 import workletUrl from "./dsp.worklet.ts?worker&url";
 
@@ -175,7 +175,82 @@ function reverb(ctx: BaseAudioContext): Core {
     to(pre.delayTime, (p.predelay ?? 10) / 1000, t); to(low.frequency, p.lowcut ?? 120, t); to(high.frequency, p.highcut ?? 8000, t); m.set(p.mix ?? 25, t);
   } };
 }
-const CORES: Record<string, (ctx: BaseAudioContext, p: P) => Core> = { comp: worklet("comp"), glue: worklet("glue"), limiter: worklet("limiter"), gate: worklet("gate"), crush: worklet("crush"), utility, eq3, eq8, channeleq, sat, overdrive, autopan, chorus, delay, reverb };
+/** An LFO whose shape can be changed: sine, triangle or square, built from harmonics so it swings exactly -1 to 1. */
+function lfoOsc(ctx: BaseAudioContext) {
+  const osc = ctx.createOscillator(); let made = -1; osc.start(ctx.currentTime);
+  return { osc, shape(n: number) { if (n === made) return; const h = panHarmonics(n), im = new Float32Array(h.length + 1); h.forEach((b, i) => { im[i + 1] = b; }); osc.setPeriodicWave(ctx.createPeriodicWave(new Float32Array(h.length + 1), im, { disableNormalization: true })); made = n; } };
+}
+/**
+ * Follows how loud a sound is: its output is about 1 for a full-level tone. `speed` sets how quickly it
+ * follows. The smoothing is a one-pole filter made with the browser's exact (double precision) filter: its
+ * ordinary low-pass set this low read a tenth short.
+ */
+function follower(ctx: BaseAudioContext) {
+  const mono = ctx.createGain(), abs = ctx.createWaveShaper(), out = ctx.createGain();
+  mono.channelCount = 1; mono.channelCountMode = "explicit";
+  const c = new Float32Array(2049); for (let i = 0; i < c.length; i++) c[i] = Math.abs((2 * i) / (c.length - 1) - 1); abs.curve = c;
+  out.gain.value = Math.PI / 2;                                    // a sine's average size is 2/pi of its peak
+  mono.connect(abs);
+  let smooth: IIRFilterNode | undefined, made = -1;
+  const nodes: AudioNode[] = [mono, abs, out];
+  return { input: mono, output: out, nodes, speed(ms: number, _t: number) {
+    if (ms === made) return;
+    const a = 1 - Math.exp(-1 / ((Math.max(1, ms) / 1000) * ctx.sampleRate)), next = ctx.createIIRFilter([a], [1, a - 1]);
+    if (smooth) { abs.disconnect(smooth); smooth.disconnect(); nodes.splice(nodes.indexOf(smooth), 1); }
+    abs.connect(next).connect(out); nodes.push(next); smooth = next; made = ms;
+  } };
+}
+function autofilter(ctx: BaseAudioContext): Core {
+  const f = biquad(ctx, "lowpass", 1200, 0), lfo = lfoOsc(ctx), depth = ctx.createGain(), fol = follower(ctx), env = ctx.createGain();
+  lfo.osc.connect(depth).connect(f.detune);
+  const input = ctx.createGain(); input.connect(f); input.connect(fol.input); fol.output.connect(env).connect(f.detune);
+  return { input, output: f, nodes: [input, f, lfo.osc, depth, env, ...fol.nodes], set(p, t, bpm) {
+    const kind = autoFilterKind(p); if (f.type !== kind) f.type = kind;
+    lfo.shape(p.shape ?? 0); to(lfo.osc.frequency, lfoRateHz(p, bpm), t); to(depth.gain, (p.lfo ?? 1) * 1200, t); to(env.gain, (p.env ?? 0) * 1200, t); fol.speed(p.envSpeed ?? 40, t);
+    to(f.frequency, p.freq ?? 1200, t); to(f.Q, kind === "lowpass" || kind === "highpass" ? 20 * Math.log10(p.res ?? 1.5) : p.res ?? 1.5, t);
+  } };
+}
+function phaser(ctx: BaseAudioContext): Core {
+  const m = mixer(ctx), lfo = ctx.createOscillator(), stages = Array.from({ length: PHASER_STAGES }, () => biquad(ctx, "allpass", 800, PHASER_Q)), cents = ctx.createGain(), ph = ctx.createGain(), fl = ctx.createGain();
+  const d = ctx.createDelay(0.05), swing = ctx.createGain(), fb = ctx.createGain(), half = ctx.createGain(); half.gain.value = 0.5;
+  lfo.start(ctx.currentTime); lfo.connect(cents); for (const s of stages) cents.connect(s.detune);
+  chain(m.input, ...stages, ph, half); m.input.connect(half);    // the wet sound is the untouched sound plus the shifted one, halved: where they are opposite, a notch
+  lfo.connect(swing).connect(d.delayTime); chain(m.input, d, fl, half); d.connect(fb).connect(d);
+  half.connect(m.wet);
+  return { input: m.input, output: m.output, nodes: [...m.nodes, lfo, ...stages, cents, ph, fl, d, swing, fb, half], set(p, t) {
+    const a = Math.min(1, Math.max(0, (p.amount ?? 60) / 100)), flange = !!p.mode;
+    to(lfo.frequency, p.rate ?? 0.3, t); to(cents.gain, a * PHASER_SWING_CENTS, t); for (const s of stages) to(s.frequency, p.centre ?? 800, t);
+    to(d.delayTime, FLANGER_BASE, t); to(swing.gain, a * FLANGER_SWING, t); to(fb.gain, flange ? Math.min(0.9, (p.feedback ?? 40) / 100) : 0, t);
+    to(ph.gain, flange ? 0 : 1, t); to(fl.gain, flange ? 1 : 0, t); m.set(p.mix ?? 100, t);
+  } };
+}
+function echo(ctx: BaseAudioContext): Core {
+  const m = mixer(ctx), sum = ctx.createGain(), d = ctx.createDelay(DELAY_MAX_SECONDS + 0.1), low = biquad(ctx, "highpass", 150), high = biquad(ctx, "lowpass", 5000), shape = ctx.createWaveShaper(), fb = ctx.createGain();
+  const block = 128 / ctx.sampleRate, late = ctx.createDelay(0.01), duck = ctx.createGain(), fol = follower(ctx), down = ctx.createGain(), lfo = ctx.createOscillator(), wob = ctx.createGain();
+  late.delayTime.value = block; fol.speed(60, 0); lfo.start(ctx.currentTime);
+  chain(m.input, sum, d, low, high, shape, late, duck, m.wet); shape.connect(fb).connect(sum);
+  m.input.connect(fol.input); fol.output.connect(down).connect(duck.gain); lfo.connect(wob).connect(d.delayTime);
+  let made = -1;
+  return { input: m.input, output: m.output, nodes: [...m.nodes, sum, d, low, high, shape, fb, late, duck, down, lfo, wob, ...fol.nodes], set(p, t, bpm) {
+    const g = echoDriveGain(p.drive ?? 0);
+    if (g !== made) { if (g === 1) shape.curve = null; else { const n = 4097, c = new Float32Array(n); for (let i = 0; i < n; i++) c[i] = Math.tanh(((2 * i) / (n - 1) - 1) * g) / Math.tanh(g); shape.curve = c; } made = g; }
+    to(d.delayTime, Math.max(0, echoSeconds(p, bpm) - block), t); to(fb.gain, Math.min(0.95, (p.feedback ?? 50) / 100), t); to(low.frequency, p.lowcut ?? 150, t); to(high.frequency, p.highcut ?? 5000, t);
+    to(wob.gain, ((p.wobble ?? 0) / 100) * ECHO_WOBBLE, t); to(lfo.frequency, p.wobbleRate ?? 0.5, t); to(down.gain, -(p.duck ?? 0) / 100, t); m.set(p.mix ?? 35, t);
+  } };
+}
+function filterdelay(ctx: BaseAudioContext): Core {
+  const m = mixer(ctx), input = stereo(ctx), split = ctx.createChannelSplitter(2), block = 128 / ctx.sampleRate, nodes: AudioNode[] = [input, split];
+  m.input.connect(input).connect(split);
+  const lines = FILTER_DELAY_LINES.map((k) => { const fromL = ctx.createGain(), fromR = ctx.createGain(), d = ctx.createDelay(DELAY_MAX_SECONDS + 0.1), f = biquad(ctx, "bandpass", 1000, 1), fb = ctx.createGain(), late = ctx.createDelay(0.01), level = ctx.createGain(), pan = ctx.createStereoPanner();
+    late.delayTime.value = block; split.connect(fromL, 0); split.connect(fromR, 1); fromL.connect(d); fromR.connect(d); chain(d, f, late, level, pan, m.wet); f.connect(fb).connect(d);
+    nodes.push(fromL, fromR, d, f, fb, late, level, pan); return { k, fromL, fromR, d, f, fb, level, pan }; });
+  return { input: m.input, output: m.output, nodes: [...m.nodes, ...nodes], set(p, t, bpm) {
+    for (const l of lines) { const s = filterDelayLine(p, l.k, bpm); to(l.fromL.gain, s.hears[0], t); to(l.fromR.gain, s.hears[1], t); to(l.d.delayTime, Math.max(0, s.seconds - block), t); to(l.fb.gain, s.feedback, t);
+      to(l.f.frequency, s.freq, t); to(l.f.Q, s.q, t); to(l.level.gain, s.level, t); to(l.pan.pan, s.pan, t); }
+    m.set(p.mix ?? 40, t);
+  } };
+}
+const CORES: Record<string, (ctx: BaseAudioContext, p: P) => Core> = { comp: worklet("comp"), glue: worklet("glue"), limiter: worklet("limiter"), gate: worklet("gate"), crush: worklet("crush"), resonators: worklet("resonators"), autofilter, phaser, echo, filterdelay, utility, eq3, eq8, channeleq, sat, overdrive, autopan, chorus, delay, reverb };
 
 /** The audio for one device, or nothing when the kind is unknown. */
 export function buildDevice(ctx: BaseAudioContext, d: Device, bpm = 120): LiveDevice | undefined {

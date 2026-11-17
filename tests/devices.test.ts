@@ -67,7 +67,7 @@ const FREQS = [30, 100, 250, 700, 1000, 2500, 6000, 15000];
 
 describe("the EQs", () => {
   it("every EQ changes nothing at its starting settings", () => {
-    for (const kind of Object.keys(CURVES)) for (const f of FREQS) expect(Math.abs(CURVES[kind]!(start(kind), f))).toBeLessThan(0.01);
+    for (const kind of ["eq3", "eq8", "channeleq"]) for (const f of FREQS) expect(Math.abs(CURVES[kind]!(start(kind), f))).toBeLessThan(0.01);
   });
   it("three bands: each gain reaches its own band, a kill silences it, and the splits are 6 dB down where two bands meet", () => {
     expect(eq3Db(start("eq3", { low: 6 }), 40)).toBeCloseTo(6, 1);
@@ -145,5 +145,27 @@ describe("the other devices' maths", () => {
     expect(delayRouting({ feedback: 50, pingpong: 0 })).toEqual({ leftIn: [1, 0], rightIn: [0, 1], self: 0.5, cross: 0 });
     expect(delayRouting({ feedback: 50, pingpong: 1 })).toEqual({ leftIn: [0.5, 0.5], rightIn: [0, 0], self: 0, cross: 0.5 });
     expect(delayEchoes(start("delay", { feedback: 50, pingpong: 1, divR: 4 }), 120, 3)).toEqual([{ at: 0.375, side: "left", level: 1 }, { at: 0.875, side: "right", level: 0.5 }, { at: 1.25, side: "left", level: 0.25 }]);
+  });
+});
+
+import { autoFilterDb, autoFilterHz, echoDriveGain, echoSeconds, filterDelayLine, noteName } from "../src/daw/devices";
+describe("auto filter, echo, filter delay", () => {
+  it("auto filter: the LFO and the loudness move it by octaves; at rest it is a plain filter", () => {
+    const p = start("autofilter", { freq: 1000, lfo: 2, env: -1 });
+    expect(autoFilterHz(p)).toBe(1000); expect(autoFilterHz(p, 1)).toBe(4000); expect(autoFilterHz(p, -1)).toBe(250); expect(autoFilterHz(p, 0, 1)).toBe(500);
+    expect(autoFilterDb(start("autofilter", { freq: 1000, res: Math.SQRT1_2 }), 1000)).toBeCloseTo(-3.01, 1);
+    expect(autoFilterDb(start("autofilter", { type: 3, freq: 1000 }), 1000)).toBeLessThan(-60);
+    expect(CURVES.autofilter!(start("autofilter", { type: 1, freq: 2000 }), 100)).toBeLessThan(-40);
+  });
+  it("echo: time in beats follows the tempo; no drive is no gain", () => {
+    expect(echoSeconds(start("echo"), 120)).toBe(0.5); expect(echoSeconds(start("echo", { sync: 0, ms: 80 }), 120)).toBe(0.08);
+    expect(echoDriveGain(0)).toBe(1); expect(echoDriveGain(100)).toBe(8);
+  });
+  it("filter delay: the left line hears the left, the middle both, the right the right; a line that is off is silent", () => {
+    const p = start("filterdelay", { mon: 0 });
+    expect(filterDelayLine(p, "l", 120)).toMatchObject({ hears: [1, 0], seconds: 0.25, pan: -1, level: 1 });
+    expect(filterDelayLine(p, "m", 120)).toMatchObject({ hears: [0.5, 0.5], level: 0 });
+    expect(filterDelayLine(p, "r", 120)).toMatchObject({ hears: [0, 1], seconds: 0.375, pan: 1 });
+    expect(noteName(60)).toBe("C4"); expect(noteName(57)).toBe("A3");
   });
 });

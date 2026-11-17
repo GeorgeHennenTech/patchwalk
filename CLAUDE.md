@@ -1277,6 +1277,8 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   and gate show a "Turning down by" meter (`transport.reduction`). Measured: compressor within 0.03 dB of
   its rule; limiter exactly at its ceiling, 1.5 ms late. Not built: a sidechain. Next devices are listed
   under "Next" in `docs/STOCK_PLUGINS.md`.
+  **Five more the same day (twenty devices):** Auto filter, Phaser and flanger, Echo, Filter delay
+  (ready-made parts) and Resonators (`ResonatorDsp` in the worklet). Measurements in `docs/STOCK_PLUGINS.md`.
 - **"Walk me through it" (16 Nov 2026, owner's go-ahead with two rules of their own).** A second mode on the
   Ask tab (a switch, remembered): a how-to question becomes a walkthrough of steps shown one at a time.
   `api/walk.ts` answers two kinds of request: `plan` (one call with structured output over ten passages:

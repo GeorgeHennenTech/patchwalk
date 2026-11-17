@@ -43,6 +43,24 @@ maths, and a measurement in a browser (`transport.levels()` reads the left and r
   the two thresholds stayed open (no chatter).
 - [x] 10. **Crusher** (Redux): bits, keep one sample in N, dry/wet. Measured: 2 bits gave 5 levels.
 
+- [x] 12. **Auto filter** (Auto Filter): low-pass, high-pass, band-pass or notch; an LFO (sine, triangle,
+  square; Hz or beats) and the sound's own loudness each move it by a set number of octaves. Measured: at
+  rest every kind matched its drawn curve to 0.00 dB; a square LFO of one octave on a band-pass at 1 kHz
+  passed 2 kHz then 500 Hz in turn (30 dB between them); loudness moved it within 0.3 dB of the maths.
+  One slope only (12 dB an octave).
+- [x] 15. **Phaser and flanger** (Phaser-Flanger): one device, two modes. Measured still: the flanger
+  removed 100 and 300 Hz completely and left 200 and 400 Hz untouched; the phaser followed its maths (6 dB
+  lower throughout, because here the wet sound is halved); stable at 90% feedback. The phaser has no feedback.
+- [x] 17. **Echo** (Echo): time in beats or ms, feedback, low and high cut, drive, wobble, ducking,
+  dry/wet. Measured: repeats exactly 0.500 s apart at 1/4 and 120 bpm, each half the last at 50%; ducking
+  at 50% turned the echoes down 6.0 dB under a full-level tone; peak stayed at 1.00 at full feedback and drive.
+- [x] 18. **Filter delay** (Filter Delay): three delays (fed by left, both, right), each with a band-pass,
+  time, feedback, pan and level. Measured: a click on the left came back on the left at 0.250 s and from
+  the middle line at 0.500 s on both sides, and never from the right line; the mirror image for the right.
+- [x] 25. **Resonators** (Resonators): five tuned loops (the first on a note, the rest in semitones from
+  it), ring time, brightness, level each. In the worklet (`ResonatorDsp`). Measured: set to A3 it rang at
+  220 Hz; tests hold it in tune within 8 cents and to its ring time.
+
 These five run in an AudioWorklet (`src/daw/dsp.ts` is the code, with no browser parts, so
 `tests/dsp.test.ts` runs exactly what the sound is made with; `dsp.worklet.ts` wraps it; `prepareDevices`
 loads it, and a chain passes such a device by until it has loaded). A new sample-by-sample device: a class
@@ -74,16 +92,11 @@ changes glide. Each was measured by building it on an `OfflineAudioContext` in a
 
 ## To build, in this order
 - [ ] 11. **Erosion** (Erosion): a short delay shaken by noise or a sine
-- [ ] 12. **Auto filter** (Auto Filter): a filter moved by its own LFO and by the sound's level
-- [ ] 15. **Phaser and flanger** (Phaser-Flanger)
-- [ ] 17. **Echo** (Echo): a delay with its own modulation, filter, drive and ducking
-- [ ] 18. **Filter delay** (Filter Delay): three filtered delays
 - [ ] 20. **Drum bus** (Drum Buss): drive, crunch, transient shaping and a low boom, for a drum track
 - [ ] 21. **Multiband dynamics** (Multiband Dynamics): three bands, each compressed or expanded
 - [ ] 22. **Beat repeat** (Beat Repeat): catches a slice and repeats it on the grid
 - [ ] 23. **Grain delay** (Grain Delay)
 - [ ] 24. **Shifter** (Shifter, Frequency Shifter): pitch or frequency shift
-- [ ] 25. **Resonators** (Resonators): five tuned comb filters
 - [ ] 26. **Amp, cabinet and pedal** (Amp, Cabinet, Pedal, Dynamic Tube): guitar-style drive and speaker colour
 - [ ] 27. **Vinyl distortion** (Vinyl Distortion)
 - [ ] 28. **Spectrum and tuner** (Spectrum, Tuner): devices that only show, not change, the sound
@@ -100,6 +113,7 @@ changes glide. Each was measured by building it on an `OfflineAudioContext` in a
 Distortion, three-band EQ, compressor, chorus, flanger, phaser, delay, reverb (`src/synth/fx.ts`). The Studio's devices are separate from these.
 
 ## Next
-12 Auto filter, 15 Phaser and flanger, 17 Echo, 18 Filter delay, 20 Drum bus and 25 Resonators can be made
-from ready-made parts. 21 Multiband dynamics can reuse `CompDsp` with the three-band split. A sidechain for
-the compressor needs the transport to carry one track's sound to another track's device.
+11 Erosion, 20 Drum bus, 21 Multiband dynamics (reuse `CompDsp` with the three-band split), 22 Beat repeat,
+24 Shifter, 26-28, 30 MIDI effects. A sidechain for the compressor needs the transport to carry one track's
+sound to another track's device. A level follower made from ready parts must smooth with `createIIRFilter`:
+the ordinary low-pass set to a few Hz read a tenth short (`follower` in `fxnodes.ts`).

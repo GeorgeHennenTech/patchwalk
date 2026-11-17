@@ -1,7 +1,7 @@
 // The devices (effects) that can sit on a track, after its instrument, in a row: the Studio's own versions of
 // a DAW's stock plugins. This file is the plain data and rules: what devices exist, their settings and ranges,
 // and the edits to a track's chain. No sound here; `fxnodes.ts` makes the audio from the same settings.
-import { GLUE_ATTACKS, GLUE_RATIOS, GLUE_RELEASES, compCurveDb } from "./dsp";
+import { GLUE_ATTACKS, GLUE_RATIOS, GLUE_RELEASES, RES_NAMES, compCurveDb } from "./dsp";
 // The devices are our own, built from what each kind of effect does. They are named for what they do, the
 // way every DAW names them; they are not copies of any maker's code, sound or look.
 
@@ -24,6 +24,12 @@ export const EQ8_TYPES = ["Low cut", "Low shelf", "Bell", "Notch", "High shelf",
 const EQ8_START: [number, number][] = [[1, 80], [2, 200], [2, 500], [2, 1000], [2, 2000], [2, 4000], [2, 8000], [4, 12000]];
 export const SAT_CURVES = ["Soft", "Hard", "Fold", "Uneven"];
 export const PAN_SHAPES = ["Sine", "Triangle", "Square"];
+export const AUTO_FILTER_TYPES = ["Low-pass", "High-pass", "Band-pass", "Notch"];
+const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+export const noteName = (n: number) => `${NOTE_NAMES[((n % 12) + 12) % 12]}${Math.floor(n / 12) - 1}`;
+const lfoParams = (extra: Partial<ParamSpec> = {}): ParamSpec[] => [menu("shape", "LFO shape", PAN_SHAPES, 0, extra), sw("sync", "LFO in beats", 0, extra),
+  { id: "rate", label: "LFO speed", min: 0.05, max: 20, step: 0.01, def: 1, unit: "Hz", log: true, ...extra, when: (p) => !p.sync }, menu("div", "One turn every", LFO_DIVS.map((d) => d.name), 4, { ...extra, when: (p) => !!p.sync })];
+const FD_LINES: [string, string, number, number, number][] = [["l", "Left", 2, 800, -100], ["m", "Both", 4, 2000, 0], ["r", "Right", 3, 5000, 100]];
 
 export const DEVICES: DeviceSpec[] = [
   { kind: "utility", name: "Utility", like: "Utility", about: "Level, left and right, width, and flipping a side upside down. The plain tool for fixing a track.", params: [
@@ -86,6 +92,31 @@ export const DEVICES: DeviceSpec[] = [
     { id: "feedback", label: "Feedback", min: 0, max: 95, step: 1, def: 40, unit: "%" }, sw("pingpong", "Ping-pong"),
     sw("filter", "Filter the echoes", 1), hz("filterFreq", "Filter at", 50, 12000, 1000, { when: (p) => !!p.filter }), { id: "filterWidth", label: "Filter width", min: 0.5, max: 9, step: 0.1, def: 6, unit: "oct", when: (p) => !!p.filter },
     pct("mix", "Dry / wet", 30),
+  ] },
+  { kind: "autofilter", name: "Auto filter", like: "Auto Filter", wide: true, note: "One slope only (12 dB an octave). The picture shows the filter at rest, not while it moves.", about: "A filter that moves by itself: an LFO sweeps it, and the sound's own loudness can open or close it.", params: [
+    menu("type", "Kind", AUTO_FILTER_TYPES), hz("freq", "Frequency", 30, 18000, 1200), { id: "res", label: "Resonance", min: 0.5, max: 20, step: 0.01, def: 1.5, log: true },
+    { id: "lfo", label: "LFO moves it by", min: 0, max: 4, step: 0.05, def: 1, unit: "oct" }, ...lfoParams(),
+    { id: "env", label: "Loudness moves it by", min: -4, max: 4, step: 0.1, def: 0, unit: "oct" }, { id: "envSpeed", label: "Loudness follows in", min: 5, max: 500, step: 1, def: 40, unit: "ms", log: true },
+  ] },
+  { kind: "phaser", name: "Phaser and flanger", like: "Phaser-Flanger", note: "The phaser has no feedback (a browser loop needs a delay in it).", about: "Two sweeping effects in one: a phaser cuts moving notches with all-pass filters, a flanger with a very short delay.", params: [
+    menu("mode", "Mode", ["Phaser", "Flanger"]), { id: "rate", label: "Speed", min: 0.02, max: 10, step: 0.01, def: 0.3, unit: "Hz", log: true }, pct("amount", "Amount", 60),
+    hz("centre", "Centre", 100, 6000, 800, { when: (p) => !p.mode }), { id: "feedback", label: "Feedback", min: 0, max: 90, step: 1, def: 40, unit: "%", when: (p) => !!p.mode }, pct("mix", "Dry / wet", 100),
+  ] },
+  { kind: "echo", name: "Echo", like: "Echo", note: "A general character delay; the drive and wobble are our own.", about: "A delay with character: its repeats can be filtered, driven, made to wobble in pitch, and ducked while you play.", params: [
+    sw("sync", "In beats", 1), menu("div", "Time", DELAY_DIVS.map((d) => d.name), 4, { when: (p) => !!p.sync }), { id: "ms", label: "Time", min: 1, max: 2000, step: 1, def: 350, unit: "ms", log: true, when: (p) => !p.sync },
+    { id: "feedback", label: "Feedback", min: 0, max: 95, step: 1, def: 50, unit: "%" }, hz("lowcut", "Low cut", 20, 2000, 150), hz("highcut", "High cut", 500, 20000, 5000),
+    pct("drive", "Drive", 0), pct("wobble", "Wobble", 0), { id: "wobbleRate", label: "Wobble speed", min: 0.05, max: 8, step: 0.01, def: 0.5, unit: "Hz", log: true, when: (p) => (p.wobble ?? 0) > 0 },
+    pct("duck", "Duck while playing", 0), pct("mix", "Dry / wet", 35),
+  ] },
+  { kind: "filterdelay", name: "Filter delay", like: "Filter Delay", about: "Three delays, one fed by the left side, one by both and one by the right, each with its own filter, time, feedback, place and level.", params: [
+    sw("sync", "In beats", 1), pct("mix", "Dry / wet", 40),
+    ...FD_LINES.flatMap(([k, group, div, f, pan]): ParamSpec[] => [sw(`${k}on`, "On", 1, { group }), hz(`${k}freq`, "Filter at", 50, 12000, f, { group }), { id: `${k}width`, label: "Filter width", min: 0.5, max: 9, step: 0.1, def: 3, unit: "oct", group },
+      menu(`${k}div`, "Time", DELAY_DIVS.map((d) => d.name), div, { group, when: (p) => !!p.sync }), { id: `${k}ms`, label: "Time", min: 1, max: 2000, step: 1, def: 250, unit: "ms", log: true, group, when: (p) => !p.sync },
+      { id: `${k}fb`, label: "Feedback", min: 0, max: 95, step: 1, def: 30, unit: "%", group }, { id: `${k}pan`, label: "Pan", min: -100, max: 100, step: 1, def: pan, group }, db(`${k}level`, "Level", -36, 6, 0, { group })]),
+  ] },
+  { kind: "resonators", name: "Resonators", like: "Resonators", about: "Five tuned loops that ring at notes you choose whenever the sound excites them: drums become chords.", note: "No input filter yet.", params: [
+    { id: "note", label: "Note", min: 24, max: 84, step: 1, def: 48 }, { id: "decay", label: "Rings for", min: 0.05, max: 10, step: 0.05, def: 1.5, unit: "s", log: true }, pct("colour", "Brightness", 70), pct("mix", "Dry / wet", 50),
+    ...RES_NAMES.flatMap((group, i): ParamSpec[] => { const n = i + 1; return [sw(`r${n}on`, "On", i < 3 ? 1 : 0, { group }), ...(i ? [{ id: `r${n}pitch`, label: "Semitones from I", min: -24, max: 24, step: 1, def: [0, 7, 12, 16, 19][i]!, group } as ParamSpec] : []), db(`r${n}gain`, "Level", -36, 6, 0, { group })]; }),
   ] },
   { kind: "reverb", name: "Reverb", like: "Reverb", note: "A plain room made from fading noise: no early reflections, and its character is not tuned by ear.", about: "A room: the sound carries on after it stops, for as long as the decay time.", params: [
     { id: "decay", label: "Decay", min: 0.2, max: 10, step: 0.1, def: 1.8, unit: "s", log: true }, { id: "predelay", label: "Pre-delay", min: 0, max: 250, step: 1, def: 10, unit: "ms" },
@@ -219,7 +250,7 @@ export function channelEqDb(p: Record<string, number>, f: number, sampleRate = 4
     + toDb(biquadAt("peaking", p.midFreq ?? 1000, CHANNEL_MID_Q, p.mid ?? 0, f, sampleRate)) + toDb(biquadAt("highshelf", CHANNEL_HIGH_HZ, 1, p.high ?? 0, f, sampleRate)) + (p.out ?? 0);
 }
 /** The curve a device draws, when it has one: its level in dB at a frequency. */
-export const CURVES: Record<string, (p: Record<string, number>, f: number, sampleRate?: number) => number> = { eq3: eq3Db, eq8: eq8Db, channeleq: channelEqDb };
+export const CURVES: Record<string, (p: Record<string, number>, f: number, sampleRate?: number) => number> = { eq3: eq3Db, eq8: eq8Db, channeleq: channelEqDb, autofilter: (p, f, sr) => autoFilterDb(p, f, sr) };
 
 // ---- Compressor ----
 /** A steady sound at `inDb` comes out of the compressor at this level, make-up left out. */
@@ -262,6 +293,27 @@ export function panShape(shape: number, turn: number): number {
 export function autoPanGain(p: Record<string, number>, turn: number, side: "left" | "right"): number {
   const a = clamp((p.amount ?? 100) / 100, 0, 1), at = turn - (side === "right" ? (p.phase ?? 180) / 360 : 0);
   return 1 - a / 2 + (a / 2) * panShape(p.shape ?? 0, at);
+}
+
+// ---- Auto filter ----
+const AUTO_KINDS: BiquadKind[] = ["lowpass", "highpass", "bandpass", "notch"];
+export const autoFilterKind = (p: Record<string, number>): BiquadKind => AUTO_KINDS[p.type ?? 0] ?? "lowpass";
+/** Where the auto filter sits for an LFO value (-1 to 1) and a loudness (0 to 1, where 1 is a full-level tone). */
+export const autoFilterHz = (p: Record<string, number>, lfo = 0, level = 0) => (p.freq ?? 1200) * 2 ** ((p.lfo ?? 1) * lfo + (p.env ?? 0) * level);
+export const autoFilterDb = (p: Record<string, number>, f: number, sampleRate = 48000, lfo = 0, level = 0) => toDb(biquadAt(autoFilterKind(p), autoFilterHz(p, lfo, level), p.res ?? 1.5, 0, f, sampleRate));
+
+// ---- Echo ----
+export const ECHO_WOBBLE = 0.004, ECHO_MAX_DRIVE = 8;
+export const echoSeconds = (p: Record<string, number>, bpm: number) => clamp(p.sync ? ((DELAY_DIVS[p.div ?? 4] ?? DELAY_DIVS[4]!).beats * 60) / bpm : (p.ms ?? 350) / 1000, 0.001, DELAY_MAX_SECONDS);
+export const echoDriveGain = (drive: number) => 1 + (clamp(drive ?? 0, 0, 100) / 100) * (ECHO_MAX_DRIVE - 1);
+
+// ---- Filter delay ----
+export const FILTER_DELAY_LINES = ["l", "m", "r"] as const;
+/** One line of the filter delay: its time, feedback, what it hears of the left and right, and where it is sent. */
+export function filterDelayLine(p: Record<string, number>, k: "l" | "m" | "r", bpm: number) {
+  const seconds = clamp(p.sync ? ((DELAY_DIVS[p[`${k}div`] ?? 4] ?? DELAY_DIVS[4]!).beats * 60) / bpm : (p[`${k}ms`] ?? 250) / 1000, 0.001, DELAY_MAX_SECONDS);
+  return { seconds, feedback: clamp((p[`${k}fb`] ?? 30) / 100, 0, 0.95), hears: (k === "l" ? [1, 0] : k === "r" ? [0, 1] : [0.5, 0.5]) as [number, number], pan: clamp((p[`${k}pan`] ?? 0) / 100, -1, 1),
+    level: (p[`${k}on`] ?? 1) ? dbToGain(p[`${k}level`] ?? 0) : 0, freq: p[`${k}freq`] ?? 1000, q: octavesToQ(p[`${k}width`] ?? 3) };
 }
 
 // ---- Chorus ----

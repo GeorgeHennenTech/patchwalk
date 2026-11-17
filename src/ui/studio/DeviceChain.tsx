@@ -1,9 +1,9 @@
 // A track's effects, in a row after its instrument, the way a DAW's device chain reads left to right.
 import { useEffect, useRef, useState } from "react";
-import { CURVES, DEVICES, MAX_DEVICES, addDevice, moveDevice, removeDevice, setDeviceParam, specOf, toggleDevice, type Device, type ParamSpec } from "../../daw/devices";
+import { CURVES, noteName, DEVICES, MAX_DEVICES, addDevice, moveDevice, removeDevice, setDeviceParam, specOf, toggleDevice, type Device, type ParamSpec } from "../../daw/devices";
 
 const round = (v: number) => (Math.abs(v) >= 100 ? Math.round(v) : Number(v.toFixed(2)));
-const shown = (s: ParamSpec, v: number) => (s.unit === "Hz" && v >= 1000 ? `${round(v / 1000)} kHz` : s.choices ? s.choices[v] ?? String(v) : s.id === "pan" ? (v === 0 ? "centre" : v < 0 ? `${-v} left` : `${v} right`) : `${v > 0 && s.min < 0 && s.unit === "dB" ? "+" : ""}${v}${s.unit ? ` ${s.unit}` : ""}`);
+const shown = (s: ParamSpec, v: number) => (s.id === "note" ? noteName(v) : s.unit === "Hz" && v >= 1000 ? `${round(v / 1000)} kHz` : s.choices ? s.choices[v] ?? String(v) : s.id.endsWith("pan") ? (v === 0 ? "centre" : v < 0 ? `${-v} left` : `${v} right`) : `${v > 0 && s.min < 0 && s.unit === "dB" ? "+" : ""}${v}${s.unit ? ` ${s.unit}` : ""}`);
 
 // A slider that moves in ratios (frequencies, times) keeps its place as a number from 0 to 1000.
 const toSlider = (s: ParamSpec, v: number) => Math.round((1000 * Math.log(v / s.min)) / Math.log(s.max / s.min));

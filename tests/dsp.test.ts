@@ -110,3 +110,34 @@ describe("crusher", () => {
   });
   it("smoothing steps make sense", () => { expect(stepFor(0, SR)).toBe(1); expect(stepFor(10, SR)).toBeCloseTo(1 / 480, 4); expect(makeDsp("tape", SR)).toBeUndefined(); });
 });
+
+import { ResonatorDsp, resonatorHz, resonatorKeep } from "../src/daw/dsp";
+describe("resonators", () => {
+  const click = () => { const x = new Float32Array(SR * 2); x[5] = 1; return x; };
+  const partial = (x: Float32Array, f: number, from: number, to: number) => { let re = 0, im = 0; for (let i = Math.round(from * SR); i < to * SR; i++) { re += x[i]! * Math.cos((2 * Math.PI * f * i) / SR); im += x[i]! * Math.sin((2 * Math.PI * f * i) / SR); } return Math.hypot(re, im); };
+  const only = (n: number, more: P = {}): P => ({ note: 57, decay: 1, colour: 100, mix: 100, r1on: 0, r2on: 0, r3on: 0, r4on: 0, r5on: 0, [`r${n}on`]: 1, ...more });
+  it("each sits where its semitones put it", () => {
+    const hz = resonatorHz({ note: 57, r2pitch: 12, r3pitch: -12, r4pitch: 7, r5pitch: 0 });
+    expect(hz[0]).toBeCloseTo(220, 6); expect(hz[1]).toBeCloseTo(440, 6); expect(hz[2]).toBeCloseTo(110, 6); expect(hz[3]).toBeCloseTo(329.63, 1);
+    expect(resonatorKeep(100, 1) ** 100).toBeCloseTo(0.001, 6);       // a hundred trips in a second: 60 dB down
+  });
+  it("a click makes it ring at its note, in tune, and not at a note in between", () => {
+    const [out] = run(new ResonatorDsp(SR), only(1), click());
+    let best = 0, at = 0; for (let f = 200; f <= 240; f += 0.25) { const v = partial(out, f, 0.05, 1); if (v > best) { best = v; at = f; } }
+    expect(Math.abs(1200 * Math.log2(at / 220))).toBeLessThan(8);
+    expect(partial(out, 311, 0.05, 1)).toBeLessThan(best / 20);
+    const [fifth] = run(new ResonatorDsp(SR), only(2, { r2pitch: 7 }), click());
+    expect(partial(fifth, 329.63, 0.05, 1)).toBeGreaterThan(20 * partial(fifth, 277, 0.05, 1));
+  });
+  it("rings for about the time asked, shorter when asked, and less bright with the colour down", () => {
+    const level = (x: Float32Array, t: number) => dB(partial(x, 220, t, t + 0.05));   // the note itself: its upper partials die sooner
+    const [long] = run(new ResonatorDsp(SR), only(1, { decay: 1 }), click()), [short] = run(new ResonatorDsp(SR), only(1, { decay: 0.2 }), click());
+    expect(level(long, 0.1) - level(long, 0.6)).toBeCloseTo(30, -1);
+    expect(level(short, 0.1) - level(short, 0.2)).toBeCloseTo(30, -1);
+    const [dull] = run(new ResonatorDsp(SR), only(1, { colour: 20 }), click());
+    expect(partial(dull, 2200, 0.05, 0.5) / partial(dull, 220, 0.05, 0.5)).toBeLessThan(0.3 * (partial(long, 2200, 0.05, 0.5) / partial(long, 220, 0.05, 0.5)));
+  });
+  it("with every resonator off and the mix down it is the untouched sound", () => {
+    const x = sine(300, 0.4, 0.2), [out] = run(new ResonatorDsp(SR), only(1, { mix: 0 }), x); expect(out[1000]).toBe(x[1000]);
+  });
+});

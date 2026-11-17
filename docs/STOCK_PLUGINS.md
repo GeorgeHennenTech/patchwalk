@@ -27,11 +27,26 @@ maths, and a measurement in a browser (`transport.levels()` reads the left and r
   Each draws its curve from the maths the sound is made with. Measured at eight frequencies, several
   settings each: the sound matched the drawn curve to 0.00 dB, and all three change nothing at their
   starting settings. The three-band split is two Butterworth filters in a row each way (24 dB an octave).
-- [x] 4. **Compressor** (Compressor): threshold, ratio, attack, release, make-up, dry/wet. Built on the
-  browser's compressor with its hidden make-up cancelled. Measured on a steady tone 20 dB over the
-  threshold at 4:1: out 0.5 dB above the maths; at 20:1, 0.9 dB above (the browser's curve is not quite a
-  sharp corner). Dry/wet at 50% with ratio 1 was flat at 100 Hz, 3 kHz and 9 kHz (the dry sound is held
-  back 6 ms to line up). **Not built: knee, a reduction meter, sidechain from another track.**
+- [x] 4. **Compressor** (Compressor): threshold, ratio, attack, release, knee, make-up, dry/wet, and a
+  "Turning down by" meter. Rebuilt on our own sample-by-sample code (first made on the browser's
+  compressor, which was up to 0.9 dB off and had no knee). Measured on a steady tone: out within 0.03 dB of
+  the rule at 4:1 and 20:1, with and without a knee; dry/wet 0 is the untouched sound. **Not built:
+  sidechain from another track.**
+- [x] 5. **Glue compressor** (Glue Compressor): reads the average level through a fixed 6 dB knee; fixed
+  choices of ratio (2, 4, 10), attack and release; soft clip; meter. A general bus compressor, numbers our
+  own, not a model of any hardware. Tested against its rule to within 1 dB.
+- [x] 6. **Limiter** (Limiter): gain, ceiling, release, meter. Looks 1.5 ms ahead (so the track is 1.5 ms
+  late). Measured: a tone pushed 18 dB into a -0.3 dB ceiling peaked at -0.30 dB; a sudden hit three times
+  full level never passed the ceiling; the gain never jumps.
+- [x] 7. **Gate** (Gate): threshold, how far under it closes, attack, hold, release, floor, meter.
+  Measured: a loud tone passed untouched, a tone 20 dB under the threshold fell to silence, and one between
+  the two thresholds stayed open (no chatter).
+- [x] 10. **Crusher** (Redux): bits, keep one sample in N, dry/wet. Measured: 2 bits gave 5 levels.
+
+These five run in an AudioWorklet (`src/daw/dsp.ts` is the code, with no browser parts, so
+`tests/dsp.test.ts` runs exactly what the sound is made with; `dsp.worklet.ts` wraps it; `prepareDevices`
+loads it, and a chain passes such a device by until it has loaded). A new sample-by-sample device: a class
+in `dsp.ts`, its name in `DSP_KINDS` and `makeDsp`, a `worklet("kind")` entry in `CORES`.
 - [x] 8. **Saturator** (Saturator): four curves of our own (Soft, Hard, Fold, Uneven), drive, output,
   dry/wet. Measured: harmonics 1 to 5 within 0.1 dB of the curve applied directly; Uneven adds even
   harmonics, the others none. No oversampling (the browser's adds a delay that would comb with the dry sound).
@@ -58,10 +73,6 @@ changes glide. Each was measured by building it on an `OfflineAudioContext` in a
 (`buildDevice(ctx, device, bpm)`), which is the quickest way to measure the next ones.
 
 ## To build, in this order
-- [ ] 5. **Glue compressor** (Glue Compressor): a slower bus-style compressor with fixed choices
-- [ ] 6. **Limiter** (Limiter): a ceiling the sound cannot pass
-- [ ] 7. **Gate** (Gate): silence below a threshold, with attack, hold, release
-- [ ] 10. **Bit and rate crusher** (Redux)
 - [ ] 11. **Erosion** (Erosion): a short delay shaken by noise or a sine
 - [ ] 12. **Auto filter** (Auto Filter): a filter moved by its own LFO and by the sound's level
 - [ ] 15. **Phaser and flanger** (Phaser-Flanger)
@@ -89,7 +100,6 @@ changes glide. Each was measured by building it on an `OfflineAudioContext` in a
 Distortion, three-band EQ, compressor, chorus, flanger, phaser, delay, reverb (`src/synth/fx.ts`). The Studio's devices are separate from these.
 
 ## Next
-5 Glue compressor, 6 Limiter, 7 Gate and 10 the crusher need exact sample-by-sample control, which means the
-browser's lower-level audio code (an AudioWorklet): build that base once, then those four (and a compressor
-with a knee, meter and sidechain) sit on it. 12 Auto filter, 15 Phaser and flanger, 17 Echo, 18 Filter
-delay, 20 Drum bus and 25 Resonators can be made from ready-made parts like this batch.
+12 Auto filter, 15 Phaser and flanger, 17 Echo, 18 Filter delay, 20 Drum bus and 25 Resonators can be made
+from ready-made parts. 21 Multiband dynamics can reuse `CompDsp` with the three-band split. A sidechain for
+the compressor needs the transport to carry one track's sound to another track's device.

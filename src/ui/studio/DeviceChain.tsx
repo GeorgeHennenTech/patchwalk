@@ -1,5 +1,5 @@
 // A track's effects, in a row after its instrument, the way a DAW's device chain reads left to right.
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CURVES, DEVICES, MAX_DEVICES, addDevice, moveDevice, removeDevice, setDeviceParam, specOf, toggleDevice, type Device, type ParamSpec } from "../../daw/devices";
 
 const round = (v: number) => (Math.abs(v) >= 100 ? Math.round(v) : Number(v.toFixed(2)));
@@ -41,7 +41,14 @@ function Curve({ kind, p }: { kind: string; p: Record<string, number> }) {
   );
 }
 
-export function DeviceChain({ devices, onChange }: { devices: Device[]; onChange: (next: Device[]) => void }) {
+/** How far the device is turning the sound down, read from the audio about thirty times a second. */
+function Meter({ read }: { read: () => number | undefined }) {
+  const bar = useRef<HTMLSpanElement>(null), text = useRef<HTMLElement>(null);
+  useEffect(() => { let raf = 0, shown = 0; const tick = () => { const v = Math.max(0, read() ?? 0); shown = v > shown ? v : shown + (v - shown) * 0.15; if (bar.current) bar.current.style.width = `${Math.min(100, (shown / 24) * 100)}%`; if (text.current) text.current.textContent = `${shown.toFixed(1)} dB`; raf = requestAnimationFrame(tick); }; raf = requestAnimationFrame(tick); return () => cancelAnimationFrame(raf); }, [read]);
+  return <div className="dev-meter" aria-label="Turning down by"><span>Turning down by <b ref={text}>0.0 dB</b></span><i><span ref={bar} /></i></div>;
+}
+
+export function DeviceChain({ devices, onChange, reduction }: { devices: Device[]; onChange: (next: Device[]) => void; reduction?: (deviceId: string) => number | undefined }) {
   return (
     <div className="chain" aria-label="Effects on this track">
       <div className="chain-row">
@@ -55,6 +62,7 @@ export function DeviceChain({ devices, onChange }: { devices: Device[]; onChange
               <button aria-label={`Remove ${spec.name}`} title="Remove" onClick={() => onChange(removeDevice(devices, d.id))}>×</button>
             </header>
             {CURVES[d.kind] && <Curve kind={d.kind} p={d.p} />}
+            {spec.meter && reduction && <Meter read={() => (d.on ? reduction(d.id) : 0)} />}
             <Params spec={spec} d={d} set={(id, v) => onChange(setDeviceParam(devices, d.id, id, v))} />
             {spec.note && <p className="dev-note">{spec.note}</p>}
           </section>

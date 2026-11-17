@@ -5,6 +5,7 @@ import { Engine } from "../synth/engine";
 import { Kit } from "./kit";
 import { audibleOf, stepSeconds, stepTime, type Pad } from "./drums";
 import { chainShape } from "./devices";
+import { chainReady, prepareDevices } from "./fxnodes";
 import { buildDevice, type LiveDevice } from "./fxnodes";
 import { songEvents, type Song } from "./song";
 
@@ -42,6 +43,7 @@ export class Transport {
     this.meterL.fftSize = this.meterR.fftSize = 2048;
     this.master.connect(split); split.connect(this.meterL, 0); split.connect(this.meterR, 1);
     this.kit = new Kit(this.ctx, this.master);
+    void prepareDevices(this.ctx).then(() => this.sync(), () => undefined);
   }
   /** Bring the audio in line with the song: a gain per track, a synth per synth track, levels, mutes and sounds. */
   sync(): void {
@@ -53,7 +55,8 @@ export class Transport {
       if (!out || !input) { out = ctx.createGain(); out.gain.value = 0; out.connect(this.master!); this.outs.set(track.id, out); input = ctx.createGain(); this.ins.set(track.id, input); }
       out.gain.setTargetAtTime(on[i] ? track.level / 80 : 0, t, 0.015);
       // the effects: wired again only when a device is added, removed or moved; a setting is changed in place
-      const shape = chainShape(track.devices), have0 = this.chains.get(track.id);
+      const shape = chainShape(track.devices) + (chainReady(ctx, track.devices) ? "" : "~"), have0   // "~": some devices are still loading and are passed by until they are
+      = this.chains.get(track.id);
       if (!have0 || have0.shape !== shape) {
         input.disconnect(); have0?.live.forEach((l) => l.dispose());
         const live = new Map<string, LiveDevice>();
@@ -92,6 +95,8 @@ export class Transport {
     const read = (a?: AnalyserNode) => { if (!a) return -120; const b = new Float32Array(a.fftSize); a.getFloatTimeDomainData(b); let s = 0; for (const v of b) s += v * v; return 10 * Math.log10(s / b.length + 1e-12); };
     return { left: read(this.meterL), right: read(this.meterR) };
   }
+  /** How many dB a device is turning the sound down by right now, when it is one that says. */
+  reduction(trackId: string, deviceId: string): number | undefined { return this.chains.get(trackId)?.live.get(deviceId)?.reduction?.(); }
   /** Strike one pad now, for trying a sound. */
   hitPad(trackId: string, pad: Pad, strength = 0.85): void {
     this.ready();

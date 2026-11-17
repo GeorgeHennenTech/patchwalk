@@ -2,13 +2,33 @@
 // same way: the sound goes both through the effect and straight past it, and switching the device on or off
 // crossfades between the two, so nothing clicks and nothing restarts.
 import { CHANNEL_CUT_HZ, CHANNEL_HIGH_HZ, CHANNEL_LOW_HZ, CHANNEL_MID_Q, DELAY_MAX_SECONDS, CHORUS_SWING, dbToGain, delayRouting, delayTimes, eq3Gains, eq8Band, lfoRateHz, mixGains, octavesToQ, overdriveGain, overdriveToneHz, panHarmonics, satTable, utilityMatrix, type Device } from "./devices";
-import { compAutoMakeupCancelDb, reverbImpulse } from "../synth/fx";
+import { reverbImpulse } from "../synth/fx";
+import { DSP_KINDS } from "./dsp";
+import workletUrl from "./dsp.worklet.ts?worker&url";
 
-export interface LiveDevice { input: AudioNode; output: AudioNode; update(d: Device, bpm?: number): void; dispose(): void }
-interface Core { input: AudioNode; output: AudioNode; set(p: Record<string, number>, t: number, bpm: number): void; nodes: AudioNode[] }
+export interface LiveDevice { input: AudioNode; output: AudioNode; update(d: Device, bpm?: number): void; dispose(): void; /** dB the device is turning the sound down by, for those that say */ reduction?(): number }
+interface Core { input: AudioNode; output: AudioNode; set(p: Record<string, number>, t: number, bpm: number): void; nodes: AudioNode[]; reduction?(): number }
 type P = Record<string, number>;
-/** The browser's compressor looks this far ahead, so the untouched sound is held back the same time before the two are mixed. */
-export const COMP_LAG = 0.006;
+// The sample-by-sample effects run in an AudioWorklet, which the browser has to load before one can be made.
+const loaded = new WeakMap<BaseAudioContext, Promise<void>>(), ready = new WeakSet<BaseAudioContext>();
+/** Load the sample-by-sample effects into this audio context. Safe to call again. */
+export function prepareDevices(ctx: BaseAudioContext): Promise<void> {
+  let p = loaded.get(ctx);
+  if (!p) { p = ctx.audioWorklet.addModule(workletUrl).then(() => { ready.add(ctx); }); loaded.set(ctx, p); p.catch(() => loaded.delete(ctx)); }
+  return p;
+}
+export const devicesReady = (ctx: BaseAudioContext) => ready.has(ctx);
+const needsWorklet = (kind: string) => (DSP_KINDS as readonly string[]).includes(kind);
+/** Whether every device of a chain can be built right now. */
+export const chainReady = (ctx: BaseAudioContext, chain: Device[]) => devicesReady(ctx) || !chain.some((d) => needsWorklet(d.kind));
+function worklet(kind: string) {
+  return (ctx: BaseAudioContext, p0: P): Core => {
+    const node = new AudioWorkletNode(ctx, "pw-dsp", { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2], processorOptions: { kind, p: p0 } });
+    let reduction = 0, sent = JSON.stringify(p0);
+    node.port.onmessage = (e: MessageEvent) => { if (typeof e.data?.reduction === "number") reduction = e.data.reduction; };
+    return { input: node, output: node, nodes: [node], reduction: () => reduction, set(p) { const now = JSON.stringify(p); if (now !== sent) { sent = now; node.port.postMessage({ p }); } } };
+  };
+}
 const BUTTER_DB = 20 * Math.log10(Math.SQRT1_2);
 const stereo = (ctx: BaseAudioContext) => { const g = ctx.createGain(); g.channelCount = 2; g.channelCountMode = "explicit"; g.channelInterpretation = "speakers"; return g; };
 // While a device is being built its settings are put in place at once; after that they glide, so nothing clicks.
@@ -67,16 +87,6 @@ function channeleq(ctx: BaseAudioContext): Core {
   chain(cut, low, mid, high, out);
   return { input: cut, output: out, nodes: [cut, low, mid, high, out], set(p, t) {
     to(cut.frequency, p.lowcut ? CHANNEL_CUT_HZ : 1, t); to(low.gain, p.low ?? 0, t); to(mid.gain, p.mid ?? 0, t); to(mid.frequency, p.midFreq ?? 1000, t); to(high.gain, p.high ?? 0, t); to(out.gain, dbToGain(p.out ?? 0), t);
-  } };
-}
-function comp(ctx: BaseAudioContext): Core {
-  const m = mixer(ctx, COMP_LAG), c = ctx.createDynamicsCompressor(), up = ctx.createGain();
-  c.knee.value = 0;
-  chain(m.input, c, up, m.wet);
-  return { input: m.input, output: m.output, nodes: [...m.nodes, c, up], set(p, t) {
-    const th = p.threshold ?? -18, ratio = p.ratio ?? 4;
-    to(c.threshold, th, t); to(c.ratio, ratio, t); to(c.attack, (p.attack ?? 10) / 1000, t); to(c.release, (p.release ?? 120) / 1000, t);
-    to(up.gain, dbToGain((p.makeup ?? 0) + compAutoMakeupCancelDb(th, ratio)), t); m.set(p.mix ?? 100, t);
   } };
 }
 function sat(ctx: BaseAudioContext): Core {
@@ -165,18 +175,18 @@ function reverb(ctx: BaseAudioContext): Core {
     to(pre.delayTime, (p.predelay ?? 10) / 1000, t); to(low.frequency, p.lowcut ?? 120, t); to(high.frequency, p.highcut ?? 8000, t); m.set(p.mix ?? 25, t);
   } };
 }
-const CORES: Record<string, (ctx: BaseAudioContext) => Core> = { utility, eq3, eq8, channeleq, comp, sat, overdrive, autopan, chorus, delay, reverb };
+const CORES: Record<string, (ctx: BaseAudioContext, p: P) => Core> = { comp: worklet("comp"), glue: worklet("glue"), limiter: worklet("limiter"), gate: worklet("gate"), crush: worklet("crush"), utility, eq3, eq8, channeleq, sat, overdrive, autopan, chorus, delay, reverb };
 
 /** The audio for one device, or nothing when the kind is unknown. */
 export function buildDevice(ctx: BaseAudioContext, d: Device, bpm = 120): LiveDevice | undefined {
   const make = CORES[d.kind];
-  if (!make) return undefined;
-  const core = make(ctx), input = ctx.createGain(), output = ctx.createGain(), wet = ctx.createGain(), dry = ctx.createGain();
+  if (!make || (needsWorklet(d.kind) && !devicesReady(ctx))) return undefined;
+  const core = make(ctx, d.p), input = ctx.createGain(), output = ctx.createGain(), wet = ctx.createGain(), dry = ctx.createGain();
   input.connect(core.input); core.output.connect(wet).connect(output);
   input.connect(dry).connect(output);
   wet.gain.value = d.on ? 1 : 0; dry.gain.value = d.on ? 0 : 1;
   building = true; try { core.set(d.p, ctx.currentTime, bpm); } finally { building = false; }
-  return { input, output,
+  return { input, output, reduction: core.reduction,
     update(next, tempo = bpm) { const t = ctx.currentTime; core.set(next.p, t, tempo); wet.gain.setTargetAtTime(next.on ? 1 : 0, t, SMOOTH); dry.gain.setTargetAtTime(next.on ? 0 : 1, t, SMOOTH); },
     dispose() { for (const n of [input, output, wet, dry, ...core.nodes]) { try { if (n instanceof OscillatorNode) n.stop(); n.disconnect(); } catch { /* already apart */ } } },
   };

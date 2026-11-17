@@ -1267,7 +1267,16 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   within 1 dB of its maths and has no knee, meter or sidechain. A `ParamSpec` can be a menu, `log`, in a
   `group`, or shown `when`; a `DeviceSpec` can be `wide`, carry a `note`, and draw a curve (`CURVES`).
   `buildDevice(ctx, d, bpm)` works on an `OfflineAudioContext`, which is how each was measured. **Nobody
-  has heard any of them.** Next: an AudioWorklet base for limiter, gate, glue compressor and crusher.
+  has heard any of them.**
+  **Sample-by-sample devices (17 Nov 2026, owner: "continue"):** the Compressor was rebuilt, and Glue
+  compressor, Limiter, Gate and Crusher added (fifteen devices), on an AudioWorklet. `src/daw/dsp.ts` holds
+  the code with no browser parts (`CompDsp`, `LimiterDsp`, `GateDsp`, `CrushDsp`, `compCurveDb`), so
+  `tests/dsp.test.ts` runs exactly what makes the sound; `dsp.worklet.ts` wraps it (imported with
+  `?worker&url`, which bundles it for the built site: checked with `vite preview`); `prepareDevices(ctx)`
+  loads it and a chain marks itself `~` and passes such devices by until it has. Compressor, glue, limiter
+  and gate show a "Turning down by" meter (`transport.reduction`). Measured: compressor within 0.03 dB of
+  its rule; limiter exactly at its ceiling, 1.5 ms late. Not built: a sidechain. Next devices are listed
+  under "Next" in `docs/STOCK_PLUGINS.md`.
 - **"Walk me through it" (16 Nov 2026, owner's go-ahead with two rules of their own).** A second mode on the
   Ask tab (a switch, remembered): a how-to question becomes a walkthrough of steps shown one at a time.
   `api/walk.ts` answers two kinds of request: `plan` (one call with structured output over ten passages:

@@ -1,11 +1,12 @@
 // The devices (effects) that can sit on a track, after its instrument, in a row: the Studio's own versions of
 // a DAW's stock plugins. This file is the plain data and rules: what devices exist, their settings and ranges,
 // and the edits to a track's chain. No sound here; `fxnodes.ts` makes the audio from the same settings.
+import { GLUE_ATTACKS, GLUE_RATIOS, GLUE_RELEASES, compCurveDb } from "./dsp";
 // The devices are our own, built from what each kind of effect does. They are named for what they do, the
 // way every DAW names them; they are not copies of any maker's code, sound or look.
 
 export interface ParamSpec { id: string; label: string; min: number; max: number; step: number; def: number; unit?: string; /** for a switch or a menu: the names of the values 0, 1, 2... */ choices?: string[]; /** the slider moves in ratios (for frequencies and times) */ log?: boolean; /** settings with the same group are shown together, one group at a time */ group?: string; /** shown only while this is true */ when?: (p: Record<string, number>) => boolean }
-export interface DeviceSpec { kind: string; name: string; about: string; /** the stock device in Ableton Live that does the same job, so a chain built here can be rebuilt there */ like: string; params: ParamSpec[]; /** a wider card, for a device with a picture */ wide?: boolean; /** what the page must admit about this device */ note?: string }
+export interface DeviceSpec { /** shows how many dB it is turning the sound down */ meter?: boolean; kind: string; name: string; about: string; /** the stock device in Ableton Live that does the same job, so a chain built here can be rebuilt there */ like: string; params: ParamSpec[]; /** a wider card, for a device with a picture */ wide?: boolean; /** what the page must admit about this device */ note?: string }
 export interface Device { id: string; kind: string; on: boolean; /** each setting's value, by its id */ p: Record<string, number> }
 
 const sw = (id: string, label: string, def = 0, extra: Partial<ParamSpec> = {}): ParamSpec => ({ id, label, min: 0, max: 1, step: 1, def, choices: ["Off", "On"], ...extra });
@@ -44,10 +45,24 @@ export const DEVICES: DeviceSpec[] = [
   { kind: "channeleq", name: "Channel EQ", like: "Channel EQ", wide: true, about: "A quick EQ: a low shelf, a middle band you can move, a high shelf, and a switch that removes rumble.", params: [
     sw("lowcut", "Cut rumble (80 Hz)"), db("low", "Low", -15, 15), db("mid", "Mid", -12, 12), hz("midFreq", "Mid at", 120, 7500, 1000), db("high", "High", -15, 15), db("out", "Output", -12, 12),
   ] },
-  { kind: "comp", name: "Compressor", like: "Compressor", note: "Built on the browser's own compressor: the corner at the threshold is sharp (no knee setting), and there is no meter or sidechain yet.", about: "Turns the sound down whenever it is louder than the threshold, so loud and quiet parts end up closer together.", params: [
+  { kind: "comp", name: "Compressor", like: "Compressor", meter: true, note: "No sidechain from another track yet. The level is read from peaks.", about: "Turns the sound down whenever it is louder than the threshold, so loud and quiet parts end up closer together.", params: [
     db("threshold", "Threshold", -60, 0, -18), { id: "ratio", label: "Ratio", min: 1, max: 20, step: 0.1, def: 4, log: true },
     { id: "attack", label: "Attack", min: 0.1, max: 200, step: 0.1, def: 10, unit: "ms", log: true }, { id: "release", label: "Release", min: 10, max: 1000, step: 1, def: 120, unit: "ms", log: true },
-    db("makeup", "Make-up", 0, 24), pct("mix", "Dry / wet", 100),
+    db("knee", "Knee", 0, 24, 6), db("makeup", "Make-up", 0, 24), pct("mix", "Dry / wet", 100),
+  ] },
+  { kind: "glue", name: "Glue compressor", like: "Glue Compressor", meter: true, note: "A general bus compressor with fixed choices, not a model of any hardware. It reads the average level, so its threshold sits about 3 dB lower than a peak reading.", about: "A gentler compressor for a whole drum track or mix: it reads the average level and has a few fixed choices for each setting.", params: [
+    db("threshold", "Threshold", -40, 0, -15), menu("ratio", "Ratio", GLUE_RATIOS.map((r) => `${r} : 1`), 1), menu("attack", "Attack", GLUE_ATTACKS.map((a) => `${a} ms`), 3), menu("release", "Release", GLUE_RELEASES.map((r) => `${r / 1000} s`), 2),
+    db("makeup", "Make-up", 0, 20), sw("clip", "Soft clip"), pct("mix", "Dry / wet", 100),
+  ] },
+  { kind: "limiter", name: "Limiter", like: "Limiter", meter: true, note: "It looks 1.5 ms ahead, so this track comes out 1.5 ms late.", about: "A ceiling the sound cannot pass. Turn the gain up to push more of the sound against it.", params: [
+    db("gain", "Gain", 0, 24), { id: "ceiling", label: "Ceiling", min: -24, max: 0, step: 0.1, def: -0.3, unit: "dB" }, { id: "release", label: "Release", min: 1, max: 1000, step: 1, def: 100, unit: "ms", log: true },
+  ] },
+  { kind: "gate", name: "Gate", like: "Gate", meter: true, about: "Silences the sound while it is quieter than the threshold: for cutting the tail off a drum or the noise between notes.", params: [
+    db("threshold", "Threshold", -80, 0, -40), db("back", "Closes this far under", 0, 24, 3), { id: "attack", label: "Attack", min: 0.1, max: 100, step: 0.1, def: 1, unit: "ms", log: true },
+    { id: "hold", label: "Hold", min: 0, max: 500, step: 1, def: 20, unit: "ms" }, { id: "release", label: "Release", min: 1, max: 2000, step: 1, def: 80, unit: "ms", log: true }, db("floor", "Floor", -80, 0, -80),
+  ] },
+  { kind: "crush", name: "Crusher", like: "Redux", note: "Plain rounding and holding, with none of the smoothing a converter has: it is meant to sound rough.", about: "Fewer levels and fewer samples a second: the grit of old samplers and games.", params: [
+    { id: "bits", label: "Bits", min: 1, max: 16, step: 1, def: 8 }, { id: "hold", label: "Keep one sample in", min: 1, max: 64, step: 1, def: 4, log: true }, pct("mix", "Dry / wet", 100),
   ] },
   { kind: "sat", name: "Saturator", like: "Saturator", note: "The four curves are our own. Not smoothed against the harsh edge very high notes can get when driven hard.", about: "Pushes the sound into a curve that rounds, clips or folds its peaks, adding harmonics.", params: [
     menu("curve", "Curve", SAT_CURVES), db("drive", "Drive", 0, 36, 12), db("out", "Output", -36, 6), pct("mix", "Dry / wet", 100),
@@ -208,7 +223,7 @@ export const CURVES: Record<string, (p: Record<string, number>, f: number, sampl
 
 // ---- Compressor ----
 /** A steady sound at `inDb` comes out of the compressor at this level, make-up left out. */
-export const compOutDb = (p: Record<string, number>, inDb: number) => { const t = p.threshold ?? -18; return inDb <= t ? inDb : t + (inDb - t) / Math.max(1, p.ratio ?? 4); };
+export const compOutDb = (p: Record<string, number>, inDb: number) => compCurveDb(inDb, p.threshold ?? -18, p.ratio ?? 4, p.knee ?? 0);
 
 // ---- Saturator ----
 /** One sample through a saturation curve. Our own four: rounded, clipped flat, folded back, and one that treats the two halves differently. */

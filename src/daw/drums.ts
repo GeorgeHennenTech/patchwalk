@@ -2,11 +2,11 @@
 // and the Studio all work from the same rules. A pattern is a grid: one lane per pad, one cell per step,
 // each cell off or struck at one of three strengths. A lane carries its pad's sound settings as well.
 
-export const VOICES = ["kick", "snare", "clap", "hat", "openhat", "tomlow", "tomhigh", "rim", "ride", "ridebell"] as const;
+export const VOICES = ["kick", "snare", "clap", "hat", "openhat", "tomlow", "tomhigh", "rim", "ride", "ridebell", "crash", "shaker", "tambourine", "cowbell", "clave", "snap", "sub", "congahigh", "congalow"] as const;
 /** The drums a new rack starts with. The ride bell is there to choose for a pad, not given a pad of its own. */
 export const DEFAULT_VOICES = ["kick", "snare", "clap", "hat", "openhat", "tomlow", "tomhigh", "rim", "ride"] as const;
 export type Voice = (typeof VOICES)[number];
-export const VOICE_NAMES: Record<Voice, string> = { kick: "Kick", snare: "Snare", clap: "Clap", hat: "Closed hat", openhat: "Open hat", tomlow: "Low tom", tomhigh: "High tom", rim: "Rim", ride: "Ride", ridebell: "Ride bell" };
+export const VOICE_NAMES: Record<Voice, string> = { kick: "Kick", snare: "Snare", clap: "Clap", hat: "Closed hat", openhat: "Open hat", tomlow: "Low tom", tomhigh: "High tom", rim: "Rim", ride: "Ride", ridebell: "Ride bell", crash: "Crash", shaker: "Shaker", tambourine: "Tambourine", cowbell: "Cowbell", clave: "Clave", snap: "Finger snap", sub: "Long sub kick", congahigh: "High conga", congalow: "Low conga" };
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
 /** A cell: 0 is silent; 1 soft, 2 normal, 3 accented. */
@@ -93,6 +93,7 @@ export const GENRE_STARTERS: Pattern[] = [
   fromRows("Dubstep half-time", 140, { kick: "X.........x.....", snare: "........X.......", hat: "x...x.x.x...x.xo", rim: "......x........." }, 0),
   fromRows("Drum and bass", 172, { kick: "X.........x.....", snare: "....X.......X...", hat: "x.x.x.x.x.x.x.x.", openhat: "......o........." }, 0),
   fromRows("Two-step garage", 132, { kick: "X......x..x.....", clap: "....X.......X...", hat: "..x...x...x...x.", rim: ".x.......x......" }, 35),
+  fromRows("Club pop", 128, { kick: "X...x...x...x...", clap: "....X.......X...", hat: "x.x.x.x.x.x.x.x.", openhat: "..o...o...o...o." }, 0),
   fromRows("Glitch stutter", 110, { kick: "X.....x...x.....X..x..x...x.....", snare: "....X.......X.......X.......X.xx", hat: "x.xox.x.xxxox.x.x.xox.xxx.x.oooo", tomhigh: "...............x.............o.." }, 15),
 ];
 

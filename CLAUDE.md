@@ -1076,8 +1076,8 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   12 semitones: `tuneRate`, playback speed for a file, pitch of the tones for a built-in drum), and the
   learner's stored sounds to click onto that drum or delete. A file can also be dragged onto a row.
   `src/daw/samples.ts` keeps the files in the browser's IndexedDB (`patchwalk-samples`; 12 MB a file, 64
-  files; `checkFile` says in words why a file is refused). **Files never leave the browser: nothing uploads
-  them, and they are not stored with the account**, so a pattern opened in another browser plays the
+  files; `checkFile` says in words why a file is refused). (At first files never left the browser; since
+  the Library tab they are also sent to the site's database, see below), so a pattern opened in another browser plays the
   built-in drum and says the sound is not there. A lane carries `sample` (the stored file's id) and `tune`;
   `Kit.load` decodes a file once and `hit` plays it whole (no trim, fade or start point yet).
   `GENRE_STARTERS` (Glitch-hop, Breakbeat, Psydub, Trip-hop, Dubstep half-time, Drum and bass, Two-step
@@ -1167,6 +1167,39 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   adds two sine tones). Our own numbers, not a model of any cymbal or drum machine, not heard by anyone.
   A new rack has nine pads, the ninth a ride (`DEFAULT_VOICES`); **a rack made before this keeps its eight
   pads: "Add a pad" and choose Ride or Ride bell from the Drum menu.** A "Ride groove" starting point was added.
+- **Library tab, and Studio work kept in the database (17 Nov 2026, owner's request: "whatever samples we
+  drop in gets saved to a database as well... a full blown database tab instead of just a walkthrough tab").**
+  The "Walkthroughs" tab is now **"Library"** (`src/ui/LibraryView.tsx`): shelves for Walkthroughs (the old
+  page), Sounds, Breaks, Racks and Songs. **This replaces "files never leave the browser" for Studio sound
+  files: the owner asked for them to be stored and shared with everyone signed in.** (Rule 3 is about
+  presets and is unchanged.)
+  - Server: `src/store/library.ts` + `api/library.ts` (`list`, `get`, `put`, `remove`; keys
+    `pw:lib:<kind>:index` and `pw:lib:<kind>:doc:<id>`, no expiry). **No call to Claude, so it needs the
+    password and a signed-in account and no key; anyone signed in may add; only the adder or the owner may
+    remove.** A sound is at most 2 MB (150 MB in all, 300 sounds) and its id is made from its bytes
+    (`soundId`: `h` + 24 hex of SHA-256), so one file is one entry whoever adds it. Breaks, racks and songs
+    are JSON up to 300 KB, one per person per name. Tested with a stand-in database
+    (`tests/shared-library.test.ts`; **`tests/library.test.ts` is the book library's file: do not overwrite it**).
+  - Browser: `src/guide/library.ts` (`libList`, `libGet`, `libPut`, `libRemove`, `soundHash`, `shareSound`).
+    A sound file added in the Studio now gets the byte-made id, is kept in IndexedDB and, if 2 MB or under,
+    sent to the library; the rack says which happened. Sounds kept before this are moved to byte-made ids
+    on the next visit and their pads, saved songs and saved racks are rewritten (`renameSamples`).
+    **A pad whose sound is not in the browser is fetched from the library once and kept** (`useStudio`), so
+    a rack, song or break opens with its sounds on any computer. "Save this break", "Save this rack" and
+    saving a song also put them in the library. The Library tab's "Add to my ..." copies an item into the
+    browser's own lists after making it safe again (`tidyBreak`, `tidyRack`, `tidySong`); Sounds can be played.
+  - Checked in a browser with a stand-in for `/api/library`: a dropped file reached the library; a break,
+    rack and song were kept; each shelf listed them; after the browser's own sound store was wiped the pad's
+    sound came back from the library. **Not yet run against the real database: whether Upstash accepts a
+    value of nearly 3 MB (a 2 MB sound as text) is unknown.** If it refuses, the rack says the sound was kept
+    in the browser only; the remedy would be Vercel Blob for the files (the owner would have to add it).
+  - **More built-in drums** (`kit.ts`, chosen from a pad's Drum menu; not given pads of their own): crash,
+    shaker, tambourine, cowbell, clave, finger snap, long sub kick, high and low conga. Our own recipes, not
+    heard by anyone. A "Club pop" starting pattern and a "Big saw chords" starting sound were added.
+  - Literature on drum patterns and breakbeat was searched for and listed in `docs/LITERATURE.md`
+    (Hockman's McGill thesis on breakbeats, Butler's book and article, Witek 2014, the Groove MIDI Dataset);
+    nothing was taken in. The owner's wishes for eastern drums and late-2000s club pop are in
+    `docs/CURRICULUM.md`.
 - **"Walk me through it" (16 Nov 2026, owner's go-ahead with two rules of their own).** A second mode on the
   Ask tab (a switch, remembered): a how-to question becomes a walkthrough of steps shown one at a time.
   `api/walk.ts` answers two kinds of request: `plan` (one call with structured output over ten passages:

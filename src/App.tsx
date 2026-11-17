@@ -10,6 +10,7 @@ import { WalkLibrary } from "./ui/Walkthrough";
 import { DriverPage } from "./ui/DriverDiagram";
 import ModelLabs from "./ui/ModelLabs";
 import DawView from "./ui/DawView";
+import LibraryView from "./ui/LibraryView";
 import { CompareView } from "./ui/CompareView";
 import { DisplayTable } from "./ui/DisplayTable";
 import { DropZone } from "./ui/DropZone";
@@ -118,7 +119,7 @@ export function App() {
           <button role="tab" aria-selected={mode === "play"} className={mode === "play" ? "on" : ""} onClick={() => setMode("play")}>Lessons</button>
           <button role="tab" aria-selected={mode === "learn"} className={mode === "learn" ? "on" : ""} onClick={() => setMode("learn")}>Serum tasks</button>
           <button role="tab" aria-selected={mode === "ask"} className={mode === "ask" ? "on" : ""} onClick={() => setMode("ask")}>Ask the guide</button>
-          <button role="tab" aria-selected={mode === "walks"} className={mode === "walks" ? "on" : ""} onClick={() => setMode("walks")}>Walkthroughs</button>
+          <button role="tab" aria-selected={mode === "walks"} className={mode === "walks" ? "on" : ""} onClick={() => setMode("walks")}>Library</button>
           <button role="tab" aria-selected={mode === "sound"} className={mode === "sound" ? "on" : ""} onClick={() => setMode("sound")}>Sound systems</button>
           <button role="tab" aria-selected={mode === "studio"} className={mode === "studio" ? "on" : ""} onClick={() => setMode("studio")}>Studio</button>
           <button role="tab" aria-selected={mode === "strings"} className={mode === "strings" ? "on" : ""} onClick={() => setMode("strings")}>Physical models</button>
@@ -144,7 +145,7 @@ export function App() {
       )}
 
       {mode === "ask" && <AskView />}
-      {mode === "walks" && <WalkLibrary />}
+      {mode === "walks" && <LibraryView />}
       {mode === "sound" && <DriverPage />}
       {mode === "studio" && <DawView />}
       {mode === "strings" && <ModelLabs />}

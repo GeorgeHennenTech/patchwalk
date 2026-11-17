@@ -441,3 +441,8 @@ first lessons that use the Studio.
 Then: undo and redo, recording into the open clip, saved breaks and racks, and MIDI files out and in (the
 only format that moves both ways with Ableton; its own rack and set files are private and are not written).
 Nobody has opened one of our MIDI files in Ableton yet: ask the owner how it went.
+
+Later still: the Walkthroughs tab became the Library tab, with shelves for sounds, breaks, racks and songs
+kept in the site's database (the owner asked for dropped-in samples to be stored and shared). Not yet run
+against the real database. Drum-pattern literature leads are in `docs/LITERATURE.md`; the owner's wishes for
+eastern drums and late-2000s club pop are in `docs/CURRICULUM.md`.

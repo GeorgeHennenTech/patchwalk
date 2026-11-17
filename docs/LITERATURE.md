@@ -152,3 +152,31 @@ $230; no free copy).
 | Cook and Scavone, "The Synthesis ToolKit (STK)", ICMC 1999 | Open-source instrument models many synths borrow from | Linked from https://soundlab.cs.princeton.edu/research/phymod |
 | Chowning, "The Synthesis of Complex Audio Spectra by Means of Frequency Modulation", JAES 21(7), 1973 | FM (not physical modelling, but the owner listed it earlier) | Yamaha hosts a copy, https://www.yamahasynth.com/wp-content/uploads/images/fm_synthesispaper-2.pdf |
 | Stilson and Smith, "Alias-Free Digital Synthesis of Classic Analog Waveforms", ICMC 1996 | How digital synths make clean saws and squares | A copy on a third-party site only; look on CCRMA |
+
+## Drum patterns, groove and breakbeat (found by search on 17 Nov 2026; nothing taken in yet)
+
+The owner asked for literature to base drum-pattern lessons on, breakbeat especially, and remembered seeing
+dissertations on it. These were confirmed to exist by search; none has been opened or read, so nothing in a
+lesson may be attributed to them until they are in the library.
+
+- Jason A. Hockman, *An ethnographic and technological study of breakbeats in Hardcore, Jungle, and Drum &
+  Bass*, PhD thesis, McGill University (submitted 2013, about 540 pages). Almost certainly the dissertation
+  the owner remembers. McGill's own repository (eScholarship) should hold the author's copy: take it from
+  there, not from a document-sharing site.
+- Hockman and Davies, "Computational Strategies for Breakbeat Classification and Resequencing in Hardcore,
+  Jungle and Drum & Bass", DAFx 2015. Open copy in the DAFx paper archive and at Birmingham City University.
+- Mark J. Butler, *Unlocking the Groove: Rhythm, Meter, and Musical Design in Electronic Dance Music*
+  (Indiana University Press, 2006). A book to buy. The main scholarly treatment of rhythm in dance music.
+- Mark J. Butler, "Turning the Beat Around: Reinterpretation, Metrical Dissonance, and Asymmetry in
+  Electronic Dance Music", *Music Theory Online* 7.6 (2001). Free on mtosmt.org.
+- Witek, Clarke, Wallentin, Kringelbach and Vuust, "Syncopation, body-movement and pleasure in groove
+  music", *PLoS ONE* 9(4), 2014 (CC BY 4.0; a correction was published in 2015). Listeners rated funk drum
+  breaks: a middling amount of syncopation scored highest for wanting to move. About groove and pleasure
+  ratings only: never stretch it into a claim about what sound does to the brain.
+- Groove MIDI Dataset (Gillick and others, Google Magenta; CC BY 4.0): 13.6 hours of real drummers' playing
+  as MIDI. The licence allows use with credit, so it could supply real timing and loudness for lessons on
+  feel. Not downloaded.
+
+Wanted, not yet looked for: a text on South Asian rhythm (tala; tabla and its strokes), one on Arabic and
+Turkish rhythmic modes, and one on West African bell patterns, for the owner's interest in "eastern music
+drums"; and anything reliable on late-2000s club pop production.

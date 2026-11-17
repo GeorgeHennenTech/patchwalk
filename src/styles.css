@@ -329,3 +329,15 @@ tr.dim td { opacity: 0.6; }
 .daw-keep input { padding: 6px 10px; width: 220px; }
 .daw-kept { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
 @media (max-width: 800px) { .daw-kept { grid-template-columns: 1fr; } }
+.daw-sound-ok { margin: 10px 0 0; font-size: 0.88rem; color: #1b7a3d; }
+@media (prefers-color-scheme: dark) { .daw-sound-ok { color: #7dffb0; } }
+/* Library tab */
+.lib-pages { margin: 4px 0 14px; flex-wrap: wrap; }
+.lib-blurb { margin: 0 0 12px; max-width: 72ch; }
+.lib-find { padding: 6px 10px; width: min(340px, 100%); margin-bottom: 10px; }
+.lib-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.lib-list li { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 8px 12px; border: 1px solid var(--line, #d9c9b0); border-radius: 10px; }
+.lib-what { flex: 1; min-width: 200px; display: grid; }
+.lib-what span { font-size: 0.82rem; opacity: 0.75; }
+.lib-have { font-size: 0.82rem; opacity: 0.75; }
+.lib-list .linkish { background: none; border: 0; color: var(--accent); text-decoration: underline; cursor: pointer; box-shadow: none; padding: 0; }

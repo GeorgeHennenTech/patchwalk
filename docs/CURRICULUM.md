@@ -446,3 +446,18 @@ Lessons can be taken in any order, but they have to be built in some order. Each
 
 What is realistic: steps 1 and 2 are a few substantial pieces of work each. The whole map is a long project.
 Every lesson's script and card is a draft until the owner has reviewed it.
+
+## Added by the owner on 17 Nov 2026 (planned, nothing built)
+
+- **Drums from South Asia, the Middle East and beyond.** The owner wants to learn "eastern music drums and
+  its drum patterns". Needs first: a text in the library (see `docs/LITERATURE.md`), a Studio grid that is
+  not always sixteen steps in four beats (many of these cycles are 7, 10, 12 or 16 beats grouped unevenly),
+  and sounds: these drums have several distinct strokes each, so they need the owner's own sample files or
+  a proper model; the built-in tone-and-noise drums will not do.
+- **Late-2000s club pop: drums and synth sounds.** The owner named the style by its artists and wants to put
+  a psychedelic bass spin on it. Teach the general traits of the style (four-on-the-floor around 120 to
+  130 bpm, claps on two and four, bright stacked-saw chords, plucks, pumping from sidechain) on the Studio
+  and the synth. **Never claim how any named artist or producer made a sound, and do not name them in the
+  app.** A "Club pop" starting pattern and a "Big saw chords" starting sound exist as a first step.
+- **Drum-pattern lessons from literature.** Wait for the texts in `docs/LITERATURE.md` (Hockman's thesis
+  first), then write lessons in the Studio from them.

@@ -24,7 +24,7 @@ export function DrumRack({ pattern, onChange, studio, trackId, picked, onPick, s
   const hear = (i: number, p: Pattern = pattern) => { const l = p.lanes[i]; if (l) transport.hitPad(trackId, l); };
   const take = async (i: number, file: File) => {
     setNote(""); onPick(i);
-    try { const s = await addSample(file, samples.length); const next = setLane(setSample(pattern, i, s.id), i, { name: s.name.slice(0, 24), start: 0, length: 100, fade: 0 }); onChange(next); hear(i, next); }
+    try { const s = await addSample(file, samples.length); const next = setLane(setSample(pattern, i, s.id), i, { name: s.name.slice(0, 24), start: 0, length: 100, fade: 0 }); onChange(next); hear(i, next); void s.shared.then(setNote); }
     catch (e) { setNote(e instanceof Error ? e.message : "That file could not be used."); }
   };
   const set = (change: Parameters<typeof setLane>[2]) => onChange(setLane(pattern, picked, change));
@@ -57,7 +57,7 @@ export function DrumRack({ pattern, onChange, studio, trackId, picked, onPick, s
           <button className="primary" onClick={() => picker.current?.click()}>Upload a sound…</button>
           {lane.sample && <button onClick={() => onChange(setSample(pattern, picked))}>Use the built-in drum</button>}
         </div>
-        {note && <p className="daw-sound-note" role="alert">{note}</p>}
+        {note && <p className={/library|browser/.test(note) && !/could not|does not/i.test(note) ? "daw-sound-ok" : "daw-sound-note"} role="status">{note}</p>}
         {own && <Wave peaks={transport.peaks(own.id)} start={lane.start} length={lane.length} fade={lane.fade} seconds={transport.seconds(own.id)} />}
         <div className="rack-knobs">
           {own && <>
@@ -75,7 +75,7 @@ export function DrumRack({ pattern, onChange, studio, trackId, picked, onPick, s
           <p className="daw-sound-label">Your sounds: click one to put it on this pad</p>
           <div className="daw-chips">{samples.map((s) => <span key={s.id} className={`daw-chip${lane.sample === s.id ? " on" : ""}`}><button onClick={() => { const next = setSample(pattern, picked, s.id); onChange(next); hear(picked, next); }}>{s.name}</button><button aria-label={`Delete ${s.name}`} title="Delete from this browser" onClick={() => removeSample(s.id)}>×</button></span>)}</div>
         </>}
-        <p className="muted daw-sound-small">Drag a sound file from your computer onto any pad. Your files stay in this browser: they are never uploaded.</p>
+        <p className="muted daw-sound-small">Drag a sound file from your computer onto any pad. A file is kept in this browser and, if it is 2 MB or under, saved to the site's library for everyone signed in.</p>
       </div>}
     </div>
   );

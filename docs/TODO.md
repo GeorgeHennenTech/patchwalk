@@ -136,6 +136,8 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [x] Studio: upload your own drum sounds (kept in the browser), tune per drum, genre starting points (17 Nov 2026)
 - [x] Studio: drum rack (16 pads, start/length/fade, pan, choke groups), track grid with clips, synth on tracks, piano roll, one clock (17 Nov 2026)
 - [x] Studio: undo/redo, record from keys and pads, saved breaks and racks, MIDI files in and out (17 Nov 2026)
+- [x] Library tab; Studio sounds, breaks, racks and songs kept in the database; nine more built-in drums (17 Nov 2026)
+- [ ] Owner to try: drop a sample in the Studio and check it shows in Library > Sounds on the live site
 - [ ] Studio next: note loudness, copy/paste, per-track effects, export to a sound file, a kit as a zip of sound files, lessons that use it; earlier list: one clock shared with the synth, piano roll, chaining patterns, mixer, per-drum sound, a lesson using the grid
 - [ ] Mini DAW: tracks, mixer, automation, export
 - [ ] Genre lessons, starting with glitch-hop, breakbeat and psydub

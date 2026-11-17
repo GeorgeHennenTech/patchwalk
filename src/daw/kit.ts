@@ -90,6 +90,15 @@ export class Kit {
       case "tomhigh": this.tone(bus, "sine", t, 215, 138, 0.14, 0.7 * v, 0.27); break;
       case "ride": this.metal(bus, t, 412, 4200, 0.075 * v, 1.3); this.hiss(bus, t, "bandpass", 6200, 1.5, 0.22 * v, 0.03); break;
       case "ridebell": this.metal(bus, t, 412, 1500, 0.06 * v, 0.9); this.tone(bus, "sine", t, 1180, 1180, 0.05, 0.3 * v, 0.55); this.tone(bus, "sine", t, 1770, 1770, 0.05, 0.16 * v, 0.4); break;
+      case "crash": this.metal(bus, t, 337, 2600, 0.085 * v, 2.2); this.hiss(bus, t, "highpass", 5000, 0.5, 0.32 * v, 1.1); break;
+      case "shaker": this.hiss(bus, t, "bandpass", 6800, 1.1, 0.34 * v, 0.07); break;
+      case "tambourine": this.metal(bus, t, 1190, 6000, 0.05 * v, 0.22); this.hiss(bus, t, "highpass", 8000, 0.7, 0.3 * v, 0.12); break;
+      case "cowbell": this.tone(bus, "square", t, 562, 562, 0.05, 0.2 * v, 0.32); this.tone(bus, "square", t, 845, 845, 0.05, 0.16 * v, 0.28); break;
+      case "clave": this.tone(bus, "sine", t, 2500, 2450, 0.02, 0.6 * v, 0.045); break;
+      case "snap": this.hiss(bus, t, "bandpass", 2300, 3, 0.7 * v, 0.03); this.hiss(bus, t + 0.012, "bandpass", 1700, 2, 0.45 * v, 0.07); break;
+      case "sub": this.tone(bus, "sine", t, 150, 44, 0.07, 0.95 * v, 1.1); this.hiss(bus, t, "lowpass", 1800, 0.5, 0.2 * v, 0.01); break;
+      case "congahigh": this.tone(bus, "sine", t, 420, 330, 0.04, 0.7 * v, 0.2); this.hiss(bus, t, "bandpass", 1900, 1.5, 0.25 * v, 0.02); break;
+      case "congalow": this.tone(bus, "sine", t, 280, 215, 0.05, 0.75 * v, 0.28); this.hiss(bus, t, "bandpass", 1300, 1.5, 0.22 * v, 0.02); break;
       case "rim": this.tone(bus, "triangle", t, 830, 800, 0.02, 0.5 * v, 0.035); this.hiss(bus, t, "bandpass", 3200, 2, 0.3 * v, 0.02); break;
     }
   }

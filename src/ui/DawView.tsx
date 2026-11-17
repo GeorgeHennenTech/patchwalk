@@ -7,6 +7,7 @@ import { DrumRack } from "./studio/DrumRack";
 import { PianoRoll } from "./studio/PianoRoll";
 import { TrackSynth } from "./studio/TrackSynth";
 import { firstSong, useStudio } from "./studio/useStudio";
+import { libPut } from "../guide/library";
 import { BPM_MAX, BPM_MIN, GENRE_STARTERS, STARTERS, STEPS_PER_BAR, SWING_MAX, clearAll, setHit, tidySteps, type Pattern } from "../daw/drums";
 import { PPQ, hitsToMidi, midiBars, midiToHits, midiToNotes, notesToMidi, readMidi, songToMidi, writeMidi } from "../daw/midi";
 import { CLIP_BARS, MAX_TRACKS, SONG_BARS, SOUNDS, addClip, addTrack, clipOf, clipPattern, duplicateClip, moveClip, newSong, removeClip, setClipBars, setNotes, setPatch, setSongBars, setSongSwing, setSongTempo, trackOf, withPads, withPattern, type Song } from "../daw/song";
@@ -84,9 +85,9 @@ export default function DawView() {
     if (track.kind === "drums") { const got = midiToHits(notes, file.ppq, track.pads.length, steps), p = clipPattern(sized, track, now as never); change(withPattern(sized, track.id, clip.id, { ...p, lanes: p.lanes.map((l, i) => ({ ...l, steps: got.rows[i]! })) })); setNote(`Brought in ${notes.length - got.left} hits${got.left ? `; ${got.left} did not fit (outside the pads, or past the end of the clip)` : ""}. Pad 1 is the note C1, pad 2 the next key up, and so on.`); }
     else { const got = midiToNotes(notes, file.ppq, steps); change(setNotes(sized, track.id, clip.id, got.notes)); setNote(`Brought in ${got.notes.length} notes${got.left ? `; ${got.left} were past the end of the clip` : ""}.`); }
   };
-  const keepBreak = () => { if (!pattern || !clip) return; const b: Break = { name: saveAs.trim() || `${track!.name} bar ${clip.start + 1}`, bars: clip.bars === 2 ? 2 : 1, bpm: song.bpm, swing: song.swing, rows: pattern.lanes.map((l) => l.steps), pads: pattern.lanes.map((l) => l.name) }; const next = withNamed(breaks, b); setBreaks(next); storeBreaks(next); setNote(`Saved the break “${b.name}”.`); };
+  const keepBreak = () => { if (!pattern || !clip) return; const b: Break = { name: saveAs.trim() || `${track!.name} bar ${clip.start + 1}`, bars: clip.bars === 2 ? 2 : 1, bpm: song.bpm, swing: song.swing, rows: pattern.lanes.map((l) => l.steps), pads: pattern.lanes.map((l) => l.name) }; const next = withNamed(breaks, b); setBreaks(next); storeBreaks(next); setNote(`Saved the break “${b.name}”.`); void libPut("break", b.name, b, `${b.bars} bar${b.bars === 1 ? "" : "s"}, ${b.rows.length} pads, ${b.bpm} bpm`).then((r) => { if (r.ok && r.value.entry) setNote(`Saved the break “${b.name}”, here and in the library.`); }); };
   const useBreak = (b: Break) => { if (!track || !clip || !pattern) return; const sized = setClipBars(song, track.id, clip.id, b.bars), now = clipOf(trackOf(sized, track.id), clip.id)!, p = clipPattern(sized, track as never, now as never); change(withPattern(sized, track.id, clip.id, { ...p, lanes: p.lanes.map((l, i) => ({ ...l, steps: tidySteps(b.rows[i], p.length) })) })); setNote(b.rows.length > p.lanes.length ? `“${b.name}” was written for ${b.rows.length} pads; this rack has ${p.lanes.length}, so the rest were left out.` : ""); };
-  const keepRack = () => { if (!track || track.kind !== "drums") return; const r: Rack = { name: saveAs.trim() || track.name, pads: track.pads }; const next = withNamed(racks, r); setRacks(next); storeRacks(next); setNote(`Saved the rack “${r.name}”.`); };
+  const keepRack = () => { if (!track || track.kind !== "drums") return; const r: Rack = { name: saveAs.trim() || track.name, pads: track.pads }; const next = withNamed(racks, r); setRacks(next); storeRacks(next); setNote(`Saved the rack “${r.name}”.`); void libPut("rack", r.name, r, `${r.pads.length} pads${r.pads.some((p) => p.sample) ? ", with sound files" : ""}`).then((x) => { if (x.ok && x.value.entry) setNote(`Saved the rack “${r.name}”, here and in the library.`); }); };
   return (
     <section className="panel daw">
       <h2>Studio</h2>
@@ -172,7 +173,7 @@ export default function DawView() {
           <h3>Your songs</h3>
           <div className="daw-save">
             <input type="text" value={song.name} maxLength={40} aria-label="Song name" onChange={(e) => change((s) => ({ ...s, name: e.target.value }))} />
-            <button onClick={() => { const next = withSavedSong(songs, song); setSongs(next); storeSongs(next); }}>{songs.some((s) => s.name === song.name.trim()) ? "Save over it" : "Save"}</button>
+            <button onClick={() => { const next = withSavedSong(songs, song); setSongs(next); storeSongs(next); void libPut("song", song.name, song, `${song.tracks.length} tracks, ${song.bars} bars, ${song.bpm} bpm`); }} title="Saves the song in this browser and in the site's library">{songs.some((s) => s.name === song.name.trim()) ? "Save over it" : "Save"}</button>
             <button onClick={() => download(songToMidi(song), song.name)} title="The whole song as one MIDI file: a track per track. It carries the notes and the tempo, not the sounds.">Download .mid</button>
           </div>
           {songs.length === 0 ? <p className="muted">Nothing saved yet. Saved songs stay in this browser. The song you are working on is kept as you go.</p> :
@@ -187,7 +188,7 @@ export default function DawView() {
         </div>
       </div>
       <details className="daw-missing"><summary>What is missing here</summary>
-        <p>The built-in drums are made by the browser from tones and noise as they play: our own recipes, not recordings and not a model of any drum machine, and nobody has tuned them by ear yet. The synth tracks are the practice synth from the lessons. A MIDI file carries notes and tempo only: not the sounds, the swing or the levels, and Ableton's own rack and set files cannot be written from here. Not built yet: note loudness in the piano roll, copying notes, automation, an effects rack per track, a master meter, and saving a song as a sound file. Songs and your sound files are kept in this browser only.</p>
+        <p>The built-in drums are made by the browser from tones and noise as they play: our own recipes, not recordings and not a model of any drum machine, and nobody has tuned them by ear yet. The synth tracks are the practice synth from the lessons. A MIDI file carries notes and tempo only: not the sounds, the swing or the levels, and Ableton's own rack and set files cannot be written from here. Not built yet: note loudness in the piano roll, copying notes, automation, an effects rack per track, a master meter, and saving a song as a sound file. Saved songs, breaks and racks, and sound files of 2 MB or under, are kept in this browser and in the site's library (the Library tab), where everyone signed in can use them.</p>
       </details>
     </section>
   );

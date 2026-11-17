@@ -28,6 +28,7 @@ export const SOUNDS: { name: string; patch: Partial<SynthState> }[] = [
   { name: "Bass", patch: { shape: "saw", octave: -2, subOn: true, filterOn: true, cutoff: 600, resonance: 20, envA: 2, envD: 250, envS: 60, envR: 80, voiceMode: "mono", volumeDb: -12 } },
   { name: "Pluck", patch: { shape: "saw", filterOn: true, cutoff: 700, resonance: 15, env2Dest: "cutoff", env2Amount: 55, env2D: 220, envA: 2, envD: 260, envS: 0, envR: 180, delayOn: true, delayMix: 25, volumeDb: -12 } },
   { name: "Lead", patch: { shape: "square", filterOn: true, cutoff: 4200, resonance: 12, envA: 4, envD: 300, envS: 75, envR: 120, voiceMode: "mono", glide: 60, volumeDb: -14 } },
+  { name: "Big saw chords", patch: { shape: "saw", voices: 7, detune: 30, spread: 100, filterOn: true, cutoff: 5200, resonance: 8, envA: 4, envD: 500, envS: 85, envR: 220, reverbOn: true, reverbSize: 2, reverbMix: 20, volumeDb: -17 } },
   { name: "Plain saw", patch: {} },
 ];
 export const soundPatch = (name: string): SynthState => ({ ...INITIAL, ...(SOUNDS.find((s) => s.name === name)?.patch ?? {}) });
@@ -151,6 +152,8 @@ export function songEvents(s: Song, from: number, until: number, loop?: { start:
 }
 /** Every sound-file id the song's pads use. */
 export const samplesUsed = (s: Song): string[] => [...new Set(s.tracks.flatMap((t) => (t.kind === "drums" ? t.pads.map((p) => p.sample).filter((x): x is string => !!x) : [])))];
+/** Change the ids of sound files on every pad (a sound's id became one made from its bytes). */
+export const renameSamples = (s: Song, ids: Record<string, string>): Song => (samplesUsed(s).some((id) => ids[id]) ? { ...s, tracks: s.tracks.map((t) => (t.kind === "drums" ? { ...t, pads: t.pads.map((p) => (p.sample && ids[p.sample] ? { ...p, sample: ids[p.sample]! } : p)) } : t)) } : s);
 /** Take a sound off every pad of every track. */
 export const dropSongSample = (s: Song, id: string): Song => ({ ...s, tracks: s.tracks.map((t) => (t.kind === "drums" ? { ...t, pads: t.pads.map((p) => { if (p.sample !== id) return p; const { sample: _old, ...rest } = p; return rest; }) } : t)) });
 

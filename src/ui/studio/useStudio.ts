@@ -59,6 +59,8 @@ export function useStudio() {
     const t = transport.current!;
     if (t.playing) { t.stop(); setPlaying(false); setStep(-1); } else { t.start(); setPlaying(true); }
   }, []);
+  /** Play from a step of the song (stopping first if it is playing). */
+  const playFrom = useCallback((from: number) => { const t = transport.current!; if (t.playing) t.stop(); t.start(from); setPlaying(true); }, []);
   const setLoop = useCallback((loop: Loop | undefined) => { transport.current!.loop = loop; }, []);
   useEffect(() => {
     if (!playing) return;
@@ -134,6 +136,6 @@ export function useStudio() {
     setSamples((list) => list.filter((s) => s.id !== id));
     change((s) => dropSongSample(s, id));
   }, [change]);
-  return { mark, undo, redo, canUndo: past.current.length > 0, canRedo: future.current.length > 0, song, change, playing, toggle, step, setLoop, transport: transport.current!, samples, addSample, removeSample };
+  return { mark, undo, redo, canUndo: past.current.length > 0, canRedo: future.current.length > 0, song, change, playing, toggle, playFrom, step, setLoop, transport: transport.current!, samples, addSample, removeSample };
 }
 export type Studio = ReturnType<typeof useStudio>;

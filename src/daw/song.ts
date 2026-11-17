@@ -10,7 +10,7 @@ import { BPM_MAX, BPM_MIN, STEPS_PER_BAR, STRENGTH, SWING_MAX, audibleOf, defaul
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
-export interface NoteEv { /** MIDI note number */ note: number; /** steps from the clip's start */ start: number; /** steps */ length: number; /** 1 to 127 */ velocity: number }
+export interface NoteEv { /** MIDI note number */ note: number; /** steps from the clip's start */ start: number; /** steps */ length: number; /** 1 to 127 */ velocity: number; /** percent chance that it plays each time round (1 to 99); left out means always */ chance?: number }
 interface ClipBase { id: string; /** the bar it starts on, counting from 0 */ start: number; bars: number; /** switched off: it stays on the grid and makes no sound */ off?: boolean }
 export interface DrumClip extends ClipBase { /** for each pad's id, its row of steps */ hits: Record<string, Hit[]> }
 export interface SynthClip extends ClipBase { notes: NoteEv[] }
@@ -27,7 +27,7 @@ export interface DrumTrack extends TrackBase { kind: "drums"; pads: Pad[]; clips
 export interface SynthTrack extends TrackBase { kind: "synth"; patch: SynthState; clips: SynthClip[]; /** note effects, in front of the synth: they change the clip's notes before they are played */ noteFx: Device[] }
 export type Track = DrumTrack | SynthTrack;
 export type Clip = DrumClip | SynthClip;
-export interface Song { name: string; bpm: number; swing: number; /** length in bars */ bars: number; tracks: Track[]; /** the master volume, 0 to 100 */ volume: number; /** return tracks: A, then B */ returns: ReturnTrack[] }
+export interface Song { name: string; bpm: number; swing: number; /** length in bars */ bars: number; tracks: Track[]; /** the master volume, 0 to 100 */ volume: number; /** return tracks: A, then B */ returns: ReturnTrack[]; /** effects on everything, just before the master volume */ masterFx?: Device[]; /** the key the song is in: the piano roll lights these notes' rows */ scale?: { root: number; name: string } }
 export const MASTER_START = 85;
 /** The master volume as a gain: its starting place is a little under full, to leave room when tracks add up. */
 export const masterGain = (volume: number) => 0.9 * (clamp(volume, 0, 100) / MASTER_START);
@@ -158,7 +158,7 @@ export const withPads = (s: Song, trackId: string, pads: Pad[]): Song => withTra
 
 // Notes in a synth clip
 const sameNote = (a: NoteEv, b: NoteEv) => a.note === b.note && a.start === b.start;
-export const tidyNote = (n: NoteEv, steps: number): NoteEv => { const start = clamp(Math.round(n.start), 0, steps - 1); return { note: clamp(Math.round(n.note), NOTE_LOW, NOTE_HIGH), start, length: clamp(Math.round(n.length), 1, steps - start), velocity: clamp(Math.round(n.velocity), 1, 127) }; };
+export const tidyNote = (n: NoteEv, steps: number): NoteEv => { const start = clamp(Math.round(n.start), 0, steps - 1); return { note: clamp(Math.round(n.note), NOTE_LOW, NOTE_HIGH), start, length: clamp(Math.round(n.length), 1, steps - start), velocity: clamp(Math.round(n.velocity), 1, 127), ...(Number.isFinite(n.chance) && n.chance! < 100 ? { chance: clamp(Math.round(n.chance!), 0, 99) } : {}) }; };
 /** Add a note, or replace the one that starts at the same place on the same key. */
 export const putNote = (s: Song, trackId: string, clipId: string, n: NoteEv): Song => withClip(s, trackId, clipId, (c) => ("notes" in c ? { ...c, notes: [...c.notes.filter((x) => !sameNote(x, n)), tidyNote(n, c.bars * STEPS_PER_BAR)].sort((a, b) => a.start - b.start || a.note - b.note) } : c));
 export const dropNote = (s: Song, trackId: string, clipId: string, n: Pick<NoteEv, "note" | "start">): Song => withClip(s, trackId, clipId, (c) => ("notes" in c ? { ...c, notes: c.notes.filter((x) => !(x.note === n.note && x.start === n.start)) } : c));
@@ -205,9 +205,47 @@ export function playedNotes(t: SynthTrack, c: SynthClip): FxNote[] {
   played.set(c.notes, { chain: t.noteFx, bars: c.bars, out });
   return out;
 }
+// ---- note tools: each works on the chosen notes, or on every note when none is chosen ----
+const chosen = (notes: NoteEv[], keys: ReadonlySet<string>) => (keys.size ? notes.filter((n) => keys.has(noteKey(n))) : notes);
+const swap = (notes: NoteEv[], keys: ReadonlySet<string>, made: NoteEv[]): { notes: NoteEv[]; keys: Set<string> } => { const taken = new Set(made.map(noteKey)), rest = (keys.size ? notes.filter((n) => !keys.has(noteKey(n))) : []).filter((n) => !taken.has(noteKey(n))); return { notes: [...rest, ...made], keys: keys.size ? taken : new Set() }; };
+/** Play the chosen notes backwards: the last becomes the first, within the stretch they cover. */
+export function reverseNotes(notes: NoteEv[], keys: ReadonlySet<string>): { notes: NoteEv[]; keys: Set<string> } {
+  const picked = chosen(notes, keys); if (!picked.length) return { notes, keys: new Set(keys) };
+  const s = span(picked); return swap(notes, keys, picked.map((n) => ({ ...n, start: s.from + s.to - (n.start + n.length) })));
+}
+/** Turn the chosen notes upside down: the highest becomes the lowest. */
+export function invertNotes(notes: NoteEv[], keys: ReadonlySet<string>): { notes: NoteEv[]; keys: Set<string> } {
+  const picked = chosen(notes, keys); if (!picked.length) return { notes, keys: new Set(keys) };
+  const s = span(picked); return swap(notes, keys, picked.map((n) => ({ ...n, note: s.low + s.high - n.note })));
+}
+/** Twice as fast (factor 0.5) or half as fast (factor 2), from the first chosen note. Notes that no longer fit in the clip are dropped. */
+export function scaleTime(notes: NoteEv[], keys: ReadonlySet<string>, factor: number, steps: number): { notes: NoteEv[]; keys: Set<string> } {
+  const picked = chosen(notes, keys); if (!picked.length) return { notes, keys: new Set(keys) };
+  const from = span(picked).from, made = picked.map((n) => ({ ...n, start: from + Math.round((n.start - from) * factor), length: Math.max(1, Math.round(n.length * factor)) })).filter((n) => n.start < steps).map((n) => ({ ...n, length: Math.min(n.length, steps - n.start) }));
+  const seen = new Set<string>(); return swap(notes, keys, made.filter((n) => { const k = noteKey(n); if (seen.has(k)) return false; seen.add(k); return true; }));
+}
+/** Make each chosen note last until the next one starts (the last one to the end of the clip), so nothing is left silent between them. */
+export function legatoNotes(notes: NoteEv[], keys: ReadonlySet<string>, steps: number): { notes: NoteEv[]; keys: Set<string> } {
+  const picked = chosen(notes, keys); if (!picked.length) return { notes, keys: new Set(keys) };
+  const starts = [...new Set(picked.map((n) => n.start))].sort((a, b) => a - b);
+  return swap(notes, keys, picked.map((n) => ({ ...n, length: (starts[starts.indexOf(n.start) + 1] ?? steps) - n.start })));
+}
+/** Set the chance of the chosen notes (100 or more means always). */
+export const setChance = (notes: NoteEv[], keys: ReadonlySet<string>, chance: number): NoteEv[] => notes.map((n) => { if (!keys.has(noteKey(n))) return n; const c = clamp(Math.round(chance), 0, 100); if (c >= 100) { if (n.chance === undefined) return n; const { chance: _always, ...rest } = n; return rest; } return n.chance === c ? n : { ...n, chance: c }; });
+/** Double a clip: twice as long, with what was in it written again in the new half. Nothing happens if it cannot be that long or there is no room. */
+export function doubleClip(s: Song, trackId: string, clipId: string): Song {
+  const t = trackOf(s, trackId), c = clipOf(t, clipId); if (!t || !c) return s;
+  const bars = c.bars * 2, steps = c.bars * STEPS_PER_BAR;
+  if (!CLIP_BARS[t.kind].includes(bars) || !isFree(s, t, c.start, bars, c.id)) return s;
+  return withClip(s, trackId, clipId, (x) => ("hits" in x
+    ? { ...x, bars, hits: Object.fromEntries(Object.entries(x.hits).map(([id, row]) => { const one = row.slice(0, steps); while (one.length < steps) one.push(0); return [id, [...one, ...one]]; })) }
+    : { ...x, bars, notes: [...x.notes, ...x.notes.map((n) => ({ ...n, start: n.start + steps }))] }));
+}
+/** Whether a note belongs to a key: `root` is 0 for C up to 11 for B, `steps` the scale's semitones above it. */
+export const inKey = (note: number, root: number, steps: readonly number[]) => steps.includes((((note - root) % 12) + 12) % 12);
 /** Put a new chain of note effects on a synth track. */
 export const setNoteFx = (s: Song, trackId: string, noteFx: Device[]): Song => ({ ...s, tracks: s.tracks.map((t) => (t.id === trackId && t.kind === "synth" ? { ...t, noteFx } : t)) });
-export function songEvents(s: Song, from: number, until: number, loop?: { start: number; bars: number }): SongEvent[] {
+export function songEvents(s: Song, from: number, until: number, loop?: { start: number; bars: number }, /** the dice for notes that have a chance */ rand: () => number = Math.random): SongEvent[] {
   const first = (loop?.start ?? 0) * STEPS_PER_BAR, span = Math.max(1, (loop?.bars ?? s.bars)) * STEPS_PER_BAR, on = audibleOf(s.tracks), out: SongEvent[] = [];
   for (let n = from; n < until; n++) {
     const step = first + (((n % span) + span) % span), bar = Math.floor(step / STEPS_PER_BAR), at = stepTime(n, s.bpm, s.swing);
@@ -221,7 +259,7 @@ export function songEvents(s: Song, from: number, until: number, loop?: { start:
         t.pads.forEach((pad, j) => { const hit = (c as DrumClip).hits[pad.id]?.[local] ?? 0; if (hit && sounding[j] && pad.level > 0) out.push({ track: t.id, at, step, kind: "hit", pad, strength: STRENGTH[hit] * (pad.level / 100) }); });
       } else {
         // a note that starts part-way through a step (an arpeggiator's triplet, say) is played that much later
-        for (const note of playedNotes(t, c as SynthClip)) if (Math.floor(note.start + 1e-9) === local) out.push({ track: t.id, at: at + (note.start - local) * stepSeconds(s.bpm), step, kind: "note", note: note.note, seconds: Math.max(0.03, Math.min(note.length, c.bars * STEPS_PER_BAR - note.start) * stepSeconds(s.bpm) - 0.01), velocity: note.velocity });
+        for (const note of playedNotes(t, c as SynthClip)) if (Math.floor(note.start + 1e-9) === local && (note.chance === undefined || rand() * 100 < note.chance)) out.push({ track: t.id, at: at + (note.start - local) * stepSeconds(s.bpm), step, kind: "note", note: note.note, seconds: Math.max(0.03, Math.min(note.length, c.bars * STEPS_PER_BAR - note.start) * stepSeconds(s.bpm) - 0.01), velocity: note.velocity });
       }
     });
   }
@@ -246,6 +284,8 @@ export function tidySong(raw: unknown): Song | undefined {
     song.returns.push({ id: g.id, name: typeof g.name === "string" ? g.name.slice(0, 24) : "Return", level: clamp(Number(g.level ?? 80) || 0, 0, 100), pan: clamp(Math.round(Number(g.pan) || 0), -100, 100), mute: g.mute === true, devices: tidyDevices(g.devices) });
   }
   song.returns.sort((a, b) => a.id.localeCompare(b.id));
+  const mfx = tidyDevices((r as { masterFx?: unknown }).masterFx); if (mfx.length) song.masterFx = mfx;
+  const sc = (r as { scale?: { root?: unknown; name?: unknown } }).scale; if (sc && typeof sc.name === "string" && Number.isInteger(sc.root) && (sc.root as number) >= 0 && (sc.root as number) < 12) song.scale = { root: sc.root as number, name: sc.name.slice(0, 30) };
   const tidySends = (raw: unknown) => { const out: Record<string, number> = {}; if (raw && typeof raw === "object") for (const x of song.returns) { const v = Number((raw as Record<string, unknown>)[x.id]); if (Number.isFinite(v) && v > 0) out[x.id] = clamp(Math.round(v), 0, 100); } return out; };
   for (const g of Array.isArray(r.tracks) ? r.tracks.slice(0, MAX_TRACKS) : []) {
     if (!g || typeof g !== "object" || (g.kind !== "drums" && g.kind !== "synth")) continue;

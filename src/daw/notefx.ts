@@ -6,7 +6,7 @@ import { arpCycle, type ArpMode } from "../synth/arp";
 import type { Device, DeviceSpec, ParamSpec } from "./devices";
 
 /** A note as a clip holds it. After note effects, starts and lengths need not be whole steps. */
-export interface FxNote { note: number; start: number; length: number; velocity: number }
+export interface FxNote { note: number; start: number; length: number; velocity: number; /** percent chance that the note plays each time round; missing means always */ chance?: number }
 
 const KEYS = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 /** The scales a note can be kept to, as semitones above the key note. */
@@ -34,6 +34,12 @@ export const NOTE_FX: DeviceSpec[] = [
     num("chance", "Chance", 0, 100, 50, { unit: "%" }), num("range", "Up to (semitones)", 1, 24, 12), menu("way", "Direction", ["Up", "Down", "Both"], 2),
   ] },
   { kind: "n-scale", midi: true, name: "Scale", like: "Scale", about: "Keeps every note in a key: a note outside the scale moves to the nearest note inside it.", params: [menu("root", "Key", KEYS), menu("scale", "Scale", SCALES.map((s) => s.name))] },
+  { kind: "n-echo", midi: true, name: "Note echo", like: "Note Echo (Max for Live)", about: "Repeats every note a set time later, each repeat softer, and higher or lower if you like.", params: [
+    { id: "gap", label: "Every", min: 0, max: 5, step: 1, def: 2, choices: ["1/32", "1/16", "1/8", "1/4", "1/8 dotted", "1/16 triplet"] },
+    { id: "repeats", label: "Repeats", min: 1, max: 6, step: 1, def: 3 },
+    { id: "fade", label: "Each one softer by", min: 0, max: 90, step: 1, def: 35, unit: "%" },
+    { id: "step", label: "Pitch each repeat", min: -12, max: 12, step: 1, def: 0, unit: "st" },
+  ], note: "Repeats that would run past the end of the clip are left out." },
   { kind: "n-velocity", midi: true, name: "Velocity", like: "Velocity", about: "Squeezes or stretches how hard notes are played, and can add a little randomness to it.", params: [
     num("low", "Softest becomes", 1, 127, 1), num("high", "Hardest becomes", 1, 127, 127), num("random", "Random, up to", 0, 64, 0),
   ] },
@@ -69,6 +75,8 @@ export function arpeggiate(notes: readonly FxNote[], p: Record<string, number>, 
 }
 
 /** One note effect applied to a clip's notes. `steps` is the clip's length in sixteenths. */
+/** The gap between a note and each of its echoes, in sixteenth steps. */
+export const ECHO_GAPS = [0.5, 1, 2, 4, 3, 2 / 3];
 export function applyOne(d: Device, notes: readonly FxNote[], steps: number): FxNote[] {
   const p = d.p;
   switch (d.kind) {
@@ -79,6 +87,10 @@ export function applyOne(d: Device, notes: readonly FxNote[], steps: number): Fx
     case "n-chord": return notes.flatMap((n) => [n, ...[p.shift1, p.shift2, p.shift3, p.shift4].filter((s): s is number => !!s).map((s) => ({ ...n, note: n.note + s }))]);
     case "n-length": return notes.map((n) => ({ ...n, length: Math.min(steps - n.start, p.mode ? n.length * ((p.percent ?? 50) / 100) : p.steps ?? 1) }));
     case "n-arp": return arpeggiate(notes, p, steps);
+    case "n-echo": { const gap = ECHO_GAPS[p.gap ?? 2] ?? 2, out: FxNote[] = [];
+      for (const n of notes) { out.push(n); for (let k = 1; k <= (p.repeats ?? 3); k++) { const start = n.start + k * gap; if (start >= steps) break;
+        out.push({ ...n, start, length: Math.min(n.length, gap, steps - start), note: n.note + k * (p.step ?? 0), velocity: clampVel(n.velocity * (1 - (p.fade ?? 35) / 100) ** k) }); } }
+      return out.filter((n) => n.note >= 0 && n.note <= 127); }
     default: return [...notes];
   }
 }

@@ -8,23 +8,23 @@ here when it is built. Everything built stays our own device or feature doing th
 ## Suggested order
 
 ### 1. Quick wins (each S, together about two sessions)
-- [ ] Tap tempo (p.176)
-- [ ] Note tools in the piano roll: transpose, double and halve speed, reverse, invert, legato (p.172)
-- [ ] Duplicate loop: double a clip's length and contents (p.161, 200)
-- [ ] Scale mode: choose root and scale, in-scale rows highlighted, Fold to scale and Fold (p.163, 197-199)
-- [ ] Note chance: a probability per note, in a lane under velocity; randomize velocity (p.205-209)
+- [x] Tap tempo (p.176)
+- [x] Note tools in the piano roll: transpose, double and halve speed, reverse, invert, legato (p.172)
+- [x] Duplicate loop: double a clip's length and contents (p.161, 200)
+- [ ] Scale mode: choose root and scale, in-scale rows highlighted (DONE 17 Nov), Fold to scale and Fold (not yet) (p.163, 197-199)
+- [ ] Note chance: a probability per note, in a lane under velocity (DONE 17 Nov); randomize velocity (not yet) (p.205-209)
 - [ ] Hear a note as you click or move it (p.194)
 - [ ] Count-in of 1 to 4 bars; overdub or replace when recording (p.290, 296)
-- [ ] Click the timeline to choose where playback starts; Shift+Space continues from where it stopped (p.115-116)
+- [x] Click a bar number to play from there; Shift+Space plays on from the bar where it stopped (p.115-116)
 - [ ] Locators: named markers, jump to next and previous (p.117-119)
-- [ ] Browser: search box, and hear a sample or break before loading it (p.76-78)
-- [ ] Shortcuts: F1-F8 track on/off, Ctrl/Cmd+Up/Down halve or double the loop, Ctrl/Cmd+I insert silence,
+- [ ] Browser: search box (DONE 17 Nov), and hear a sample or break before loading it (not yet) (p.76-78)
+- [ ] Shortcuts: F1-F8 track on/off (DONE 17 Nov), Ctrl/Cmd+Up/Down halve or double the loop, Ctrl/Cmd+I insert silence,
       A show automation, H and W fit, Ctrl/Cmd+Alt+T return track, Ctrl/Cmd+Shift+E export MIDI (p.845-856)
-- [ ] Note Echo note effect (p.676)
+- [x] Note Echo note effect (p.676)
 - [ ] Sidechain on Gate, Glue compressor, Auto filter and Multiband (the wiring exists for the Compressor)
       (p.393, 442, 445, 467)
 - [ ] Utility: bass mono, left-only / right-only, DC filter; Saturator: soft clip and colour (p.489, 509-510)
-- [ ] Effects on the master (p.281)
+- [x] Effects on the master (p.281)
 
 ### 2. The biggest limits today (M to L each)
 - [ ] Grid sizes with triplets and snap off, notes off the sixteenth grid, then Quantize with an amount

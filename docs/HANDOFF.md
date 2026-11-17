@@ -499,3 +499,7 @@ asked for the Ableton look here, which replaces the "our own look" rule for the 
 artwork, fonts or logo. See `CLAUDE.md` ("The effect chain drawn like Live's device view").
 **`docs/ABLETON_GAPS.md` (17 Nov 2026) lists everything in the Ableton manual the Studio lacks, in a
 suggested order with page numbers; pick the next Studio work from it and tick items off there.**
+First batch of its quick wins is built (tap tempo, note tools, clip doubling, key highlighting, note
+chance, play from a bar, F1-F8, browser search, effects on the master, note echo). Still open in the
+quick-win group: count-in and overdub, locators, hearing a sample before loading, sidechain on more
+devices, Utility and Saturator extras, fold to scale, the rest of the shortcuts.

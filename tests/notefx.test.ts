@@ -9,7 +9,7 @@ const chord = [n(60, 0, 8), n(64, 0, 8), n(67, 0, 8)];
 
 describe("note effects", () => {
   it("are a separate family from the sound effects, each with its Ableton counterpart", () => {
-    expect(NOTE_FX.map((d) => d.name)).toEqual(["Arpeggiator", "Chord", "Note length", "Pitch", "Random", "Scale", "Velocity"]);
+    expect(NOTE_FX.map((d) => d.name)).toEqual(["Arpeggiator", "Chord", "Note length", "Pitch", "Random", "Scale", "Note echo", "Velocity"]);
     for (const d of NOTE_FX) { expect(d.midi).toBe(true); expect(d.kind.startsWith("n-")).toBe(true); expect(DEVICES.some((x) => x.kind === d.kind)).toBe(false); expect(newDevice(d.kind)).toBeTruthy(); }
     const mixed = [{ kind: "n-pitch" }, { kind: "utility" }, { kind: "n-arp" }];
     expect(tidyDevices(mixed).map((d) => d.kind)).toEqual(["utility"]);                     // a sound chain never holds a note effect
@@ -84,5 +84,15 @@ describe("note effects in a song", () => {
     expect(tidySong(JSON.parse(JSON.stringify(withFx)))).toEqual(withFx);
     const old = JSON.parse(JSON.stringify(s)); delete old.tracks[0].noteFx;
     expect((tidySong(old)!.tracks[0] as SynthTrack).noteFx).toEqual([]);
+  });
+});
+
+describe("note echo", () => {
+  it("repeats each note later, softer and shifted, and stops at the end of the clip", () => {
+    const d = { id: "e", kind: "n-echo", on: true, p: { gap: 3, repeats: 3, fade: 50, step: 12 } };
+    const out = applyNoteFx([d], [{ note: 60, start: 0, length: 2, velocity: 100 }], 16).sort((a, b) => a.start - b.start);
+    expect(out.map((n) => [n.note, n.start, n.velocity])).toEqual([[60, 0, 100], [72, 4, 50], [84, 8, 25], [96, 12, 13]]);
+    const short = applyNoteFx([d], [{ note: 60, start: 10, length: 2, velocity: 100 }], 16);
+    expect(short.map((n) => n.start).sort((a, b) => a - b)).toEqual([10, 14]);
   });
 });

@@ -10,6 +10,8 @@ import { buildDevice, type LiveDevice } from "./fxnodes";
 import { masterGain, sendGain, songEvents, type Song } from "./song";
 import { automate, hasAutomation } from "./automation";
 
+/** The id of the strip that holds the effects on everything. */
+export const MASTER = "master";
 const AHEAD = 0.12, EVERY_MS = 25;
 export interface Loop { start: number; bars: number }
 
@@ -61,8 +63,8 @@ export class Transport {
     const ctx = this.ctx, song = this.place >= 0 ? automate(this.read(), this.place) : this.read(), on = audibleOf(song.tracks), t = ctx.currentTime;
     this.master!.gain.setTargetAtTime(masterGain(song.volume), t, 0.015);
     // every track and every return track has the same strip: input -> effects -> level -> pan -> master
-    const strips: { id: string; level: number; pan: number; devices: Device[]; heard: boolean }[] = [...song.tracks.map((x, i) => ({ id: x.id, level: x.level, pan: x.pan, devices: x.devices, heard: on[i]! })), ...song.returns.map((x) => ({ id: x.id, level: x.level, pan: x.pan, devices: x.devices, heard: !x.mute }))];
-    for (const strip of strips) if (!this.outs.has(strip.id)) { const out = ctx.createGain(), pan = ctx.createStereoPanner(), tap = ctx.createAnalyser(); out.gain.value = 0; tap.fftSize = 1024; out.connect(pan); pan.connect(this.master!); pan.connect(tap);
+    const strips: { id: string; level: number; pan: number; devices: Device[]; heard: boolean }[] = [{ id: MASTER, level: 80, pan: 0, devices: song.masterFx ?? [], heard: true }, ...song.tracks.map((x, i) => ({ id: x.id, level: x.level, pan: x.pan, devices: x.devices, heard: on[i]! })), ...song.returns.map((x) => ({ id: x.id, level: x.level, pan: x.pan, devices: x.devices, heard: !x.mute }))];
+    for (const strip of strips) if (!this.outs.has(strip.id)) { const out = ctx.createGain(), pan = ctx.createStereoPanner(), tap = ctx.createAnalyser(); out.gain.value = 0; tap.fftSize = 1024; out.connect(pan); pan.connect(strip.id === MASTER ? this.master! : this.ins.get(MASTER)!); pan.connect(tap);   // every strip plays into the master's effects; the master's own strip (made first) plays into the master volume
       this.outs.set(strip.id, out); this.pans.set(strip.id, pan); this.taps.set(strip.id, tap); this.ins.set(strip.id, ctx.createGain()); }
     for (const strip of strips) {
       const out = this.outs.get(strip.id)!, input = this.ins.get(strip.id)!;
@@ -159,10 +161,14 @@ export class Transport {
     this.ready();
     this.engines.get(trackId)?.engine.playAt(note, this.ctx!.currentTime + 0.005, seconds, velocity);
   }
-  start(): void {
+  /** Where the song was when it was last stopped, in steps: Shift+Space carries on from the start of that bar. */
+  stoppedAt = 0;
+  /** Play. `from`: the step of the song to start on (ignored while a loop is set: a loop starts at its own beginning). */
+  start(from = 0): void {
     if (this.playing) return;
     this.ready();
-    this.began = this.ctx!.currentTime + 0.08; this.next = 0; this.due = []; this.shown = -1;
+    const song0 = this.read(), first = this.loop ? 0 : Math.max(0, Math.min(song0.bars * 16 - 1, Math.round(from)));
+    this.began = this.ctx!.currentTime + 0.08 - stepTime(first, song0.bpm, song0.swing); this.next = first; this.due = []; this.shown = -1;
     this.sync();                                                   // devices that follow the bar (beat repeat) are told where bar 1 now is
     const pump = () => {
       const ctx = this.ctx!, song = this.read();
@@ -192,6 +198,7 @@ export class Transport {
     this.sync();
   }
   stop(): void {
+    if (this.playing) { const at = this.step(); if (at >= 0) this.stoppedAt = at; }
     if (this.timer !== undefined) window.clearInterval(this.timer);
     this.timer = undefined; this.due = []; this.shown = -1;
     for (const e of this.engines.values()) e.engine.stopScheduled();

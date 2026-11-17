@@ -69,7 +69,7 @@ export function LevelBar({ read, wide }: { read: () => number; wide?: boolean })
   return <i className={`lvl${wide ? " wide" : ""}`} aria-hidden="true"><span ref={bar} /></i>;
 }
 
-export function Arrangement({ song, live, back, onBack, onChange, levelOf, masterLevel, picked, also = [], onPick, onAdd, onPlace, onBars, onMark = () => undefined, step, loop, renaming }: { /** the selected return track, and how to select one */ back?: string; onBack?: (id: string) => void; /** the song with automated settings where they stand right now: only the faders are drawn from it */ live?: Song; /** called before an edit that should be its own step to undo */ onMark?: () => void; /** a track's level right now, in dB */ levelOf?: (track: string) => number; /** the whole song's level right now, in dB */ masterLevel?: () => number; /** a clip was dropped on a bar of a track (copy: Alt was held) */ onPlace: (fromTrack: string, clip: string, toTrack: string, bar: number, copy: boolean) => void; /** a clip's right edge was dragged to a new length */ onBars: (track: string, clip: string, bars: number) => void; song: Song; onChange: (next: Song | ((s: Song) => Song)) => void; picked: { track?: string; clip?: string }; /** more clips of the selected track, selected with Shift or Ctrl/Cmd */ also?: readonly string[]; onPick: (track: string, clip?: string, add?: boolean) => void; onAdd: (track: string, bar: number) => void; step: number; /** the looped stretch, in bars */ loop?: { start: number; bars: number }; /** the track whose name box should take the keyboard */ renaming?: string }) {
+export function Arrangement({ song, live, back, onBack, onSeek, onChange, levelOf, masterLevel, picked, also = [], onPick, onAdd, onPlace, onBars, onMark = () => undefined, step, loop, renaming }: { /** play from a bar (a click on its number) */ onSeek?: (bar: number) => void; /** the selected return track, and how to select one */ back?: string; onBack?: (id: string) => void; /** the song with automated settings where they stand right now: only the faders are drawn from it */ live?: Song; /** called before an edit that should be its own step to undo */ onMark?: () => void; /** a track's level right now, in dB */ levelOf?: (track: string) => number; /** the whole song's level right now, in dB */ masterLevel?: () => number; /** a clip was dropped on a bar of a track (copy: Alt was held) */ onPlace: (fromTrack: string, clip: string, toTrack: string, bar: number, copy: boolean) => void; /** a clip's right edge was dragged to a new length */ onBars: (track: string, clip: string, bars: number) => void; song: Song; onChange: (next: Song | ((s: Song) => Song)) => void; picked: { track?: string; clip?: string }; /** more clips of the selected track, selected with Shift or Ctrl/Cmd */ also?: readonly string[]; onPick: (track: string, clip?: string, add?: boolean) => void; onAdd: (track: string, bar: number) => void; step: number; /** the looped stretch, in bars */ loop?: { start: number; bars: number }; /** the track whose name box should take the keyboard */ renaming?: string }) {
   const bars = Array.from({ length: song.bars }, (_, i) => i), cols = { gridTemplateColumns: `repeat(${song.bars}, minmax(52px, 1fr))` };
   // Dragging a clip: sideways to another bar, up or down to another track of the same kind; Alt copies. Dragging
   // its right edge changes its length. Nothing moves until the pointer has gone a few pixels, so a click is a click.
@@ -107,7 +107,7 @@ export function Arrangement({ song, live, back, onBack, onChange, levelOf, maste
     <div className={`arr${zoom ? " zoomed" : ""}${song.returns.length ? " sends" : ""}`} role="group" aria-label="Arrangement" ref={box} style={{ "--barsw": zoom ? `${song.bars * zoom}px` : "0px" } as React.CSSProperties}>
       <div className="arr-row arr-top">
         <div className="arr-bars" style={cols}>
-          {bars.map((b) => <span key={b} className={`arr-bar-n${step >= 0 && Math.floor(step / STEPS_PER_BAR) === b ? " now" : ""}`}>{b + 1}</span>)}
+          {bars.map((b) => <button key={b} className={`arr-bar-n${step >= 0 && Math.floor(step / STEPS_PER_BAR) === b ? " now" : ""}`} onClick={() => onSeek?.(b)} title={`Play from bar ${b + 1}`} aria-label={`Play from bar ${b + 1}`}>{b + 1}</button>)}
           {loop && <div className="arr-loop" style={{ left: `${(loop.start / song.bars) * 100}%`, width: `${(loop.bars / song.bars) * 100}%` }} title="The looped stretch" />}
         </div>
         <div className="arr-side arr-side-top">Tracks
@@ -165,9 +165,9 @@ export function Arrangement({ song, live, back, onBack, onChange, levelOf, maste
           </div>
         </div>
       ))}
-      <div className="arr-row arr-master">
-        <div className="arr-bars" style={cols} />
-        <div className="arr-side">
+      <div className={`arr-row arr-master${back === "master" ? " picked" : ""}`}>
+        <div className="arr-bars" style={cols} onMouseDown={() => onBack?.("master")}><span className="arr-return-note">{song.masterFx?.length ? `Master: ${song.masterFx.length} effect${song.masterFx.length === 1 ? "" : "s"} on everything. Click to see them.` : "Master: click here to put effects on everything (a limiter, an EQ)."}</span></div>
+        <div className="arr-side" onMouseDown={() => onBack?.("master")}>
           <span className="arr-name master">Master</span>
           <span className="arr-mix">
             <input type="range" className="arr-level" min={0} max={100} value={song.volume} aria-label="Master volume" title={`Master volume ${song.volume}`} onChange={(e) => onChange((s) => ({ ...s, volume: Number(e.target.value) }))} onDoubleClick={() => onChange((s) => ({ ...s, volume: MASTER_START }))} />

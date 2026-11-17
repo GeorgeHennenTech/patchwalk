@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { STARTERS, STRENGTH } from "../src/daw/drums";
-import { addReturn, removeReturn, sendGain, setReturn, setSend, addClip, addTrack, clipOf, clipPattern, duplicateClip, isFree, moveClip, newSong, putNote, removeClip, setClipBars, setNotes, setSongBars, setSongTempo, setTrack, songEvents, tidySong, trackOf, withPattern, MAX_TRACKS, type DrumTrack, type DrumClip, type SynthClip, type Song } from "../src/daw/song";
+import { doubleClip, inKey, invertNotes, legatoNotes, reverseNotes, scaleTime, setChance, noteKey as keyOf, addReturn, removeReturn, sendGain, setReturn, setSend, addClip, addTrack, clipOf, clipPattern, duplicateClip, isFree, moveClip, newSong, putNote, removeClip, setClipBars, setNotes, setSongBars, setSongTempo, setTrack, songEvents, tidySong, trackOf, withPattern, MAX_TRACKS, type DrumTrack, type DrumClip, type SynthClip, type Song } from "../src/daw/song";
 
 /** A song with one bar of four-on-the-floor on bar 1 and a chord on bars 1 to 2. */
 function demo(): { song: Song; drums: string; synth: string; beat: string; chord: string } {
@@ -247,5 +247,52 @@ describe("return tracks and sends", () => {
     expect(back.returns[0]).toMatchObject({ id: "ra", level: 60 }); expect(back.tracks[1]!.sends).toEqual({ ra: 40 });
     const odd = tidySong({ ...JSON.parse(JSON.stringify(newSong())), tracks: [{ ...JSON.parse(JSON.stringify(newSong().tracks[0])), sends: { rb: 50, zz: 9 } }] })!;
     expect(odd.returns).toEqual([]); expect(odd.tracks[0]!.sends).toBeUndefined();
+  });
+});
+
+describe("note tools, chance, doubling and key", () => {
+  const n = (note: number, start: number, length = 1) => ({ note, start, length, velocity: 100 });
+  const tune = [n(60, 0, 2), n(64, 2), n(67, 4, 4)];
+  const sorted = (xs: { note: number; start: number; length: number }[]) => xs.map((x) => [x.note, x.start, x.length]).sort((a, b) => a[1]! - b[1]!);
+  it("reverses in time and inverts in pitch, and doing either twice gives the notes back", () => {
+    expect(sorted(reverseNotes(tune, new Set()).notes)).toEqual([[67, 0, 4], [64, 5, 1], [60, 6, 2]]);
+    expect(sorted(invertNotes(tune, new Set()).notes)).toEqual([[67, 0, 2], [63, 2, 1], [60, 4, 4]]);
+    expect(sorted(reverseNotes(reverseNotes(tune, new Set()).notes, new Set()).notes)).toEqual(sorted(tune));
+    expect(sorted(invertNotes(invertNotes(tune, new Set()).notes, new Set()).notes)).toEqual(sorted(tune));
+  });
+  it("only touches the chosen notes when some are chosen", () => {
+    const r = invertNotes(tune, new Set([keyOf(tune[1]!), keyOf(tune[2]!)]));
+    expect(sorted(r.notes)).toEqual([[60, 0, 2], [67, 2, 1], [64, 4, 4]]); expect(r.keys.size).toBe(2);
+  });
+  it("plays twice as fast or half as fast, dropping what no longer fits", () => {
+    expect(sorted(scaleTime(tune, new Set(), 0.5, 16).notes)).toEqual([[60, 0, 1], [64, 1, 1], [67, 2, 2]]);
+    expect(sorted(scaleTime(tune, new Set(), 2, 16).notes)).toEqual([[60, 0, 4], [64, 4, 2], [67, 8, 8]]);
+    expect(sorted(scaleTime(tune, new Set(), 2, 8).notes)).toEqual([[60, 0, 4], [64, 4, 2]]);
+  });
+  it("legato fills the gaps", () => { expect(sorted(legatoNotes([n(60, 0), n(62, 4), n(64, 10)], new Set(), 16).notes)).toEqual([[60, 0, 4], [62, 4, 6], [64, 10, 6]]); });
+  it("a note with a chance plays only when the dice allow, and one without always plays", () => {
+    let s = newSong(); s = addClip(s, "t2", 0)!.song; const c = s.tracks[1]!.clips[0]!;
+    s = setNotes(s, "t2", c.id, setChance([n(60, 0), n(62, 0)], new Set(["60:0"]), 30));
+    expect((s.tracks[1]!.clips[0] as SynthClip).notes.find((x) => x.note === 60)!.chance).toBe(30);
+    const played = (roll: number) => songEvents(s, 0, 1, undefined, () => roll).filter((e) => e.kind === "note").map((e) => (e as { note: number }).note).sort();
+    expect(played(0.1)).toEqual([60, 62]); expect(played(0.9)).toEqual([62]);
+    expect(setChance([{ ...n(60, 0), chance: 30 }], new Set(["60:0"]), 100)[0]).not.toHaveProperty("chance");
+    expect((tidySong(JSON.parse(JSON.stringify(s)))!.tracks[1]!.clips[0] as SynthClip).notes.find((x) => x.note === 60)!.chance).toBe(30);
+  });
+  it("doubles a clip with its contents, when there is room and the length is allowed", () => {
+    let s = newSong(); s = addClip(s, "t2", 0)!.song; const id = s.tracks[1]!.clips[0]!.id; s = setNotes(s, "t2", id, [n(60, 3)]);
+    const d = doubleClip(s, "t2", id), c = d.tracks[1]!.clips[0] as SynthClip;
+    expect(c.bars).toBe(2); expect(sorted(c.notes)).toEqual([[60, 3, 1], [60, 19, 1]]);
+    const blocked = addClip(s, "t2", 1)!.song; expect(doubleClip(blocked, "t2", id)).toBe(blocked);
+    let dr = newSong(); dr = addClip(dr, "t1", 0)!.song; const did = dr.tracks[0]!.clips[0]!.id, dd = doubleClip(dr, "t1", did).tracks[0]!.clips[0] as DrumClip;
+    expect(dd.bars).toBe(2); expect(Object.values(dd.hits).every((row) => row.length === 32)).toBe(true);
+    expect(doubleClip(doubleClip(dr, "t1", did), "t1", did).tracks[0]!.clips[0]!.bars).toBe(2);
+  });
+  it("knows which notes belong to a key, and keeps the song's key and master effects", () => {
+    expect([60, 62, 63, 65].map((x) => inKey(x, 0, [0, 2, 4, 5, 7, 9, 11]))).toEqual([true, true, false, true]);
+    expect(inKey(57, 9, [0, 3, 7])).toBe(true);
+    const s = tidySong(JSON.parse(JSON.stringify({ ...newSong(), scale: { root: 9, name: "Minor" }, masterFx: [{ id: "d1", kind: "limiter", on: true, p: {} }] })))!;
+    expect(s.scale).toEqual({ root: 9, name: "Minor" }); expect(s.masterFx?.[0]?.kind).toBe("limiter");
+    expect(tidySong(JSON.parse(JSON.stringify({ ...newSong(), scale: { root: 40, name: "x" } })))!.scale).toBeUndefined();
   });
 });

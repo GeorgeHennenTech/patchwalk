@@ -8,6 +8,9 @@ import { Arrangement } from "./studio/Arrangement";
 import { DrumRack } from "./studio/DrumRack";
 import { automate } from "../daw/automation";
 import { DRAG_DEVICE, DeviceChain } from "./studio/DeviceChain";
+import { MASTER } from "../daw/transport";
+import type { Device } from "../daw/devices";
+import { SCALES } from "../daw/notefx";
 import { NOTE_FX } from "../daw/notefx";
 import { renderSong } from "../daw/render";
 import { listSamples } from "../daw/samples";
@@ -18,7 +21,7 @@ import { firstSong, useStudio } from "./studio/useStudio";
 import { libPut } from "../guide/library";
 import { BPM_MAX, BPM_MIN, GENRE_STARTERS, STARTERS, STEPS_PER_BAR, SWING_MAX, VOICES, VOICE_NAMES, addPad, clearAll, setHit, setSample, tidySteps, type Pattern, type Voice } from "../daw/drums";
 import { PPQ, hitsToMidi, midiBars, midiToHits, midiToNotes, notesToMidi, readMidi, songToMidi, writeMidi } from "../daw/midi";
-import { CLIP_BARS, MAX_RETURNS, MAX_TRACKS, addReturn, setReturn, SONG_BARS, SOUNDS, addClip, addTrack, clipOf, clipPattern, duplicateClip, duplicateNotes, hasOtherMusic, moveClip, newSong, noteKey, pasteClip, removeClip, setClipBars, joinClips, placeClip, splitClip, setDevices, setNoteFx, setNotes, setPatch, setSongBars, setSongSwing, setSongTempo, setTrack, shiftNotes, soundPatch, stretchNotes, toggleClipOff, trackOf, withPads, withPattern, type Clip, type DrumClip, type DrumTrack, type NoteEv, type Song } from "../daw/song";
+import { CLIP_BARS, MAX_RETURNS, MAX_TRACKS, addReturn, setReturn, SONG_BARS, SOUNDS, addClip, addTrack, clipOf, clipPattern, duplicateClip, duplicateNotes, doubleClip, invertNotes, legatoNotes, reverseNotes, scaleTime, hasOtherMusic, moveClip, newSong, noteKey, pasteClip, removeClip, setClipBars, joinClips, placeClip, splitClip, setDevices, setNoteFx, setNotes, setPatch, setSongBars, setSongSwing, setSongTempo, setTrack, shiftNotes, soundPatch, stretchNotes, toggleClipOff, trackOf, withPads, withPattern, type Clip, type DrumClip, type DrumTrack, type NoteEv, type Song } from "../daw/song";
 import { loadBreaks, loadRacks, loadSaved, loadSongs, rackOnto, saveSong, storeBreaks, storeRacks, storeSongs, withNamed, withSavedSong, withoutSavedSong, type Break, type Rack } from "../daw/store";
 import { loadPatches } from "../synth/patches";
 import type { SynthState } from "../synth/params";
@@ -33,7 +36,7 @@ const mac = typeof navigator !== "undefined" && /mac/i.test(navigator.platform);
 const MOD = mac ? "Cmd" : "Ctrl";
 /** The shortcuts, as shown in the list. Each is the one Ableton Live uses for the same thing. */
 const KEYS: [string, string][] = [
-  ["Space", "Play and stop"], ["Home", "Play again from the start"], ["F9", "Record on and off"],
+  ["Space", "Play and stop"], ["Shift+Space", "Play on from the bar where the song was stopped"], ["F1 to F8", "Switch tracks 1 to 8 on and off"], ["Home", "Play again from the start"], ["F9", "Record on and off"],
   [`${MOD}+Z`, "Undo"], [mac ? "Cmd+Shift+Z" : "Ctrl+Y", "Redo"],
   [`${MOD}+D`, "Duplicate the selected notes, or the selected clip"], [`${MOD}+C / X / V`, "Copy, cut and paste notes or a clip"], ["Delete", "Delete the selected notes, or the selected clip"],
   [`${MOD}+A`, "Select every note in the open clip"], [`${MOD}+L`, "Loop the selected clip, on and off"], [`${MOD}+Shift+M`, "Add an empty clip to the selected track"],
@@ -54,7 +57,7 @@ const remember = (key: string, value: string) => { try { localStorage.setItem(ke
 
 export default function DawView() {
   const studio = useStudio();
-  const { song, change, playing, toggle, step, transport, undo, redo, samples } = studio;
+  const { song, change, playing, toggle, playFrom, step, transport, undo, redo, samples } = studio;
   const [picked, setPicked] = useState<{ track?: string; clip?: string }>(() => ({ track: song.tracks[0]?.id, clip: song.tracks[0]?.clips[0]?.id }));
   const [pad, setPad] = useState(0);
   /** more clips of the selected track, picked with Shift or Ctrl/Cmd: a break, Delete and 0 act on all of them */
@@ -95,7 +98,13 @@ export default function DawView() {
   const [synthOpen, setSynthOpen] = useState(false);
   // a selected return track: the detail view then shows its effects
   const [ret, setRet] = useState<string>();
-  const back = song.returns.find((r) => r.id === ret);
+  const back = ret === MASTER ? { id: MASTER, name: "Master", devices: song.masterFx ?? [] } : song.returns.find((r) => r.id === ret);
+  const setBackDevices = (next: Device[]) => change((s) => (ret === MASTER ? { ...s, masterFx: next } : setReturn(s, ret!, { devices: next })));
+  // tap tempo: the gaps between the last few clicks of the Tap button, turned into beats a minute
+  const taps = useRef<number[]>([]);
+  const tap = () => { const now = performance.now(), t = taps.current.filter((x) => now - x < 2500); t.push(now); taps.current = t.slice(-6);
+    if (t.length >= 3) { const gaps = taps.current.slice(1).map((x, i) => x - taps.current[i]!), bpm = 60000 / (gaps.reduce((a, b) => a + b, 0) / gaps.length); change((s) => setSongTempo(s, bpm)); } };
+  const [find, setFind] = useState("");
   const pick = (t?: string, c?: string, add = false) => {
     setRet(undefined);
     if (add && c && t === picked.track && picked.clip && c !== picked.clip) { setAlso((a) => (a.includes(c) ? a.filter((x) => x !== c) : [...a, c])); return; }
@@ -197,6 +206,7 @@ export default function DawView() {
   // Editing commands, as the keys and the buttons call them. Notes come first when any are selected.
   const notesNow = clip && "notes" in clip ? clip.notes : undefined;
   const hasSel = !!notesNow && sel.size > 0;
+  const tool = (r: { notes: NoteEv[]; keys: Set<string> }) => { studio.mark(); putNotes(r.notes, r.keys); };
   const putNotes = (notes: NoteEv[], keys?: Set<string>) => { if (track && clip) { change((s) => setNotes(s, track.id, clip.id, notes)); if (keys) setSel(keys); } };
   const act = {
     duplicate: () => { if (hasSel) { const r = duplicateNotes(notesNow!, sel, steps); if (r.notes === notesNow) setNote("There is no room after the selected notes in this clip. Make the clip longer first."); else putNotes(r.notes, r.keys); } else if (track && clip) { const made = duplicateClip(song, track.id, clip.id); if (made) { change(made.song); pick(track.id, made.clip); } else setNote("There is no free place after this clip to duplicate it into."); } },
@@ -250,7 +260,8 @@ export default function DawView() {
         return;
       }
       if (e.altKey || menu) return;
-      if (e.code === "Space") { done(); toggle(); return; }
+      if (e.code === "Space") { done(); if (e.shiftKey && !playing) playFrom(Math.floor(transport.stoppedAt / STEPS_PER_BAR) * STEPS_PER_BAR); else toggle(); return; }
+      if (/^F[1-8]$/.test(e.key)) { const t = song.tracks[Number(e.key.slice(1)) - 1]; if (t) { done(); change((s) => setTrack(s, t.id, { mute: !t.mute })); } return; }
       if (e.key === "Tab" && e.shiftKey) { done(); setView((v) => (v === "clip" ? "device" : "clip")); return; }
       if (e.key === "F9") { done(); a.record(); return; }
       if (e.key === "Escape") { setSel(new Set()); return; }
@@ -269,13 +280,14 @@ export default function DawView() {
   }, [toggle, undo, redo]);
 
   const where = step >= 0 ? `${Math.floor(step / 16) + 1}. ${Math.floor((step % 16) / 4) + 1}. ${(step % 4) + 1}` : "1. 1. 1";
-  const item = (label: string, onUse: () => void, title?: string, onDrop?: () => void, drag?: string) => <li key={label}><button onClick={onUse} title={title} draggable={!!drag} onDragStart={drag ? (e) => { e.dataTransfer.setData(DRAG_DEVICE, `add:${drag}`); e.dataTransfer.effectAllowed = "copy"; } : undefined}>{label}</button>{onDrop && <button className="br-x" aria-label={`Delete ${label}`} title="Delete" onClick={onDrop}>×</button>}</li>;
+  const item = (label: string, onUse: () => void, title?: string, onDrop?: () => void, drag?: string) => (find.trim() && !find.toLowerCase().split(/\s+/).filter(Boolean).every((w) => label.toLowerCase().includes(w)) ? null : <li key={label}><button onClick={onUse} title={title} draggable={!!drag} onDragStart={drag ? (e) => { e.dataTransfer.setData(DRAG_DEVICE, `add:${drag}`); e.dataTransfer.effectAllowed = "copy"; } : undefined}>{label}</button>{onDrop && <button className="br-x" aria-label={`Delete ${label}`} title="Delete" onClick={onDrop}>×</button>}</li>);
   return (
     <section className={`daw2${browser ? "" : " no-browser"}`} aria-label="Studio">
       <header className="tb">
         <div className="tb-group">
           <label className="tb-num" title="Tempo, in beats a minute"><input type="number" min={BPM_MIN} max={BPM_MAX} value={song.bpm} aria-label="Tempo" onChange={(e) => change((s) => setSongTempo(s, Number(e.target.value) || s.bpm))} /> bpm</label>
           <label className="tb-num" title="Swing: plays every second step late. 0 is straight; around 55 to 65 is a shuffle."><input type="number" min={0} max={SWING_MAX} value={song.swing} aria-label="Swing" onChange={(e) => change((s) => setSongSwing(s, Number(e.target.value) || 0))} /> % swing</label>
+          <button className="tb-tog" onClick={tap} title="Tap tempo: click in time with the beat you want, three or more times">Tap</button>
           <button className={`tb-tog${click ? " on" : ""}`} aria-pressed={click} onClick={() => setClick(!click)} title="Metronome: a click on every beat while the song plays">Click</button>
         </div>
         <div className="tb-group tb-mid">
@@ -299,10 +311,11 @@ export default function DawView() {
         {browser && <aside className="br" aria-label="Browser">
           <ul className="br-cats" role="tablist" aria-label="Kinds of thing">{CATS.map((c) => <li key={c}><button role="tab" aria-selected={cat === c} className={cat === c ? "on" : ""} onClick={() => { setCat(c); remember("patchwalk.studio.cat", c); }}>{c}</button></li>)}</ul>
           <div className="br-items">
+            <input type="search" className="br-find" value={find} placeholder="Search this list" aria-label="Search this list" onChange={(e) => setFind(e.target.value)} onKeyDown={(e) => { if (e.key === "Escape") setFind(""); e.stopPropagation(); }} />
             {cat === "Sounds" && <><p className="br-hint">Click a sound to put it on the selected synth track, or to add a synth track.</p><ul>{SOUNDS.map((s) => item(s.name, () => useSound(s.name, soundPatch(s.name))))}</ul>{patches.length > 0 && <><h4>Your sounds</h4><ul>{patches.map((p) => item(p.name, () => useSound(p.name, p.state)))}</ul></>}</>}
             {cat === "Drums" && <><p className="br-hint">Click a drum to add it as a pad on the selected drum track.</p><ul>{VOICES.map((v) => item(VOICE_NAMES[v], () => usePad(v)))}</ul></>}
             {cat === "Samples" && <><input ref={sampleIn} type="file" multiple accept="audio/*,.wav,.mp3,.flac,.ogg,.aif,.aiff,.m4a" hidden onChange={(e) => { const files = [...(e.target.files ?? [])]; e.target.value = ""; if (files.length) void upload(files); }} /><button className="br-up primary" onClick={() => sampleIn.current?.click()}>Upload sound files…</button><p className="br-hint">Your sound files. Click one to add it as a pad on the selected drum track. You can choose several files at once.</p>{samples.length === 0 ? <p className="br-none">None yet.</p> : <ul>{samples.map((s) => item(s.name, () => usePad("kick", s), undefined, () => { if (window.confirm(`Delete “${s.name}” from this browser? Pads that use it go back to a built-in drum.`)) studio.removeSample(s.id); }))}</ul>}</>}
-            {cat === "Effects" && <><p className="br-hint">Click an effect to add it to the end of the selected track's chain, or drag it into the chain where you want it.</p><ul>{DEVICES.map((d) => item(d.name, () => { if (back) { const next = addDevice(back.devices, d.kind); if (next === back.devices) { setNote("A track holds eight effects at most."); return; } studio.mark(); change((s) => setReturn(s, back.id, { devices: next })); setNote(`Added ${d.name} to ${back.name}.`); return; } if (!track) { setNote("Select a track first."); return; } const next = addDevice(track.devices, d.kind); if (next === track.devices) { setNote("A track holds eight effects at most."); return; } studio.mark(); change((s) => setDevices(s, track.id, next)); setView("device"); setNote(`Added ${d.name} to ${track.name}.`); }, d.about, undefined, d.kind))}</ul><p className="br-hint">Note effects go in front of a synth and change its clips' notes.</p><ul>{NOTE_FX.map((d) => item(d.name, () => { if (!track || track.kind !== "synth") { setNote("Select a synth track first: note effects change notes."); return; } const next = addDevice(track.noteFx, d.kind); if (next === track.noteFx) { setNote("A track holds eight note effects at most."); return; } studio.mark(); change((s) => setNoteFx(s, track.id, next)); setView("device"); setNote(`Added ${d.name} in front of ${track.name}.`); }, d.about, undefined, d.kind))}</ul></>}
+            {cat === "Effects" && <><p className="br-hint">Click an effect to add it to the end of the selected track's chain, or drag it into the chain where you want it.</p><ul>{DEVICES.map((d) => item(d.name, () => { if (back) { const next = addDevice(back.devices, d.kind); if (next === back.devices) { setNote("A track holds eight effects at most."); return; } studio.mark(); setBackDevices(next); setNote(`Added ${d.name} to ${back.name}.`); return; } if (!track) { setNote("Select a track first."); return; } const next = addDevice(track.devices, d.kind); if (next === track.devices) { setNote("A track holds eight effects at most."); return; } studio.mark(); change((s) => setDevices(s, track.id, next)); setView("device"); setNote(`Added ${d.name} to ${track.name}.`); }, d.about, undefined, d.kind))}</ul><p className="br-hint">Note effects go in front of a synth and change its clips' notes.</p><ul>{NOTE_FX.map((d) => item(d.name, () => { if (!track || track.kind !== "synth") { setNote("Select a synth track first: note effects change notes."); return; } const next = addDevice(track.noteFx, d.kind); if (next === track.noteFx) { setNote("A track holds eight note effects at most."); return; } studio.mark(); change((s) => setNoteFx(s, track.id, next)); setView("device"); setNote(`Added ${d.name} in front of ${track.name}.`); }, d.about, undefined, d.kind))}</ul></>}
             {cat === "Breaks" && <><p className="br-hint">Click a break to replace the selected drum clip. Shift-click clips to select several and replace them all. Nothing else changes. The song's tempo is left alone unless nothing else is written in the song yet.</p>{breaks.length > 0 && <><h4>Your breaks</h4><ul>{breaks.map((b) => item(b.name, () => useBreak(b), `${b.bars} bar${b.bars === 1 ? "" : "s"}, written at ${b.bpm} bpm`, () => { const next = breaks.filter((x) => x.name !== b.name); setBreaks(next); storeBreaks(next); }))}</ul></>}<h4>Starting points</h4><ul>{[...STARTERS, ...GENRE_STARTERS, ...oldPatterns].map((s, i) => <li key={`${s.name}${i}`}><button onClick={() => fill(s)} title={`${s.bpm} bpm${s.swing ? `, swing ${s.swing}%` : ""}${s.length === 32 ? ", 2 bars" : ""}`}>{s.name}</button></li>)}</ul><p className="br-hint">Common shapes for each style, written for this page: not anyone's recorded beat.</p></>}
             {cat === "Racks" && <><p className="br-hint">Click a rack to put its pads on the selected drum track.</p>{racks.length === 0 ? <p className="br-none">None saved yet. Save one from a drum track's Device view.</p> : <ul>{racks.map((r) => item(r.name, () => { if (track?.kind === "drums") { change((s) => withPads(s, track.id, rackOnto(track.pads, r))); setNote(`Put the rack “${r.name}” on ${track.name}.`); } else setNote("Select a drum track first."); }, `${r.pads.length} pads`, () => { const next = racks.filter((x) => x.name !== r.name); setRacks(next); storeRacks(next); }))}</ul>}</>}
             {cat === "Songs" && <><p className="br-hint">Click a song to open it. Save the one you are working on first if you want to keep it.</p><ul>{songs.map((s) => item(s.name, () => open(s), `${s.tracks.length} tracks, ${s.bars} bars`, () => { const next = withoutSavedSong(songs, s.name); setSongs(next); storeSongs(next); }))}{item("Example song", () => { if (window.confirm("Open the example song? Save this one first if you want to keep it.")) open(firstSong()); })}{item("Empty song", () => { if (window.confirm("Start an empty song? Save this one first if you want to keep it.")) open(newSong()); })}</ul></>}
@@ -322,14 +335,14 @@ export default function DawView() {
               <button onClick={() => { studio.mark(); const next = addReturn(song); change(next); setRet(next.returns.find((r) => !song.returns.some((x) => x.id === r.id))?.id); }} disabled={song.returns.length >= MAX_RETURNS} title="A return track has no clips: tracks send some of their sound to it and it comes back through its effects, so one reverb or delay can serve every track">+ Return track</button>
             </span>
           </div>
-          <Arrangement song={song} live={live} back={back?.id} onBack={setRet} onChange={change} onMark={() => studio.mark()} levelOf={(id) => transport.trackLevel(id)} masterLevel={() => { const l = transport.levels(); return Math.max(l.left, l.right) + 3; }} picked={picked} also={also} onPick={pick} onAdd={add} onPlace={(from, c, to, bar, copy) => { const made = placeClip(song, from, c, to, bar, copy); if (!made) { studio.mark(); return; }   /* a drop where it already is: the start of a length drag, its own step to undo */ studio.mark(); change(made.song); pick(made.track, made.clip); setNote(copy ? "Copied the clip." : "Moved the clip."); }} onBars={(t, c, bars) => change((s) => setClipBars(s, t, c, bars))} step={step} loop={loop} renaming={renaming} />
+          <Arrangement song={song} live={live} back={back?.id} onBack={setRet} onSeek={(bar) => playFrom(bar * STEPS_PER_BAR)} onChange={change} onMark={() => studio.mark()} levelOf={(id) => transport.trackLevel(id)} masterLevel={() => { const l = transport.levels(); return Math.max(l.left, l.right) + 3; }} picked={picked} also={also} onPick={pick} onAdd={add} onPlace={(from, c, to, bar, copy) => { const made = placeClip(song, from, c, to, bar, copy); if (!made) { studio.mark(); return; }   /* a drop where it already is: the start of a length drag, its own step to undo */ studio.mark(); change(made.song); pick(made.track, made.clip); setNote(copy ? "Copied the clip." : "Moved the clip."); }} onBars={(t, c, bars) => change((s) => setClipBars(s, t, c, bars))} step={step} loop={loop} renaming={renaming} />
         </div>
       </div>
 
       {back && <div className="detail k-return">
-        <div className="detail-head"><h3>{back.name}<small> · return track</small></h3><span className="daw-hint">Tracks send sound here with their send sliders. Keep each effect giving only the effect (Dry / wet at 100), because the untouched sound is already heard from the track itself.</span></div>
-        <DeviceChain devices={back.devices} reduction={(id) => studio.transport.reduction(back.id, id)} analyser={(id) => studio.transport.analyser(back.id, id)} onChange={(next) => change((s) => setReturn(s, back.id, { devices: next }))} />
-        {!back.devices.length && <p className="daw-hint">No effects on this return track yet. Click one under Effects in the browser.</p>}
+        <div className="detail-head"><h3>{back.name}<small>{back.id === MASTER ? " · effects on everything" : " · return track"}</small></h3><span className="daw-hint">{back.id === MASTER ? "Every track and return passes through these effects, in order, just before the master volume. A limiter last in line is the usual choice." : "Tracks send sound here with their send sliders. Keep each effect giving only the effect (Dry / wet at 100), because the untouched sound is already heard from the track itself."}</span></div>
+        <DeviceChain devices={back.devices} reduction={(id) => studio.transport.reduction(back.id, id)} analyser={(id) => studio.transport.analyser(back.id, id)} onChange={setBackDevices} />
+        {!back.devices.length && back.id !== MASTER && <p className="daw-hint">No effects on this return track yet. Click one under Effects in the browser.</p>}
       </div>}
       {track && <div className={`detail k-${track.kind}`} style={back ? { display: "none" } : undefined}>
         <div className="detail-head">
@@ -340,9 +353,19 @@ export default function DawView() {
             <button onClick={() => change((s) => moveClip(s, track.id, clip.id, -1))} title="Move the clip one bar earlier" aria-label="Move clip earlier">◀</button>
             <button onClick={() => change((s) => moveClip(s, track.id, clip.id, 1))} title="Move the clip one bar later" aria-label="Move clip later">▶</button>
             <button onClick={act.duplicate} title={`Duplicate (${MOD}+D)`}>Duplicate</button>
+            <button onClick={() => { studio.mark(); change((s) => doubleClip(s, track.id, clip.id)); }} disabled={!CLIP_BARS[track.kind].includes(clip.bars * 2)} title="Double the clip: twice as long, with its contents written again in the new half">×2 length</button>
             <button onClick={act.off} title="Switch the clip off or on (0)">{clip.off ? "Switch on" : "Switch off"}</button>
             {"hits" in clip && pattern && <button onClick={() => setPattern(clearAll(pattern))}>Clear</button>}
             {"notes" in clip && <button onClick={() => putNotes([], new Set())}>Clear</button>}
+            {"notes" in clip && <span className="note-tools" role="group" aria-label="Note tools: they change the selected notes, or all of them when none is selected">
+              <button onClick={() => tool(reverseNotes(clip.notes, sel))} title="Play the notes backwards">Reverse</button>
+              <button onClick={() => tool(invertNotes(clip.notes, sel))} title="Turn the notes upside down: the highest becomes the lowest">Invert</button>
+              <button onClick={() => tool(scaleTime(clip.notes, sel, 0.5, clip.bars * STEPS_PER_BAR))} title="Twice as fast">÷2</button>
+              <button onClick={() => tool(scaleTime(clip.notes, sel, 2, clip.bars * STEPS_PER_BAR))} title="Half as fast">×2</button>
+              <button onClick={() => tool(legatoNotes(clip.notes, sel, clip.bars * STEPS_PER_BAR))} title="Stretch each note until the next one starts">Legato</button>
+              <label title="The key of the song: the piano roll lights the rows that belong to it">Key <select value={song.scale ? song.scale.root : -1} aria-label="Key note" onChange={(e) => { const root = Number(e.target.value); change((s) => (root < 0 ? (({ scale: _none, ...rest }) => rest)(s) as Song : { ...s, scale: { root, name: s.scale?.name ?? "Minor" } })); }}><option value={-1}>none</option>{["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"].map((n, i) => <option key={n} value={i}>{n}</option>)}</select></label>
+              {song.scale && <select value={song.scale.name} aria-label="Scale" onChange={(e) => change((s) => ({ ...s, scale: { root: s.scale!.root, name: e.target.value } }))}>{SCALES.map((x) => <option key={x.name}>{x.name}</option>)}</select>}
+            </span>}
             <button onClick={clipOut} title="Save this clip as a MIDI file that Ableton and other DAWs open">Download .mid</button>
             <input ref={midiIn} type="file" accept=".mid,.midi,audio/midi" hidden onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) void clipIn(f); }} />
             <button onClick={() => midiIn.current?.click()} title="Read a MIDI file into this clip, replacing what is in it">Bring in .mid</button>
@@ -360,7 +383,7 @@ export default function DawView() {
         {track.kind === "synth" && engine && <TrackSynth key={`${track.id}:${nonce}`} engine={engine} patch={track.patch} bpm={song.bpm} show={view === "device" && synthOpen && !back} keysOff={() => keysOff.current} onNote={onNote} onPatch={(p) => change((s) => setPatch(s, track.id, { ...p, bpm: s.bpm }))} />}
         {view === "clip" && !clip && <p className="daw-hint">No clip is selected. Double-click an empty bar of this track to add one ({MOD}+Shift+M){track.clips.length ? ", or click one of its clips" : ""}.</p>}
         {view === "clip" && clip && "notes" in clip && <>
-          <PianoRoll clip={clip} step={local} sel={sel} onSel={setSel} draw={draw} onNotes={(notes) => change((s) => setNotes(s, track.id, clip.id, notes))} onHear={(n) => transport.note(track.id, n)} />
+          <PianoRoll clip={clip} scale={song.scale ? { root: song.scale.root, steps: (SCALES.find((x) => x.name === song.scale!.name) ?? SCALES[0]!).steps } : undefined} step={local} sel={sel} onSel={setSel} draw={draw} onNotes={(notes) => change((s) => setNotes(s, track.id, clip.id, notes))} onHear={(n) => transport.note(track.id, n)} />
           <p className="daw-roll-help">{draw ? "Draw mode: click or drag to write notes, click a note to remove it." : "Drag to select notes, drag a note to move it, drag its right end for length. Double-click an empty place to add a note, double-click a note to remove it."} {sel.size > 0 && <b>{sel.size} selected.</b>}</p>
         </>}
         {view === "clip" && clip && "hits" in clip && pattern && <>

@@ -1398,6 +1398,25 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   against the Studio and listed what it lacks, with page numbers and rough sizes; the file puts it in a
   suggested order (quick wins, the biggest limits, bigger pieces, deeper versions of our devices, missing
   devices, what a browser cannot do). **Choose the next Studio work from it and tick items off there.**
+  **Quick wins from the gap list, first batch (17 Nov 2026, owner: "begin building").** (1) **Tap** beside the
+  tempo (three or more clicks; `tap` in `DawView.tsx`). (2) **Note tools** on a synth clip (Reverse, Invert,
+  ÷2, ×2, Legato; `reverseNotes`, `invertNotes`, `scaleTime`, `legatoNotes` in `song.ts`): they change the
+  selected notes, or all of them when none is selected. (3) **×2 length** on any clip (`doubleClip`: twice as
+  long, contents written again). (4) **Key**: `song.scale { root, name }` chosen beside the note tools; the
+  piano roll lights the rows in the key and its key note more strongly (`inKey`; scales are `SCALES` in
+  `notefx.ts`). No fold yet. (5) **Note chance**: `NoteEv.chance` (percent; left out means always); the lane
+  under the roll switches between Loud and Chance by clicking its name; `songEvents` rolls a dice each time
+  round (its last argument is the dice, for tests); such notes are drawn striped. An arpeggiator drops the
+  chance; other note effects keep it. (6) **Play from a bar**: click a bar number (`Transport.start(from)`,
+  `playFrom` in `useStudio`); **Shift+Space** plays on from the bar where the song was stopped
+  (`transport.stoppedAt`); ignored while a loop is set. (7) **F1 to F8** switch tracks on and off. (8) A
+  **search box** at the top of every browser list. (9) **Effects on the master**: `song.masterFx`; click the
+  Master row to see and add them; in `Transport.sync` the first strip is `MASTER`, every other strip plays
+  into its input and it plays into the master volume. The click and a struck pad with no track bypass it.
+  (10) **Note echo** note effect (`n-echo`). Checked in a browser: tap gave a tempo, play started at bar 2,
+  Shift+Space resumed there, F2 muted track 2, Invert and ÷2 changed the notes, the key lit 29 rows, a
+  chance of 50 was written, search narrowed the list, and a Utility on the master at -6 dB took 5.5 dB off
+  the whole song. **Nobody has heard it.**
   **Two to-do lists, and both must be updated with every push (owner asked 17 Nov 2026 why the widget was
   behind):** `docs/TODO.md` (what the `/todo` pane in Claude Code reads) and the owner's "Patchwalk To-Do"
   page (https://claude.ai/artifact/7sHF6r2vvBuxa8DSkcfcPz, rows in its `todos` collection, written with

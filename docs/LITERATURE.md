@@ -180,3 +180,37 @@ lesson may be attributed to them until they are in the library.
 Wanted, not yet looked for: a text on South Asian rhythm (tala; tabla and its strokes), one on Arabic and
 Turkish rhythmic modes, and one on West African bell patterns, for the owner's interest in "eastern music
 drums"; and anything reliable on late-2000s club pop production.
+
+## Drums and rhythm of South Asia and the Middle East (found by search on 17 Nov 2026; nothing taken in)
+
+For the owner's wish to learn "eastern music drums and its drum patterns". Confirmed to exist by search;
+none opened or read. "Eastern" was read as South Asia, the Arab world and Turkey; East Asian drumming
+(taiko, gamelan) was not searched.
+
+North India (tabla, tala):
+- Martin Clayton, *Time in Indian Music: Rhythm, Metre, and Form in North Indian Rag Performance* (Oxford,
+  2001; paperback 2008). A book to buy. The standard study of tal (metre), lay (tempo) and laykari (rhythmic
+  variation). The first to get.
+- James Kippen, *The Tabla of Lucknow* (Cambridge, 1988; Manohar reprint 2005). To buy; no free copy found.
+- Robert Gottlieb, *Solo Tabla Drumming of North India* (Motilal Banarsidass, 1993, two volumes with
+  transcriptions). To buy. Seen only as a review listing.
+- C. V. Raman, "The Indian musical drums", Proc. Indian Academy of Sciences 1 (1934, some lists say 1935),
+  179-188, and Raman and Kumar, "Musical drums with harmonic overtones", Nature 104 (1920). Why a tabla has
+  a clear pitch when most drums do not: the black patch loads the skin so its overtones line up. Old enough
+  that the Academy's own repository (repository.ias.ac.in) should give it away; check there.
+- Ajay Srinivasamurthy, *A Data-driven Bayesian Approach to Automatic Rhythm Analysis of Indian Art Music*,
+  PhD thesis, Universitat Pompeu Fabra, 2016, with a companion page of examples and the CompMusic rhythm
+  datasets. In the university's repository; whether it is free to read was not confirmed.
+
+Arab world (iqa'at: rhythmic modes built from "dum" and "tak"):
+- Johnny Farraj and Sami Abu Shumays, *Inside Arabic Music* (Oxford, 2019). A book to buy.
+- MaqamWorld's pages on iqa'at (maqamworld.com): the free reference by the same authors, each rhythm
+  written out. A website, not a text to take in whole; read its terms before copying anything.
+
+Turkey (usul):
+- Holzapfel and others on usul and metre: "Relation between surface rhythm and rhythmic modes in Turkish
+  makam music" (Journal of New Music Research, 2015) and "Tracking the 'odd': meter inference in a
+  culturally diverse music corpus" (ISMIR 2014). ISMIR papers are free; the journal article may not be.
+
+Already on the wanted list and relevant: Fletcher and Rossing, *The Physics of Musical Instruments* (the
+owner is to supply it), for how these drums make their sound.

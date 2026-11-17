@@ -4,11 +4,25 @@
 // The devices are our own, built from what each kind of effect does. They are named for what they do, the
 // way every DAW names them; they are not copies of any maker's code, sound or look.
 
-export interface ParamSpec { id: string; label: string; min: number; max: number; step: number; def: number; unit?: string; /** for a switch or a menu: the names of the values 0, 1, 2... */ choices?: string[] }
-export interface DeviceSpec { kind: string; name: string; about: string; /** the stock device in Ableton Live that does the same job, so a chain built here can be rebuilt there */ like: string; params: ParamSpec[] }
+export interface ParamSpec { id: string; label: string; min: number; max: number; step: number; def: number; unit?: string; /** for a switch or a menu: the names of the values 0, 1, 2... */ choices?: string[]; /** the slider moves in ratios (for frequencies and times) */ log?: boolean; /** settings with the same group are shown together, one group at a time */ group?: string; /** shown only while this is true */ when?: (p: Record<string, number>) => boolean }
+export interface DeviceSpec { kind: string; name: string; about: string; /** the stock device in Ableton Live that does the same job, so a chain built here can be rebuilt there */ like: string; params: ParamSpec[]; /** a wider card, for a device with a picture */ wide?: boolean; /** what the page must admit about this device */ note?: string }
 export interface Device { id: string; kind: string; on: boolean; /** each setting's value, by its id */ p: Record<string, number> }
 
-const sw = (id: string, label: string, def = 0): ParamSpec => ({ id, label, min: 0, max: 1, step: 1, def, choices: ["Off", "On"] });
+const sw = (id: string, label: string, def = 0, extra: Partial<ParamSpec> = {}): ParamSpec => ({ id, label, min: 0, max: 1, step: 1, def, choices: ["Off", "On"], ...extra });
+
+const hz = (id: string, label: string, min: number, max: number, def: number, extra: Partial<ParamSpec> = {}): ParamSpec => ({ id, label, min, max, step: 1, def, unit: "Hz", log: true, ...extra });
+const db = (id: string, label: string, min: number, max: number, def = 0, extra: Partial<ParamSpec> = {}): ParamSpec => ({ id, label, min, max, step: 0.5, def, unit: "dB", ...extra });
+const pct = (id: string, label: string, def: number, extra: Partial<ParamSpec> = {}): ParamSpec => ({ id, label, min: 0, max: 100, step: 1, def, unit: "%", ...extra });
+const menu = (id: string, label: string, choices: string[], def = 0, extra: Partial<ParamSpec> = {}): ParamSpec => ({ id, label, min: 0, max: choices.length - 1, step: 1, def, choices, ...extra });
+
+/** Lengths in beats that a delay can be set to. */
+export const DELAY_DIVS = [{ name: "1/16", beats: 0.25 }, { name: "1/8 triplet", beats: 1 / 3 }, { name: "1/8", beats: 0.5 }, { name: "1/8 dotted", beats: 0.75 }, { name: "1/4", beats: 1 }, { name: "1/4 dotted", beats: 1.5 }, { name: "1/2", beats: 2 }, { name: "1 bar", beats: 4 }];
+/** Lengths in beats that one turn of an LFO can be set to. */
+export const LFO_DIVS = [...DELAY_DIVS, { name: "2 bars", beats: 8 }, { name: "4 bars", beats: 16 }];
+export const EQ8_TYPES = ["Low cut", "Low shelf", "Bell", "Notch", "High shelf", "High cut"];
+const EQ8_START: [number, number][] = [[1, 80], [2, 200], [2, 500], [2, 1000], [2, 2000], [2, 4000], [2, 8000], [4, 12000]];
+export const SAT_CURVES = ["Soft", "Hard", "Fold", "Uneven"];
+export const PAN_SHAPES = ["Sine", "Triangle", "Square"];
 
 export const DEVICES: DeviceSpec[] = [
   { kind: "utility", name: "Utility", like: "Utility", about: "Level, left and right, width, and flipping a side upside down. The plain tool for fixing a track.", params: [
@@ -17,12 +31,57 @@ export const DEVICES: DeviceSpec[] = [
     { id: "width", label: "Width", min: 0, max: 200, step: 1, def: 100, unit: "%" },
     sw("mono", "Mono"), sw("flipL", "Flip left"), sw("flipR", "Flip right"), sw("mute", "Mute"),
   ] },
+  { kind: "eq3", name: "Three-band EQ", like: "EQ Three", wide: true, about: "Splits the sound into lows, mids and highs at two frequencies you choose, with a level and a kill switch for each.", params: [
+    db("low", "Low", -36, 12), db("mid", "Mid", -36, 12), db("high", "High", -36, 12),
+    sw("killLow", "Kill low"), sw("killMid", "Kill mid"), sw("killHigh", "Kill high"),
+    hz("freqLow", "Low / mid at", 50, 800, 250), hz("freqHigh", "Mid / high at", 1000, 12000, 2500),
+  ] },
+  { kind: "eq8", name: "Eight-band EQ", like: "EQ Eight", wide: true, about: "Eight bands, each a bell, a shelf, a notch or a cut, with the whole curve drawn. Every band starts flat.", params: EQ8_START.flatMap(([type, f], i): ParamSpec[] => { const n = i + 1, group = `Band ${n}`; return [
+    sw(`b${n}on`, "On", 1, { group }), menu(`b${n}type`, "Shape", EQ8_TYPES, type, { group }), hz(`b${n}freq`, "Frequency", 20, 20000, f, { group }),
+    db(`b${n}gain`, "Gain", -18, 18, 0, { group, when: (p) => [1, 2, 4].includes(p[`b${n}type`] ?? 2) }),
+    { id: `b${n}q`, label: "Sharpness", min: 0.1, max: 18, step: 0.01, def: 0.71, log: true, group, when: (p) => ![1, 4].includes(p[`b${n}type`] ?? 2) },
+  ]; }) },
+  { kind: "channeleq", name: "Channel EQ", like: "Channel EQ", wide: true, about: "A quick EQ: a low shelf, a middle band you can move, a high shelf, and a switch that removes rumble.", params: [
+    sw("lowcut", "Cut rumble (80 Hz)"), db("low", "Low", -15, 15), db("mid", "Mid", -12, 12), hz("midFreq", "Mid at", 120, 7500, 1000), db("high", "High", -15, 15), db("out", "Output", -12, 12),
+  ] },
+  { kind: "comp", name: "Compressor", like: "Compressor", note: "Built on the browser's own compressor: the corner at the threshold is sharp (no knee setting), and there is no meter or sidechain yet.", about: "Turns the sound down whenever it is louder than the threshold, so loud and quiet parts end up closer together.", params: [
+    db("threshold", "Threshold", -60, 0, -18), { id: "ratio", label: "Ratio", min: 1, max: 20, step: 0.1, def: 4, log: true },
+    { id: "attack", label: "Attack", min: 0.1, max: 200, step: 0.1, def: 10, unit: "ms", log: true }, { id: "release", label: "Release", min: 10, max: 1000, step: 1, def: 120, unit: "ms", log: true },
+    db("makeup", "Make-up", 0, 24), pct("mix", "Dry / wet", 100),
+  ] },
+  { kind: "sat", name: "Saturator", like: "Saturator", note: "The four curves are our own. Not smoothed against the harsh edge very high notes can get when driven hard.", about: "Pushes the sound into a curve that rounds, clips or folds its peaks, adding harmonics.", params: [
+    menu("curve", "Curve", SAT_CURVES), db("drive", "Drive", 0, 36, 12), db("out", "Output", -36, 6), pct("mix", "Dry / wet", 100),
+  ] },
+  { kind: "overdrive", name: "Overdrive", like: "Overdrive", note: "A general overdrive, not a model of any pedal.", about: "Keeps one band of the sound, drives it hard, then takes some top off. The band you choose is what growls.", params: [
+    hz("freq", "Band at", 100, 6000, 800), { id: "width", label: "Band width", min: 0.5, max: 6, step: 0.1, def: 3, unit: "oct" }, pct("drive", "Drive", 50), pct("tone", "Tone", 60), pct("mix", "Dry / wet", 60),
+  ] },
+  { kind: "autopan", name: "Auto pan", like: "Auto Pan", note: "A speed set in beats is the right length but does not start on the bar line.", about: "Turns the left and right sides up and down in turn. With the sides moving together it is a tremolo.", params: [
+    pct("amount", "Amount", 100), menu("shape", "Shape", PAN_SHAPES), sw("sync", "In beats"),
+    { id: "rate", label: "Speed", min: 0.05, max: 20, step: 0.01, def: 1, unit: "Hz", log: true, when: (p) => !p.sync }, menu("div", "One turn every", LFO_DIVS.map((d) => d.name), 4, { when: (p) => !!p.sync }),
+    { id: "phase", label: "Right side behind by", min: 0, max: 360, step: 5, def: 180, unit: "°" },
+  ] },
+  { kind: "chorus", name: "Chorus", like: "Chorus-Ensemble", about: "Adds two copies whose delay drifts slowly, one to each side, so one voice sounds like several.", params: [
+    { id: "rate", label: "Speed", min: 0.05, max: 10, step: 0.01, def: 0.8, unit: "Hz", log: true }, pct("amount", "Amount", 50), { id: "delay", label: "Delay", min: 3, max: 30, step: 0.5, def: 12, unit: "ms" },
+    { id: "feedback", label: "Feedback", min: 0, max: 80, step: 1, def: 0, unit: "%" }, pct("width", "Width", 100), pct("mix", "Dry / wet", 50),
+  ] },
+  { kind: "delay", name: "Delay", like: "Delay", note: "Changing a time while sound is in the delay bends its pitch for a moment.", about: "Echoes, with a time for each side in beats or milliseconds, feedback, a filter on the echoes, and ping-pong.", params: [
+    sw("sync", "In beats", 1),
+    menu("divL", "Left time", DELAY_DIVS.map((d) => d.name), 3, { when: (p) => !!p.sync }), menu("divR", "Right time", DELAY_DIVS.map((d) => d.name), 3, { when: (p) => !!p.sync }),
+    { id: "msL", label: "Left time", min: 1, max: 2000, step: 1, def: 300, unit: "ms", log: true, when: (p) => !p.sync }, { id: "msR", label: "Right time", min: 1, max: 2000, step: 1, def: 300, unit: "ms", log: true, when: (p) => !p.sync },
+    { id: "feedback", label: "Feedback", min: 0, max: 95, step: 1, def: 40, unit: "%" }, sw("pingpong", "Ping-pong"),
+    sw("filter", "Filter the echoes", 1), hz("filterFreq", "Filter at", 50, 12000, 1000, { when: (p) => !!p.filter }), { id: "filterWidth", label: "Filter width", min: 0.5, max: 9, step: 0.1, def: 6, unit: "oct", when: (p) => !!p.filter },
+    pct("mix", "Dry / wet", 30),
+  ] },
+  { kind: "reverb", name: "Reverb", like: "Reverb", note: "A plain room made from fading noise: no early reflections, and its character is not tuned by ear.", about: "A room: the sound carries on after it stops, for as long as the decay time.", params: [
+    { id: "decay", label: "Decay", min: 0.2, max: 10, step: 0.1, def: 1.8, unit: "s", log: true }, { id: "predelay", label: "Pre-delay", min: 0, max: 250, step: 1, def: 10, unit: "ms" },
+    hz("lowcut", "Low cut", 20, 1000, 120), hz("highcut", "High cut", 1000, 20000, 8000), pct("mix", "Dry / wet", 25),
+  ] },
 ];
 export const MAX_DEVICES = 8;
 export const specOf = (kind: string): DeviceSpec | undefined => DEVICES.find((d) => d.kind === kind);
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 /** A setting's value kept inside its range and on its step. */
-export const tidyParam = (s: ParamSpec, v: unknown): number => { const n = Number(v); return Number.isFinite(n) ? clamp(Math.round(n / s.step) * s.step, s.min, s.max) : s.def; };
+export const tidyParam = (s: ParamSpec, v: unknown): number => { const n = Number(v); return Number.isFinite(n) ? Number(clamp(Math.round(n / s.step) * s.step, s.min, s.max).toFixed(4)) : s.def; };
 const freeId = (taken: readonly string[]) => { let n = 1; while (taken.includes(`d${n}`)) n++; return `d${n}`; };
 
 export function newDevice(kind: string, taken: readonly string[] = []): Device | undefined {
@@ -72,4 +131,149 @@ export function utilityMatrix(p: Record<string, number>): { ll: number; rl: numb
   // Pan is a balance: it turns the other side down and never turns a side up.
   const left = pan > 0 ? 1 - pan : 1, right = pan < 0 ? 1 + pan : 1;
   return { ll: (left * sl * (1 + w)) / 2, rl: (left * sr * (1 - w)) / 2, lr: (right * sl * (1 - w)) / 2, rr: (right * sr * (1 + w)) / 2, gain: p.mute ? 0 : dbToGain(p.gain ?? 0) };
+}
+
+// ---- shared pieces ----
+/** A dry / wet setting (0 to 100) as the two gains: a straight crossfade. */
+export const mixGains = (mix: number): [number, number] => { const m = clamp((mix ?? 100) / 100, 0, 1); return [1 - m, m]; };
+/** A band's width in octaves as the sharpness (Q) of a band-pass that wide. */
+export const octavesToQ = (oct: number) => { const r = 2 ** Math.max(0.05, oct); return Math.sqrt(r) / (r - 1); };
+
+type C = [number, number];
+const cmul = (a: C, b: C): C => [a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]];
+const cadd = (a: C, b: C): C => [a[0] + b[0], a[1] + b[1]];
+const cdiv = (a: C, b: C): C => { const d = b[0] * b[0] + b[1] * b[1]; return [(a[0] * b[0] + a[1] * b[1]) / d, (a[1] * b[0] - a[0] * b[1]) / d]; };
+const cscale = (a: C, k: number): C => [a[0] * k, a[1] * k];
+const toDb = (c: C) => 10 * Math.log10(c[0] * c[0] + c[1] * c[1] + 1e-24);
+export type BiquadKind = "lowpass" | "highpass" | "bandpass" | "notch" | "allpass" | "peaking" | "lowshelf" | "highshelf";
+/**
+ * What one two-pole filter of the browser's does to a frequency, as a complex number (size and turn). `q` is
+ * the plain sharpness for every kind (the audio converts it to dB where the browser wants that); shelves ignore it.
+ */
+export function biquadAt(kind: BiquadKind, f0: number, q: number, gainDb: number, f: number, sampleRate = 48000): C {
+  const w0 = (2 * Math.PI * clamp(f0, 1, sampleRate / 2 - 1)) / sampleRate, cos = Math.cos(w0), sin = Math.sin(w0), A = 10 ** (gainDb / 40), al = sin / (2 * Math.max(1e-4, q));
+  let b: [number, number, number], a: [number, number, number];
+  if (kind === "lowpass") { b = [(1 - cos) / 2, 1 - cos, (1 - cos) / 2]; a = [1 + al, -2 * cos, 1 - al]; }
+  else if (kind === "highpass") { b = [(1 + cos) / 2, -(1 + cos), (1 + cos) / 2]; a = [1 + al, -2 * cos, 1 - al]; }
+  else if (kind === "bandpass") { b = [al, 0, -al]; a = [1 + al, -2 * cos, 1 - al]; }
+  else if (kind === "notch") { b = [1, -2 * cos, 1]; a = [1 + al, -2 * cos, 1 - al]; }
+  else if (kind === "allpass") { b = [1 - al, -2 * cos, 1 + al]; a = [1 + al, -2 * cos, 1 - al]; }
+  else if (kind === "peaking") { b = [1 + al * A, -2 * cos, 1 - al * A]; a = [1 + al / A, -2 * cos, 1 - al / A]; }
+  else { const k = sin * Math.SQRT1_2 * 2 * Math.sqrt(A), up = kind === "highshelf" ? 1 : -1; // a shelf, slope 1
+    b = [A * (A + 1 + up * (A - 1) * cos + k), -up * 2 * A * (A - 1 + up * (A + 1) * cos), A * (A + 1 + up * (A - 1) * cos - k)];
+    a = [A + 1 - up * (A - 1) * cos + k, up * 2 * (A - 1 - up * (A + 1) * cos), A + 1 - up * (A - 1) * cos - k]; }
+  const w = (2 * Math.PI * f) / sampleRate, z1: C = [Math.cos(w), -Math.sin(w)], z2: C = [Math.cos(2 * w), -Math.sin(2 * w)];
+  const poly = (c: [number, number, number]): C => cadd(cadd([c[0], 0], cscale(z1, c[1])), cscale(z2, c[2]));
+  return cdiv(poly(b), poly(a));
+}
+const BUTTER = Math.SQRT1_2;
+
+// ---- Three-band EQ ----
+/** The three bands' gains (kill is silence). */
+export const eq3Gains = (p: Record<string, number>): [number, number, number] => [p.killLow ? 0 : dbToGain(p.low ?? 0), p.killMid ? 0 : dbToGain(p.mid ?? 0), p.killHigh ? 0 : dbToGain(p.high ?? 0)];
+/**
+ * The three-band EQ at one frequency, in dB. The split is the kind whose bands add back to the untouched level
+ * (two Butterworth filters in a row each way, 24 dB an octave); the lows also pass through the upper split's
+ * turn of phase so that all three bands line up.
+ */
+export function eq3Db(p: Record<string, number>, f: number, sampleRate = 48000): number {
+  const f1 = p.freqLow ?? 250, f2 = p.freqHigh ?? 2500, [gl, gm, gh] = eq3Gains(p);
+  const sq = (c: C) => cmul(c, c), lp1 = sq(biquadAt("lowpass", f1, BUTTER, 0, f, sampleRate)), hp1 = sq(biquadAt("highpass", f1, BUTTER, 0, f, sampleRate));
+  const lp2 = sq(biquadAt("lowpass", f2, BUTTER, 0, f, sampleRate)), hp2 = sq(biquadAt("highpass", f2, BUTTER, 0, f, sampleRate));
+  return toDb(cadd(cadd(cscale(cmul(lp1, cadd(lp2, hp2)), gl), cscale(cmul(hp1, lp2), gm)), cscale(cmul(hp1, hp2), gh)));
+}
+
+// ---- Eight-band EQ ----
+const EQ8_KINDS: BiquadKind[] = ["highpass", "lowshelf", "peaking", "notch", "highshelf", "lowpass"];
+/** One band of the eight-band EQ as a filter. A band that is off is a bell with no gain, which changes nothing. */
+export function eq8Band(p: Record<string, number>, n: number): { kind: BiquadKind; f: number; q: number; gain: number } {
+  const on = p[`b${n}on`] ?? 1, kind = EQ8_KINDS[p[`b${n}type`] ?? 2] ?? "peaking", f = p[`b${n}freq`] ?? 1000, q = p[`b${n}q`] ?? 0.71;
+  if (!on) return { kind: "peaking", f, q: 1, gain: 0 };
+  return { kind, f, q, gain: kind === "peaking" || kind === "lowshelf" || kind === "highshelf" ? p[`b${n}gain`] ?? 0 : 0 };
+}
+export function eq8Db(p: Record<string, number>, f: number, sampleRate = 48000): number {
+  let sum = 0;
+  for (let n = 1; n <= 8; n++) { const b = eq8Band(p, n); sum += toDb(biquadAt(b.kind, b.f, b.q, b.gain, f, sampleRate)); }
+  return sum;
+}
+
+// ---- Channel EQ ----
+export const CHANNEL_LOW_HZ = 100, CHANNEL_HIGH_HZ = 8000, CHANNEL_CUT_HZ = 80, CHANNEL_MID_Q = 0.7;
+export function channelEqDb(p: Record<string, number>, f: number, sampleRate = 48000): number {
+  return (p.lowcut ? toDb(biquadAt("highpass", CHANNEL_CUT_HZ, BUTTER, 0, f, sampleRate)) : 0) + toDb(biquadAt("lowshelf", CHANNEL_LOW_HZ, 1, p.low ?? 0, f, sampleRate))
+    + toDb(biquadAt("peaking", p.midFreq ?? 1000, CHANNEL_MID_Q, p.mid ?? 0, f, sampleRate)) + toDb(biquadAt("highshelf", CHANNEL_HIGH_HZ, 1, p.high ?? 0, f, sampleRate)) + (p.out ?? 0);
+}
+/** The curve a device draws, when it has one: its level in dB at a frequency. */
+export const CURVES: Record<string, (p: Record<string, number>, f: number, sampleRate?: number) => number> = { eq3: eq3Db, eq8: eq8Db, channeleq: channelEqDb };
+
+// ---- Compressor ----
+/** A steady sound at `inDb` comes out of the compressor at this level, make-up left out. */
+export const compOutDb = (p: Record<string, number>, inDb: number) => { const t = p.threshold ?? -18; return inDb <= t ? inDb : t + (inDb - t) / Math.max(1, p.ratio ?? 4); };
+
+// ---- Saturator ----
+/** One sample through a saturation curve. Our own four: rounded, clipped flat, folded back, and one that treats the two halves differently. */
+export function saturate(curve: number, x: number): number {
+  if (curve === 1) return clamp(x, -1, 1);
+  if (curve === 2) return Math.sin((Math.PI / 2) * x);
+  if (curve === 3) return x >= 0 ? Math.tanh(x) : Math.tanh(0.5 * x) / 0.75;
+  return Math.tanh(x);
+}
+/** The table the audio reads: inputs from -1 to 1, with the drive already applied. */
+export function satTable(curve: number, driveDb: number, points = 4097): Float32Array<ArrayBuffer> {
+  const out = new Float32Array(points), g = dbToGain(driveDb);
+  for (let i = 0; i < points; i++) out[i] = saturate(curve, ((2 * i) / (points - 1) - 1) * g);
+  return out;
+}
+
+// ---- Overdrive ----
+export const OVERDRIVE_MAX_GAIN = 60;
+export const overdriveGain = (drive: number) => 1 + (clamp(drive ?? 50, 0, 100) / 100) ** 2 * (OVERDRIVE_MAX_GAIN - 1);
+/** Tone from 0 to 100 as the frequency above which the driven sound is turned down. */
+export const overdriveToneHz = (tone: number) => 500 * 40 ** (clamp(tone ?? 60, 0, 100) / 100);
+
+// ---- Auto pan ----
+/** How many times a second an LFO turns: its own speed, or a length in beats at the song's tempo. */
+export const lfoRateHz = (p: Record<string, number>, bpm: number) => (p.sync ? bpm / (60 * (LFO_DIVS[p.div ?? 4] ?? LFO_DIVS[4]!).beats) : p.rate ?? 1);
+/** The sine parts of a shape's harmonics (harmonic 1 first), each shape swinging between -1 and 1. */
+export function panHarmonics(shape: number, count = 32): number[] {
+  return Array.from({ length: count }, (_, i) => { const n = i + 1; if (shape === 0) return n === 1 ? 1 : 0; if (n % 2 === 0) return 0; return shape === 1 ? (8 / (Math.PI * Math.PI)) * (((n - 1) / 2) % 2 ? -1 : 1) / (n * n) : 4 / (Math.PI * n); });
+}
+/** The shape's value at a place in its turn (0 to 1). */
+export function panShape(shape: number, turn: number): number {
+  const x = turn - Math.floor(turn);
+  return shape === 0 ? Math.sin(2 * Math.PI * x) : shape === 1 ? (x < 0.25 ? 4 * x : x < 0.75 ? 2 - 4 * x : 4 * x - 4) : x < 0.5 ? 1 : -1;
+}
+/** The gain of one side at a place in the LFO's turn: it swings between full and (1 - amount). The right side runs behind by `phase` degrees. */
+export function autoPanGain(p: Record<string, number>, turn: number, side: "left" | "right"): number {
+  const a = clamp((p.amount ?? 100) / 100, 0, 1), at = turn - (side === "right" ? (p.phase ?? 180) / 360 : 0);
+  return 1 - a / 2 + (a / 2) * panShape(p.shape ?? 0, at);
+}
+
+// ---- Chorus ----
+export const CHORUS_SWING = 0.004;
+/** The two delays of the chorus (seconds) at a place in the LFO's turn: they move opposite ways. */
+export function chorusDelays(p: Record<string, number>, turn: number): [number, number] {
+  const base = (p.delay ?? 12) / 1000, swing = Math.min(CHORUS_SWING, base - 0.0005) * clamp((p.amount ?? 50) / 100, 0, 1) * Math.sin(2 * Math.PI * turn);
+  return [base + swing, base - swing];
+}
+
+// ---- Delay ----
+export const DELAY_MAX_SECONDS = 4;
+/** The left and right delay times in seconds. */
+export function delayTimes(p: Record<string, number>, bpm: number): [number, number] {
+  const beats = (i: number) => ((DELAY_DIVS[i] ?? DELAY_DIVS[3]!).beats * 60) / bpm;
+  const t = p.sync ? [beats(p.divL ?? 3), beats(p.divR ?? 3)] : [(p.msL ?? 300) / 1000, (p.msR ?? 300) / 1000];
+  return [clamp(t[0]!, 0.001, DELAY_MAX_SECONDS), clamp(t[1]!, 0.001, DELAY_MAX_SECONDS)];
+}
+/** How the delay is wired, as gains: what goes into each side's delay, and what each sends back to itself and across. */
+export function delayRouting(p: Record<string, number>): { leftIn: [number, number]; rightIn: [number, number]; self: number; cross: number } {
+  const fb = clamp((p.feedback ?? 40) / 100, 0, 0.95);
+  return p.pingpong ? { leftIn: [0.5, 0.5], rightIn: [0, 0], self: 0, cross: fb } : { leftIn: [1, 0], rightIn: [0, 1], self: fb, cross: 0 };
+}
+/** When each echo of a single click arrives, on which side and how loud, with the filter left out. */
+export function delayEchoes(p: Record<string, number>, bpm: number, most = 8): { at: number; side: "left" | "right"; level: number }[] {
+  const [tl, tr] = delayTimes(p, bpm), fb = clamp((p.feedback ?? 40) / 100, 0, 0.95), out: { at: number; side: "left" | "right"; level: number }[] = [];
+  if (p.pingpong) { let at = 0; for (let k = 0; k < most; k++) { const left = k % 2 === 0; at += left ? tl : tr; out.push({ at, side: left ? "left" : "right", level: fb ** k }); } }
+  else for (let k = 1; k <= most; k++) out.push({ at: k * tl, side: "left", level: fb ** (k - 1) });
+  return out;
 }

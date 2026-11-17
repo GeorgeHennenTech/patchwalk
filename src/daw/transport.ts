@@ -58,10 +58,10 @@ export class Transport {
         input.disconnect(); have0?.live.forEach((l) => l.dispose());
         const live = new Map<string, LiveDevice>();
         let from: AudioNode = input;
-        for (const d of track.devices) { const l = buildDevice(ctx, d); if (!l) continue; from.connect(l.input); from = l.output; live.set(d.id, l); }
+        for (const d of track.devices) { const l = buildDevice(ctx, d, song.bpm); if (!l) continue; from.connect(l.input); from = l.output; live.set(d.id, l); }
         from.connect(out);
         this.chains.set(track.id, { shape, live });
-      } else for (const d of track.devices) have0.live.get(d.id)?.update(d);
+      } else for (const d of track.devices) have0.live.get(d.id)?.update(d, song.bpm);
       if (track.kind !== "synth") return;
       const have = this.engines.get(track.id);
       if (!have) { const engine = new Engine(track.patch, ctx, input); if (ctx.state === "running") void engine.start(); this.engines.set(track.id, { engine, patch: track.patch }); }

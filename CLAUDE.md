@@ -1260,6 +1260,14 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   measuring. Measured for Utility in a browser: gain +6 and -12 dB gave 6.0 and -11.9; pan hard left
   silenced the right; flip-left with mono cancelled a centred sound; switched off, it changed nothing.
   **The owner wants these knocked out one at a time: after each, say what it does and what was measured.**
+  **Batch of ten (17 Nov 2026, owner: "start on what you can"):** Three-band EQ, Eight-band EQ, Channel EQ,
+  Compressor, Saturator, Overdrive, Auto pan, Chorus, Delay, Reverb (eleven devices now; the measurements
+  are in `docs/STOCK_PLUGINS.md`). The EQs matched their drawn curves exactly; delay echoes land on the
+  exact sample (a browser feedback loop is 128 samples late, cancelled in `delay()`); the compressor is
+  within 1 dB of its maths and has no knee, meter or sidechain. A `ParamSpec` can be a menu, `log`, in a
+  `group`, or shown `when`; a `DeviceSpec` can be `wide`, carry a `note`, and draw a curve (`CURVES`).
+  `buildDevice(ctx, d, bpm)` works on an `OfflineAudioContext`, which is how each was measured. **Nobody
+  has heard any of them.** Next: an AudioWorklet base for limiter, gate, glue compressor and crusher.
 - **"Walk me through it" (16 Nov 2026, owner's go-ahead with two rules of their own).** A second mode on the
   Ask tab (a switch, remembered): a how-to question becomes a walkthrough of steps shown one at a time.
   `api/walk.ts` answers two kinds of request: `plan` (one call with structured output over ten passages:

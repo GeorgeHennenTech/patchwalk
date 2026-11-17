@@ -175,3 +175,60 @@ tr.dim td { opacity: 0.6; }
 .checks li.ok span { color: var(--ok); font-weight: 700; }
 .checks li.no span { color: var(--err); font-weight: 700; }
 @media (max-width: 760px) { .learn { grid-template-columns: 1fr; } .learn-nav { position: static; } .learn-nav small { display: none; } }
+
+/* Studio: the drum programmer */
+.daw h2 small { font-size: 0.5em; opacity: 0.7; margin-left: 8px; }
+.daw-lede { margin: 0 0 14px; max-width: 70ch; }
+.daw-bar { display: flex; flex-wrap: wrap; gap: 14px 20px; align-items: center; margin-bottom: 16px; }
+.daw-play { min-width: 104px; font-size: 1.05rem; padding: 10px 16px; }
+.daw-knob { display: grid; font-size: 0.85rem; gap: 2px; }
+.daw-knob span { white-space: nowrap; }
+.daw-knob input { width: 150px; }
+.drum-grid { --cell: 34px; display: grid; gap: 5px; overflow-x: auto; padding: 14px; border-radius: 14px; background: #17101c; color: #f4e9f7; user-select: none; }
+.drum-grid.len32 { --cell: 28px; }
+.drum-grid.len32 .drum-name { width: 84px; white-space: nowrap; font-size: 0.78rem; }
+.drum-grid.len32 .drum-level { width: 44px; }
+.drum-grid.len32 .drum-cells { gap: 3px; }
+.drum-grid.len32 .drum-cells > * { width: auto; flex: 1 1 0; min-width: 12px; }
+.drum-grid.len32 .drum-cells > :nth-child(4n+1):not(:first-child) { margin-left: 4px; }
+.drum-grid.len32 .drum-cells > :nth-child(17) { margin-left: 12px; }
+.drum-lane { display: flex; align-items: center; gap: 6px; }
+.drum-lane.muted .drum-cells { opacity: 0.35; }
+.drum-grid .drum-name { width: 96px; flex: none; text-align: left; padding: 6px 8px; border-radius: 8px; border: 1px solid #4b3a55; background: #2a1d33; color: inherit; font-weight: 600; font-size: 0.85rem; cursor: pointer; }
+.drum-grid .drum-name:hover { border-color: #ff7ab8; }
+.drum-grid .drum-flag { width: 26px; height: 26px; flex: none; padding: 0; border-radius: 6px; border: 1px solid #4b3a55; background: #2a1d33; color: #b9a6c2; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
+.drum-grid .drum-flag.on { background: #ffb347; color: #17101c; border-color: #ffb347; }
+.drum-grid .drum-flag.solo.on { background: #5fe0ff; border-color: #5fe0ff; }
+.drum-grid .drum-level { width: 64px; flex: none; }
+.drum-grid .drum-clear { width: 24px; flex: none; padding: 0; border: 0; background: none; color: #8d7a97; font-size: 1.1rem; cursor: pointer; }
+.drum-grid .drum-clear:hover { color: #ff7ab8; }
+.drum-cells { display: flex; gap: 4px; flex: 1; min-width: 0; }
+.drum-cells > * { width: var(--cell); flex: none; }
+.drum-cells > :nth-child(4n+1):not(:first-child) { margin-left: 8px; }
+.drum-grid .cell, .daw-key .cell { height: var(--cell, 16px); padding: 0; border-radius: 6px; border: 1px solid #45344f; background: #2c2034; cursor: pointer; box-shadow: none; }
+.drum-grid .cell.odd { background: #231929; }
+.drum-grid .cell:hover { border-color: #ff7ab8; }
+.drum-grid .cell:focus-visible { outline: 2px solid #5fe0ff; outline-offset: 1px; }
+.cell.h1 { background: #8a3b68 !important; border-color: #a85485 !important; }
+.cell.h2 { background: #ff5fa8 !important; border-color: #ff8fc2 !important; }
+.cell.h3 { background: #ffe66b !important; border-color: #fff3ad !important; box-shadow: 0 0 9px #ffe66b99 !important; }
+.drum-grid .cell.now { border-color: #fff; box-shadow: inset 0 0 0 2px #ffffffaa; }
+.drum-grid .cell.now.h1, .drum-grid .cell.now.h2, .drum-grid .cell.now.h3 { transform: scale(1.1); }
+.drum-count .count { text-align: center; font-size: 0.75rem; color: #8d7a97; }
+.drum-count .count.beat { color: #f4e9f7; font-weight: 700; }
+.drum-count .count.now { color: #ffe66b; }
+.drum-count .drum-name, .drum-count .drum-flag, .drum-count .drum-level, .drum-count .drum-clear { visibility: hidden; border: 0; height: 0; }
+.daw-key { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; margin: 10px 0; flex-wrap: wrap; }
+.daw-key .cell { display: inline-block; width: 16px; height: 16px; margin-left: 8px; cursor: default; }
+.daw-key .linkish { margin-left: auto; background: none; border: 0; color: var(--accent); text-decoration: underline; cursor: pointer; box-shadow: none; padding: 0; }
+.daw-help { margin: 0 0 12px; padding-left: 20px; max-width: 72ch; }
+.daw-shelf { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 14px; }
+@media (max-width: 800px) { .daw-shelf { grid-template-columns: 1fr; } }
+.daw-shelf h3 { margin: 0 0 8px; font-size: 1rem; }
+.daw-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.daw-chip { display: inline-flex; }
+.daw-chip button:first-child { border-radius: 10px 0 0 10px; }
+.daw-chip button:last-child { border-radius: 0 10px 10px 0; border-left: 0; padding: 0 9px; }
+.daw-save { display: flex; gap: 8px; margin-bottom: 10px; }
+.daw-save input { flex: 1; min-width: 0; padding: 6px 10px; }
+.daw-missing { margin-top: 16px; font-size: 0.9rem; }

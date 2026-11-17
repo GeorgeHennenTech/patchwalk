@@ -1053,6 +1053,24 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   exactly 0.2500 s apart, and stopped when the keys were let go. (A first version driven by timers alone
   wandered between 0.19 and 0.50 s.) Because arpeggiated notes are not in `held`, a lesson step cannot
   check which note is sounding, only the settings and the keys pressed. Lesson C8.4 "The arpeggiator".
+- **Studio tab: the DAW begins with the drum programmer (17 Nov 2026, owner's request; "we can use elements of
+  the DAW in lessons").** `src/daw/drums.ts` is the pattern as plain data and maths (eight drums, 16 or 32
+  steps, each cell off / soft / normal / accent; tempo 60-200, swing 0-75% delaying every second step; mute,
+  solo, level per row; `strikes(p, from, until)` is the one place that decides what is heard and when;
+  `STARTERS` are five common shapes, not anyone's recorded beat; `tidyPattern` makes stored data safe).
+  `src/daw/kit.ts` makes every drum from oscillators and noise at the moment it is struck: **no samples, our
+  own recipes, not a model of any drum machine, not tuned by ear** (a closed hat cuts a ringing open hat).
+  `src/daw/machine.ts` hands each step to the audio clock about a tenth of a second ahead and reads the
+  pattern afresh every step, so edits and tempo changes are heard while it plays (`retime` keeps the current
+  step's place). `src/ui/DrumGrid.tsx` holds `useDrumMachine` and `DrumGrid` (reusable; `lanes` shows only
+  chosen drums, for a lesson); `src/ui/DawView.tsx` is the tab: Play/Stop (Space), tempo, swing, 1 or 2
+  bars, click to place, drag to paint, Shift-click or right-click for strength, a moving step marker,
+  starting points, and patterns saved by name in the browser (`src/daw/store.ts`, `patchwalk.pattern.v1`
+  and `patchwalk.patterns.v1`; not yet with the account). Measured in a browser: kicks exactly 0.4839 s
+  apart at 124 bpm and 0.4000 s after changing to 150 while playing; edits, save and reload worked.
+  **Not heard by anyone.** It has its own audio context, separate from the practice synth: joining them
+  (one clock, the synth as an instrument, a mixer) is the next piece. Not built: choosing or shaping each
+  drum's sound, notes for the synth (piano roll), chaining patterns, effects, and any lesson that uses the grid.
 - **"Walk me through it" (16 Nov 2026, owner's go-ahead with two rules of their own).** A second mode on the
   Ask tab (a switch, remembered): a how-to question becomes a walkthrough of steps shown one at a time.
   `api/walk.ts` answers two kinds of request: `plan` (one call with structured output over ten passages:

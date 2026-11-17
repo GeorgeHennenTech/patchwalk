@@ -422,3 +422,12 @@ string has not been touched.
 - The Physical models tab is on hold until the owner uploads the literature (list given to them on 16 Nov;
   `docs/LITERATURE.md`). Then lessons come first, written from the texts.
 
+
+## 17 Nov 2026: Studio tab (the DAW begins)
+The owner asked to start the working DAW as its own tab, drums first, with parts reusable in lessons. Built:
+the drum programmer (`src/daw/`, `src/ui/DrumGrid.tsx`, `src/ui/DawView.tsx`; details in `CLAUDE.md` under
+"Studio tab"). Timing was measured in a browser; nobody has heard the drums, which are synthesized by our own
+recipes. Next pieces, in this order unless the owner says otherwise: a lesson or two that uses the grid; one
+audio clock shared with the practice synth; a piano roll so the synth plays notes; chaining patterns; a mixer.
+Also built since the last entry and described in `CLAUDE.md`: "Draw this" playable models, the shared
+Walkthroughs library, side threads by highlighting, and "Build this lesson in Serum 2".

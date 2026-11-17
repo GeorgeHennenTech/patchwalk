@@ -132,7 +132,9 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 ## Bigger builds, later
 - [ ] Listening lab: acoustics, psychoacoustics, ear training
 - [ ] Extended synthesis methods (FM, granular and others)
-- [ ] Mini DAW: piano roll, drum sequencer, tracks, mixer, automation, export
+- [x] Studio tab: drum programmer (17 Nov 2026): grid, swing, strengths, saved patterns; drums synthesized
+- [ ] Studio next: one clock shared with the synth, piano roll, chaining patterns, mixer, per-drum sound, a lesson using the grid
+- [ ] Mini DAW: tracks, mixer, automation, export
 - [ ] Genre lessons, starting with glitch-hop, breakbeat and psydub
 - [ ] Lessons on Serum itself: the matrix tab and the rest of its specialist features (50 planned)
 - [ ] The full curriculum: about 475 lessons across 17 tracks

@@ -171,3 +171,18 @@ describe("editing with the keys: selected notes and clips", () => {
     expect(pasteClip(song, drums, c, 8)).toBeUndefined();
   });
 });
+
+import { hasOtherMusic } from "../src/daw/song";
+describe("when a break may set the song's tempo", () => {
+  it("only when nothing else is written in the song", () => {
+    const { song, drums, synth, beat, chord } = demo();
+    expect(hasOtherMusic(song, drums, [beat])).toBe(true);            // the chord is there
+    const noChord = removeClip(song, synth, chord);
+    expect(hasOtherMusic(noChord, drums, [beat])).toBe(false);        // only the clip being replaced
+    const empty = addClip(noChord, synth, 3)!.song;
+    expect(hasOtherMusic(empty, drums, [beat])).toBe(false);          // an empty clip is not music
+    const second = duplicateClip(noChord, drums, beat)!;
+    expect(hasOtherMusic(second.song, drums, [beat])).toBe(true);     // another drum clip with hits
+    expect(hasOtherMusic(second.song, drums, [beat, second.clip])).toBe(false);
+  });
+});

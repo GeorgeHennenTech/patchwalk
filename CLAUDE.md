@@ -1237,8 +1237,9 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
     a clip with a break and added a synth track. Cmd on a Mac was not tried (the test browser is Linux).
 - **Studio: a break replaces only what is selected; several clips at once; upload in Samples (17 Nov 2026,
   owner's requests).** Clicking a break or a starting point in the browser replaces the selected drum clip
-  and nothing else: **it no longer sets the song's tempo or swing** (the status line says what tempo it was
-  written for). Shift- or Ctrl/Cmd-click selects more clips on the same track (`also` in `DawView.tsx`); a
+  and nothing else: **it does not set the song's tempo or swing, except when nothing else is written in the
+  song** (`hasOtherMusic`: no hit or note outside the clips being replaced; the owner's rule). The status
+  line says which happened. Shift- or Ctrl/Cmd-click selects more clips on the same track (`also` in `DawView.tsx`); a
   break then fills all of them in one undo step, and Delete and 0 act on all of them (`fillWith`,
   `targets`). The browser's Samples list has "Upload sound files…" (several at once; each is kept in the
   browser and sent to the library as before) and a × to delete one. Checked in a browser: with one of three

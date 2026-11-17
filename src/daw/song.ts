@@ -185,6 +185,8 @@ export function songEvents(s: Song, from: number, until: number, loop?: { start:
   }
   return out;
 }
+/** Whether anything is written in the song apart from some clips of one track (the ones about to be replaced). */
+export const hasOtherMusic = (s: Song, trackId: string, clipIds: readonly string[]): boolean => s.tracks.some((t) => t.clips.some((c) => !(t.id === trackId && clipIds.includes(c.id)) && ("hits" in c ? Object.values(c.hits).some((row) => row.some(Boolean)) : c.notes.length > 0)));
 /** Every sound-file id the song's pads use. */
 export const samplesUsed = (s: Song): string[] => [...new Set(s.tracks.flatMap((t) => (t.kind === "drums" ? t.pads.map((p) => p.sample).filter((x): x is string => !!x) : [])))];
 /** Change the ids of sound files on every pad (a sound's id became one made from its bytes). */

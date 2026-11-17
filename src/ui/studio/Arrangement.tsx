@@ -17,7 +17,7 @@ function ClipPicture({ track, clip }: { track: Track; clip: Clip }) {
   return <svg viewBox={`0 0 ${steps} ${span}`} preserveAspectRatio="none" aria-hidden="true">{clip.notes.map((n) => <rect key={`${n.note}:${n.start}`} x={n.start + 0.05} y={span - (n.note - lo) - 1} width={n.length - 0.1} height={0.9} />)}</svg>;
 }
 
-export function Arrangement({ song, onChange, picked, onPick, onAdd, step, loop, renaming }: { song: Song; onChange: (next: Song | ((s: Song) => Song)) => void; picked: { track?: string; clip?: string }; onPick: (track: string, clip?: string) => void; onAdd: (track: string, bar: number) => void; step: number; /** the looped stretch, in bars */ loop?: { start: number; bars: number }; /** the track whose name box should take the keyboard */ renaming?: string }) {
+export function Arrangement({ song, onChange, picked, also = [], onPick, onAdd, step, loop, renaming }: { song: Song; onChange: (next: Song | ((s: Song) => Song)) => void; picked: { track?: string; clip?: string }; /** more clips of the selected track, selected with Shift or Ctrl/Cmd */ also?: readonly string[]; onPick: (track: string, clip?: string, add?: boolean) => void; onAdd: (track: string, bar: number) => void; step: number; /** the looped stretch, in bars */ loop?: { start: number; bars: number }; /** the track whose name box should take the keyboard */ renaming?: string }) {
   const bars = Array.from({ length: song.bars }, (_, i) => i), cols = { gridTemplateColumns: `repeat(${song.bars}, minmax(52px, 1fr))` };
   const head = step >= 0 ? `${(step / (song.bars * STEPS_PER_BAR)) * 100}%` : undefined;
   return (
@@ -34,7 +34,7 @@ export function Arrangement({ song, onChange, picked, onPick, onAdd, step, loop,
           <div className="arr-bars" style={cols} onMouseDown={() => { if (picked.track !== t.id) onPick(t.id); }}>
             {bars.map((b) => (clipAt(t, b) ? null : <button key={b} className={`arr-slot${b % 4 === 0 ? " four" : ""}`} style={{ gridColumn: b + 1, gridRow: 1 }} onDoubleClick={() => onAdd(t.id, b)} onKeyDown={(e) => { if (e.key === "Enter") onAdd(t.id, b); }} aria-label={`Add a clip to ${t.name} at bar ${b + 1}`} title="Double-click to add a clip here" />))}
             {t.clips.map((c) => (
-              <button key={c.id} className={`arr-clip${picked.track === t.id && picked.clip === c.id ? " picked" : ""}${c.off ? " off" : ""}`} style={{ gridColumn: `${c.start + 1} / span ${c.bars}`, gridRow: 1 }} onMouseDown={(e) => { e.stopPropagation(); onPick(t.id, c.id); }} aria-pressed={picked.track === t.id && picked.clip === c.id} aria-label={`${t.name} clip at bar ${c.start + 1}, ${c.bars} bar${c.bars === 1 ? "" : "s"}${c.off ? ", switched off" : ""}`}>
+              <button key={c.id} className={`arr-clip${picked.track === t.id && (picked.clip === c.id || also.includes(c.id)) ? " picked" : ""}${c.off ? " off" : ""}`} style={{ gridColumn: `${c.start + 1} / span ${c.bars}`, gridRow: 1 }} onMouseDown={(e) => { e.stopPropagation(); onPick(t.id, c.id, e.shiftKey || e.ctrlKey || e.metaKey); }} aria-pressed={picked.track === t.id && (picked.clip === c.id || also.includes(c.id))} aria-label={`${t.name} clip at bar ${c.start + 1}, ${c.bars} bar${c.bars === 1 ? "" : "s"}${c.off ? ", switched off" : ""}`}>
                 <span className="arr-clip-name">{t.name}</span>
                 <ClipPicture track={t} clip={c} />
               </button>

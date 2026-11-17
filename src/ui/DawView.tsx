@@ -12,7 +12,7 @@ import { firstSong, useStudio } from "./studio/useStudio";
 import { libPut } from "../guide/library";
 import { BPM_MAX, BPM_MIN, GENRE_STARTERS, STARTERS, STEPS_PER_BAR, SWING_MAX, VOICES, VOICE_NAMES, addPad, clearAll, setHit, setSample, tidySteps, type Pattern, type Voice } from "../daw/drums";
 import { PPQ, hitsToMidi, midiBars, midiToHits, midiToNotes, notesToMidi, readMidi, songToMidi, writeMidi } from "../daw/midi";
-import { CLIP_BARS, MAX_TRACKS, SONG_BARS, SOUNDS, addClip, addTrack, clipOf, clipPattern, duplicateClip, duplicateNotes, moveClip, newSong, noteKey, pasteClip, removeClip, setClipBars, setNotes, setPatch, setSongBars, setSongSwing, setSongTempo, setTrack, shiftNotes, soundPatch, stretchNotes, toggleClipOff, trackOf, withPads, withPattern, type Clip, type NoteEv, type Song } from "../daw/song";
+import { CLIP_BARS, MAX_TRACKS, SONG_BARS, SOUNDS, addClip, addTrack, clipOf, clipPattern, duplicateClip, duplicateNotes, moveClip, newSong, noteKey, pasteClip, removeClip, setClipBars, setNotes, setPatch, setSongBars, setSongSwing, setSongTempo, setTrack, shiftNotes, soundPatch, stretchNotes, toggleClipOff, trackOf, withPads, withPattern, type Clip, type DrumClip, type DrumTrack, type NoteEv, type Song } from "../daw/song";
 import { loadBreaks, loadRacks, loadSaved, loadSongs, rackOnto, saveSong, storeBreaks, storeRacks, storeSongs, withNamed, withSavedSong, withoutSavedSong, type Break, type Rack } from "../daw/store";
 import { loadPatches } from "../synth/patches";
 import type { SynthState } from "../synth/params";
@@ -31,7 +31,7 @@ const KEYS: [string, string][] = [
   [`${MOD}+Z`, "Undo"], [mac ? "Cmd+Shift+Z" : "Ctrl+Y", "Redo"],
   [`${MOD}+D`, "Duplicate the selected notes, or the selected clip"], [`${MOD}+C / X / V`, "Copy, cut and paste notes or a clip"], ["Delete", "Delete the selected notes, or the selected clip"],
   [`${MOD}+A`, "Select every note in the open clip"], [`${MOD}+L`, "Loop the selected clip, on and off"], [`${MOD}+Shift+M`, "Add an empty clip to the selected track"],
-  [`${MOD}+R`, "Rename the selected track"], [`${MOD}+S`, "Save the song"], ["0", "Switch the selected clip (or track) off and on"], ["S", "Solo the selected track (when the computer keyboard is off)"],
+  [`${MOD}+R`, "Rename the selected track"], [`${MOD}+S`, "Save the song"], ["Shift+click a clip", "Select several clips on one track (a break, Delete and 0 then act on all of them)"], ["0", "Switch the selected clip (or track) off and on"], ["S", "Solo the selected track (when the computer keyboard is off)"],
   ["Arrow keys", "Move selected notes a step or a semitone; with nothing selected, move between tracks and clips"], ["Shift+Up / Down", "Move selected notes an octave"], ["Shift+Left / Right", "Make selected notes shorter or longer"],
   ["B", "Draw mode on and off"], ["M", "Computer keyboard plays notes, on and off"], ["Z / X, C / V", "Computer keyboard: octave down and up, softer and harder"],
   ["Shift+Tab", "Switch the detail view between Clip and Device"], [`${MOD}+Alt+B`, "Show and hide the browser"], ["Esc", "Deselect"],
@@ -47,6 +47,8 @@ export default function DawView() {
   const { song, change, playing, toggle, step, transport, undo, redo, samples } = studio;
   const [picked, setPicked] = useState<{ track?: string; clip?: string }>(() => ({ track: song.tracks[0]?.id, clip: song.tracks[0]?.clips[0]?.id }));
   const [pad, setPad] = useState(0);
+  /** more clips of the selected track, picked with Shift or Ctrl/Cmd: a break, Delete and 0 act on all of them */
+  const [also, setAlso] = useState<string[]>([]);
   const [loopClip, setLoopClip] = useState(false);
   const [rec, setRec] = useState(false);
   const [click, setClick] = useState(false);
@@ -67,6 +69,7 @@ export default function DawView() {
   const oldPatterns = useMemo(loadSaved, []);
   const patches = useMemo(loadPatches, [nonce]);
   const midiIn = useRef<HTMLInputElement>(null);
+  const sampleIn = useRef<HTMLInputElement>(null);
   const heldKeys = useRef(new Map<number, { start: number; velocity: number }>());
   const board = useRef<Board | null>(null);
   const keysOff = useRef(false); keysOff.current = !keysOn;
@@ -78,7 +81,10 @@ export default function DawView() {
   useEffect(() => { transport.click = click; }, [click, transport]);
   useEffect(() => { setSel(new Set()); }, [picked.track, picked.clip]);
   useEffect(() => { if (renaming) { const t = window.setTimeout(() => setRenaming(undefined), 50); return () => window.clearTimeout(t); } }, [renaming]);
-  const pick = (t?: string, c?: string) => { setPicked({ track: t, clip: c }); setPad(0); };
+  const pick = (t?: string, c?: string, add = false) => {
+    if (add && c && t === picked.track && picked.clip && c !== picked.clip) { setAlso((a) => (a.includes(c) ? a.filter((x) => x !== c) : [...a, c])); return; }
+    setPicked({ track: t, clip: c }); setPad(0); setAlso([]);
+  };
   const open = (s: Song) => { if (playing) toggle(); change(s); pick(s.tracks[0]?.id, s.tracks[0]?.clips[0]?.id); };
   const add = (trackId: string, bar: number) => { const made = addClip(song, trackId, bar); if (made) { change(made.song); pick(trackId, made.clip); setView("clip"); } };
   const local = clip && step >= clip.start * STEPS_PER_BAR && step < (clip.start + clip.bars) * STEPS_PER_BAR ? step - clip.start * STEPS_PER_BAR : -1;
@@ -87,9 +93,22 @@ export default function DawView() {
   // a drum track's pads as a pattern: with the picked clip's rows, or with empty rows when no clip is picked
   const pattern: Pattern | undefined = track?.kind === "drums" ? (clip && "hits" in clip ? clipPattern(song, track, clip) : { name: track.name, bpm: song.bpm, swing: song.swing, length: 16, lanes: track.pads.map((p) => ({ ...p, steps: tidySteps(undefined, 16) })) }) : undefined;
   const setPattern = (p: Pattern) => { if (!track) return; change((s) => (clip ? withPattern(s, track.id, clip.id, p) : withPads(s, track.id, p.lanes.map(({ steps: _s, ...rest }) => rest)))); };
-  const fill = (from: Pattern) => { if (!track || track.kind !== "drums" || !clip || !pattern) { setNote("Select a drum clip first, then click a break to fill it."); return; } const used = new Set<string>();
-    const lanes = pattern.lanes.map((l) => { const src = l.sample || used.has(l.voice) ? undefined : from.lanes.find((x) => x.voice === l.voice); if (src) used.add(l.voice); return { ...l, steps: tidySteps(src?.steps, from.length) }; });
-    change((s) => withPattern(setSongSwing(setSongTempo(s, from.bpm), from.swing), track.id, clip.id, { ...pattern, length: from.length, lanes })); setNote(`Filled the clip with “${from.name}” and set the song to ${from.bpm} bpm.`); };
+  // A break from the browser replaces the selected drum clip, or every selected clip, and nothing else:
+  // not the other clips, not the song's tempo or swing.
+  const targets = clip ? [clip.id, ...also.filter((id) => id !== clip.id && clipOf(track, id))] : [];
+  const fillWith = (name: string, bars: number, rowFor: (lane: Pattern["lanes"][number], index: number, used: Set<string>) => unknown, tail = "") => {
+    if (!track || track.kind !== "drums" || !clip) { setNote("Select a drum clip first, then click a break to fill it."); return; }
+    studio.mark();
+    change((s) => targets.reduce((acc, id) => {
+      const sized = setClipBars(acc, track.id, id, bars), t = trackOf(sized, track.id) as DrumTrack, c = clipOf(t, id);
+      if (!c || !("hits" in c)) return acc;
+      const p = clipPattern(sized, t, c as DrumClip), used = new Set<string>();
+      return withPattern(sized, track.id, id, { ...p, lanes: p.lanes.map((l, i) => ({ ...l, steps: tidySteps(rowFor(l, i, used), p.length) })) });
+    }, s));
+    setNote(`${targets.length > 1 ? `Filled ${targets.length} clips` : "Filled the clip"} with “${name}”.${tail}`);
+  };
+  const fill = (from: Pattern) => fillWith(from.name, from.length / STEPS_PER_BAR, (l, _i, used) => { const src = l.sample || used.has(l.voice) ? undefined : from.lanes.find((x) => x.voice === l.voice); if (src) used.add(l.voice); return src?.steps; },
+    from.bpm !== song.bpm || from.swing !== song.swing ? ` It was written for ${from.bpm} bpm${from.swing ? ` with ${from.swing}% swing` : ""}; the song stays at ${song.bpm}.` : "");
   const engine = track?.kind === "synth" ? transport.engine(track.id) : undefined;
 
   // Recording: what is played while the song runs is written into the open clip, on the nearest step.
@@ -118,10 +137,16 @@ export default function DawView() {
     else { const got = midiToNotes(notes, file.ppq, n); change(setNotes(sized, track.id, clip.id, got.notes)); setNote(`Brought in ${got.notes.length} notes${got.left ? `; ${got.left} were past the end of the clip` : ""}.`); }
   };
   const keepBreak = () => { if (!pattern || !clip) return; const b: Break = { name: saveAs.trim() || `${track!.name} bar ${clip.start + 1}`, bars: clip.bars === 2 ? 2 : 1, bpm: song.bpm, swing: song.swing, rows: pattern.lanes.map((l) => l.steps), pads: pattern.lanes.map((l) => l.name) }; const next = withNamed(breaks, b); setBreaks(next); storeBreaks(next); setNote(`Saved the break “${b.name}”.`); void libPut("break", b.name, b, `${b.bars} bar${b.bars === 1 ? "" : "s"}, ${b.rows.length} pads, ${b.bpm} bpm`).then((r) => { if (r.ok && r.value.entry) setNote(`Saved the break “${b.name}”, here and in the library.`); }); };
-  const useBreak = (b: Break) => { if (!track || track.kind !== "drums" || !clip || !pattern) { setNote("Select a drum clip first, then click a break to fill it."); return; } const sized = setClipBars(song, track.id, clip.id, b.bars), now = clipOf(trackOf(sized, track.id), clip.id)!, p = clipPattern(sized, track, now as never); change(withPattern(sized, track.id, clip.id, { ...p, lanes: p.lanes.map((l, i) => ({ ...l, steps: tidySteps(b.rows[i], p.length) })) })); setNote(b.rows.length > p.lanes.length ? `“${b.name}” was written for ${b.rows.length} pads; this rack has ${p.lanes.length}, so the rest were left out.` : `Filled the clip with “${b.name}”.`); };
+  const useBreak = (b: Break) => fillWith(b.name, b.bars, (_l, i) => b.rows[i], track?.kind === "drums" && b.rows.length > track.pads.length ? ` It was written for ${b.rows.length} pads; this rack has ${track.pads.length}, so the rest were left out.` : "");
   const keepRack = () => { if (!track || track.kind !== "drums") return; const r: Rack = { name: saveAs.trim() || track.name, pads: track.pads }; const next = withNamed(racks, r); setRacks(next); storeRacks(next); setNote(`Saved the rack “${r.name}”.`); void libPut("rack", r.name, r, `${r.pads.length} pads${r.pads.some((p) => p.sample) ? ", with sound files" : ""}`).then((x) => { if (x.ok && x.value.entry) setNote(`Saved the rack “${r.name}”, here and in the library.`); }); };
   const keepSong = () => { const next = withSavedSong(songs, song); setSongs(next); storeSongs(next); setNote(`Saved the song “${song.name.trim() || "Song"}”.`); void libPut("song", song.name, song, `${song.tracks.length} tracks, ${song.bars} bars, ${song.bpm} bpm`); };
 
+  // sound files chosen in the browser's Samples list: kept here and sent to the library, ready to put on a pad
+  const upload = async (files: File[]) => {
+    let have = samples.length, ok = 0, last = "";
+    for (const f of files) { try { const s = await studio.addSample(f, have); have++; ok++; last = await s.shared; } catch (e) { setNote(`${f.name}: ${e instanceof Error ? e.message : "could not be used."}`); if (files.length === 1) return; } }
+    if (ok) setNote(ok === 1 ? `Added “${files.length === 1 ? files[0]!.name : "1 sound"}”. ${last}` : `Added ${ok} of ${files.length} sounds. They are kept in this browser, and those of 2 MB or under are in the library too.`);
+  };
   // the browser: one click puts a thing where it belongs
   const useSound = (name: string, patch: SynthState) => {
     if (track?.kind === "synth") { change((s) => setPatch(s, track.id, { ...patch, bpm: s.bpm })); setNonce((n) => n + 1); setNote(`“${name}” is now the sound of ${track.name}.`); return; }
@@ -144,7 +169,7 @@ export default function DawView() {
   const act = {
     duplicate: () => { if (hasSel) { const r = duplicateNotes(notesNow!, sel, steps); if (r.notes === notesNow) setNote("There is no room after the selected notes in this clip. Make the clip longer first."); else putNotes(r.notes, r.keys); } else if (track && clip) { const made = duplicateClip(song, track.id, clip.id); if (made) { change(made.song); pick(track.id, made.clip); } else setNote("There is no free place after this clip to duplicate it into."); } },
     copy: (): boolean => { if (hasSel) { board.current = { kind: "notes", notes: notesNow!.filter((n) => sel.has(noteKey(n))) }; setNote(`Copied ${sel.size} note${sel.size === 1 ? "" : "s"}.`); return true; } if (clip) { board.current = { kind: "clip", clip }; setNote("Copied the clip."); return true; } return false; },
-    del: (): boolean => { if (hasSel) { putNotes(notesNow!.filter((n) => !sel.has(noteKey(n))), new Set()); return true; } if (track && clip) { change((s) => removeClip(s, track.id, clip.id)); pick(track.id); return true; } return false; },
+    del: (): boolean => { if (hasSel) { putNotes(notesNow!.filter((n) => !sel.has(noteKey(n))), new Set()); return true; } if (track && clip) { change((s) => targets.reduce((acc, id) => removeClip(acc, track.id, id), s)); pick(track.id); return true; } return false; },
     paste: () => { const b = board.current; if (!b || !track) return;
       if (b.kind === "notes") { if (!notesNow) { setNote("Open a synth clip to paste notes into."); return; } const fit = b.notes.filter((n) => n.start < steps), keys = new Set(fit.map(noteKey)); putNotes([...notesNow.filter((n) => !keys.has(noteKey(n))), ...fit], keys); return; }
       const made = pasteClip(song, track.id, b.clip, clip ? clip.start + clip.bars : 0); if (made) { change(made.song); pick(track.id, made.clip); } else setNote(("hits" in b.clip) !== (track.kind === "drums") ? "A drum clip goes on a drum track and a note clip on a synth track." : "There is no free place on this track to paste the clip."); },
@@ -154,7 +179,7 @@ export default function DawView() {
       if (dy) { const i = song.tracks.findIndex((t) => t.id === picked.track), t = song.tracks[Math.min(song.tracks.length - 1, Math.max(0, i - dy))]; if (t) pick(t.id, t.clips.slice().sort((a, b) => a.start - b.start)[0]?.id); }
       else if (track) { const order = track.clips.slice().sort((a, b) => a.start - b.start), i = order.findIndex((c) => c.id === picked.clip), c = order[i < 0 ? 0 : Math.min(order.length - 1, Math.max(0, i + dx))]; if (c) pick(track.id, c.id); }
     },
-    off: () => { if (track && clip) change((s) => toggleClipOff(s, track.id, clip.id)); else if (track) change((s) => setTrack(s, track.id, { mute: !track.mute })); },
+    off: () => { if (track && clip) change((s) => targets.reduce((acc, id) => toggleClipOff(acc, track.id, id), s)); else if (track) change((s) => setTrack(s, track.id, { mute: !track.mute })); },
     solo: () => { if (track) change((s) => setTrack(s, track.id, { solo: !track.solo })); },
     insert: () => { if (!track) return; for (let b = clip ? clip.start + clip.bars : 0; b < song.bars; b++) if (addClip(song, track.id, b)) { add(track.id, b); return; } setNote("This track has no free bar for a new clip."); },
     rename: () => { if (track) setRenaming(track.id); },
@@ -240,8 +265,8 @@ export default function DawView() {
           <div className="br-items">
             {cat === "Sounds" && <><p className="br-hint">Click a sound to put it on the selected synth track, or to add a synth track.</p><ul>{SOUNDS.map((s) => item(s.name, () => useSound(s.name, soundPatch(s.name))))}</ul>{patches.length > 0 && <><h4>Your sounds</h4><ul>{patches.map((p) => item(p.name, () => useSound(p.name, p.state)))}</ul></>}</>}
             {cat === "Drums" && <><p className="br-hint">Click a drum to add it as a pad on the selected drum track.</p><ul>{VOICES.map((v) => item(VOICE_NAMES[v], () => usePad(v)))}</ul></>}
-            {cat === "Samples" && <><p className="br-hint">Your sound files. Click one to add it as a pad. To bring in more, drag a file onto a pad in the Device view.</p>{samples.length === 0 ? <p className="br-none">None yet.</p> : <ul>{samples.map((s) => item(s.name, () => usePad("kick", s)))}</ul>}</>}
-            {cat === "Breaks" && <><p className="br-hint">Click a break to fill the selected drum clip. A starting point also sets the song's tempo and swing.</p>{breaks.length > 0 && <><h4>Your breaks</h4><ul>{breaks.map((b) => item(b.name, () => useBreak(b), `${b.bars} bar${b.bars === 1 ? "" : "s"}, written at ${b.bpm} bpm`, () => { const next = breaks.filter((x) => x.name !== b.name); setBreaks(next); storeBreaks(next); }))}</ul></>}<h4>Starting points</h4><ul>{[...STARTERS, ...GENRE_STARTERS, ...oldPatterns].map((s, i) => <li key={`${s.name}${i}`}><button onClick={() => fill(s)} title={`${s.bpm} bpm${s.swing ? `, swing ${s.swing}%` : ""}${s.length === 32 ? ", 2 bars" : ""}`}>{s.name}</button></li>)}</ul><p className="br-hint">Common shapes for each style, written for this page: not anyone's recorded beat.</p></>}
+            {cat === "Samples" && <><input ref={sampleIn} type="file" multiple accept="audio/*,.wav,.mp3,.flac,.ogg,.aif,.aiff,.m4a" hidden onChange={(e) => { const files = [...(e.target.files ?? [])]; e.target.value = ""; if (files.length) void upload(files); }} /><button className="br-up primary" onClick={() => sampleIn.current?.click()}>Upload sound files…</button><p className="br-hint">Your sound files. Click one to add it as a pad on the selected drum track. You can choose several files at once.</p>{samples.length === 0 ? <p className="br-none">None yet.</p> : <ul>{samples.map((s) => item(s.name, () => usePad("kick", s), undefined, () => { if (window.confirm(`Delete “${s.name}” from this browser? Pads that use it go back to a built-in drum.`)) studio.removeSample(s.id); }))}</ul>}</>}
+            {cat === "Breaks" && <><p className="br-hint">Click a break to replace the selected drum clip. Shift-click clips to select several and replace them all. Nothing else changes, the tempo included.</p>{breaks.length > 0 && <><h4>Your breaks</h4><ul>{breaks.map((b) => item(b.name, () => useBreak(b), `${b.bars} bar${b.bars === 1 ? "" : "s"}, written at ${b.bpm} bpm`, () => { const next = breaks.filter((x) => x.name !== b.name); setBreaks(next); storeBreaks(next); }))}</ul></>}<h4>Starting points</h4><ul>{[...STARTERS, ...GENRE_STARTERS, ...oldPatterns].map((s, i) => <li key={`${s.name}${i}`}><button onClick={() => fill(s)} title={`${s.bpm} bpm${s.swing ? `, swing ${s.swing}%` : ""}${s.length === 32 ? ", 2 bars" : ""}`}>{s.name}</button></li>)}</ul><p className="br-hint">Common shapes for each style, written for this page: not anyone's recorded beat.</p></>}
             {cat === "Racks" && <><p className="br-hint">Click a rack to put its pads on the selected drum track.</p>{racks.length === 0 ? <p className="br-none">None saved yet. Save one from a drum track's Device view.</p> : <ul>{racks.map((r) => item(r.name, () => { if (track?.kind === "drums") { change((s) => withPads(s, track.id, rackOnto(track.pads, r))); setNote(`Put the rack “${r.name}” on ${track.name}.`); } else setNote("Select a drum track first."); }, `${r.pads.length} pads`, () => { const next = racks.filter((x) => x.name !== r.name); setRacks(next); storeRacks(next); }))}</ul>}</>}
             {cat === "Songs" && <><p className="br-hint">Click a song to open it. Save the one you are working on first if you want to keep it.</p><ul>{songs.map((s) => item(s.name, () => open(s), `${s.tracks.length} tracks, ${s.bars} bars`, () => { const next = withoutSavedSong(songs, s.name); setSongs(next); storeSongs(next); }))}{item("Example song", () => { if (window.confirm("Open the example song? Save this one first if you want to keep it.")) open(firstSong()); })}{item("Empty song", () => { if (window.confirm("Start an empty song? Save this one first if you want to keep it.")) open(newSong()); })}</ul></>}
           </div>
@@ -258,7 +283,7 @@ export default function DawView() {
               <button onClick={() => { const next = addTrack(song, "synth", SOUNDS[0]!.name); change(next); pick(next.tracks.at(-1)?.id); }} disabled={song.tracks.length >= MAX_TRACKS}>+ Synth track</button>
             </span>
           </div>
-          <Arrangement song={song} onChange={change} picked={picked} onPick={pick} onAdd={add} step={step} loop={loop} renaming={renaming} />
+          <Arrangement song={song} onChange={change} picked={picked} also={also} onPick={pick} onAdd={add} step={step} loop={loop} renaming={renaming} />
         </div>
       </div>
 

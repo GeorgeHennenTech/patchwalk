@@ -444,3 +444,4 @@ tr.dim td { opacity: 0.6; }
 .daw-status { padding: 5px 10px; background: var(--s2); border-top: 1px solid var(--line); color: var(--dim); font-size: 12px; display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
 .daw2 .daw-missing { margin: 0 0 0 auto; font-size: 12px; max-width: 760px; } .daw2 .daw-missing p { margin: 6px 0 2px; }
 @media (max-width: 900px) { .daw-body { grid-template-columns: 1fr; } .br { max-height: 220px; border-right: 0; border-bottom: 1px solid var(--line); } }
+.daw2 .br-up { display: block; margin: 4px 8px 8px; width: calc(100% - 16px); }

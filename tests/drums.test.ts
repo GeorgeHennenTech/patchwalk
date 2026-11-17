@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { GENRE_STARTERS, STARTERS, STRENGTH, VOICES, audible, clearAll, emptyPattern, fromRows, nextStrength, setHit, setLane, setLength, setSwing, setTempo, stepSeconds, stepTime, strikes, tidyPattern } from "../src/daw/drums";
+import { DEFAULT_VOICES, GENRE_STARTERS, STARTERS, STRENGTH, VOICES, audible, clearAll, emptyPattern, fromRows, nextStrength, setHit, setLane, setLength, setSwing, setTempo, stepSeconds, stepTime, strikes, tidyPattern } from "../src/daw/drums";
 import { withSaved, withoutSaved } from "../src/daw/store";
 
 describe("drum pattern", () => {
@@ -53,8 +53,8 @@ describe("drum pattern", () => {
   });
   it("every starter has all the drums, the right length and something to play", () => {
     for (const s of [...STARTERS, ...GENRE_STARTERS]) {
-      expect(s.lanes.map((l) => l.voice)).toEqual([...VOICES]);
-      expect(s.lanes.map((l) => l.id)).toEqual([...VOICES]);
+      expect(s.lanes.map((l) => l.voice)).toEqual([...DEFAULT_VOICES]);
+      expect(s.lanes.map((l) => l.id)).toEqual([...DEFAULT_VOICES]);
       for (const l of s.lanes) expect(l.steps).toHaveLength(s.length);
       expect(strikes(s, 0, s.length).length).toBeGreaterThan(6);
       expect(s.lanes[0]!.steps[0]).toBeGreaterThan(0); // a kick on the first beat
@@ -66,7 +66,7 @@ describe("drum pattern", () => {
     const t = tidyPattern({ name: "n", bpm: 5000, swing: -4, length: 7, lanes: [{ voice: "kick", steps: [2, 9, "x", 3], level: 400, mute: "yes" }, { voice: "bogus", steps: [3] }] })!;
     expect(t.bpm).toBe(200); expect(t.swing).toBe(0); expect(t.length).toBe(16);
     expect(t.lanes).toHaveLength(1); // only what is a drum is kept
-    expect(tidyPattern({ lanes: [] })!.lanes).toHaveLength(VOICES.length); // nothing usable: a fresh rack
+    expect(tidyPattern({ lanes: [] })!.lanes).toHaveLength(DEFAULT_VOICES.length); // nothing usable: a fresh rack
     expect(t.lanes[0]!.steps.slice(0, 4)).toEqual([2, 0, 0, 3]);
     expect(t.lanes[0]!.level).toBe(100); expect(t.lanes[0]!.mute).toBe(false);
     for (const s of STARTERS) expect(tidyPattern(JSON.parse(JSON.stringify(s)))).toEqual(s);
@@ -125,9 +125,11 @@ describe("genre starting points", () => {
 
 import { addPad, defaultPads, padWindow, removePad, tidyPads, MAX_PADS } from "../src/daw/drums";
 describe("the drum rack's pads", () => {
-  it("starts with eight pads, the two hats in one choke group", () => {
+  it("starts with nine pads, a ride among them, the two hats in one choke group", () => {
     const pads = defaultPads();
-    expect(pads).toHaveLength(8);
+    expect(pads).toHaveLength(9);
+    expect(pads.at(-1)!.voice).toBe("ride");
+    expect(tidyPads([{ voice: "ridebell" }])[0]!.name).toBe("Ride bell");
     expect(pads.filter((p) => p.choke === 1).map((p) => p.voice)).toEqual(["hat", "openhat"]);
   });
   it("adds pads up to sixteen, each with its own id and an empty row, and removes all but the last", () => {

@@ -2,9 +2,11 @@
 // and the Studio all work from the same rules. A pattern is a grid: one lane per pad, one cell per step,
 // each cell off or struck at one of three strengths. A lane carries its pad's sound settings as well.
 
-export const VOICES = ["kick", "snare", "clap", "hat", "openhat", "tomlow", "tomhigh", "rim"] as const;
+export const VOICES = ["kick", "snare", "clap", "hat", "openhat", "tomlow", "tomhigh", "rim", "ride", "ridebell"] as const;
+/** The drums a new rack starts with. The ride bell is there to choose for a pad, not given a pad of its own. */
+export const DEFAULT_VOICES = ["kick", "snare", "clap", "hat", "openhat", "tomlow", "tomhigh", "rim", "ride"] as const;
 export type Voice = (typeof VOICES)[number];
-export const VOICE_NAMES: Record<Voice, string> = { kick: "Kick", snare: "Snare", clap: "Clap", hat: "Closed hat", openhat: "Open hat", tomlow: "Low tom", tomhigh: "High tom", rim: "Rim" };
+export const VOICE_NAMES: Record<Voice, string> = { kick: "Kick", snare: "Snare", clap: "Clap", hat: "Closed hat", openhat: "Open hat", tomlow: "Low tom", tomhigh: "High tom", rim: "Rim", ride: "Ride", ridebell: "Ride bell" };
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
 /** A cell: 0 is silent; 1 soft, 2 normal, 3 accented. */
@@ -59,8 +61,8 @@ export interface Pattern {
 export const STEPS_PER_BEAT = 4, STEPS_PER_BAR = 16, BPM_MIN = 60, BPM_MAX = 200, SWING_MAX = 75;
 
 export const newPad = (id: string, voice: Voice, name: string = VOICE_NAMES[voice]): Pad => ({ id, name, voice, level: 80, mute: false, solo: false, tune: 0, pan: 0, start: 0, length: 100, fade: 0, choke: voice === "hat" || voice === "openhat" ? 1 : 0 });
-/** The eight pads a new rack starts with. The two hats share a choke group, so a closed hat cuts a ringing open one. */
-export const defaultPads = (): Pad[] => VOICES.map((v) => newPad(v, v));
+/** The nine pads a new rack starts with. The two hats share a choke group, so a closed hat cuts a ringing open one. */
+export const defaultPads = (): Pad[] => DEFAULT_VOICES.map((v) => newPad(v, v));
 const silent = (length: number): Hit[] => Array.from({ length }, () => 0 as Hit);
 
 export function emptyPattern(name = "New pattern", length: 16 | 32 = 16): Pattern {
@@ -77,6 +79,7 @@ export function fromRows(name: string, bpm: number, rows: Partial<Record<Voice, 
 export const STARTERS: Pattern[] = [
   fromRows("Four on the floor", 124, { kick: "X...x...x...x...", clap: "....x.......x...", hat: "..x...x...x...x.", openhat: "..............o." }),
   fromRows("Backbeat", 96, { kick: "X.......x.x.....", snare: "....X.......X...", hat: "x.x.x.x.x.x.x.x." }),
+  fromRows("Ride groove", 110, { kick: "X.....x...x.....", snare: "....X.......X...", ride: "x.o.x.o.x.o.x.ox", hat: "....o.......o..." }),
   fromRows("Half-time", 140, { kick: "X.....x...x.....", snare: "........X.......", hat: "x.o.x.o.x.o.x.oo", rim: "...x..........x." }),
   fromRows("Broken beat", 132, { kick: "X.....x..x......", snare: "....X.......X..o", hat: "x.xxx.x.x.xxx.x.", openhat: ".......o........" }, 12),
   fromRows("Shuffle", 100, { kick: "X..x....x..x....", snare: "....X.......X...", hat: "x.xxx.xxx.xxx.xx" }, 55),

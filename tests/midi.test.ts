@@ -18,7 +18,7 @@ describe("MIDI files", () => {
     expect(notes.filter((n) => n.note === DRUM_BASE).map((n) => n.start)).toEqual([0, 480, 960, 1440]); // kick on every beat
     const back = readMidi(writeMidi({ ppq: PPQ, bpm: 124, tracks: [{ notes, channel: 9 }] }))!;
     expect(back.tracks[0]!.channel).toBe(9);
-    expect(midiToHits(back.tracks[0]!.notes, back.ppq, 8, 16)).toEqual({ rows, left: 0 });
+    expect(midiToHits(back.tracks[0]!.notes, back.ppq, rows.length, 16)).toEqual({ rows, left: 0 });
   });
   it("notes go out and come back the same, long gaps and chords included", () => {
     const notes = [{ note: 57, start: 0, length: 32, velocity: 90 }, { note: 60, start: 0, length: 32, velocity: 90 }, { note: 72, start: 61, length: 3, velocity: 40 }];

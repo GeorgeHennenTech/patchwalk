@@ -48,6 +48,14 @@ export class Kit {
     amp.gain.setValueAtTime(0.0001, t); amp.gain.linearRampToValueAtTime(peak, t + 0.001); amp.gain.exponentialRampToValueAtTime(0.0001, t + decay);
     src.connect(filter).connect(amp).connect(to); src.start(t, (t * 7.3) % 0.5); src.stop(t + decay + 0.02);
   }
+  /** A cymbal's ring: six square waves at ratios that do not line up, with the low part taken off. The ratios and every number are our own. */
+  private metal(to: AudioNode, t: number, base: number, floorHz: number, peak: number, decay: number): void {
+    const cut = this.ctx.createBiquadFilter(), amp = this.ctx.createGain();
+    cut.type = "highpass"; cut.frequency.value = Math.min(16000, floorHz * this.rate); cut.Q.value = 0.8;
+    amp.gain.setValueAtTime(0.0001, t); amp.gain.linearRampToValueAtTime(peak, t + 0.002); amp.gain.exponentialRampToValueAtTime(peak * 0.35, t + decay * 0.12); amp.gain.exponentialRampToValueAtTime(0.0001, t + decay);
+    cut.connect(amp).connect(to);
+    for (const ratio of [1, 1.483, 1.764, 2.317, 2.891, 3.469]) { const osc = this.ctx.createOscillator(); osc.type = "square"; osc.frequency.value = base * ratio * this.rate; osc.connect(cut); osc.start(t); osc.stop(t + decay + 0.02); }
+  }
   /**
    * Strike a pad at time `t` (the audio clock's seconds), `strength` 0..1, into `to`. `scope` keeps one
    * track's choke groups apart from another's.
@@ -80,6 +88,8 @@ export class Kit {
       case "openhat": this.hiss(bus, t, "highpass", 7000, 0.7, 0.36 * v, 0.34); break;
       case "tomlow": this.tone(bus, "sine", t, 135, 82, 0.16, 0.8 * v, 0.34); break;
       case "tomhigh": this.tone(bus, "sine", t, 215, 138, 0.14, 0.7 * v, 0.27); break;
+      case "ride": this.metal(bus, t, 412, 4200, 0.075 * v, 1.3); this.hiss(bus, t, "bandpass", 6200, 1.5, 0.22 * v, 0.03); break;
+      case "ridebell": this.metal(bus, t, 412, 1500, 0.06 * v, 0.9); this.tone(bus, "sine", t, 1180, 1180, 0.05, 0.3 * v, 0.55); this.tone(bus, "sine", t, 1770, 1770, 0.05, 0.16 * v, 0.4); break;
       case "rim": this.tone(bus, "triangle", t, 830, 800, 0.02, 0.5 * v, 0.035); this.hiss(bus, t, "bandpass", 3200, 2, 0.3 * v, 0.02); break;
     }
   }

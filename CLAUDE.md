@@ -1162,6 +1162,11 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   - Checked in a browser: undo and redo put a hit back and forth; a clip downloaded as MIDI and brought
     into an empty clip gave the same 12 hits; a saved break filled a cleared clip; a key held while
     recording became a note in the roll; breaks and racks were still there after a reload.
+- **Rides (17 Nov 2026, owner's request).** Two more built-in drums in `kit.ts`: `ride` and `ridebell`
+  (`metal`: six square waves at ratios that do not line up, through a high-pass, with a long fall; the bell
+  adds two sine tones). Our own numbers, not a model of any cymbal or drum machine, not heard by anyone.
+  A new rack has nine pads, the ninth a ride (`DEFAULT_VOICES`); **a rack made before this keeps its eight
+  pads: "Add a pad" and choose Ride or Ride bell from the Drum menu.** A "Ride groove" starting point was added.
 - **"Walk me through it" (16 Nov 2026, owner's go-ahead with two rules of their own).** A second mode on the
   Ask tab (a switch, remembered): a how-to question becomes a walkthrough of steps shown one at a time.
   `api/walk.ts` answers two kinds of request: `plan` (one call with structured output over ten passages:

@@ -1371,6 +1371,28 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   a return was silent at send 0, -21.8 dB at 100, about 11 dB lower at 50, silent when switched off.
   **Nobody has heard it.** Next candidates: a time marker and free-length clips, grid sizes, Session View,
   note effects on live keys, synth knobs that move on screen, automation on returns.
+  **The effect chain drawn like Live's device view, and the synth as a device (17 Nov 2026, owner: "make the
+  audio effect chain area look identical to ableton", then "the synth shouldnt always be open under device").
+  This changes the earlier "our own look" rule for this one area, at the owner's request: the chain copies
+  the arrangement, proportions and colour scheme of Live's device view (checked against the device pictures
+  in the manual in the library), all drawn by our own CSS and SVG. Still never used: Ableton's artwork,
+  fonts or logo; and it is not pixel-identical, because our devices are not Ableton's devices.**
+  `DeviceChain.tsx` and the `.chain` block in `styles.css`: a dark strip of one height (214 px; 150 for note
+  effects); each device a grey rounded panel with a title bar (round orange on/off, bold name, small round
+  buttons for earlier, later and remove, an "i" whose tooltip is the device's note); **`Knob`** (round, black
+  track, cyan arc that fills from the top on two-way knobs, name above and value below; drag up and down,
+  Shift fine, wheel, arrows, double-click or Delete to reset); switches as square buttons that turn orange,
+  two to a cell; menus as boxes; settings flow in columns of three (`Cells`); a device with bands shows the
+  open band's knobs on the left, the dark display in the middle with band buttons under it, and the rest on
+  the right (`Body`); the "turning down by" meter is an upright bar. A device's title bar can be **dragged to
+  another place in the chain**, effects can be **dragged in from the browser's list** (`DRAG_DEVICE`), a
+  focused title bar takes Delete (remove) and 0 (on/off), and the empty end says "Drop Audio Effects Here"
+  with a menu as the other way in. **The synth is the first device in a synth track's rack** (`lead` on
+  `DeviceChain`, class `inst`): a small panel with Open / Close; the whole synth is drawn under the rack
+  only while open (`synthOpen` in `DawView.tsx`, closed to start with), and the keys play the track either
+  way. Checked in a browser: knob drag and reset, Delete, drag to reorder, drag from the browser, open and
+  close. Real mouse dragging was checked with drag events sent by script, not by hand. Not done: the drum
+  rack as a device in the row, small level meters between devices, typing a value into a knob.
   **Two to-do lists, and both must be updated with every push (owner asked 17 Nov 2026 why the widget was
   behind):** `docs/TODO.md` (what the `/todo` pane in Claude Code reads) and the owner's "Patchwalk To-Do"
   page (https://claude.ai/artifact/7sHF6r2vvBuxa8DSkcfcPz, rows in its `todos` collection, written with

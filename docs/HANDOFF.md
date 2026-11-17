@@ -492,3 +492,8 @@ sliders move on screen while automated (the synth's own knobs do not yet); the a
 and there are **return tracks with sends** (up to two; A starts with a reverb, B with a delay). Details and
 measurements are in `CLAUDE.md` ("Closer to Ableton, fourth pass"). Still to do there: a time marker and
 free-length clips, grid sizes, Session View, note effects on live keys, and the automation lessons.
+The effect chain is now drawn after Live's device view (grey panels of one height, round knobs with cyan
+arcs, orange switches, dark displays; drag a title bar to reorder, drag effects in from the browser), and
+the synth is a small device at the front of the rack that opens only when "Open" is clicked. The owner
+asked for the Ableton look here, which replaces the "our own look" rule for the chain only; no Ableton
+artwork, fonts or logo. See `CLAUDE.md` ("The effect chain drawn like Live's device view").

@@ -445,42 +445,64 @@ tr.dim td { opacity: 0.6; }
 .daw2 .daw-missing { margin: 0 0 0 auto; font-size: 12px; max-width: 760px; } .daw2 .daw-missing p { margin: 6px 0 2px; }
 @media (max-width: 900px) { .daw-body { grid-template-columns: 1fr; } .br { max-height: 220px; border-right: 0; border-bottom: 1px solid var(--line); } }
 .daw2 .br-up { display: block; margin: 4px 8px 8px; width: calc(100% - 16px); }
-/* a track's chain of effects */
-.chain { margin-top: 10px; margin-bottom: 4px; }
-.chain-row { display: flex; gap: 8px; align-items: stretch; overflow-x: auto; padding-bottom: 4px; }
-.dev { flex: none; width: 230px; background: var(--s2); border: 1px solid var(--line); border-radius: 4px; }
-.dev.off { opacity: 0.55; }
-.dev header { display: flex; align-items: center; gap: 4px; padding: 4px 6px; background: var(--s3); border-bottom: 1px solid var(--line); }
-.dev header b { flex: 1; font-size: 12.5px; }
-.daw2 .dev header button { padding: 0 5px; font-size: 11px; }
-.daw2 .dev-on { width: 14px; height: 14px; padding: 0; border-radius: 50%; background: #232325; }
-.daw2 .dev-on.on { background: var(--on); border-color: var(--on); }
-.dev-params { display: flex; flex-wrap: wrap; gap: 6px 8px; padding: 8px; }
-.dev-knob { display: grid; gap: 1px; font-size: 11.5px; color: var(--dim); width: 100%; }
-.dev-knob b { color: var(--ink); font-weight: 600; }
-.dev-knob input { width: 100%; }
-.daw2 .dev-sw { font-size: 11.5px; padding: 2px 7px; } .daw2 .dev-sw.on { background: var(--on); color: #1c1c1c; border-color: var(--on); }
-.chain-title { margin: 0 0 5px; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--dim); }
-.dev.wide { width: 320px; }
-.dev-curve { display: block; width: calc(100% - 16px); margin: 8px 8px 0; background: #1b1b1d; border: 1px solid var(--line); border-radius: 3px; }
-.dev-curve polyline { fill: none; stroke: var(--on); stroke-width: 1.6; }
-.dev-curve .grid { stroke: #333336; stroke-width: 1; } .dev-curve .zero { stroke: #55555a; stroke-width: 1; }
-.dev-curve text { fill: #8a8a90; font-size: 8px; } .dev-curve circle { fill: #1b1b1d; stroke: var(--on); stroke-width: 1.2; }
-.dev-curve text.num { fill: var(--ink); text-anchor: middle; font-size: 8px; font-weight: 700; }
-.dev-curve { touch-action: none; user-select: none; }
-.dev-dot { cursor: grab; outline: none; } .dev-dot:active { cursor: grabbing; } .dev-dot .hit { fill: transparent; stroke: none; }
-.dev-dot.on circle:not(.hit), .dev-dot:hover circle:not(.hit), .dev-dot:focus-visible circle:not(.hit) { fill: var(--on); } .dev-dot.on text.num, .dev-dot:hover text.num, .dev-dot:focus-visible text.num { fill: #1c1c1c; }
-.dev-groups { display: flex; gap: 2px; padding: 6px 8px 0; }
-.daw2 .dev-groups button { flex: 1; padding: 1px 0; font-size: 11px; } .daw2 .dev-groups button.on { background: var(--on); color: #1c1c1c; border-color: var(--on); }
-.dev-knob select { width: 100%; }
-.dev-meter { padding: 8px 8px 0; font-size: 11.5px; color: var(--dim); display: grid; gap: 3px; } .dev-meter b { color: var(--ink); }
-.dev-meter i { display: block; height: 5px; background: #1b1b1d; border: 1px solid var(--line); border-radius: 2px; } .dev-meter i span { display: block; height: 100%; width: 0; background: var(--on); }
-.dev-spectrum { display: block; width: calc(100% - 16px); height: 130px; margin: 8px 8px 0; border: 1px solid var(--line); border-radius: 3px; }
-.dev-tuner { padding: 10px 8px 4px; display: grid; gap: 6px; text-align: center; } .dev-tuner b { font-size: 30px; color: var(--ink); line-height: 1; } .dev-tuner small { color: var(--dim); font-size: 11.5px; }
-.dev-tuner-bar { position: relative; height: 14px; background: #1b1b1d; border: 1px solid var(--line); border-radius: 2px; } .dev-tuner-bar i { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: #77777c; }
-.dev-tuner-bar span { position: absolute; top: 1px; bottom: 1px; width: 4px; margin-left: -2px; background: var(--on); border-radius: 1px; transition: left 0.1s linear; } .dev-tuner-bar span.in { background: #6fdc8c; }
-.dev-note { margin: 0; padding: 0 8px 8px; font-size: 11px; color: var(--dim); line-height: 1.35; }
-.dev-add { flex: none; align-self: center; color: var(--dim); display: grid; gap: 4px; font-size: 12px; padding: 0 8px; }
+/* A track's chain of effects, drawn after the device view of Ableton Live's default theme: grey panels of one
+   height in a dark strip, round knobs with a cyan arc, orange for "on", dark displays. Our own CSS and
+   drawing throughout: none of Ableton's artwork, fonts or logo. */
+.chain { --dv-panel: #a8a8a8; --dv-edge: #1a1a1a; --dv-ink: #0c0c0c; --dv-cyan: #54d9ee; --dv-orange: #ffb02e; --dv-dark: #242424; --dv-box: #c4c4c4;
+  margin: 6px 0 4px; background: #2a2a2a; border: 2px solid #111; border-radius: 4px; padding: 4px; }
+.chain-row { display: flex; gap: 5px; align-items: stretch; overflow-x: auto; height: 214px; }
+.chain .dev { flex: none; display: flex; flex-direction: column; background: var(--dv-panel); color: var(--dv-ink); border: 1px solid var(--dv-edge); border-radius: 6px; overflow: hidden; position: relative; font-size: 11.5px; font-weight: 600; }
+.chain .dev.before::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--dv-cyan); z-index: 3; }
+.chain .dev header { display: flex; align-items: center; gap: 5px; height: 22px; flex: none; padding: 0 5px; background: var(--dv-panel); border: 0; cursor: grab; outline: none; }
+.chain .dev.picked header { background: #c9c9c9; }
+.chain .dev header b { flex: 1; font-size: 12.5px; font-weight: 700; white-space: nowrap; padding-right: 8px; }
+.chain .dev.off .dev-body { opacity: 0.45; }
+.chain .dev .dev-on { width: 15px; height: 15px; flex: none; padding: 0; border-radius: 50%; border: 1.5px solid var(--dv-edge); background: #6e6e6e; }
+.chain .dev .dev-on.on { background: var(--dv-orange); border-color: var(--dv-edge); }
+.chain .dev .dev-round { width: 15px; height: 15px; flex: none; padding: 0; border-radius: 50%; border: 1.5px solid var(--dv-edge); background: var(--dv-panel); color: var(--dv-ink); font-size: 8px; line-height: 1; display: grid; place-items: center; }
+.chain .dev .dev-round:disabled { opacity: 0.3; } .chain .dev .dev-round:hover:not(:disabled) { background: #d6d6d6; }
+.chain .dev-info { width: 13px; height: 13px; border-radius: 50%; border: 1px solid var(--dv-ink); font-size: 9px; font-style: italic; display: grid; place-items: center; cursor: help; opacity: 0.7; }
+.chain .dev-body { flex: 1; display: flex; gap: 6px; padding: 2px 6px 6px; min-height: 0; }
+.chain .dev-params { display: grid; grid-auto-flow: column; grid-template-rows: repeat(3, 1fr); gap: 0 8px; align-items: center; justify-items: center; padding: 0; }
+.chain .dev-knob { display: grid; justify-items: center; gap: 0; width: auto; min-width: 54px; color: var(--dv-ink); font-size: 11px; }
+.chain .dev-label { font-size: 11px; font-weight: 600; white-space: nowrap; line-height: 1.15; color: var(--dv-ink); }
+.chain .dev-value { font-size: 10.5px; font-weight: 600; white-space: nowrap; line-height: 1.1; color: var(--dv-ink); }
+.chain .knob { width: 34px; height: 34px; min-width: 34px; min-height: 34px; overflow: visible; flex: none; cursor: ns-resize; outline: none; touch-action: none; display: block; }
+.chain .knob-track { fill: none; stroke: var(--dv-ink); stroke-width: 3; stroke-linecap: butt; }
+.chain .knob-value { fill: none; stroke: var(--dv-cyan); stroke-width: 3; }
+.chain .knob-hand { stroke: var(--dv-ink); stroke-width: 3; stroke-linecap: round; }
+.chain .knob-mid { fill: var(--dv-ink); }
+.chain .knob:focus-visible { outline: 1px dotted var(--dv-ink); outline-offset: 1px; }
+.chain .dev-switches { display: grid; gap: 4px; justify-items: stretch; min-width: 54px; }
+.chain .dev .dev-sw { font-size: 11px; font-weight: 600; padding: 1px 6px; border: 1px solid var(--dv-edge); border-radius: 0; background: var(--dv-box); color: var(--dv-ink); white-space: nowrap; }
+.chain .dev .dev-sw.on { background: var(--dv-orange); color: var(--dv-ink); border-color: var(--dv-edge); }
+.chain .dev-menu { display: grid; justify-items: center; gap: 2px; }
+.chain .dev select { font-size: 11px; font-weight: 600; padding: 0 2px; height: 18px; max-width: 110px; border: 1px solid var(--dv-edge); border-radius: 0; background: #e2e2e2; color: var(--dv-ink); }
+.chain .dev-display { display: flex; flex-direction: column; gap: 4px; flex: none; min-width: 0; }
+.chain .dev-curve { display: block; flex: 1; min-height: 0; width: 350px; margin: 0; background: var(--dv-dark); border: 0; border-radius: 3px; touch-action: none; user-select: none; }
+.chain .dev-curve polyline { fill: none; stroke: var(--dv-cyan); stroke-width: 1.8; }
+.chain .dev-curve .grid { stroke: #3a3a3a; stroke-width: 1; } .chain .dev-curve .zero { stroke: #585858; stroke-width: 1; }
+.chain .dev-curve text { fill: #9a9a9a; font-size: 8px; font-weight: 400; } .chain .dev-curve circle { fill: var(--dv-dark); stroke: var(--dv-orange); stroke-width: 1.4; }
+.chain .dev-curve text.num { fill: var(--dv-orange); text-anchor: middle; font-size: 8px; font-weight: 700; }
+.chain .dev-curve path.live { fill: rgba(150, 150, 150, 0.45); stroke: none; pointer-events: none; }
+.dev-dot { cursor: grab; outline: none; } .dev-dot:active { cursor: grabbing; } .dev-dot .hit { fill: transparent !important; stroke: none !important; }
+.chain .dev-dot.on circle:not(.hit), .chain .dev-dot:hover circle:not(.hit), .chain .dev-dot:focus-visible circle:not(.hit) { fill: var(--dv-orange); } .chain .dev-dot.on text.num, .chain .dev-dot:hover text.num, .chain .dev-dot:focus-visible text.num { fill: var(--dv-ink); }
+.chain .dev-groups { display: flex; gap: 3px; padding: 0; flex: none; }
+.chain .dev .dev-groups button { flex: 1; padding: 0; height: 18px; font-size: 11px; font-weight: 700; border: 1px solid var(--dv-edge); border-radius: 0; background: var(--dv-box); color: var(--dv-ink); } .chain .dev .dev-groups button.on { background: var(--dv-cyan); }
+.chain .dev-meter { display: grid; grid-template-rows: auto 1fr auto; justify-items: center; gap: 2px; padding: 0; width: 34px; flex: none; }
+.chain .dev-meter i { display: block; width: 9px; height: auto; background: var(--dv-dark); border: 1px solid var(--dv-edge); border-radius: 0; position: relative; } .chain .dev-meter i span { position: absolute; left: 0; right: 0; top: 0; height: 0; width: auto; background: var(--dv-orange); display: block; }
+.chain .dev-spectrum { display: block; width: 360px; flex: 1; min-height: 0; height: auto; margin: 0; border: 0; border-radius: 3px; }
+.chain .dev-tuner { padding: 10px 8px 4px; width: 190px; display: grid; gap: 6px; text-align: center; align-content: center; flex: 1; background: var(--dv-dark); border-radius: 3px; } .chain .dev-tuner b { font-size: 34px; color: #f0f0f0; line-height: 1; } .chain .dev-tuner small { color: #b0b0b0; font-size: 11px; font-weight: 400; }
+.chain .dev-tuner-bar { position: relative; height: 14px; background: #161616; border: 1px solid #444; border-radius: 0; } .chain .dev-tuner-bar i { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: #888; }
+.chain .dev-tuner-bar span { position: absolute; top: 1px; bottom: 1px; width: 4px; margin-left: -2px; background: var(--dv-orange); transition: left 0.1s linear; } .chain .dev-tuner-bar span.in { background: var(--dv-cyan); }
+.chain .dev-drop { flex: 1; min-width: 230px; display: grid; align-content: center; justify-items: center; gap: 8px; color: #8d8d8d; font-size: 12.5px; border-radius: 4px; text-align: center; padding: 0 12px; }
+.chain .dev-drop.over { background: #353535; outline: 1px solid var(--dv-cyan); outline-offset: -1px; color: #d0d0d0; }
+.chain .dev-drop small { font-size: 11px; max-width: 240px; color: #777; }
+.chain .dev-drop select { font-size: 11.5px; }
+.chain .dev.inst { min-width: 150px; } .chain .dev.inst .dev-body { flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; }
+.chain .dev.inst .dev-open { font-size: 12px; font-weight: 700; padding: 4px 14px; border: 1px solid var(--dv-edge); border-radius: 0; background: var(--dv-box); color: var(--dv-ink); } .chain .dev.inst .dev-open.on { background: var(--dv-orange); }
+.chain .dev.inst small { font-size: 10.5px; font-weight: 500; max-width: 140px; line-height: 1.3; }
+.chain.note .chain-row { height: 150px; } .chain.note .dev-params { grid-template-rows: repeat(2, 1fr); }
 
 /* the piano roll's loudness lane: stays at the bottom of the roll while the keys scroll */
 .daw2 .roll-vel { position: sticky; bottom: 0; left: 0; display: flex; background: #232325; border-top: 1px solid var(--line); z-index: 3; }
@@ -503,7 +525,6 @@ tr.dim td { opacity: 0.6; }
 .daw2 .arr-master .arr-bars { background: var(--s1); min-height: 30px; } .daw2 .arr-master .arr-side { border-left-color: #8a8a90; background: var(--s1); }
 .daw2 .arr-name.master { flex: 1; font-weight: 700; color: var(--ink); background: none; border: 0; padding: 0 4px; font-size: 12.5px; }
 .daw2 .arr-master .arr-mix { width: 150px; }
-.dev-curve path.live { fill: rgba(120, 200, 255, 0.22); stroke: rgba(120, 200, 255, 0.55); stroke-width: 0.8; pointer-events: none; }
 
 /* automation lanes under a track */
 .daw2 .trk-auto { padding: 0 5px; font-size: 11px; font-weight: 700; min-width: 22px; } .daw2 .trk-auto.on { background: #7ec8ff; color: #10202c; border-color: #7ec8ff; }

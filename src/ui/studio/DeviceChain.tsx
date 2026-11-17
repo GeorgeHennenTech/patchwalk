@@ -12,19 +12,51 @@ const toSlider = (s: ParamSpec, v: number) => Math.round((1000 * Math.log(v / s.
 const fromSlider = (s: ParamSpec, x: number) => s.min * (s.max / s.min) ** (x / 1000);
 
 const groupsOf = (spec: { params: ParamSpec[] }) => [...new Set(spec.params.map((s) => s.group).filter((g): g is string => !!g))];
-function Params({ spec, d, set, group, setGroup }: { spec: { name: string; params: ParamSpec[] }; d: Device; set: (id: string, v: number) => void; group?: string; setGroup: (g: string) => void }) {
-  const groups = groupsOf(spec);
-  const one = (s: ParamSpec) => { const v = d.p[s.id] ?? s.def, name = `${spec.name} ${s.group ? `${s.group} ` : ""}${s.label}`;
-    if (s.choices && s.choices.length === 2) return <button key={s.id} className={`dev-sw${v ? " on" : ""}`} aria-pressed={!!v} aria-label={name} onClick={() => set(s.id, v ? 0 : 1)}>{s.label}</button>;
-    if (s.choices) return <label key={s.id} className="dev-knob"><span>{s.label}</span><select value={v} aria-label={name} onChange={(e) => set(s.id, Number(e.target.value))}>{s.choices.map((c, i) => <option key={c} value={i}>{c}</option>)}</select></label>;
-    return <label key={s.id} className="dev-knob"><span>{s.label} <b>{shown(s, v)}</b></span>{s.log
-      ? <input type="range" min={0} max={1000} step={1} value={toSlider(s, v)} aria-label={name} onChange={(e) => set(s.id, fromSlider(s, Number(e.target.value)))} onDoubleClick={() => set(s.id, s.def)} />
-      : <input type="range" min={s.min} max={s.max} step={s.step} value={v} aria-label={name} onChange={(e) => set(s.id, Number(e.target.value))} onDoubleClick={() => set(s.id, s.def)} />}</label>; };
-  const visible = (s: ParamSpec) => (!s.group || s.group === group) && (!s.when || s.when(d.p));
-  return (<>
-    {groups.length > 0 && <div className="dev-groups" role="tablist">{groups.map((g) => <button key={g} role="tab" aria-selected={g === group} className={g === group ? "on" : ""} onClick={() => setGroup(g)}>{g.replace(/^Band /, "")}</button>)}</div>}
-    <div className="dev-params">{spec.params.filter(visible).map(one)}</div>
-  </>);
+// A knob's place along its travel, 0 to 1 (frequencies and times travel in ratios), and back onto its steps.
+const travel = (s: ParamSpec, v: number) => Math.min(1, Math.max(0, s.log ? Math.log(v / s.min) / Math.log(s.max / s.min) : (v - s.min) / (s.max - s.min)));
+const fromTravel = (s: ParamSpec, t: number) => { const x = Math.min(1, Math.max(0, t)), raw = s.log ? s.min * (s.max / s.min) ** x : s.min + x * (s.max - s.min); return s.log ? raw : Math.min(s.max, Math.max(s.min, Math.round(raw / s.step) * s.step)); };
+const polar = (deg: number, r: number): [number, number] => [18 + r * Math.cos((deg * Math.PI) / 180), 18 + r * Math.sin((deg * Math.PI) / 180)];
+const arc = (from: number, to: number, r = 15) => { const [a, b] = from <= to ? [from, to] : [to, from], [x1, y1] = polar(a, r), [x2, y2] = polar(b, r); return `M${x1.toFixed(2)},${y1.toFixed(2)}A${r},${r} 0 ${b - a > 180 ? 1 : 0} 1 ${x2.toFixed(2)},${y2.toFixed(2)}`; };
+/**
+ * A round knob: name above, value below. Drag up and down to turn it (Shift for fine), use the mouse wheel or
+ * the arrow keys, double-click to put it back. A knob that goes both ways from a middle fills from the top.
+ */
+function Knob({ s, v, name, set }: { s: ParamSpec; v: number; name: string; set: (v: number) => void }) {
+  const t = travel(s, v), START = 135, SWEEP = 270, angle = START + t * SWEEP, both = !s.log && s.min < 0 && s.max > 0, zero = both ? START + travel(s, 0) * SWEEP : START;
+  const held = useRef<{ y: number; t: number } | null>(null), [px, py] = polar(angle, 14.5), [qx, qy] = polar(angle, 5);
+  const key = (e: React.KeyboardEvent) => { const by = (e.shiftKey ? 0.1 : 0.01) * (e.key === "ArrowUp" || e.key === "ArrowRight" ? 1 : e.key === "ArrowDown" || e.key === "ArrowLeft" ? -1 : 0);
+    if (by) { e.preventDefault(); e.stopPropagation(); const next = fromTravel(s, t + by); set(next === v && !s.log ? Math.min(s.max, Math.max(s.min, v + Math.sign(by) * s.step)) : next); }
+    else if (e.key === "Home") { e.preventDefault(); set(s.min); } else if (e.key === "End") { e.preventDefault(); set(s.max); } else if (e.key === "Delete" || e.key === "Backspace") { e.preventDefault(); e.stopPropagation(); set(s.def); } };
+  return (
+    <div className="dev-knob">
+      <span className="dev-label">{s.label}</span>
+      <svg viewBox="0 0 36 36" className="knob" role="slider" tabIndex={0} aria-label={name} aria-valuemin={s.min} aria-valuemax={s.max} aria-valuenow={v} aria-valuetext={shown(s, v)}
+        onPointerDown={(e) => { e.preventDefault(); e.currentTarget.setPointerCapture(e.pointerId); e.currentTarget.focus(); held.current = { y: e.clientY, t }; }}
+        onPointerMove={(e) => { const h = held.current; if (h) set(fromTravel(s, h.t + (h.y - e.clientY) / (e.shiftKey ? 900 : 150))); }}
+        onPointerUp={() => { held.current = null; }} onPointerCancel={() => { held.current = null; }}
+        onDoubleClick={() => set(s.def)} onKeyDown={key} onWheel={(e) => set(fromTravel(s, t + (e.deltaY < 0 ? 0.02 : -0.02)))}>
+        <path d={arc(START, START + SWEEP)} className="knob-track" />
+        {Math.abs(angle - zero) > 0.5 && <path d={arc(zero, angle)} className="knob-value" />}
+        {both && <path d="M15.5,0.5 L20.5,0.5 L18,4 Z" className="knob-mid" />}
+        <line x1={qx} y1={qy} x2={px} y2={py} className="knob-hand" />
+      </svg>
+      <span className="dev-value">{shown(s, v)}</span>
+    </div>
+  );
+}
+/** A device's settings as cells: knobs, menus, and switches (two switches share a cell, one above the other). */
+function Cells({ spec, d, set, list }: { spec: { name: string }; d: Device; set: (id: string, v: number) => void; list: ParamSpec[] }) {
+  const cells: ParamSpec[][] = [];
+  for (const s of list) { const sw = s.choices?.length === 2, last = cells[cells.length - 1]; if (sw && last && last.length < 2 && last[0]!.choices?.length === 2) last.push(s); else cells.push([s]); }
+  const nameOf = (s: ParamSpec) => `${spec.name} ${s.group ? `${s.group} ` : ""}${s.label}`;
+  return (
+    <div className="dev-params">
+      {cells.map((cell) => { const s = cell[0]!, v = d.p[s.id] ?? s.def;
+        if (s.choices?.length === 2) return <div key={s.id} className="dev-switches">{cell.map((x) => { const on = !!(d.p[x.id] ?? x.def); return <button key={x.id} className={`dev-sw${on ? " on" : ""}`} aria-pressed={on} aria-label={nameOf(x)} onClick={() => set(x.id, on ? 0 : 1)}>{x.label}</button>; })}</div>;
+        if (s.choices) return <label key={s.id} className="dev-menu"><span className="dev-label">{s.label}</span><select value={v} aria-label={nameOf(s)} onChange={(e) => set(s.id, Number(e.target.value))}>{s.choices.map((c, i) => <option key={c} value={i}>{c}</option>)}</select></label>;
+        return <Knob key={s.id} s={s} v={v} name={nameOf(s)} set={(x) => set(s.id, x)} />; })}
+    </div>
+  );
 }
 
 const W = 300, H = 140, LOW = 20, HIGH = 20000, TOP = 18;
@@ -61,7 +93,7 @@ function Curve({ spec, d, set, group, onGroup, analyser }: { /** the sound comin
     else return;
     e.preventDefault(); e.stopPropagation(); set(next); };
   return (
-    <svg ref={svg} className="dev-curve" viewBox={`0 0 ${W} ${H}`} role="group" aria-label={`${spec.name}: level against frequency, 20 Hz to 20 kHz, 18 dB up and down. Drag the dots.`}>
+    <svg ref={svg} className="dev-curve" preserveAspectRatio="none" viewBox={`0 0 ${W} ${H}`} role="group" aria-label={`${spec.name}: level against frequency, 20 Hz to 20 kHz, 18 dB up and down. Drag the dots.`}>
       {[100, 1000, 10000].map((f) => <g key={f}><line x1={xOf(f)} x2={xOf(f)} y1={0} y2={H} className="grid" /><text x={xOf(f) + 3} y={H - 3}>{f >= 1000 ? `${f / 1000}k` : f}</text></g>)}
       {[-12, 0, 12].map((g) => <line key={g} x1={0} x2={W} y1={yOf(g)} y2={yOf(g)} className={g ? "grid" : "zero"} />)}
       <path ref={live} className="live" />
@@ -78,22 +110,33 @@ function Curve({ spec, d, set, group, onGroup, analyser }: { /** the sound comin
   );
 }
 
-/** A device's pictures and settings. The curve's dots and the settings below share which band is open. */
+/**
+ * A device's pictures and settings, laid out left to right at one height: the open band's knobs, then the
+ * display with the band buttons under it, then the rest. The curve's dots and the band buttons share which band is open.
+ */
 function Body({ spec, d, set, reduction, analyser }: { spec: DeviceSpec; d: Device; set: (changes: Record<string, number>) => void; reduction?: (deviceId: string) => number | undefined; analyser?: (deviceId: string) => AnalyserNode | undefined }) {
-  const [group, setGroup] = useState(groupsOf(spec)[0]);
-  return (<>
-    {CURVES[d.kind] && <Curve spec={spec} d={d} set={set} group={group} onGroup={setGroup} analyser={analyser ? () => (d.on ? analyser(d.id) : undefined) : undefined} />}
-    {spec.view === "spectrum" && analyser && <SpectrumView read={() => analyser(d.id)} />}
-    {spec.view === "tuner" && analyser && <TunerView read={() => analyser(d.id)} />}
-    {spec.meter && reduction && <Meter read={() => (d.on ? reduction(d.id) : 0)} />}
-    <Params spec={spec} d={d} set={(id, v) => set({ [id]: v })} group={group} setGroup={setGroup} />
-  </>);
+  const groups = groupsOf(spec), [group, setGroup] = useState(groups[0]);
+  const visible = (s: ParamSpec) => !s.when || s.when(d.p), banded = spec.params.filter((s) => s.group && s.group === group && visible(s)), rest = spec.params.filter((s) => !s.group && visible(s));
+  const one = (id: string, v: number) => set({ [id]: v }), display = !!CURVES[d.kind] || !!spec.view;
+  return (
+    <div className="dev-body">
+      {banded.length > 0 && <Cells spec={spec} d={d} set={one} list={banded} />}
+      {(display || groups.length > 0) && <div className="dev-display">
+        {CURVES[d.kind] && <Curve spec={spec} d={d} set={set} group={group} onGroup={setGroup} analyser={analyser ? () => (d.on ? analyser(d.id) : undefined) : undefined} />}
+        {spec.view === "spectrum" && analyser && <SpectrumView read={() => analyser(d.id)} />}
+        {spec.view === "tuner" && analyser && <TunerView read={() => analyser(d.id)} />}
+        {groups.length > 0 && <div className="dev-groups" role="tablist">{groups.map((g) => <button key={g} role="tab" aria-selected={g === group} className={g === group ? "on" : ""} onClick={() => setGroup(g)}>{g.replace(/^Band /, "")}</button>)}</div>}
+      </div>}
+      {spec.meter && reduction && <Meter read={() => (d.on ? reduction(d.id) : 0)} />}
+      {rest.length > 0 && <Cells spec={spec} d={d} set={one} list={rest} />}
+    </div>
+  );
 }
 /** How far the device is turning the sound down, read from the audio about thirty times a second. */
 function Meter({ read }: { read: () => number | undefined }) {
   const bar = useRef<HTMLSpanElement>(null), text = useRef<HTMLElement>(null);
-  useEffect(() => { let raf = 0, shown = 0; const tick = () => { const v = Math.max(0, read() ?? 0); shown = v > shown ? v : shown + (v - shown) * 0.15; if (bar.current) bar.current.style.width = `${Math.min(100, (shown / 24) * 100)}%`; if (text.current) text.current.textContent = `${shown.toFixed(1)} dB`; raf = requestAnimationFrame(tick); }; raf = requestAnimationFrame(tick); return () => cancelAnimationFrame(raf); }, [read]);
-  return <div className="dev-meter" aria-label="Turning down by"><span>Turning down by <b ref={text}>0.0 dB</b></span><i><span ref={bar} /></i></div>;
+  useEffect(() => { let raf = 0, shown = 0; const tick = () => { const v = Math.max(0, read() ?? 0); shown = v > shown ? v : shown + (v - shown) * 0.15; if (bar.current) bar.current.style.height = `${Math.min(100, (shown / 24) * 100)}%`; if (text.current) text.current.textContent = `-${shown.toFixed(1)}`; raf = requestAnimationFrame(tick); }; raf = requestAnimationFrame(tick); return () => cancelAnimationFrame(raf); }, [read]);
+  return <div className="dev-meter" aria-label="Turning down by" title="How far this device is turning the sound down right now"><span className="dev-label">GR</span><i><span ref={bar} /></i><b ref={text} className="dev-value">0.0 dB</b></div>;
 }
 
 /** The sound's spectrum, 20 Hz to 20 kHz, drawn about thirty times a second. */
@@ -127,27 +170,40 @@ function TunerView({ read }: { read: () => AnalyserNode | undefined }) {
   );
 }
 
-export function DeviceChain({ devices, onChange, reduction, analyser, kind = "audio" }: { /** "note": the note effects in front of a synth; "audio": the effects after the instrument */ kind?: "audio" | "note"; devices: Device[]; onChange: (next: Device[]) => void; reduction?: (deviceId: string) => number | undefined; analyser?: (deviceId: string) => AnalyserNode | undefined }) {
+/** What is carried while an effect is dragged: one already in a chain, or a kind from the browser's list. */
+export const DRAG_DEVICE = "application/x-patchwalk-device";
+export function DeviceChain({ devices, onChange, reduction, analyser, kind = "audio", lead }: { /** the track's instrument, drawn as the first device in the row */ lead?: React.ReactNode; /** "note": the note effects in front of a synth; "audio": the effects after the instrument */ kind?: "audio" | "note"; devices: Device[]; onChange: (next: Device[]) => void; reduction?: (deviceId: string) => number | undefined; analyser?: (deviceId: string) => AnalyserNode | undefined }) {
+  const [picked, setPicked] = useState<string>(), [over, setOver] = useState<number>(), list = kind === "note" ? NOTE_FX : DEVICES;
+  // Dropping: a device of this chain moves to the place it is dropped on; a kind from the browser is added there.
+  const drop = (e: React.DragEvent, at: number) => { const raw = e.dataTransfer.getData(DRAG_DEVICE); setOver(undefined); if (!raw) return; e.preventDefault(); e.stopPropagation();
+    const [what, value] = raw.split(":");
+    if (what === "move") { const from = devices.findIndex((d) => d.id === value); if (from < 0) return; const next = devices.slice(), [d] = next.splice(from, 1); next.splice(at > from ? at - 1 : at, 0, d!); onChange(next); }
+    else if (what === "add" && list.some((x) => x.kind === value)) { const added = addDevice(devices, value!); if (added === devices) return; const next = added.slice(), d = next.pop()!; next.splice(at, 0, d); onChange(next); } };
+  const allow = (at: number) => (e: React.DragEvent) => { if (e.dataTransfer.types.includes(DRAG_DEVICE)) { e.preventDefault(); setOver(at); } };
   return (
-    <div className="chain" aria-label={kind === "note" ? "Note effects on this track" : "Effects on this track"}>
-      <h4 className="chain-title">{kind === "note" ? "Note effects · before the synth" : "Effects · after the instrument"}</h4>
+    <div className={`chain ${kind}`} aria-label={kind === "note" ? "Note effects on this track" : "Effects on this track"} onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setOver(undefined); }}>
       <div className="chain-row">
+        {lead}
         {devices.map((d, i) => { const spec = specOf(d.kind); if (!spec) return null; return (
-          <section key={d.id} className={`dev${d.on ? "" : " off"}${spec.wide ? " wide" : ""}`} aria-label={spec.name}>
-            <header>
+          <section key={d.id} className={`dev${d.on ? "" : " off"}${picked === d.id ? " picked" : ""}${over === i ? " before" : ""}`} aria-label={spec.name} onDragOver={allow(i)} onDrop={(e) => drop(e, i)}>
+            <header draggable tabIndex={0} title={`${spec.about} In Ableton Live: ${spec.like}. Drag to move it; Delete removes it.`} onDragStart={(e) => { e.dataTransfer.setData(DRAG_DEVICE, `move:${d.id}`); e.dataTransfer.effectAllowed = "move"; }} onMouseDown={() => setPicked(d.id)} onFocus={() => setPicked(d.id)}
+              onKeyDown={(e) => { if (e.target !== e.currentTarget) return; if (e.key === "Delete" || e.key === "Backspace") { e.preventDefault(); e.stopPropagation(); onChange(removeDevice(devices, d.id)); } else if (e.key === "0") { e.preventDefault(); e.stopPropagation(); onChange(toggleDevice(devices, d.id)); } }}>
               <button className={`dev-on${d.on ? " on" : ""}`} aria-pressed={d.on} aria-label={`${spec.name} on`} title="Switch this device on or off" onClick={() => onChange(toggleDevice(devices, d.id))} />
-              <b title={`${spec.about} In Ableton Live: ${spec.like}.`}>{spec.name}</b>
-              <button aria-label={`Move ${spec.name} earlier`} title="Earlier in the chain" disabled={i === 0} onClick={() => onChange(moveDevice(devices, d.id, -1))}>◀</button>
-              <button aria-label={`Move ${spec.name} later`} title="Later in the chain" disabled={i === devices.length - 1} onClick={() => onChange(moveDevice(devices, d.id, 1))}>▶</button>
-              <button aria-label={`Remove ${spec.name}`} title="Remove" onClick={() => onChange(removeDevice(devices, d.id))}>×</button>
+              <b>{spec.name}</b>
+              {spec.note && <span className="dev-info" title={spec.note} aria-label={spec.note}>i</span>}
+              <button className="dev-round" aria-label={`Move ${spec.name} earlier`} title="Earlier in the chain" disabled={i === 0} onClick={() => onChange(moveDevice(devices, d.id, -1))}>◀</button>
+              <button className="dev-round" aria-label={`Move ${spec.name} later`} title="Later in the chain" disabled={i === devices.length - 1} onClick={() => onChange(moveDevice(devices, d.id, 1))}>▶</button>
+              <button className="dev-round" aria-label={`Remove ${spec.name}`} title="Remove" onClick={() => onChange(removeDevice(devices, d.id))}>×</button>
             </header>
             <Body spec={spec} d={d} reduction={reduction} analyser={analyser} set={(changes) => onChange(Object.entries(changes).reduce((c, [id, v]) => setDeviceParam(c, d.id, id, v), devices))} />
-            {spec.note && <p className="dev-note">{spec.note}</p>}
           </section>
         ); })}
-        {devices.length < MAX_DEVICES && <label className="dev-add">{kind === "note" ? "Add a note effect" : "Add an effect"} <select value="" aria-label={kind === "note" ? "Add a note effect" : "Add an effect"} onChange={(e) => { if (e.target.value) onChange(addDevice(devices, e.target.value)); }}><option value="">Choose…</option>{(kind === "note" ? NOTE_FX : DEVICES).map((s) => <option key={s.kind} value={s.kind}>{s.name}</option>)}</select></label>}
+        <div className={`dev-drop${over === devices.length ? " over" : ""}`} onDragOver={allow(devices.length)} onDrop={(e) => drop(e, devices.length)}>
+          <span>{kind === "note" ? "Drop MIDI Effects Here" : "Drop Audio Effects Here"}</span>
+          {devices.length < MAX_DEVICES ? <select value="" aria-label={kind === "note" ? "Add a note effect" : "Add an effect"} onChange={(e) => { if (e.target.value) onChange(addDevice(devices, e.target.value)); }}><option value="">or choose…</option>{list.map((x) => <option key={x.kind} value={x.kind}>{x.name}</option>)}</select> : <small>Eight at most</small>}
+          {devices.length === 0 && <small>{kind === "note" ? "They change this track's clip notes before the synth plays them." : "The sound passes through each in turn, left to right."}</small>}
+        </div>
       </div>
-      {devices.length === 0 && <p className="daw-hint">{kind === "note" ? "No note effects yet. They change the notes written in this track's clips before the synth plays them: an arpeggiator, chords, a scale. Keys played live are not changed." : "No effects on this track yet. They go after the instrument, left to right, and the sound passes through each in turn."}</p>}
     </div>
   );
 }

@@ -35,9 +35,18 @@ const fAt = (x: number) => LOW * (HIGH / LOW) ** (Math.min(W, Math.max(0, x)) / 
  * dragged: sideways for frequency, up and down for gain (or sharpness where there is no gain); the mouse
  * wheel over a dot changes its sharpness; a double-click puts its gain back to zero. Arrow keys work too.
  */
-function Curve({ spec, d, set, group, onGroup }: { spec: { name: string; params: ParamSpec[] }; d: Device; set: (changes: Record<string, number>) => void; group?: string; onGroup: (g: string) => void }) {
+function Curve({ spec, d, set, group, onGroup, analyser }: { /** the sound coming out of the device, drawn faintly behind the curve */ analyser?: () => AnalyserNode | undefined; spec: { name: string; params: ParamSpec[] }; d: Device; set: (changes: Record<string, number>) => void; group?: string; onGroup: (g: string) => void }) {
   const kind = d.kind, p = d.p, at = CURVES[kind]!, pts: string[] = [], handles = HANDLES[kind]?.(p) ?? [], svg = useRef<SVGSVGElement>(null), held = useRef<{ h: Handle; q0: number; y0: number } | null>(null);
   for (let i = 0; i <= 150; i++) { const f = LOW * (HIGH / LOW) ** (i / 150); pts.push(`${xOf(f).toFixed(1)},${Math.min(H + 4, Math.max(-4, yOf(at(p, f)))).toFixed(1)}`); }
+  const live = useRef<SVGPathElement>(null), read = useRef(analyser); read.current = analyser;
+  useEffect(() => { let raf = 0, data: Float32Array<ArrayBuffer> | undefined, n = 0;
+    const tick = () => { raf = requestAnimationFrame(tick); if (n++ % 2) return; const a = read.current?.(), el = live.current; if (!el) return; if (!a) { el.setAttribute("d", ""); return; }
+      if (!data || data.length !== a.frequencyBinCount) data = new Float32Array(a.frequencyBinCount);
+      a.getFloatFrequencyData(data); const perBin = a.context.sampleRate / a.fftSize; let path = `M0,${H}`, any = false;
+      for (let x = 0; x <= W; x += 3) { const lo = Math.max(1, Math.floor(fAt(x) / perBin)), hi = Math.max(lo + 1, Math.ceil(fAt(x + 3) / perBin)); let top = -200; for (let b = lo; b < hi && b < data.length; b++) if (data[b]! > top) top = data[b]!;
+        const y = H * Math.min(1, Math.max(0, (-12 - top) / 84)); if (y < H - 0.5) any = true; path += `L${x},${y.toFixed(1)}`; }
+      el.setAttribute("d", any ? `${path}L${W},${H}Z` : ""); };
+    raf = requestAnimationFrame(tick); return () => cancelAnimationFrame(raf); }, []);
   const range = (id: string) => spec.params.find((s) => s.id === id);
   const where = (e: { clientX: number; clientY: number }) => { const r = svg.current!.getBoundingClientRect(); return { x: ((e.clientX - r.left) / r.width) * W, y: ((e.clientY - r.top) / r.height) * H }; };
   const sharper = (h: Handle, q: number, by: number) => { const s = h.qParam ? range(h.qParam) : undefined; return s ? Math.min(s.max, Math.max(s.min, q * by)) : q; };
@@ -55,6 +64,7 @@ function Curve({ spec, d, set, group, onGroup }: { spec: { name: string; params:
     <svg ref={svg} className="dev-curve" viewBox={`0 0 ${W} ${H}`} role="group" aria-label={`${spec.name}: level against frequency, 20 Hz to 20 kHz, 18 dB up and down. Drag the dots.`}>
       {[100, 1000, 10000].map((f) => <g key={f}><line x1={xOf(f)} x2={xOf(f)} y1={0} y2={H} className="grid" /><text x={xOf(f) + 3} y={H - 3}>{f >= 1000 ? `${f / 1000}k` : f}</text></g>)}
       {[-12, 0, 12].map((g) => <line key={g} x1={0} x2={W} y1={yOf(g)} y2={yOf(g)} className={g ? "grid" : "zero"} />)}
+      <path ref={live} className="live" />
       <polyline points={pts.join(" ")} />
       {handles.map((h, i) => { const cx = xOf(h.f), cy = Math.min(H - 8, Math.max(8, yOf(h.db))), on = !!h.group && h.group === group;
         return <g key={`${h.label}:${i}`} className={`dev-dot${on ? " on" : ""}`} tabIndex={0} role="slider" aria-label={`${spec.name} ${h.label} dot`} aria-valuenow={Math.round(h.fParam ? h.f : h.db)} aria-valuetext={`${h.fParam ? `${round(h.f)} Hz` : ""}${h.dbParam ? ` ${h.db} dB` : ""}`}
@@ -72,7 +82,7 @@ function Curve({ spec, d, set, group, onGroup }: { spec: { name: string; params:
 function Body({ spec, d, set, reduction, analyser }: { spec: DeviceSpec; d: Device; set: (changes: Record<string, number>) => void; reduction?: (deviceId: string) => number | undefined; analyser?: (deviceId: string) => AnalyserNode | undefined }) {
   const [group, setGroup] = useState(groupsOf(spec)[0]);
   return (<>
-    {CURVES[d.kind] && <Curve spec={spec} d={d} set={set} group={group} onGroup={setGroup} />}
+    {CURVES[d.kind] && <Curve spec={spec} d={d} set={set} group={group} onGroup={setGroup} analyser={analyser ? () => (d.on ? analyser(d.id) : undefined) : undefined} />}
     {spec.view === "spectrum" && analyser && <SpectrumView read={() => analyser(d.id)} />}
     {spec.view === "tuner" && analyser && <TunerView read={() => analyser(d.id)} />}
     {spec.meter && reduction && <Meter read={() => (d.on ? reduction(d.id) : 0)} />}

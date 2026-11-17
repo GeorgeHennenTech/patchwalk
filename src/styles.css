@@ -503,3 +503,4 @@ tr.dim td { opacity: 0.6; }
 .daw2 .arr-master .arr-bars { background: var(--s1); min-height: 30px; } .daw2 .arr-master .arr-side { border-left-color: #8a8a90; background: var(--s1); }
 .daw2 .arr-name.master { flex: 1; font-weight: 700; color: var(--ink); background: none; border: 0; padding: 0 4px; font-size: 12.5px; }
 .daw2 .arr-master .arr-mix { width: 150px; }
+.dev-curve path.live { fill: rgba(120, 200, 255, 0.22); stroke: rgba(120, 200, 255, 0.55); stroke-width: 0.8; pointer-events: none; }

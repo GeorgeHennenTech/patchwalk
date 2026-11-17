@@ -1,7 +1,7 @@
 // The audio of each device, built from the settings and maths in `devices.ts`. Every device is wrapped the
 // same way: the sound goes both through the effect and straight past it, and switching the device on or off
 // crossfades between the two, so nothing clicks and nothing restarts.
-import { CAB_BUMP_Q, PRESENCE_HZ, TONE_HIGH_HZ, TONE_LOW_HZ, TONE_MID_HZ, ampDrive, cabinetOf, driveTable, pedalDrive, erosionSwing, ECHO_WOBBLE, FILTER_DELAY_LINES, autoFilterKind, echoDriveGain, echoSeconds, filterDelayLine, CHANNEL_CUT_HZ, CHANNEL_HIGH_HZ, CHANNEL_LOW_HZ, CHANNEL_MID_Q, DELAY_MAX_SECONDS, CHORUS_SWING, dbToGain, delayRouting, delayTimes, eq3Gains, eq8Band, lfoRateHz, mixGains, octavesToQ, overdriveGain, overdriveToneHz, panHarmonics, satTable, utilityMatrix, type Device } from "./devices";
+import { CURVES, CAB_BUMP_Q, PRESENCE_HZ, TONE_HIGH_HZ, TONE_LOW_HZ, TONE_MID_HZ, ampDrive, cabinetOf, driveTable, pedalDrive, erosionSwing, ECHO_WOBBLE, FILTER_DELAY_LINES, autoFilterKind, echoDriveGain, echoSeconds, filterDelayLine, CHANNEL_CUT_HZ, CHANNEL_HIGH_HZ, CHANNEL_LOW_HZ, CHANNEL_MID_Q, DELAY_MAX_SECONDS, CHORUS_SWING, dbToGain, delayRouting, delayTimes, eq3Gains, eq8Band, lfoRateHz, mixGains, octavesToQ, overdriveGain, overdriveToneHz, panHarmonics, satTable, utilityMatrix, type Device } from "./devices";
 import { FLANGER_BASE, FLANGER_SWING, PHASER_Q, PHASER_STAGES, PHASER_SWING_CENTS, reverbImpulse } from "../synth/fx";
 import { DSP_KINDS } from "./dsp";
 import workletUrl from "./dsp.worklet.ts?worker&url";
@@ -317,8 +317,11 @@ export function buildDevice(ctx: BaseAudioContext, d: Device, bpm = 120, origin 
   input.connect(dry).connect(output);
   wet.gain.value = d.on ? 1 : 0; dry.gain.value = d.on ? 0 : 1;
   building = true; try { core.set(d.p, ctx.currentTime, bpm, origin); } finally { building = false; }
-  return { input, output, reduction: core.reduction, side: core.side, analyser: core.analyser,
+  // a device that draws a curve also shows the sound coming out of it, faintly, behind the curve
+  let tap: AnalyserNode | undefined;
+  if (!core.analyser && CURVES[d.kind]) { tap = ctx.createAnalyser(); tap.fftSize = 4096; tap.smoothingTimeConstant = 0.8; output.connect(tap); }
+  return { input, output, reduction: core.reduction, side: core.side, analyser: core.analyser ?? tap,
     update(next, tempo = bpm, began = origin) { const t = ctx.currentTime; core.set(next.p, t, tempo, began); wet.gain.setTargetAtTime(next.on ? 1 : 0, t, SMOOTH); dry.gain.setTargetAtTime(next.on ? 0 : 1, t, SMOOTH); },
-    dispose() { for (const n of [input, output, wet, dry, ...core.nodes]) { try { if (n instanceof OscillatorNode || n instanceof AudioBufferSourceNode) n.stop(); n.disconnect(); } catch { /* already apart */ } } },
+    dispose() { for (const n of [input, output, wet, dry, ...(tap ? [tap] : []), ...core.nodes]) { try { if (n instanceof OscillatorNode || n instanceof AudioBufferSourceNode) n.stop(); n.disconnect(); } catch { /* already apart */ } } },
   };
 }

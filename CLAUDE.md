@@ -1284,6 +1284,12 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   can sit a few Hz off the interval (13 cents flat on an octave up). **The owner asked (17 Nov 2026) whether
   the handoff doc is kept up to date: it had not been for three batches. `docs/HANDOFF.md` now ends with a
   "State" paragraph for the devices; update it with every push that adds one.**
+  **Two to-do lists, and both must be updated with every push (owner asked 17 Nov 2026 why the widget was
+  behind):** `docs/TODO.md` (what the `/todo` pane in Claude Code reads) and the owner's "Patchwalk To-Do"
+  page (https://claude.ai/artifact/7sHF6r2vvBuxa8DSkcfcPz, rows in its `todos` collection, written with
+  `ArtifactData`). They are not copies of each other: the page also holds the owner's own tasks and the
+  literature lists, so their counts differ. After a push: tick or add the line in `docs/TODO.md`, and add a
+  done row (or update the open row) in the page's matching section.
 - **"Walk me through it" (16 Nov 2026, owner's go-ahead with two rules of their own).** A second mode on the
   Ask tab (a switch, remembered): a how-to question becomes a walkthrough of steps shown one at a time.
   `api/walk.ts` answers two kinds of request: `plan` (one call with structured output over ten passages:

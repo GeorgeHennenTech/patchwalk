@@ -62,7 +62,7 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [x] Macro chapter: seven macro recipes, two macros on one sound, and a by-ear checkpoint
 - [x] First impact lessons: note start, kick, fall size and speed, sub drop, bass note as a hit, pitch at the front, checkpoint
 - [x] Effects rack (distortion, EQ, compressor, chorus, delay, reverb) and seven effects lessons
-- [ ] Effects: ducking (sidechain), multiband, and effects as modulation destinations (reordering done 15 Nov)
+- [ ] Practice synth effects: ducking (sidechain) and effects as modulation destinations (reordering done 15 Nov; multiband is in the Studio as a stock plugin)
 - [x] Editable matrix: change any connection in one table, add rows so one source moves several things; a lesson on it
 - [x] Eight more macro recipes using effects, warp, FM and the kick (16 recipes and lessons in the macro chapter now)
 - [x] Any knob can be a destination for any source; a handle on each knob sets a source's depth there; two lessons
@@ -138,13 +138,17 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [x] Studio: undo/redo, record from keys and pads, saved breaks and racks, MIDI files in and out (17 Nov 2026)
 - [x] Library tab; Studio sounds, breaks, racks and songs kept in the database; nine more built-in drums (17 Nov 2026)
 - [x] Studio laid out like Ableton's Arrangement View, with its shortcuts; note selection and draw mode; metronome (17 Nov 2026)
-- [ ] **Stock plugins, one at a time (owner, 17 Nov 2026): see `docs/STOCK_PLUGINS.md`.** Done: the device chain, 1 Utility. Next: 2 Three-band EQ.
+- [x] Studio: effects on every track, in a chain you can reorder and switch (17 Nov 2026)
+- [x] Stock plugins, first 24 of 30, each measured (17 Nov 2026; none heard by the owner yet): Utility, Three-band EQ, Eight-band EQ, Channel EQ, Compressor with knee and meter, Glue compressor, Limiter, Gate, Multiband dynamics, Saturator, Overdrive, Crusher, Drum bus, Erosion, Auto filter, Auto pan, Chorus, Phaser and flanger, Delay, Echo, Filter delay, Reverb, Resonators, Shifter
+- [x] Patchwalk installs as a desktop app from the browser (17 Nov 2026; owner to check Chrome offers Install on the live site)
+- [ ] Stock plugins still to build (see `docs/STOCK_PLUGINS.md`): Beat repeat, Amp/cabinet/pedal, Vinyl distortion, Spectrum and tuner, the MIDI effects, a sidechain for the compressor; then the hard ones (vocoder, spectral effects, grain delay)
+- [ ] Owner to listen to the 24 stock plugins and say which sound wrong (known weak spots: the pitch shifter warbles, the reverb is plain)
 - [ ] **Automation (owner asked 17 Nov 2026):** automation lanes in the Studio (a line per track that moves a
   setting over time: a synth knob, a track's level, an effect), then lessons on automation with many
   different combinations of automations to try, in the way the macro chapter has many recipes
-- [ ] Studio, Ableton-like, still missing: drag clips with the mouse, split and consolidate, zoom, grid sizes, Session View, per-track effects
+- [ ] Studio, Ableton-like, still missing: drag clips with the mouse, split and consolidate, zoom, grid sizes, Session View
 - [ ] Owner to try: drop a sample in the Studio and check it shows in Library > Sounds on the live site
-- [ ] Studio next: note loudness, copy/paste, per-track effects, export to a sound file, a kit as a zip of sound files, lessons that use it; earlier list: one clock shared with the synth, piano roll, chaining patterns, mixer, per-drum sound, a lesson using the grid
+- [ ] Studio next: note loudness, export to a sound file, a kit as a zip of sound files, lessons that use it; earlier list: one clock shared with the synth, piano roll, chaining patterns, mixer, per-drum sound, a lesson using the grid
 - [ ] Mini DAW: tracks, mixer, automation, export
 - [ ] Genre lessons, starting with glitch-hop, breakbeat and psydub
 - [ ] Lessons on Serum itself: the matrix tab and the rest of its specialist features (50 planned)

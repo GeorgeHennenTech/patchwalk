@@ -24,6 +24,8 @@ export class Kit {
     return buffer.duration;
   }
   has(id: string): boolean { return this.buffers.has(id); }
+  /** The decoded sound of a stored file, for the sampler; nothing when it is not loaded. */
+  buffer(id: string): AudioBuffer | undefined { return this.buffers.get(id); }
   forget(id: string): void { this.buffers.delete(id); }
   /** A sound file's length in seconds, or 0 when it is not loaded. */
   seconds(id: string): number { return this.buffers.get(id)?.duration ?? 0; }

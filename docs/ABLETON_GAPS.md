@@ -37,7 +37,7 @@ Live, cited from the manual. Every feature ticked below needs a lesson.
 - [x] Grid sizes with triplets, notes off the sixteenth grid, Quantize (built 17 Nov; not yet: snap off, a quantize amount in the page, Ctrl/Cmd+1 to 4)
       (p.128, 200-203)
 - [ ] Clips of any length placed anywhere, split anywhere (p.123, 128-130)
-- [ ] A sampler instrument: one sound played across the keys, looping and one-shot modes (Simpler, p.608-622)
+- [x] A sampler instrument: one sound played across the keys, held, looping and one-shot (built 17 Nov; not yet: a filter and LFO of its own, loop crossfade, warp, slicing) (Simpler, p.608-622)
 - [ ] Slice a break to pads by beat division, with a clip that replays the slices (p.229-232, 613-614, 621)
 - [ ] Knobs on the built-in drums (pitch, decay, click, drive...), and a filter and saturator per pad
       (p.558-560, 657-665)

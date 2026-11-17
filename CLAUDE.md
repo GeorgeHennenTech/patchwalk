@@ -1441,6 +1441,20 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   landed on step 1.5, triplet notes on 2 and 2.667, an arrow moved one a triplet on, Quantize pulled all
   three onto sixteenths, and the notes were played 0.1815, 0.2419 and 0.4032 s into the bar at a step of
   0.1210 s, which is exactly their places.
+  **Sampler (17 Nov 2026).** A synth track's instrument can be a sampler: one sound file played across the
+  keys. `src/daw/sampler.ts` (`SamplerSet`: sample, root key, mode classic or one-shot, start, length, loop,
+  fade in, fade out, tune, level; `samplerRate`: double speed an octave up, so higher notes are also
+  shorter, there is no time-stretching; `playSample`), `SynthTrack.sampler`, `setSampler`,
+  `src/ui/studio/SamplerPanel.tsx`. With a synth track selected, clicking a sound under Samples in the
+  browser makes the track a sampler; its panel is the first device in the rack (the file's shape with the
+  used stretch lit, a menu of sound files, knobs, One-shot and Loop, and × to go back to the synth). The
+  track keeps its clips, piano roll, note effects, effects and automation. In `Transport`, `playNote` sends
+  a note to the sampler or the synth, `samplerKey` plays keys held by hand, and a gate (`gates`) between a
+  track's synth and its input is shut while the track is a sampler (the synth is still there because the
+  keys' hook needs it). The sound file is fetched from the library like a pad's (`samplesUsed`). Measured
+  in a browser with a 440 Hz file: 438.7 Hz on the root key, 880.2 an octave up, 220.7 an octave down,
+  659.5 a fifth up; a letter key played it; the song played it; nothing was heard from the synth behind it.
+  Not built: its own filter and LFO, loop crossfade, slicing a break onto pads, automation of its knobs.
   **Lessons on all of this (owner, 17 Nov 2026: "we are also going to have to make lessons on all of these
   new features. this ableton course will be extensive").** Nothing is written and the lesson engine does
   not know the Studio; the plan is at the top of `docs/ABLETON_GAPS.md`. Every Studio feature needs one.

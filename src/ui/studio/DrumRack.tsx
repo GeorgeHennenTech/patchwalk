@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { CHOKE_GROUPS, FADE_MAX, MAX_PADS, TUNE_MAX, VOICES, VOICE_NAMES, addPad, audible, padWindow, removePad, setLane, setSample, type Pattern, type Voice } from "../../daw/drums";
 import type { Studio } from "./useStudio";
 
-function Wave({ peaks, start, length, fade, seconds }: { peaks: number[]; start: number; length: number; fade: number; seconds: number }) {
+export function Wave({ peaks, start, length, fade, seconds }: { peaks: number[]; start: number; length: number; fade: number; seconds: number }) {
   const w = padWindow({ start, length, fade }, seconds || 1), n = peaks.length || 1, x0 = (w.offset / (seconds || 1)) * n, x1 = ((w.offset + w.span) / (seconds || 1)) * n, xf = ((w.offset + w.span - w.fade) / (seconds || 1)) * n;
   return (
     <svg className="pad-wave" viewBox={`0 0 ${n} 40`} preserveAspectRatio="none" role="img" aria-label="The sound's shape, with the part that plays lit">

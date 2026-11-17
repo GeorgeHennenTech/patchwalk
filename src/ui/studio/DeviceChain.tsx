@@ -21,7 +21,7 @@ const arc = (from: number, to: number, r = 15) => { const [a, b] = from <= to ? 
  * A round knob: name above, value below. Drag up and down to turn it (Shift for fine), use the mouse wheel or
  * the arrow keys, double-click to put it back. A knob that goes both ways from a middle fills from the top.
  */
-function Knob({ s, v, name, set }: { s: ParamSpec; v: number; name: string; set: (v: number) => void }) {
+export function Knob({ s, v, name, set }: { s: ParamSpec; v: number; name: string; set: (v: number) => void }) {
   const t = travel(s, v), START = 135, SWEEP = 270, angle = START + t * SWEEP, both = !s.log && s.min < 0 && s.max > 0, zero = both ? START + travel(s, 0) * SWEEP : START;
   const held = useRef<{ y: number; t: number } | null>(null), [px, py] = polar(angle, 14.5), [qx, qy] = polar(angle, 5);
   const key = (e: React.KeyboardEvent) => { const by = (e.shiftKey ? 0.1 : 0.01) * (e.key === "ArrowUp" || e.key === "ArrowRight" ? 1 : e.key === "ArrowDown" || e.key === "ArrowLeft" ? -1 : 0);

@@ -6,6 +6,7 @@ import { clean } from "../synth/patches";
 import { addDevice, tidyDevices, type Device } from "./devices";
 import { applyNoteFx, type FxNote } from "./notefx";
 import { tidyAuto, type AutoLane } from "./automation";
+import { tidySampler, type SamplerSet } from "./sampler";
 import { BPM_MAX, BPM_MIN, STEPS_PER_BAR, STRENGTH, SWING_MAX, audibleOf, defaultPads, freeId, stepSeconds, stepTime, tidyPads, tidySteps, type Hit, type Lane, type Pad, type Pattern } from "./drums";
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
@@ -24,7 +25,7 @@ export const MAX_RETURNS = 2, RETURN_IDS = ["ra", "rb"] as const;
 /** A send's 0-to-100 as a gain: 100 sends the track at its full level, 50 a quarter of that (12 dB less). Our own choice of curve. */
 export const sendGain = (v: number) => (clamp(v, 0, 100) / 100) ** 2;
 export interface DrumTrack extends TrackBase { kind: "drums"; pads: Pad[]; clips: DrumClip[] }
-export interface SynthTrack extends TrackBase { kind: "synth"; patch: SynthState; clips: SynthClip[]; /** note effects, in front of the synth: they change the clip's notes before they are played */ noteFx: Device[] }
+export interface SynthTrack extends TrackBase { kind: "synth"; patch: SynthState; clips: SynthClip[]; /** note effects, in front of the synth: they change the clip's notes before they are played */ noteFx: Device[]; /** when set, the track's instrument is a sampler playing this sound file, and the synth is silent */ sampler?: SamplerSet }
 export type Track = DrumTrack | SynthTrack;
 export type Clip = DrumClip | SynthClip;
 export interface Song { name: string; bpm: number; swing: number; /** length in bars */ bars: number; tracks: Track[]; /** the master volume, 0 to 100 */ volume: number; /** return tracks: A, then B */ returns: ReturnTrack[]; /** effects on everything, just before the master volume */ masterFx?: Device[]; /** the key the song is in: the piano roll lights these notes' rows */ scale?: { root: number; name: string }; /** named places along the song (intro, drop, break), by the bar they sit on */ markers?: { bar: number; name: string }[] }
@@ -269,6 +270,8 @@ export function setMarker(s: Song, bar: number, name: string): Song {
 }
 /** Whether a note belongs to a key: `root` is 0 for C up to 11 for B, `steps` the scale's semitones above it. */
 export const inKey = (note: number, root: number, steps: readonly number[]) => steps.includes((((note - root) % 12) + 12) % 12);
+/** Make a synth track's instrument a sampler (or, with nothing, the synth again). */
+export const setSampler = (s: Song, trackId: string, sampler: SamplerSet | undefined): Song => ({ ...s, tracks: s.tracks.map((t) => { if (t.id !== trackId || t.kind !== "synth") return t; if (sampler) return { ...t, sampler }; const { sampler: _gone, ...rest } = t; return rest; }) });
 /** Put a new chain of note effects on a synth track. */
 export const setNoteFx = (s: Song, trackId: string, noteFx: Device[]): Song => ({ ...s, tracks: s.tracks.map((t) => (t.id === trackId && t.kind === "synth" ? { ...t, noteFx } : t)) });
 export function songEvents(s: Song, from: number, until: number, loop?: { start: number; bars: number }, /** the dice for notes that have a chance */ rand: () => number = Math.random): SongEvent[] {
@@ -294,9 +297,9 @@ export function songEvents(s: Song, from: number, until: number, loop?: { start:
 /** Whether anything is written in the song apart from some clips of one track (the ones about to be replaced). */
 export const hasOtherMusic = (s: Song, trackId: string, clipIds: readonly string[]): boolean => s.tracks.some((t) => t.clips.some((c) => !(t.id === trackId && clipIds.includes(c.id)) && ("hits" in c ? Object.values(c.hits).some((row) => row.some(Boolean)) : c.notes.length > 0)));
 /** Every sound-file id the song's pads use. */
-export const samplesUsed = (s: Song): string[] => [...new Set(s.tracks.flatMap((t) => (t.kind === "drums" ? t.pads.map((p) => p.sample).filter((x): x is string => !!x) : [])))];
+export const samplesUsed = (s: Song): string[] => [...new Set(s.tracks.flatMap((t) => (t.kind === "drums" ? t.pads.map((p) => p.sample).filter((x): x is string => !!x) : t.sampler ? [t.sampler.sample] : [])))];
 /** Change the ids of sound files on every pad (a sound's id became one made from its bytes). */
-export const renameSamples = (s: Song, ids: Record<string, string>): Song => (samplesUsed(s).some((id) => ids[id]) ? { ...s, tracks: s.tracks.map((t) => (t.kind === "drums" ? { ...t, pads: t.pads.map((p) => (p.sample && ids[p.sample] ? { ...p, sample: ids[p.sample]! } : p)) } : t)) } : s);
+export const renameSamples = (s: Song, ids: Record<string, string>): Song => (samplesUsed(s).some((id) => ids[id]) ? { ...s, tracks: s.tracks.map((t) => (t.kind === "drums" ? { ...t, pads: t.pads.map((p) => (p.sample && ids[p.sample] ? { ...p, sample: ids[p.sample]! } : p)) } : t.sampler && ids[t.sampler.sample] ? { ...t, sampler: { ...t.sampler, sample: ids[t.sampler.sample]! } } : t)) } : s);
 /** Take a sound off every pad of every track. */
 export const dropSongSample = (s: Song, id: string): Song => ({ ...s, tracks: s.tracks.map((t) => (t.kind === "drums" ? { ...t, pads: t.pads.map((p) => { if (p.sample !== id) return p; const { sample: _old, ...rest } = p; return rest; }) } : t)) });
 
@@ -318,7 +321,7 @@ export function tidySong(raw: unknown): Song | undefined {
     if (!g || typeof g !== "object" || (g.kind !== "drums" && g.kind !== "synth")) continue;
     const id = typeof g.id === "string" && /^[\w-]{1,24}$/.test(g.id) && !song.tracks.some((t) => t.id === g.id) ? g.id : freeId(song.tracks.map((t) => t.id), "t");
     const base = { id, name: typeof g.name === "string" ? g.name.slice(0, 24) : "Track", level: clamp(Number(g.level ?? 80) || 0, 0, 100), pan: clamp(Math.round(Number((g as { pan?: unknown }).pan) || 0), -100, 100), mute: g.mute === true, solo: g.solo === true, devices: tidyDevices(g.devices), auto: tidyAuto((g as { auto?: unknown }).auto, bars * STEPS_PER_BAR), ...(Object.keys(tidySends((g as { sends?: unknown }).sends)).length ? { sends: tidySends((g as { sends?: unknown }).sends) } : {}) };
-    const t: Track = g.kind === "drums" ? { ...base, kind: "drums", pads: tidyPads(g.pads).length ? tidyPads(g.pads) : defaultPads(), clips: [] } : { ...base, kind: "synth", noteFx: tidyDevices((g as { noteFx?: unknown }).noteFx, "note"), patch: { ...clean(g.patch), bpm: song.bpm }, clips: [] };
+    const t: Track = g.kind === "drums" ? { ...base, kind: "drums", pads: tidyPads(g.pads).length ? tidyPads(g.pads) : defaultPads(), clips: [] } : { ...base, kind: "synth", noteFx: tidyDevices((g as { noteFx?: unknown }).noteFx, "note"), patch: { ...clean(g.patch), bpm: song.bpm }, clips: [], ...(tidySampler((g as { sampler?: unknown }).sampler) ? { sampler: tidySampler((g as { sampler?: unknown }).sampler)! } : {}) };
     for (const c of Array.isArray(g.clips) ? g.clips : []) {
       if (!c || typeof c !== "object") continue;
       const cb = CLIP_BARS[t.kind].includes(c.bars) ? c.bars : 1, start = Math.round(Number(c.start));

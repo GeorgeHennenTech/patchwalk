@@ -9,6 +9,7 @@ import { chainReady, prepareDevices } from "./fxnodes";
 import { buildDevice, type LiveDevice } from "./fxnodes";
 import { masterGain, sendGain, songEvents, type Song } from "./song";
 import { automate, hasAutomation } from "./automation";
+import { playSample, type SampleVoice } from "./sampler";
 
 /** The id of the strip that holds the effects on everything. */
 export const MASTER = "master";
@@ -31,6 +32,8 @@ export class Transport {
   private taps = new Map<string, AnalyserNode>();
   /** Send wires, by "track>return": a gain from the track (after its level and pan) into the return's input. */
   private sends = new Map<string, GainNode>();
+  /** Per synth track: a gate between its synth and its input, shut while the track plays a sampler instead. */
+  private gates = new Map<string, GainNode>();
   private timer?: number;
   /** The audio-clock time of step 0 of this run, and the next step (counting on for ever) not yet handed over. */
   private began = 0;
@@ -97,13 +100,14 @@ export class Transport {
     for (const track of song.tracks) {
       if (track.kind !== "synth") continue;
       const have = this.engines.get(track.id), input = this.ins.get(track.id)!;
-      if (!have) { const engine = new Engine(track.patch, ctx, input); if (ctx.state === "running") void engine.start(); this.engines.set(track.id, { engine, patch: track.patch }); }
+      if (!have) { const gate = ctx.createGain(); gate.connect(input); this.gates.set(track.id, gate); const engine = new Engine(track.patch, ctx, gate); if (ctx.state === "running") void engine.start(); this.engines.set(track.id, { engine, patch: track.patch }); }
       else if (have.patch !== track.patch) { have.engine.update(track.patch); have.patch = track.patch; }
+      this.gates.get(track.id)?.gain.setTargetAtTime(track.sampler ? 0 : 1, t, 0.01);    // a sampler track's synth is still there for the keys' hook, but is not heard
     }
     for (const [id, out] of this.outs) {
       if (strips.some((x) => x.id === id)) continue;
       const e = this.engines.get(id);
-      if (e) { e.engine.stopScheduled(); e.engine.dispose(); this.engines.delete(id); }
+      if (e) { e.engine.stopScheduled(); e.engine.dispose(); this.engines.delete(id); this.gates.get(id)?.disconnect(); this.gates.delete(id); }
       out.disconnect(); this.pans.get(id)?.disconnect(); this.pans.delete(id); this.taps.delete(id); this.outs.delete(id); this.ins.get(id)?.disconnect(); this.ins.delete(id); this.chains.get(id)?.live.forEach((l) => l.dispose()); this.chains.delete(id);
     }
   }
@@ -140,7 +144,7 @@ export class Transport {
     for (let n = 0; n < song.bars * 16; n++) for (const e of songEvents(song, n, n + 1)) {
       const at = this.began + e.at;
       if (e.kind === "hit") this.kit!.hit(e.pad, at, e.strength, this.ins.get(e.track) ?? this.master!, e.track);
-      else this.engines.get(e.track)?.engine.playAt(e.note, at, e.seconds, e.velocity);
+      else this.playNote(song, e.track, e.note, at, e.seconds, e.velocity);
     }
     // automation: the browser is paused at every sixteenth to move the automated settings, then let go again
     if (hasAutomation(song)) for (let n = 0; n < song.bars * 16; n++) { const at = this.began + n * stepSeconds(song.bpm); void ctx.suspend(at).then(() => { this.place = n; this.sync(); void ctx.resume(); }).catch(() => undefined); }
@@ -159,7 +163,25 @@ export class Transport {
   /** Play one note of a synth track now, for trying a key. */
   note(trackId: string, note: number, seconds = 0.3, velocity = 100): void {
     this.ready();
-    this.engines.get(trackId)?.engine.playAt(note, this.ctx!.currentTime + 0.005, seconds, velocity);
+    this.playNote(this.read(), trackId, note, this.ctx!.currentTime + 0.005, seconds, velocity);
+  }
+  /** One note of a track at a time: through its sampler when it has one (and the file is loaded), otherwise its synth. */
+  private playNote(song: Song, trackId: string, note: number, at: number, seconds: number, velocity: number): void {
+    const t = song.tracks.find((x) => x.id === trackId), set = t?.kind === "synth" ? t.sampler : undefined;
+    if (!set) { this.engines.get(trackId)?.engine.playAt(note, at, seconds, velocity); return; }
+    const buffer = this.kit!.buffer(set.sample), to = this.ins.get(trackId);
+    if (buffer && to) playSample(this.ctx!, buffer, set, note, at, velocity, to, seconds);
+  }
+  /** A key played by hand on a sampler track: down starts the note, up lets it go. Says whether the track has a sampler (so the synth should stay silent). */
+  private keys = new Map<string, SampleVoice>();
+  samplerKey(trackId: string, note: number, on: boolean, velocity = 100): boolean {
+    const t = this.read().tracks.find((x) => x.id === trackId), set = t?.kind === "synth" ? t.sampler : undefined;
+    if (!set) return false;
+    this.ready();
+    const id = `${trackId}:${note}`, ctx = this.ctx!;
+    this.keys.get(id)?.release(ctx.currentTime); this.keys.delete(id);
+    if (on) { const buffer = this.kit!.buffer(set.sample), to = this.ins.get(trackId); const v = buffer && to ? playSample(ctx, buffer, set, note, ctx.currentTime + 0.003, velocity, to) : undefined; if (v) this.keys.set(id, v); }
+    return true;
   }
   /** Where the song was when it was last stopped, in steps: Shift+Space carries on from the start of that bar. */
   stoppedAt = 0;
@@ -180,7 +202,7 @@ export class Transport {
         for (const e of songEvents(song, this.next, this.next + 1, this.loop)) {
           const at = this.began + e.at;
           if (e.kind === "hit") this.kit!.hit(e.pad, at, e.strength, this.ins.get(e.track) ?? this.master!, e.track);
-          else this.engines.get(e.track)?.engine.playAt(e.note, at, e.seconds, e.velocity);
+          else this.playNote(song, e.track, e.note, at, e.seconds, e.velocity);
           step = e.step;
         }
         if (this.click && this.next % 4 === 0) this.kit!.tick(this.began + stepTime(this.next, song.bpm, song.swing), this.next % 16 === 0);

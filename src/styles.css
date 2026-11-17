@@ -568,3 +568,9 @@ tr.dim td { opacity: 0.6; }
 
 .daw2 .roll { position: relative; } .daw2 .roll-fold { position: sticky; left: 4px; top: 4px; z-index: 6; float: left; margin: 4px 0 -26px 4px; font-size: 10.5px; padding: 1px 6px; } .daw2 .roll-fold.on { background: var(--on); color: #1c1c1c; border-color: var(--on); }
 .roll.folded .roll-key { font-size: 9px; }
+
+/* the sampler as a device */
+.chain .dev.inst.sampler .dev-body { flex-direction: row; align-items: stretch; justify-content: flex-start; text-align: left; gap: 6px; }
+.chain .sampler-display { width: 230px; } .chain .sampler-display .pad-wave { flex: 1; min-height: 0; width: 100%; background: var(--dv-dark); border-radius: 3px; }
+.chain .sampler-none { flex: 1; margin: 0; display: grid; place-items: center; background: var(--dv-dark); color: #aaa; border-radius: 3px; font-size: 11px; font-weight: 400; text-align: center; padding: 0 8px; }
+.chain .sampler-display select { max-width: none; width: 100%; }

@@ -4,6 +4,8 @@
 import { Engine } from "../synth/engine";
 import { Kit } from "./kit";
 import { audibleOf, stepSeconds, stepTime, type Pad } from "./drums";
+import { chainShape } from "./devices";
+import { buildDevice, type LiveDevice } from "./fxnodes";
 import { songEvents, type Song } from "./song";
 
 const AHEAD = 0.12, EVERY_MS = 25;
@@ -13,7 +15,12 @@ export class Transport {
   ctx?: AudioContext;
   private kit?: Kit;
   private master?: GainNode;
+  /** Per track: where its instrument plays into, its effects, and its level. Instrument -> ins -> effects -> outs -> master. */
+  private ins = new Map<string, GainNode>();
   private outs = new Map<string, GainNode>();
+  private chains = new Map<string, { shape: string; live: Map<string, LiveDevice> }>();
+  private meterL?: AnalyserNode;
+  private meterR?: AnalyserNode;
   private engines = new Map<string, { engine: Engine; patch: unknown }>();
   private timer?: number;
   /** The audio-clock time of step 0 of this run, and the next step (counting on for ever) not yet handed over. */
@@ -30,6 +37,10 @@ export class Transport {
     if (this.ctx) return;
     this.ctx = new AudioContext();
     this.master = this.ctx.createGain(); this.master.gain.value = 0.9; this.master.connect(this.ctx.destination);
+    const split = this.ctx.createChannelSplitter(2);
+    this.meterL = this.ctx.createAnalyser(); this.meterR = this.ctx.createAnalyser();
+    this.meterL.fftSize = this.meterR.fftSize = 2048;
+    this.master.connect(split); split.connect(this.meterL, 0); split.connect(this.meterR, 1);
     this.kit = new Kit(this.ctx, this.master);
   }
   /** Bring the audio in line with the song: a gain per track, a synth per synth track, levels, mutes and sounds. */
@@ -38,18 +49,29 @@ export class Transport {
     const ctx = this.ctx, song = this.read(), on = audibleOf(song.tracks), t = ctx.currentTime;
     song.tracks.forEach((track, i) => {
       let out = this.outs.get(track.id);
-      if (!out) { out = ctx.createGain(); out.gain.value = 0; out.connect(this.master!); this.outs.set(track.id, out); }
+      let input = this.ins.get(track.id);
+      if (!out || !input) { out = ctx.createGain(); out.gain.value = 0; out.connect(this.master!); this.outs.set(track.id, out); input = ctx.createGain(); this.ins.set(track.id, input); }
       out.gain.setTargetAtTime(on[i] ? track.level / 80 : 0, t, 0.015);
+      // the effects: wired again only when a device is added, removed or moved; a setting is changed in place
+      const shape = chainShape(track.devices), have0 = this.chains.get(track.id);
+      if (!have0 || have0.shape !== shape) {
+        input.disconnect(); have0?.live.forEach((l) => l.dispose());
+        const live = new Map<string, LiveDevice>();
+        let from: AudioNode = input;
+        for (const d of track.devices) { const l = buildDevice(ctx, d); if (!l) continue; from.connect(l.input); from = l.output; live.set(d.id, l); }
+        from.connect(out);
+        this.chains.set(track.id, { shape, live });
+      } else for (const d of track.devices) have0.live.get(d.id)?.update(d);
       if (track.kind !== "synth") return;
       const have = this.engines.get(track.id);
-      if (!have) { const engine = new Engine(track.patch, ctx, out); if (ctx.state === "running") void engine.start(); this.engines.set(track.id, { engine, patch: track.patch }); }
+      if (!have) { const engine = new Engine(track.patch, ctx, input); if (ctx.state === "running") void engine.start(); this.engines.set(track.id, { engine, patch: track.patch }); }
       else if (have.patch !== track.patch) { have.engine.update(track.patch); have.patch = track.patch; }
     });
     for (const [id, out] of this.outs) {
       if (song.tracks.some((x) => x.id === id)) continue;
       const e = this.engines.get(id);
       if (e) { e.engine.stopScheduled(); e.engine.dispose(); this.engines.delete(id); }
-      out.disconnect(); this.outs.delete(id);
+      out.disconnect(); this.outs.delete(id); this.ins.get(id)?.disconnect(); this.ins.delete(id); this.chains.get(id)?.live.forEach((l) => l.dispose()); this.chains.delete(id);
     }
   }
   /** Make sure sound can be made (call from a click or a key press). */
@@ -65,10 +87,15 @@ export class Transport {
   forget(id: string): void { this.kit?.forget(id); }
   peaks(id: string, n?: number): number[] { return this.kit?.peaks(id, n) ?? []; }
   seconds(id: string): number { return this.kit?.seconds(id) ?? 0; }
+  /** How loud the left and right sides of everything are right now, in dB (very low when silent). */
+  levels(): { left: number; right: number } {
+    const read = (a?: AnalyserNode) => { if (!a) return -120; const b = new Float32Array(a.fftSize); a.getFloatTimeDomainData(b); let s = 0; for (const v of b) s += v * v; return 10 * Math.log10(s / b.length + 1e-12); };
+    return { left: read(this.meterL), right: read(this.meterR) };
+  }
   /** Strike one pad now, for trying a sound. */
   hitPad(trackId: string, pad: Pad, strength = 0.85): void {
     this.ready();
-    this.kit!.hit(pad, this.ctx!.currentTime + 0.005, strength * (pad.level / 100), this.outs.get(trackId) ?? this.master!, trackId);
+    this.kit!.hit(pad, this.ctx!.currentTime + 0.005, strength * (pad.level / 100), this.ins.get(trackId) ?? this.master!, trackId);
   }
   /** Play one note of a synth track now, for trying a key. */
   note(trackId: string, note: number, seconds = 0.3, velocity = 100): void {
@@ -85,7 +112,7 @@ export class Transport {
         let step = -1;
         for (const e of songEvents(song, this.next, this.next + 1, this.loop)) {
           const at = this.began + e.at;
-          if (e.kind === "hit") this.kit!.hit(e.pad, at, e.strength, this.outs.get(e.track) ?? this.master!, e.track);
+          if (e.kind === "hit") this.kit!.hit(e.pad, at, e.strength, this.ins.get(e.track) ?? this.master!, e.track);
           else this.engines.get(e.track)?.engine.playAt(e.note, at, e.seconds, e.velocity);
           step = e.step;
         }
@@ -126,7 +153,7 @@ export class Transport {
   dispose(): void {
     this.stop();
     for (const e of this.engines.values()) e.engine.dispose();
-    this.engines.clear(); this.outs.clear();
+    this.engines.clear(); this.outs.clear(); this.ins.clear(); this.chains.clear();
     void this.ctx?.close(); this.ctx = undefined; this.kit = undefined; this.master = undefined;
   }
 }

@@ -1246,6 +1246,20 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   clips selected only it changed and the tempo stayed; with two selected both changed and the third did
   not; one undo put both back; a saved break appeared under "Your breaks" and filled only the selected
   clip; two sound files and a text file gave two samples and a note.
+- **Stock plugins: the device chain and the list (17 Nov 2026, owner: "lets build all of the stock plugins that we
+  planned on implementing. make a list and we'll knock them out 1 by 1").** **`docs/STOCK_PLUGINS.md` is the
+  list, the order and the recipe for adding one: read it before building the next.** Thirty numbered items
+  taken from the Ableton manual's device list, each our own device doing the same job (never Ableton's code,
+  sound or look; `like` names the Ableton device so a chain can be rebuilt there). Built so far: the chain
+  itself and **1. Utility**. Every track has `devices` (up to eight) after its instrument:
+  `src/daw/devices.ts` (specs, edits, `tidyDevices`, `chainShape`, and each device's maths such as
+  `utilityMatrix`), `src/daw/fxnodes.ts` (`buildDevice`: the audio, each device wrapped so on/off crossfades
+  with the untouched sound), `src/ui/studio/DeviceChain.tsx` (the row in the Device view) and an "Effects"
+  list in the browser. `Transport` now runs instrument -> `ins` -> devices -> `outs` (level) -> master,
+  rewires a track only when `chainShape` changes, and has `levels()` (left and right level in dB) for
+  measuring. Measured for Utility in a browser: gain +6 and -12 dB gave 6.0 and -11.9; pan hard left
+  silenced the right; flip-left with mono cancelled a centred sound; switched off, it changed nothing.
+  **The owner wants these knocked out one at a time: after each, say what it does and what was measured.**
 - **"Walk me through it" (16 Nov 2026, owner's go-ahead with two rules of their own).** A second mode on the
   Ask tab (a switch, remembered): a how-to question becomes a walkthrough of steps shown one at a time.
   `api/walk.ts` answers two kinds of request: `plan` (one call with structured output over ten passages:

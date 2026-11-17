@@ -3,6 +3,7 @@
 // synth's whole settings) and its clips hold notes. No sound and no screen here.
 import { INITIAL, type SynthState } from "../synth/params";
 import { clean } from "../synth/patches";
+import { tidyDevices, type Device } from "./devices";
 import { BPM_MAX, BPM_MIN, STEPS_PER_BAR, STRENGTH, SWING_MAX, audibleOf, defaultPads, freeId, stepSeconds, stepTime, tidyPads, tidySteps, type Hit, type Lane, type Pad, type Pattern } from "./drums";
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
@@ -11,7 +12,7 @@ export interface NoteEv { /** MIDI note number */ note: number; /** steps from t
 interface ClipBase { id: string; /** the bar it starts on, counting from 0 */ start: number; bars: number; /** switched off: it stays on the grid and makes no sound */ off?: boolean }
 export interface DrumClip extends ClipBase { /** for each pad's id, its row of steps */ hits: Record<string, Hit[]> }
 export interface SynthClip extends ClipBase { notes: NoteEv[] }
-interface TrackBase { id: string; name: string; /** 0 to 100 */ level: number; mute: boolean; solo: boolean }
+interface TrackBase { id: string; name: string; /** 0 to 100 */ level: number; mute: boolean; solo: boolean; /** the effects after the instrument, in order */ devices: Device[] }
 export interface DrumTrack extends TrackBase { kind: "drums"; pads: Pad[]; clips: DrumClip[] }
 export interface SynthTrack extends TrackBase { kind: "synth"; patch: SynthState; clips: SynthClip[] }
 export type Track = DrumTrack | SynthTrack;
@@ -34,8 +35,8 @@ export const SOUNDS: { name: string; patch: Partial<SynthState> }[] = [
 export const soundPatch = (name: string): SynthState => ({ ...INITIAL, ...(SOUNDS.find((s) => s.name === name)?.patch ?? {}) });
 
 const track = (id: string, kind: Track["kind"], name: string): Track => (kind === "drums"
-  ? { id, kind, name, level: 80, mute: false, solo: false, pads: defaultPads(), clips: [] }
-  : { id, kind, name, level: 80, mute: false, solo: false, patch: soundPatch("Soft pad"), clips: [] });
+  ? { id, kind, name, level: 80, mute: false, solo: false, devices: [], pads: defaultPads(), clips: [] }
+  : { id, kind, name, level: 80, mute: false, solo: false, devices: [], patch: soundPatch("Soft pad"), clips: [] });
 export const newSong = (name = "New song"): Song => ({ name, bpm: 120, swing: 0, bars: 8, tracks: [track("t1", "drums", "Drums"), track("t2", "synth", "Soft pad")] });
 
 const withTrack = (s: Song, id: string, change: (t: Track) => Track): Song => ({ ...s, tracks: s.tracks.map((t) => (t.id === id ? change(t) : t)) });
@@ -56,6 +57,8 @@ export function addTrack(s: Song, kind: Track["kind"], sound = "Soft pad"): Song
 export const removeTrack = (s: Song, id: string): Song => ({ ...s, tracks: s.tracks.filter((t) => t.id !== id) });
 export const setTrack = (s: Song, id: string, change: Partial<Pick<TrackBase, "name" | "level" | "mute" | "solo">>): Song =>
   withTrack(s, id, (t) => ({ ...t, ...change, ...(change.name !== undefined ? { name: change.name.slice(0, 24) } : {}), ...(change.level !== undefined ? { level: clamp(change.level, 0, 100) } : {}) }));
+/** Replace a track's chain of effects. */
+export const setDevices = (s: Song, id: string, devices: Device[]): Song => withTrack(s, id, (t) => ({ ...t, devices }));
 export const setPatch = (s: Song, id: string, patch: SynthState): Song => withTrack(s, id, (t) => (t.kind === "synth" ? { ...t, patch } : t));
 export const setSongTempo = (s: Song, bpm: number): Song => { const b = clamp(Math.round(bpm), BPM_MIN, BPM_MAX); return { ...s, bpm: b, tracks: s.tracks.map((t) => (t.kind === "synth" ? { ...t, patch: { ...t.patch, bpm: b } } : t)) }; };
 export const setSongSwing = (s: Song, swing: number): Song => ({ ...s, swing: clamp(Math.round(swing), 0, SWING_MAX) });
@@ -202,7 +205,7 @@ export function tidySong(raw: unknown): Song | undefined {
   for (const g of Array.isArray(r.tracks) ? r.tracks.slice(0, MAX_TRACKS) : []) {
     if (!g || typeof g !== "object" || (g.kind !== "drums" && g.kind !== "synth")) continue;
     const id = typeof g.id === "string" && /^[\w-]{1,24}$/.test(g.id) && !song.tracks.some((t) => t.id === g.id) ? g.id : freeId(song.tracks.map((t) => t.id), "t");
-    const base = { id, name: typeof g.name === "string" ? g.name.slice(0, 24) : "Track", level: clamp(Number(g.level ?? 80) || 0, 0, 100), mute: g.mute === true, solo: g.solo === true };
+    const base = { id, name: typeof g.name === "string" ? g.name.slice(0, 24) : "Track", level: clamp(Number(g.level ?? 80) || 0, 0, 100), mute: g.mute === true, solo: g.solo === true, devices: tidyDevices(g.devices) };
     const t: Track = g.kind === "drums" ? { ...base, kind: "drums", pads: tidyPads(g.pads).length ? tidyPads(g.pads) : defaultPads(), clips: [] } : { ...base, kind: "synth", patch: { ...clean(g.patch), bpm: song.bpm }, clips: [] };
     for (const c of Array.isArray(g.clips) ? g.clips : []) {
       if (!c || typeof c !== "object") continue;

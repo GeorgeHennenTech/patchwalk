@@ -138,6 +138,7 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [x] Studio: undo/redo, record from keys and pads, saved breaks and racks, MIDI files in and out (17 Nov 2026)
 - [x] Library tab; Studio sounds, breaks, racks and songs kept in the database; nine more built-in drums (17 Nov 2026)
 - [x] Studio laid out like Ableton's Arrangement View, with its shortcuts; note selection and draw mode; metronome (17 Nov 2026)
+- [ ] **Stock plugins, one at a time (owner, 17 Nov 2026): see `docs/STOCK_PLUGINS.md`.** Done: the device chain, 1 Utility. Next: 2 Three-band EQ.
 - [ ] **Automation (owner asked 17 Nov 2026):** automation lanes in the Studio (a line per track that moves a
   setting over time: a synth knob, a track's level, an effect), then lessons on automation with many
   different combinations of automations to try, in the way the macro chapter has many recipes

@@ -451,3 +451,7 @@ The Studio was then rebuilt in the organisation of Ableton's Arrangement View (c
 headers at the right, Clip/Device detail view) with Live's keyboard shortcuts for everything it has
 (`CLAUDE.md`, "Studio laid out like Ableton's Arrangement View"). The owner wants it to keep moving toward
 Ableton's look and organisation; likely next: dragging clips with the mouse, split, zoom, Session View.
+
+The owner then asked for all the planned stock plugins, one by one. `docs/STOCK_PLUGINS.md` has the list of
+thirty, the order and how to add one. The device chain and Utility are built and measured; next is the
+three-band EQ. After each one, report what it does and what was measured, then go on to the next.

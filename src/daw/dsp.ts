@@ -3,7 +3,9 @@
 // Nothing here touches the browser, so tests run the very same code the sound is made with.
 // The designs are the standard textbook ones; every fixed number is our own choice.
 export type P = Record<string, number>;
-export interface Dsp { set(p: P): void; run(inL: Float32Array, inR: Float32Array, outL: Float32Array, outR: Float32Array): void; /** how many dB the sound is being turned down right now */ reduction?(): number }
+/** What an effect may be told besides the sound itself: which sample this block starts at, and a second sound to listen to (a sidechain). */
+export interface Extra { frame?: number; sideL?: Float32Array; sideR?: Float32Array }
+export interface Dsp { set(p: P): void; /** the song's tempo, and the sample at which its first bar began */ clock?(bpm: number, originFrame: number): void; run(inL: Float32Array, inR: Float32Array, outL: Float32Array, outR: Float32Array, extra?: Extra): void; /** how many dB the sound is being turned down right now */ reduction?(): number }
 
 const dbToGain = (db: number) => 10 ** (db / 20);
 const toDb = (v: number) => 20 * Math.log10(v + 1e-10);
@@ -30,19 +32,21 @@ export const GLUE_KNEE = 6, RMS_MS = 10;
  */
 export class CompDsp implements Dsp {
   private env = 0; private sq = 0; private y = 0; private worst = 0;
-  private p = { threshold: -18, ratio: 4, knee: 0, makeup: 1, dry: 0, wet: 1, att: 1, relDecay: 1, rel: 1, clip: false };
+  private p = { threshold: -18, ratio: 4, knee: 0, makeup: 1, dry: 0, wet: 1, att: 1, relDecay: 1, rel: 1, clip: false, side: false };
   constructor(private readonly sampleRate: number, private readonly glue = false) {}
   set(p: P): void {
     const glue = this.glue, mix = Math.min(1, Math.max(0, (p.mix ?? 100) / 100));
     const attack = glue ? GLUE_ATTACKS[p.attack ?? 3] ?? 1 : p.attack ?? 10, release = glue ? GLUE_RELEASES[p.release ?? 2] ?? 400 : p.release ?? 120;
     this.p = { threshold: p.threshold ?? -18, ratio: glue ? GLUE_RATIOS[p.ratio ?? 1] ?? 4 : p.ratio ?? 4, knee: glue ? GLUE_KNEE : p.knee ?? 0, makeup: dbToGain(p.makeup ?? 0), dry: 1 - mix, wet: mix,
-      att: stepFor(attack, this.sampleRate), relDecay: Math.exp(-1 / ((release / 1000) * this.sampleRate)), rel: stepFor(release, this.sampleRate), clip: glue && !!p.clip };
+      att: stepFor(attack, this.sampleRate), relDecay: Math.exp(-1 / ((release / 1000) * this.sampleRate)), rel: stepFor(release, this.sampleRate), clip: glue && !!p.clip, side: (p.side ?? 0) > 0 };
   }
-  run(inL: Float32Array, inR: Float32Array, outL: Float32Array, outR: Float32Array): void {
+  run(inL: Float32Array, inR: Float32Array, outL: Float32Array, outR: Float32Array, extra?: Extra): void {
     const p = this.p, rms = stepFor(RMS_MS, this.sampleRate);
+    // with a sidechain chosen, the level is read from that other sound (silence if it is not playing), and this sound is what gets turned down
+    const side = p.side, sl = extra?.sideL, sr = extra?.sideR ?? sl;
     let { env, sq, y } = this, worst = 0;
     for (let i = 0; i < inL.length; i++) {
-      const l = inL[i]!, r = inR[i]!, a = Math.max(Math.abs(l), Math.abs(r));
+      const l = inL[i]!, r = inR[i]!, a = side ? (sl ? Math.max(Math.abs(sl[i]!), Math.abs(sr![i]!)) : 0) : Math.max(Math.abs(l), Math.abs(r));
       let level: number;
       if (this.glue) { sq += (a * a - sq) * rms; level = Math.sqrt(sq); } else { env = a > env ? a : env * p.relDecay; level = env; }
       const inDb = toDb(level), want = compCurveDb(inDb, p.threshold, p.ratio, p.knee) - inDb;    // zero or negative
@@ -345,8 +349,103 @@ export class ShifterDsp implements Dsp {
   }
 }
 
-export const DSP_KINDS = ["comp", "glue", "limiter", "gate", "crush", "resonators", "multiband", "drumbus", "shifter"] as const;
+export const REPEAT_INTERVALS = [4, 8, 16, 32, 64], REPEAT_GRIDS = [0.5, 1, 2, 4, 8], REPEAT_FADE_MS = 2;
+/** A repeatable random number from 0 to 1 for the nth interval, so the same song repeats the same way each time. */
+export const repeatChance = (n: number) => { let x = (Math.imul(n + 1, 2654435761) ^ 0x9e3779b9) >>> 0; x = Math.imul(x ^ (x >>> 15), 2246822519) >>> 0; x ^= x >>> 13; return (x >>> 0) / 4294967296; };
+/**
+ * Beat repeat. Once every interval (counted from the start of the song, plus an offset), it may catch a slice
+ * one grid step long and play it again and again for the gate time, each repeat a little quieter if decay is
+ * set. "Mix" adds the repeats to the sound, "Insert" plays them in its place, "Gate" lets only the repeats
+ * through. All times are in sixteenth notes at the song's tempo; swing is not followed.
+ */
+export class BeatRepeatDsp implements Dsp {
+  private readonly size: number; private readonly buf: Float32Array[]; private bpm = 120; private origin = 0; private count = 0;
+  private last = -1; private state: "idle" | "catching" | "repeating" = "idle"; private pos = 0; private len = 0; private left = 0; private gain = 1;
+  private p = { interval: 16, offset: 0, grid: 1, gate: 8, chance: 1, decay: 0, mode: 0 };
+  constructor(private readonly sampleRate: number) { this.size = Math.ceil(sampleRate * 2.2); this.buf = [new Float32Array(this.size), new Float32Array(this.size)]; }
+  set(p: P): void {
+    this.p = { interval: REPEAT_INTERVALS[p.interval ?? 2] ?? 16, offset: p.offset ?? 0, grid: REPEAT_GRIDS[p.grid ?? 1] ?? 1, gate: p.gate ?? 8, chance: (p.chance ?? 100) / 100, decay: Math.min(1, Math.max(0, (p.decay ?? 0) / 100)), mode: p.mode ?? 0 };
+  }
+  clock(bpm: number, originFrame: number): void { this.bpm = bpm; this.origin = originFrame; }
+  run(inL: Float32Array, inR: Float32Array, outL: Float32Array, outR: Float32Array, extra?: Extra): void {
+    const p = this.p, perStep = (this.sampleRate * 15) / this.bpm, start = extra?.frame ?? this.count, fade = Math.max(1, Math.round((REPEAT_FADE_MS / 1000) * this.sampleRate));
+    for (let i = 0; i < inL.length; i++) {
+      const step = (start + i - this.origin) / perStep, n = Math.floor((step - p.offset) / p.interval);
+      if (n !== this.last) { const first = this.last === -1 && step - p.offset - n * p.interval > 0.5; this.last = n;      // not when switched on in the middle of an interval
+        if (!first && n >= 0 && repeatChance(n) < p.chance) { this.state = "catching"; this.pos = 0; this.len = Math.min(this.size, Math.max(8, Math.round(p.grid * perStep))); this.left = Math.round(p.gate * perStep); this.gain = 1; } }
+      const l = inL[i]!, r = inR[i]!; let rl = 0, rr = 0, repeating = false;
+      if (this.state === "catching") { this.buf[0]![this.pos] = l; this.buf[1]![this.pos] = r; if (++this.pos >= this.len) { this.state = "repeating"; this.pos = 0; this.left -= this.len; } }
+      else if (this.state === "repeating") {
+        if (this.left <= 0) this.state = "idle";
+        else { repeating = true; const edge = Math.min(1, this.pos / fade, (this.len - 1 - this.pos) / fade, this.left / fade), g = this.gain * edge;
+          rl = this.buf[0]![this.pos]! * g; rr = this.buf[1]![this.pos]! * g; this.left--;
+          if (++this.pos >= this.len) { this.pos = 0; this.gain *= 1 - p.decay * 0.5; } }
+      }
+      if (p.mode === 0) { outL[i] = l + rl; outR[i] = r + rr; } else if (p.mode === 1) { outL[i] = repeating ? rl : l; outR[i] = repeating ? rr : r; } else { outL[i] = rl; outR[i] = rr; }
+    }
+    this.count = start + inL.length;
+  }
+}
+
+export const VINYL_POP_MS = 0.4;
+/**
+ * Vinyl distortion: the kinds of wear a record adds. "Tracing" bends one band of the sound unevenly, which
+ * adds its second harmonic; "pinch" bends it evenly and oppositely on the two sides, which adds a third
+ * harmonic that widens the sound and disappears in mono; "crackle" adds short random pops. A sketch of
+ * those three effects, with our own numbers, not a measurement of any record or player.
+ */
+export class VinylDsp implements Dsp {
+  private readonly band = new Bq(); private readonly dc = new Bq(); private seed = 987654321; private pop = 0; private popSide = 0;
+  private p = { tracing: 0, pinch: 0, perSample: 0, level: 0, decay: 0 };
+  constructor(private readonly sampleRate: number) { this.dc.set("highpass", 15, BUTTER, sampleRate); this.set({}); }
+  set(p: P): void {
+    this.band.set("bandpass", p.freq ?? 1500, 1, this.sampleRate);
+    this.p = { tracing: ((p.tracing ?? 0) / 100) * 2, pinch: ((p.pinch ?? 0) / 100) * 4, perSample: (p.crackle ?? 0) / this.sampleRate, level: dbToGain(p.crackleLevel ?? -24), decay: Math.exp(-1 / ((VINYL_POP_MS / 1000) * this.sampleRate)) };
+  }
+  private rnd(): number { this.seed = (Math.imul(this.seed, 1664525) + 1013904223) >>> 0; return this.seed / 4294967296; }
+  run(inL: Float32Array, inR: Float32Array, outL: Float32Array, outR: Float32Array): void {
+    const p = this.p;
+    for (let i = 0; i < inL.length; i++) {
+      let l = inL[i]!, r = inR[i]!;
+      if (p.tracing > 0 || p.pinch > 0) {
+        const bl = this.band.tick(l, 0), br = this.band.tick(r, 1), m = (bl + br) / 2;
+        if (p.tracing > 0) { l += this.dc.tick(p.tracing * bl * bl, 0); r += this.dc.tick(p.tracing * br * br, 1); }      // squaring adds the octave above; the high-pass removes the steady push it also adds
+        if (p.pinch > 0) { const d = p.pinch * m * m * m; l += d; r -= d; }
+      }
+      if (p.perSample > 0 && this.rnd() < p.perSample) { this.pop = (this.rnd() * 2 - 1) * p.level; this.popSide = this.rnd(); }
+      if (this.pop !== 0) { l += this.pop * (1 - this.popSide * 0.7); r += this.pop * (0.3 + this.popSide * 0.7); this.pop *= p.decay; if (Math.abs(this.pop) < 1e-6) this.pop = 0; }
+      outL[i] = l; outR[i] = r;
+    }
+  }
+}
+
+/**
+ * The note a steady sound is playing, found by sliding the sound along itself and looking for the shift at
+ * which it best matches (autocorrelation). Gives 0 when the sound is too quiet or has no clear pitch.
+ */
+export function detectPitch(x: Float32Array, sampleRate: number, lowHz = 40, highHz = 2000): number {
+  const n = x.length, minLag = Math.floor(sampleRate / highHz), maxLag = Math.min(Math.floor(sampleRate / lowHz), Math.floor(n / 2));
+  let energy = 0; for (let i = 0; i < n; i++) energy += x[i]! * x[i]!;
+  if (energy / n < 1e-6 || maxLag <= minLag + 2) return 0;
+  const at = (lag: number) => { let s = 0, a = 0, b = 0; for (let i = 0; i + lag < n; i++) { s += x[i]! * x[i + lag]!; a += x[i]! * x[i]!; b += x[i + lag]! * x[i + lag]!; } return s / (Math.sqrt(a * b) + 1e-12); };
+  const c = new Float32Array(maxLag + 2); let top = 0; for (let lag = minLag; lag <= maxLag + 1; lag++) { c[lag] = at(lag); if (c[lag]! > top) top = c[lag]!; }
+  if (top < 0.5) return 0;
+  // the first clear peak, not the highest: a match at one period also matches at two and three
+  let lag = minLag + 1; while (lag < maxLag && !(c[lag]! > 0.9 * top && c[lag]! >= c[lag - 1]! && c[lag]! >= c[lag + 1]!)) lag++;
+  if (lag >= maxLag) return 0;
+  const a = c[lag - 1]!, b = c[lag]!, d = c[lag + 1]!, shift = a - 2 * b + d === 0 ? 0 : (0.5 * (a - d)) / (a - 2 * b + d);
+  return sampleRate / (lag + shift);
+}
+const NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+/** The nearest note to a frequency, and how many cents sharp (+) or flat (-) of it the frequency is. */
+export function nearestNote(hz: number): { name: string; note: number; cents: number } {
+  const exact = 69 + 12 * Math.log2(hz / 440), note = Math.round(exact);
+  return { name: `${NAMES[((note % 12) + 12) % 12]}${Math.floor(note / 12) - 1}`, note, cents: Math.round((exact - note) * 100) };
+}
+
+export const DSP_KINDS = ["comp", "glue", "limiter", "gate", "crush", "resonators", "multiband", "drumbus", "shifter", "beatrepeat", "vinyl"] as const;
 export function makeDsp(kind: string, sampleRate: number): Dsp | undefined {
   return kind === "comp" ? new CompDsp(sampleRate) : kind === "glue" ? new CompDsp(sampleRate, true) : kind === "limiter" ? new LimiterDsp(sampleRate) : kind === "gate" ? new GateDsp(sampleRate) : kind === "crush" ? new CrushDsp(sampleRate) : kind === "resonators" ? new ResonatorDsp(sampleRate)
-    : kind === "multiband" ? new MultibandDsp(sampleRate) : kind === "drumbus" ? new DrumBusDsp(sampleRate) : kind === "shifter" ? new ShifterDsp(sampleRate) : undefined;
+    : kind === "multiband" ? new MultibandDsp(sampleRate) : kind === "drumbus" ? new DrumBusDsp(sampleRate) : kind === "shifter" ? new ShifterDsp(sampleRate)
+    : kind === "beatrepeat" ? new BeatRepeatDsp(sampleRate) : kind === "vinyl" ? new VinylDsp(sampleRate) : undefined;
 }

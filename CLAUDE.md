@@ -1284,6 +1284,15 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   can sit a few Hz off the interval (13 cents flat on an octave up). **The owner asked (17 Nov 2026) whether
   the handoff doc is kept up to date: it had not been for three batches. `docs/HANDOFF.md` now ends with a
   "State" paragraph for the devices; update it with every push that adds one.**
+  **Seven more and the sidechain (thirty-one devices):** Beat repeat and Vinyl distortion (worklet), Amp,
+  Cabinet, Pedal (ready parts), Spectrum and Tuner (`view` on the spec; `transport.analyser`; `detectPitch`
+  and `nearestNote` in `dsp.ts`). The compressor's "Listens to" menu is a sidechain: its worklet node has a
+  second input (`LiveDevice.side`) and `Transport.sync` plugs the chosen track's `ins` into it (before that
+  track's effects and level), rewiring when the choice changes; a track's input is now unplugged only from
+  its own chain (`first`), never from everything, so sidechain wires survive. Devices are told the tempo and
+  when bar 1 began (`Dsp.clock`, `buildDevice(ctx, d, bpm, origin)`); `Dsp.run` takes an `Extra` (the block's
+  first sample number and the side sound). **When checking the Studio page by script, loop bar 1: the
+  example song is empty after its first bars, which reads as silence** (this cost an hour).
   **Two to-do lists, and both must be updated with every push (owner asked 17 Nov 2026 why the widget was
   behind):** `docs/TODO.md` (what the `/todo` pane in Claude Code reads) and the owner's "Patchwalk To-Do"
   page (https://claude.ai/artifact/7sHF6r2vvBuxa8DSkcfcPz, rows in its `todos` collection, written with

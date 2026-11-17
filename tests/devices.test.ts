@@ -169,3 +169,19 @@ describe("auto filter, echo, filter delay", () => {
     expect(noteName(60)).toBe("C4"); expect(noteName(57)).toBe("A3");
   });
 });
+
+import { CABINETS, ampDrive, cabinetDb, driveTable, pedalDrive } from "../src/daw/devices";
+describe("amp, pedal, cabinet", () => {
+  it("drive never passes full level, grows with gain, and the amp treats the two halves differently", () => {
+    for (const type of [0, 1, 2]) for (const gain of [0, 50, 100]) for (let x = -1; x <= 1; x += 0.05) { expect(Math.abs(ampDrive(type, gain, x))).toBeLessThanOrEqual(1.12); expect(Math.abs(pedalDrive(type, gain, x))).toBeLessThanOrEqual(1.0001); }
+    expect(ampDrive(2, 50, 0.05)).toBeGreaterThan(ampDrive(0, 50, 0.05)); expect(pedalDrive(0, 100, 0.05)).toBeGreaterThan(pedalDrive(0, 0, 0.05));
+    expect(ampDrive(1, 50, 0.3)).not.toBeCloseTo(-ampDrive(1, 50, -0.3), 3);
+    expect(pedalDrive(1, 100, 0.5)).toBe(1); expect(pedalDrive(2, 100, 0.2)).toBeGreaterThan(0.99);
+    const t = driveTable((x) => pedalDrive(0, 0, x)); expect(t[0]).toBeCloseTo(-1, 6); expect(t[2048]).toBe(0); expect(t[4096]).toBeCloseTo(1, 6);
+  });
+  it("a cabinet has no deep bass, a bump in the low mids, and little above a few kHz; a far microphone is duller", () => {
+    for (let size = 0; size < CABINETS.length; size++) { const p = { size, mic: 0 }, c = CABINETS[size]!;
+      expect(cabinetDb(p, 25)).toBeLessThan(-15); expect(cabinetDb(p, c.bump * 1.3)).toBeGreaterThan(0.5); expect(cabinetDb(p, 800)).toBeCloseTo(0, 0); expect(cabinetDb(p, 12000)).toBeLessThan(-20); }
+    expect(cabinetDb({ size: 3, mic: 1 }, 4000)).toBeLessThan(cabinetDb({ size: 3, mic: 0 }, 4000) - 3);
+  });
+});

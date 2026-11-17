@@ -312,7 +312,7 @@ export default function DawView() {
           </>}
         </div>
         {track.kind === "synth" && engine && <TrackSynth key={`${track.id}:${nonce}`} engine={engine} patch={track.patch} bpm={song.bpm} show={view === "device"} keysOff={() => keysOff.current} onNote={onNote} onPatch={(p) => change((s) => setPatch(s, track.id, { ...p, bpm: s.bpm }))} />}
-        {view === "device" && <DeviceChain devices={track.devices} reduction={(id) => studio.transport.reduction(track.id, id)} onChange={(next) => change((s) => setDevices(s, track.id, next))} />}
+        {view === "device" && <DeviceChain devices={track.devices} reduction={(id) => studio.transport.reduction(track.id, id)} analyser={(id) => studio.transport.analyser(track.id, id)} onChange={(next) => change((s) => setDevices(s, track.id, next))} />}
         {view === "clip" && !clip && <p className="daw-hint">No clip is selected. Double-click an empty bar of this track to add one ({MOD}+Shift+M){track.clips.length ? ", or click one of its clips" : ""}.</p>}
         {view === "clip" && clip && "notes" in clip && <>
           <PianoRoll clip={clip} step={local} sel={sel} onSel={setSel} draw={draw} onNotes={(notes) => change((s) => setNotes(s, track.id, clip.id, notes))} onHear={(n) => transport.note(track.id, n)} />

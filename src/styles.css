@@ -471,5 +471,9 @@ tr.dim td { opacity: 0.6; }
 .dev-knob select { width: 100%; }
 .dev-meter { padding: 8px 8px 0; font-size: 11.5px; color: var(--dim); display: grid; gap: 3px; } .dev-meter b { color: var(--ink); }
 .dev-meter i { display: block; height: 5px; background: #1b1b1d; border: 1px solid var(--line); border-radius: 2px; } .dev-meter i span { display: block; height: 100%; width: 0; background: var(--on); }
+.dev-spectrum { display: block; width: calc(100% - 16px); height: 130px; margin: 8px 8px 0; border: 1px solid var(--line); border-radius: 3px; }
+.dev-tuner { padding: 10px 8px 4px; display: grid; gap: 6px; text-align: center; } .dev-tuner b { font-size: 30px; color: var(--ink); line-height: 1; } .dev-tuner small { color: var(--dim); font-size: 11.5px; }
+.dev-tuner-bar { position: relative; height: 14px; background: #1b1b1d; border: 1px solid var(--line); border-radius: 2px; } .dev-tuner-bar i { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: #77777c; }
+.dev-tuner-bar span { position: absolute; top: 1px; bottom: 1px; width: 4px; margin-left: -2px; background: var(--on); border-radius: 1px; transition: left 0.1s linear; } .dev-tuner-bar span.in { background: #6fdc8c; }
 .dev-note { margin: 0; padding: 0 8px 8px; font-size: 11px; color: var(--dim); line-height: 1.35; }
 .dev-add { flex: none; align-self: center; color: var(--dim); display: grid; gap: 4px; font-size: 12px; padding: 0 8px; }

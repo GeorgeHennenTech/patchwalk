@@ -1,13 +1,13 @@
 // The audio of each device, built from the settings and maths in `devices.ts`. Every device is wrapped the
 // same way: the sound goes both through the effect and straight past it, and switching the device on or off
 // crossfades between the two, so nothing clicks and nothing restarts.
-import { erosionSwing, ECHO_WOBBLE, FILTER_DELAY_LINES, autoFilterKind, echoDriveGain, echoSeconds, filterDelayLine, CHANNEL_CUT_HZ, CHANNEL_HIGH_HZ, CHANNEL_LOW_HZ, CHANNEL_MID_Q, DELAY_MAX_SECONDS, CHORUS_SWING, dbToGain, delayRouting, delayTimes, eq3Gains, eq8Band, lfoRateHz, mixGains, octavesToQ, overdriveGain, overdriveToneHz, panHarmonics, satTable, utilityMatrix, type Device } from "./devices";
+import { CAB_BUMP_Q, PRESENCE_HZ, TONE_HIGH_HZ, TONE_LOW_HZ, TONE_MID_HZ, ampDrive, cabinetOf, driveTable, pedalDrive, erosionSwing, ECHO_WOBBLE, FILTER_DELAY_LINES, autoFilterKind, echoDriveGain, echoSeconds, filterDelayLine, CHANNEL_CUT_HZ, CHANNEL_HIGH_HZ, CHANNEL_LOW_HZ, CHANNEL_MID_Q, DELAY_MAX_SECONDS, CHORUS_SWING, dbToGain, delayRouting, delayTimes, eq3Gains, eq8Band, lfoRateHz, mixGains, octavesToQ, overdriveGain, overdriveToneHz, panHarmonics, satTable, utilityMatrix, type Device } from "./devices";
 import { FLANGER_BASE, FLANGER_SWING, PHASER_Q, PHASER_STAGES, PHASER_SWING_CENTS, reverbImpulse } from "../synth/fx";
 import { DSP_KINDS } from "./dsp";
 import workletUrl from "./dsp.worklet.ts?worker&url";
 
-export interface LiveDevice { input: AudioNode; output: AudioNode; update(d: Device, bpm?: number): void; dispose(): void; /** dB the device is turning the sound down by, for those that say */ reduction?(): number }
-interface Core { input: AudioNode; output: AudioNode; set(p: Record<string, number>, t: number, bpm: number): void; nodes: AudioNode[]; reduction?(): number }
+export interface LiveDevice { input: AudioNode; output: AudioNode; update(d: Device, bpm?: number, origin?: number): void; dispose(): void; /** where a second sound can be plugged in for the device to listen to (its input 1) */ side?: AudioNode; /** the sound at this point, for a device that shows it */ analyser?: AnalyserNode; /** dB the device is turning the sound down by, for those that say */ reduction?(): number }
+interface Core { input: AudioNode; output: AudioNode; set(p: Record<string, number>, t: number, bpm: number, origin: number): void; nodes: AudioNode[]; reduction?(): number; side?: AudioNode; analyser?: AnalyserNode }
 type P = Record<string, number>;
 // The sample-by-sample effects run in an AudioWorklet, which the browser has to load before one can be made.
 const loaded = new WeakMap<BaseAudioContext, Promise<void>>(), ready = new WeakSet<BaseAudioContext>();
@@ -21,12 +21,13 @@ export const devicesReady = (ctx: BaseAudioContext) => ready.has(ctx);
 const needsWorklet = (kind: string) => (DSP_KINDS as readonly string[]).includes(kind);
 /** Whether every device of a chain can be built right now. */
 export const chainReady = (ctx: BaseAudioContext, chain: Device[]) => devicesReady(ctx) || !chain.some((d) => needsWorklet(d.kind));
-function worklet(kind: string) {
+function worklet(kind: string, inputs = 1) {
   return (ctx: BaseAudioContext, p0: P): Core => {
-    const node = new AudioWorkletNode(ctx, "pw-dsp", { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2], processorOptions: { kind, p: p0 } });
-    let reduction = 0, sent = JSON.stringify(p0);
+    const node = new AudioWorkletNode(ctx, "pw-dsp", { numberOfInputs: inputs, numberOfOutputs: 1, outputChannelCount: [2], processorOptions: { kind, p: p0 } });
+    let reduction = 0, sent = "";
     node.port.onmessage = (e: MessageEvent) => { if (typeof e.data?.reduction === "number") reduction = e.data.reduction; };
-    return { input: node, output: node, nodes: [node], reduction: () => reduction, set(p) { const now = JSON.stringify(p); if (now !== sent) { sent = now; node.port.postMessage({ p }); } } };
+    return { input: node, output: node, nodes: [node], reduction: () => reduction, side: inputs > 1 ? node : undefined,
+      set(p, _t, bpm, origin) { const now = `${JSON.stringify(p)}|${bpm}|${origin}`; if (now !== sent) { sent = now; node.port.postMessage({ p, bpm, origin }); } } };
   };
 }
 const BUTTER_DB = 20 * Math.log10(Math.SQRT1_2);
@@ -272,19 +273,52 @@ function erosion(ctx: BaseAudioContext): Core {
     to(sameL.gain, mode < 2 ? swing : 0, t); to(sameR.gain, mode === 0 ? swing : 0, t); to(wideR.gain, mode === 1 ? swing : 0, t); to(sinL.gain, mode === 2 ? swing : 0, t); to(sinR.gain, mode === 2 ? swing : 0, t);
   } };
 }
-const CORES: Record<string, (ctx: BaseAudioContext, p: P) => Core> = { comp: worklet("comp"), glue: worklet("glue"), limiter: worklet("limiter"), gate: worklet("gate"), crush: worklet("crush"), resonators: worklet("resonators"), multiband: worklet("multiband"), drumbus: worklet("drumbus"), shifter: worklet("shifter"), erosion, autofilter, phaser, echo, filterdelay, utility, eq3, eq8, channeleq, sat, overdrive, autopan, chorus, delay, reverb };
+/** Bass, middle and treble: a low shelf, a bell and a high shelf. */
+function tone3(ctx: BaseAudioContext) {
+  const low = biquad(ctx, "lowshelf", TONE_LOW_HZ), mid = biquad(ctx, "peaking", TONE_MID_HZ, 0.7), high = biquad(ctx, "highshelf", TONE_HIGH_HZ);
+  low.connect(mid).connect(high);
+  return { input: low, output: high, nodes: [low, mid, high] as AudioNode[], set(b: number, m: number, h: number, t: number) { to(low.gain, b, t); to(mid.gain, m, t); to(high.gain, h, t); } };
+}
+function amp(ctx: BaseAudioContext): Core {
+  const rumble = biquad(ctx, "highpass", 60), shape = ctx.createWaveShaper(), still = biquad(ctx, "highpass", 10), tone = tone3(ctx), presence = biquad(ctx, "peaking", PRESENCE_HZ, 1), out = ctx.createGain();
+  shape.oversample = "4x"; chain(rumble, shape, still, tone.input); chain(tone.output, presence, out);
+  let made = "";
+  return { input: rumble, output: out, nodes: [rumble, shape, still, ...tone.nodes, presence, out], set(p, t) {
+    const key = `${p.type ?? 0}:${p.gain ?? 50}`; if (key !== made) { shape.curve = driveTable((x) => ampDrive(p.type ?? 0, p.gain ?? 50, x)); made = key; }
+    tone.set(p.bass ?? 0, p.middle ?? 0, p.treble ?? 0, t); to(presence.gain, p.presence ?? 0, t); to(out.gain, dbToGain(p.volume ?? 0), t);
+  } };
+}
+function pedal(ctx: BaseAudioContext): Core {
+  const m = mixer(ctx), shape = ctx.createWaveShaper(), tone = tone3(ctx), out = ctx.createGain();
+  chain(m.input, shape, tone.input); chain(tone.output, out, m.wet);
+  let made = "";
+  return { input: m.input, output: m.output, nodes: [...m.nodes, shape, ...tone.nodes, out], set(p, t) {
+    const key = `${p.type ?? 0}:${p.gain ?? 50}`; if (key !== made) { shape.curve = driveTable((x) => pedalDrive(p.type ?? 0, p.gain ?? 50, x)); made = key; }
+    tone.set(p.bass ?? 0, p.mid ?? 0, p.treble ?? 0, t); to(out.gain, dbToGain(p.out ?? 0), t); m.set(p.mix ?? 100, t);
+  } };
+}
+function cabinet(ctx: BaseAudioContext): Core {
+  const low = biquad(ctx, "highpass", 80), bump = biquad(ctx, "peaking", 100, CAB_BUMP_Q), top1 = biquad(ctx, "lowpass", 5000), top2 = biquad(ctx, "lowpass", 5000);
+  chain(low, bump, top1, top2);
+  return { input: low, output: top2, nodes: [low, bump, top1, top2], set(p, t) { const c = cabinetOf(p); to(low.frequency, c.low, t); to(bump.frequency, c.bump, t); to(bump.gain, c.lift, t); to(top1.frequency, c.top, t); to(top2.frequency, c.top, t); } };
+}
+/** A device that only shows the sound: it passes straight through, with a tap for the picture. */
+function viewer(size: number) {
+  return (ctx: BaseAudioContext): Core => { const pass = ctx.createGain(), a = ctx.createAnalyser(); a.fftSize = size; a.smoothingTimeConstant = 0.7; pass.connect(a); return { input: pass, output: pass, nodes: [pass, a], analyser: a, set() { /* nothing to set */ } }; };
+}
+const CORES: Record<string, (ctx: BaseAudioContext, p: P) => Core> = { comp: worklet("comp", 2), beatrepeat: worklet("beatrepeat"), vinyl: worklet("vinyl"), amp, pedal, cabinet, spectrum: viewer(4096), tuner: viewer(4096), glue: worklet("glue"), limiter: worklet("limiter"), gate: worklet("gate"), crush: worklet("crush"), resonators: worklet("resonators"), multiband: worklet("multiband"), drumbus: worklet("drumbus"), shifter: worklet("shifter"), erosion, autofilter, phaser, echo, filterdelay, utility, eq3, eq8, channeleq, sat, overdrive, autopan, chorus, delay, reverb };
 
 /** The audio for one device, or nothing when the kind is unknown. */
-export function buildDevice(ctx: BaseAudioContext, d: Device, bpm = 120): LiveDevice | undefined {
+export function buildDevice(ctx: BaseAudioContext, d: Device, bpm = 120, origin = 0): LiveDevice | undefined {
   const make = CORES[d.kind];
   if (!make || (needsWorklet(d.kind) && !devicesReady(ctx))) return undefined;
   const core = make(ctx, d.p), input = ctx.createGain(), output = ctx.createGain(), wet = ctx.createGain(), dry = ctx.createGain();
   input.connect(core.input); core.output.connect(wet).connect(output);
   input.connect(dry).connect(output);
   wet.gain.value = d.on ? 1 : 0; dry.gain.value = d.on ? 0 : 1;
-  building = true; try { core.set(d.p, ctx.currentTime, bpm); } finally { building = false; }
-  return { input, output, reduction: core.reduction,
-    update(next, tempo = bpm) { const t = ctx.currentTime; core.set(next.p, t, tempo); wet.gain.setTargetAtTime(next.on ? 1 : 0, t, SMOOTH); dry.gain.setTargetAtTime(next.on ? 0 : 1, t, SMOOTH); },
+  building = true; try { core.set(d.p, ctx.currentTime, bpm, origin); } finally { building = false; }
+  return { input, output, reduction: core.reduction, side: core.side, analyser: core.analyser,
+    update(next, tempo = bpm, began = origin) { const t = ctx.currentTime; core.set(next.p, t, tempo, began); wet.gain.setTargetAtTime(next.on ? 1 : 0, t, SMOOTH); dry.gain.setTargetAtTime(next.on ? 0 : 1, t, SMOOTH); },
     dispose() { for (const n of [input, output, wet, dry, ...core.nodes]) { try { if (n instanceof OscillatorNode || n instanceof AudioBufferSourceNode) n.stop(); n.disconnect(); } catch { /* already apart */ } } },
   };
 }

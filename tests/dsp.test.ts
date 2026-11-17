@@ -206,3 +206,77 @@ describe("shifter", () => {
     expect(part(down, 750, 0.5, 1.5)).toBeCloseTo(0.5, 1); expect(dB(part(down, 1250, 0.5, 1.5) / part(down, 750, 0.5, 1.5))).toBeLessThan(-40);
   });
 });
+
+import { BeatRepeatDsp, VinylDsp, detectPitch, nearestNote, repeatChance } from "../src/daw/dsp";
+describe("compressor sidechain", () => {
+  it("listens to the other sound: a quiet sound is turned down while a loud one plays on the side, and left alone when the side is silent", () => {
+    const quiet = sine(300, 0.05, 1), loud = sine(60, 0.5, 1), d = new CompDsp(SR); d.set({ threshold: -26, ratio: 4, knee: 0, side: 1 });
+    const out = new Float32Array(quiet.length), o2 = new Float32Array(quiet.length);
+    for (let i = 0; i + 128 <= quiet.length; i += 128) d.run(quiet.subarray(i, i + 128), quiet.subarray(i, i + 128), out.subarray(i, i + 128), o2.subarray(i, i + 128), { sideL: loud.subarray(i, i + 128) });
+    expect(dB(peak(out, 0.6, 0.9) / 0.05)).toBeCloseTo(-15, 0);
+    const alone = new CompDsp(SR); alone.set({ threshold: -26, ratio: 4, knee: 0, side: 1 }); const [untouched] = run(alone, { threshold: -26, ratio: 4, knee: 0, side: 1 }, sine(300, 0.5, 1));
+    expect(peak(untouched, 0.6, 0.9)).toBeCloseTo(0.5, 3);            // loud itself, but nothing on the side: nothing happens
+  });
+});
+
+describe("beat repeat", () => {
+  // 120 bpm: a sixteenth is 6000 samples. The input is a ramp so every sample can be told from every other.
+  const ramp = Float32Array.from({ length: SR * 4 }, (_, i) => (i % 96000) / 96000 + 0.001);
+  const go = (p: P) => { const d = new BeatRepeatDsp(SR); d.clock(120, 0); return run(d, p, ramp)[0]; };
+  it("in Insert mode: passes the sound until its place in the bar, catches one slice, then repeats that slice for the gate time", () => {
+    const out = go({ interval: 2, offset: 4, grid: 1, gate: 4, chance: 100, decay: 0, mode: 1 });      // every bar, 4 sixteenths in, 1/16 slices, for 4 sixteenths
+    expect(out[10000]).toBeCloseTo(ramp[10000]!, 6);                                                    // before: untouched
+    expect(out[24000 + 3000]).toBeCloseTo(ramp[24000 + 3000]!, 6);                                      // being caught: still the sound itself
+    for (const k of [1, 2, 3]) expect(out[24000 + k * 6000 + 3000]).toBeCloseTo(ramp[24000 + 3000]!, 6);   // three repeats of that same slice
+    expect(out[24000 + 4 * 6000 + 3000]).toBeCloseTo(ramp[24000 + 4 * 6000 + 3000]!, 6);               // after the gate: the sound again
+    expect(out[96000 + 24000 + 6000 + 3000]).toBeCloseTo(ramp[96000 + 24000 + 3000]!, 6);               // and again in the next bar
+  });
+  it("Gate lets only the repeats through, Mix adds them, decay makes each quieter, and chance 0 never repeats", () => {
+    const gate = go({ interval: 2, offset: 4, grid: 1, gate: 4, chance: 100, mode: 2 });
+    expect(gate[10000]).toBe(0); expect(gate[24000 + 6000 + 3000]).toBeCloseTo(ramp[24000 + 3000]!, 6);
+    const mix = go({ interval: 2, offset: 4, grid: 1, gate: 4, chance: 100, mode: 0 });
+    expect(mix[24000 + 6000 + 3000]).toBeCloseTo(ramp[24000 + 3000]! + ramp[24000 + 6000 + 3000]!, 6);
+    const fading = go({ interval: 2, offset: 4, grid: 1, gate: 4, chance: 100, decay: 100, mode: 2 });
+    expect(fading[24000 + 2 * 6000 + 3000]).toBeCloseTo(0.5 * fading[24000 + 6000 + 3000]!, 6);
+    const never = go({ interval: 2, offset: 4, grid: 1, gate: 4, chance: 0, mode: 1 });
+    for (let i = 0; i < never.length - 128; i += 997) expect(never[i]).toBe(ramp[i]);
+  });
+  it("its dice are repeatable and fair", () => {
+    expect(repeatChance(3)).toBe(repeatChance(3)); let under = 0; for (let n = 0; n < 2000; n++) { const v = repeatChance(n); expect(v).toBeGreaterThanOrEqual(0); expect(v).toBeLessThan(1); if (v < 0.5) under++; }
+    expect(under).toBeGreaterThan(850); expect(under).toBeLessThan(1150);
+  });
+});
+
+describe("vinyl distortion", () => {
+  it("tracing adds the octave above the band; pinch adds a third harmonic that is opposite on the two sides", () => {
+    const tone = sine(1500, 0.5, 1), [plain] = run(new VinylDsp(SR), { tracing: 0, pinch: 0, crackle: 0 }, tone);
+    expect(plain[2000]).toBe(tone[2000]);
+    const [traced] = run(new VinylDsp(SR), { tracing: 100, freq: 1500, crackle: 0 }, tone);
+    expect(part(traced, 3000, 0.3, 0.9)).toBeGreaterThan(0.05); expect(part(traced, 1500, 0.3, 0.9)).toBeCloseTo(0.5, 1);
+    let mean = 0; for (let i = 20000; i < 40000; i++) mean += traced[i]!; expect(Math.abs(mean / 20000)).toBeLessThan(0.01);                      // no steady push left
+    const [l, r] = run(new VinylDsp(SR), { tracing: 0, pinch: 100, freq: 1500, crackle: 0 }, tone);
+    expect(part(l, 4500, 0.3, 0.9)).toBeGreaterThan(0.02);
+    const mono = Float32Array.from(l, (v, i) => (v + r[i]!) / 2); expect(part(mono, 4500, 0.3, 0.9)).toBeLessThan(1e-4);
+  });
+  it("crackle pops about as often as asked, and not at all at zero", () => {
+    const silence = new Float32Array(SR * 4), [out] = run(new VinylDsp(SR), { tracing: 0, crackle: 20, crackleLevel: -12 }, silence);
+    let pops = 0, quiet = true; for (let i = 0; i < out.length; i++) { const loud = Math.abs(out[i]!) > 1e-5; if (loud && quiet) pops++; quiet = !loud; }
+    expect(pops).toBeGreaterThan(40); expect(pops).toBeLessThan(130);
+    const [none] = run(new VinylDsp(SR), { tracing: 0, crackle: 0 }, silence); expect(peak(none, 0, 3.9)).toBe(0);
+  });
+});
+
+describe("tuner", () => {
+  it("finds the note of a tone and of a saw, to within a few cents, and gives nothing for silence or noise", () => {
+    for (const f of [55, 110, 440, 987.77, 1760]) expect(Math.abs(1200 * Math.log2(detectPitch(sine(f, 0.5, 0.1).subarray(0, 4096), SR) / f))).toBeLessThan(3);
+    const saw = Float32Array.from({ length: 4096 }, (_, i) => 2 * ((i * 196) / SR % 1) - 1);
+    expect(Math.abs(1200 * Math.log2(detectPitch(saw, SR) / 196))).toBeLessThan(3);
+    expect(detectPitch(new Float32Array(4096), SR)).toBe(0);
+    let seed = 1; const noise = Float32Array.from({ length: 4096 }, () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 2147483648 - 1; });
+    expect(detectPitch(noise, SR)).toBe(0);
+  });
+  it("names the nearest note and how far off", () => {
+    expect(nearestNote(440)).toEqual({ name: "A4", note: 69, cents: 0 });
+    expect(nearestNote(261.63).name).toBe("C4"); expect(nearestNote(445).cents).toBe(20); expect(nearestNote(435).cents).toBe(-20);
+  });
+});

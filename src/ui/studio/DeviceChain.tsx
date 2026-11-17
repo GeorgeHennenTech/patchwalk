@@ -1,5 +1,6 @@
 // A track's effects, in a row after its instrument, the way a DAW's device chain reads left to right.
 import { useEffect, useRef, useState } from "react";
+import { detectPitch, nearestNote } from "../../daw/dsp";
 import { CURVES, noteName, DEVICES, MAX_DEVICES, addDevice, moveDevice, removeDevice, setDeviceParam, specOf, toggleDevice, type Device, type ParamSpec } from "../../daw/devices";
 
 const round = (v: number) => (Math.abs(v) >= 100 ? Math.round(v) : Number(v.toFixed(2)));
@@ -48,7 +49,38 @@ function Meter({ read }: { read: () => number | undefined }) {
   return <div className="dev-meter" aria-label="Turning down by"><span>Turning down by <b ref={text}>0.0 dB</b></span><i><span ref={bar} /></i></div>;
 }
 
-export function DeviceChain({ devices, onChange, reduction }: { devices: Device[]; onChange: (next: Device[]) => void; reduction?: (deviceId: string) => number | undefined }) {
+/** The sound's spectrum, 20 Hz to 20 kHz, drawn about thirty times a second. */
+function SpectrumView({ read }: { read: () => AnalyserNode | undefined }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => { let raf = 0, data: Float32Array<ArrayBuffer> | undefined;
+    const tick = () => { raf = requestAnimationFrame(tick); const c = ref.current, a = read(), g = c?.getContext("2d"); if (!c || !g) return;
+      g.fillStyle = "#1b1b1d"; g.fillRect(0, 0, c.width, c.height); g.strokeStyle = "#333336"; g.fillStyle = "#8a8a90"; g.font = "9px sans-serif";
+      for (const f of [100, 1000, 10000]) { const x = (c.width * Math.log(f / 20)) / Math.log(1000); g.beginPath(); g.moveTo(x, 0); g.lineTo(x, c.height); g.stroke(); g.fillText(f >= 1000 ? `${f / 1000}k` : String(f), x + 3, c.height - 3); }
+      if (!a) return;
+      if (!data || data.length !== a.frequencyBinCount) data = new Float32Array(a.frequencyBinCount);
+      a.getFloatFrequencyData(data); const perBin = a.context.sampleRate / a.fftSize;
+      g.strokeStyle = "#f5a623"; g.lineWidth = 1.4; g.beginPath();
+      for (let x = 0; x < c.width; x++) { const f = 20 * 1000 ** (x / c.width), lo = Math.max(1, Math.floor(f / perBin)), hi = Math.max(lo + 1, Math.ceil((20 * 1000 ** ((x + 1) / c.width)) / perBin)); let top = -200; for (let b = lo; b < hi && b < data.length; b++) if (data[b]! > top) top = data[b]!;
+        const y = c.height * Math.min(1, Math.max(0, -top / 96)); if (x) g.lineTo(x, y); else g.moveTo(x, y); }
+      g.stroke(); };
+    raf = requestAnimationFrame(tick); return () => cancelAnimationFrame(raf); }, [read]);
+  return <canvas ref={ref} className="dev-spectrum" width={600} height={260} aria-label="Spectrum: 20 Hz to 20 kHz across, loud at the top down to 96 dB quieter at the bottom" />;
+}
+/** The note being played and how far off it is, read a few times a second. */
+function TunerView({ read }: { read: () => AnalyserNode | undefined }) {
+  const [got, setGot] = useState<{ name: string; cents: number; hz: number } | null>(null);
+  useEffect(() => { const id = window.setInterval(() => { const a = read(); if (!a) { setGot(null); return; } const x = new Float32Array(a.fftSize); a.getFloatTimeDomainData(x); const hz = detectPitch(x, a.context.sampleRate); setGot(hz ? { ...nearestNote(hz), hz } : null); }, 120); return () => window.clearInterval(id); }, [read]);
+  const off = got ? Math.max(-50, Math.min(50, got.cents)) : 0;
+  return (
+    <div className="dev-tuner" aria-live="off">
+      <b>{got ? got.name : "–"}</b>
+      <div className="dev-tuner-bar"><i /><span style={{ left: `${50 + off}%`, opacity: got ? 1 : 0.2 }} className={got && Math.abs(got.cents) <= 5 ? "in" : ""} /></div>
+      <small>{got ? `${got.hz.toFixed(1)} Hz · ${got.cents === 0 ? "in tune" : got.cents > 0 ? `${got.cents} cents sharp` : `${-got.cents} cents flat`}` : "Play one note at a time"}</small>
+    </div>
+  );
+}
+
+export function DeviceChain({ devices, onChange, reduction, analyser }: { devices: Device[]; onChange: (next: Device[]) => void; reduction?: (deviceId: string) => number | undefined; analyser?: (deviceId: string) => AnalyserNode | undefined }) {
   return (
     <div className="chain" aria-label="Effects on this track">
       <div className="chain-row">
@@ -62,6 +94,8 @@ export function DeviceChain({ devices, onChange, reduction }: { devices: Device[
               <button aria-label={`Remove ${spec.name}`} title="Remove" onClick={() => onChange(removeDevice(devices, d.id))}>×</button>
             </header>
             {CURVES[d.kind] && <Curve kind={d.kind} p={d.p} />}
+            {spec.view === "spectrum" && analyser && <SpectrumView read={() => analyser(d.id)} />}
+            {spec.view === "tuner" && analyser && <TunerView read={() => analyser(d.id)} />}
             {spec.meter && reduction && <Meter read={() => (d.on ? reduction(d.id) : 0)} />}
             <Params spec={spec} d={d} set={(id, v) => onChange(setDeviceParam(devices, d.id, id, v))} />
             {spec.note && <p className="dev-note">{spec.note}</p>}

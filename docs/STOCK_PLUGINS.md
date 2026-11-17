@@ -80,6 +80,27 @@ maths, and a measurement in a browser (`transport.levels()` reads the left and r
   crossfaded readings do not line up in phase, which is the warble. A better method (lining the readings
   up, or a phase vocoder) is the fix if the owner's ear objects.
 
+- [x] **Compressor sidechain** ("Listens to": Itself or Track 1 to 8). The compressor's worklet has a
+  second input and the transport plugs the chosen track's sound into it, taken before that track's effects
+  and level, so it works even when that track is muted. Measured: a quiet tone with a loud tone on the side
+  was turned down 14.7 dB (rule 15.0), and not at all with silence on the side; in the Studio page a
+  compressor on the synth track listening to the drums read 12.7 to 24.6 dB of reduction over a bar.
+- [x] 22. **Beat repeat** (Beat Repeat): interval, offset, slice length, gate, chance, decay, and Mix /
+  Insert / Gate. The transport tells devices the tempo and when bar 1 began (`clock`). Measured with a
+  ramp so every sample is distinct: untouched before its place in the bar, then three exact copies of the
+  caught slice, then the sound again. Straight sixteenths only (no swing); no pitch drop or filter.
+- [x] 26. **Amp, Cabinet, Pedal** (Amp, Cabinet, Pedal). General shapes with our own numbers, not models of
+  any gear. Amp: clean / crunch / heavy drive, bass, middle, treble, presence, volume. Pedal: overdrive /
+  distortion / fuzz with a three-band tone and dry/wet. Cabinet: four speaker sizes and a close or far
+  microphone, drawn as a curve. Measured: cabinet matched its curve to 0.00 dB; drive adds harmonics that
+  grow from clean to heavy and from overdrive to fuzz. **Dynamic Tube is not built.**
+- [x] 27. **Vinyl distortion** (Vinyl Distortion): tracing (adds the octave above one band), pinch (a third
+  harmonic opposite on the two sides, gone in mono), crackle. A sketch, numbers our own. Measured: tracing
+  at full put the octave 6 dB under the tone; tests hold pinch to cancel in mono and crackle to its rate.
+- [x] 28. **Spectrum and Tuner** (Spectrum, Tuner): show the sound, change nothing (pass at 0.00 dB). The
+  tuner finds the note by autocorrelation (`detectPitch`, within 3 cents from 55 Hz to 1.76 kHz in tests);
+  in the Studio page it read A2, 4 cents flat, on the example pad.
+
 These five run in an AudioWorklet (`src/daw/dsp.ts` is the code, with no browser parts, so
 `tests/dsp.test.ts` runs exactly what the sound is made with; `dsp.worklet.ts` wraps it; `prepareDevices`
 loads it, and a chain passes such a device by until it has loaded). A new sample-by-sample device: a class
@@ -110,11 +131,7 @@ changes glide. Each was measured by building it on an `OfflineAudioContext` in a
 (`buildDevice(ctx, device, bpm)`), which is the quickest way to measure the next ones.
 
 ## To build, in this order
-- [ ] 22. **Beat repeat** (Beat Repeat): catches a slice and repeats it on the grid
 - [ ] 23. **Grain delay** (Grain Delay)
-- [ ] 26. **Amp, cabinet and pedal** (Amp, Cabinet, Pedal, Dynamic Tube): guitar-style drive and speaker colour
-- [ ] 27. **Vinyl distortion** (Vinyl Distortion)
-- [ ] 28. **Spectrum and tuner** (Spectrum, Tuner): devices that only show, not change, the sound
 - [ ] 30. **MIDI effects** (Arpeggiator, Chord, Note Length, Pitch, Random, Scale, Velocity): these change
   notes before the instrument, so they need a second kind of slot in front of it
 
@@ -128,7 +145,8 @@ changes glide. Each was measured by building it on an `OfflineAudioContext` in a
 Distortion, three-band EQ, compressor, chorus, flanger, phaser, delay, reverb (`src/synth/fx.ts`). The Studio's devices are separate from these.
 
 ## Next
-22 Beat repeat (the device must be told the song's bar position), 26 Amp/cabinet/pedal, 27 Vinyl distortion,
-28 Spectrum and tuner, 30 MIDI effects, and a sidechain for the compressor (the transport must carry one
-track's sound to another track's device). A level follower made from ready parts must smooth with `createIIRFilter`:
+30 MIDI effects (Arpeggiator, Chord, Note Length, Pitch, Random, Scale, Velocity): they change notes before
+the instrument, so they need a second kind of slot in front of it. Then the hard ones at the bottom of this
+file. When checking anything in the Studio page by script, loop bar 1 first: the example song is empty
+after its first bars, which reads as silence. A level follower made from ready parts must smooth with `createIIRFilter`:
 the ordinary low-pass set to a few Hz read a tenth short (`follower` in `fxnodes.ts`).

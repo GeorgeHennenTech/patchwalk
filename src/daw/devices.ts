@@ -6,7 +6,7 @@ import { GLUE_ATTACKS, GLUE_RATIOS, GLUE_RELEASES, RES_NAMES, compCurveDb } from
 // way every DAW names them; they are not copies of any maker's code, sound or look.
 
 export interface ParamSpec { id: string; label: string; min: number; max: number; step: number; def: number; unit?: string; /** for a switch or a menu: the names of the values 0, 1, 2... */ choices?: string[]; /** the slider moves in ratios (for frequencies and times) */ log?: boolean; /** settings with the same group are shown together, one group at a time */ group?: string; /** shown only while this is true */ when?: (p: Record<string, number>) => boolean }
-export interface DeviceSpec { /** shows how many dB it is turning the sound down */ meter?: boolean; kind: string; name: string; about: string; /** the stock device in Ableton Live that does the same job, so a chain built here can be rebuilt there */ like: string; params: ParamSpec[]; /** a wider card, for a device with a picture */ wide?: boolean; /** what the page must admit about this device */ note?: string }
+export interface DeviceSpec { /** a device that shows the sound instead of changing it */ view?: "spectrum" | "tuner"; /** shows how many dB it is turning the sound down */ meter?: boolean; kind: string; name: string; about: string; /** the stock device in Ableton Live that does the same job, so a chain built here can be rebuilt there */ like: string; params: ParamSpec[]; /** a wider card, for a device with a picture */ wide?: boolean; /** what the page must admit about this device */ note?: string }
 export interface Device { id: string; kind: string; on: boolean; /** each setting's value, by its id */ p: Record<string, number> }
 
 const sw = (id: string, label: string, def = 0, extra: Partial<ParamSpec> = {}): ParamSpec => ({ id, label, min: 0, max: 1, step: 1, def, choices: ["Off", "On"], ...extra });
@@ -24,6 +24,9 @@ export const EQ8_TYPES = ["Low cut", "Low shelf", "Bell", "Notch", "High shelf",
 const EQ8_START: [number, number][] = [[1, 80], [2, 200], [2, 500], [2, 1000], [2, 2000], [2, 4000], [2, 8000], [4, 12000]];
 export const SAT_CURVES = ["Soft", "Hard", "Fold", "Uneven"];
 export const PAN_SHAPES = ["Sine", "Triangle", "Square"];
+export const AMP_TYPES = ["Clean", "Crunch", "Heavy"], PEDAL_TYPES = ["Overdrive", "Distortion", "Fuzz"];
+/** The cabinets: where the bass stops, the low-mid bump, and where the top stops. Our own numbers. */
+export const CABINETS = [{ name: "1 x 12", low: 90, bump: 120, lift: 3, top: 5500 }, { name: "2 x 12", low: 80, bump: 110, lift: 4, top: 5000 }, { name: "4 x 10", low: 100, bump: 140, lift: 3, top: 6000 }, { name: "4 x 12", low: 70, bump: 100, lift: 5, top: 4500 }];
 export const AUTO_FILTER_TYPES = ["Low-pass", "High-pass", "Band-pass", "Notch"];
 const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 export const noteName = (n: number) => `${NOTE_NAMES[((n % 12) + 12) % 12]}${Math.floor(n / 12) - 1}`;
@@ -51,10 +54,11 @@ export const DEVICES: DeviceSpec[] = [
   { kind: "channeleq", name: "Channel EQ", like: "Channel EQ", wide: true, about: "A quick EQ: a low shelf, a middle band you can move, a high shelf, and a switch that removes rumble.", params: [
     sw("lowcut", "Cut rumble (80 Hz)"), db("low", "Low", -15, 15), db("mid", "Mid", -12, 12), hz("midFreq", "Mid at", 120, 7500, 1000), db("high", "High", -15, 15), db("out", "Output", -12, 12),
   ] },
-  { kind: "comp", name: "Compressor", like: "Compressor", meter: true, note: "No sidechain from another track yet. The level is read from peaks.", about: "Turns the sound down whenever it is louder than the threshold, so loud and quiet parts end up closer together.", params: [
+  { kind: "comp", name: "Compressor", like: "Compressor", meter: true, note: "Listening to another track (a sidechain) hears that track before its own effects and level, even when it is muted. The level is read from peaks.", about: "Turns the sound down whenever it is louder than the threshold, so loud and quiet parts end up closer together.", params: [
     db("threshold", "Threshold", -60, 0, -18), { id: "ratio", label: "Ratio", min: 1, max: 20, step: 0.1, def: 4, log: true },
     { id: "attack", label: "Attack", min: 0.1, max: 200, step: 0.1, def: 10, unit: "ms", log: true }, { id: "release", label: "Release", min: 10, max: 1000, step: 1, def: 120, unit: "ms", log: true },
     db("knee", "Knee", 0, 24, 6), db("makeup", "Make-up", 0, 24), pct("mix", "Dry / wet", 100),
+    menu("side", "Listens to", ["Itself", ...Array.from({ length: 8 }, (_, i) => `Track ${i + 1}`)]),
   ] },
   { kind: "glue", name: "Glue compressor", like: "Glue Compressor", meter: true, note: "A general bus compressor with fixed choices, not a model of any hardware. It reads the average level, so its threshold sits about 3 dB lower than a peak reading.", about: "A gentler compressor for a whole drum track or mix: it reads the average level and has a few fixed choices for each setting.", params: [
     db("threshold", "Threshold", -40, 0, -15), menu("ratio", "Ratio", GLUE_RATIOS.map((r) => `${r} : 1`), 1), menu("attack", "Attack", GLUE_ATTACKS.map((a) => `${a} ms`), 3), menu("release", "Release", GLUE_RELEASES.map((r) => `${r / 1000} s`), 2),
@@ -135,6 +139,25 @@ export const DEVICES: DeviceSpec[] = [
   { kind: "erosion", name: "Erosion", like: "Erosion", note: "How strong the noise settings sound depends on the width; the amount is not an exact measure.", about: "Shakes a very short delay with noise or a sine, which roughens the sound with a hiss-like or buzzing edge.", params: [
     menu("mode", "Shaken by", ["Noise", "Wide noise", "Sine"]), hz("freq", "Frequency", 200, 16000, 3000), { id: "width", label: "Noise width", min: 0.2, max: 6, step: 0.1, def: 1, unit: "oct", when: (p) => (p.mode ?? 0) < 2 }, pct("amount", "Amount", 40),
   ] },
+  { kind: "beatrepeat", name: "Beat repeat", like: "Beat Repeat", note: "Counted from the start of the song in straight sixteenths: swing is not followed. No pitch drop or filter on the repeats yet.", about: "Every so often it catches a short slice of the sound and plays it over and over: the stutter of glitch music.", params: [
+    menu("interval", "Catch once every", ["1/4 note", "1/2 note", "1 bar", "2 bars", "4 bars"], 2), { id: "offset", label: "Starting this many sixteenths in", min: 0, max: 15, step: 1, def: 12 },
+    menu("grid", "Slice length", ["1/32", "1/16", "1/8", "1/4", "1/2"], 1), { id: "gate", label: "Repeat for (sixteenths)", min: 1, max: 16, step: 1, def: 4 },
+    pct("chance", "Chance", 100), pct("decay", "Each repeat quieter", 0), menu("mode", "Mode", ["Mix", "Insert", "Gate"], 1),
+  ] },
+  { kind: "amp", name: "Amp", like: "Amp", note: "A general guitar-amp shape: three levels of drive and a tone stack. Not a model of any amplifier.", about: "Drive followed by bass, middle, treble and presence, the way a guitar amp is laid out.", params: [
+    menu("type", "Kind", AMP_TYPES), pct("gain", "Gain", 50), db("bass", "Bass", -12, 12), db("middle", "Middle", -12, 12), db("treble", "Treble", -12, 12), db("presence", "Presence", -12, 12), db("volume", "Volume", -24, 12),
+  ] },
+  { kind: "cabinet", name: "Cabinet", like: "Cabinet", wide: true, note: "A filter in the rough shape of a guitar speaker: our own numbers, not a measured cabinet or microphone.", about: "What a guitar speaker does to a sound: no deep bass, a bump in the low mids, and nothing much above a few kHz. Usually put after an amp or a pedal.", params: [
+    menu("size", "Speakers", CABINETS.map((c) => c.name), 3), menu("mic", "Microphone", ["Close", "Far"]),
+  ] },
+  { kind: "pedal", name: "Pedal", like: "Pedal", note: "Three general kinds of drive, not models of any pedal.", about: "A stomp-box drive: overdrive rounds, distortion clips, fuzz squares the sound off almost completely.", params: [
+    menu("type", "Kind", PEDAL_TYPES), pct("gain", "Gain", 50), db("bass", "Bass", -12, 12), db("mid", "Mid", -12, 12), db("treble", "Treble", -12, 12), db("out", "Output", -24, 12), pct("mix", "Dry / wet", 100),
+  ] },
+  { kind: "vinyl", name: "Vinyl distortion", like: "Vinyl Distortion", note: "A sketch of a record's wear with our own numbers, not a measurement of any record or player.", about: "The wear of a record: one band bent so it grows an octave above, a widening distortion that vanishes in mono, and crackle.", params: [
+    pct("tracing", "Tracing", 30), hz("freq", "Band at", 200, 8000, 1500), pct("pinch", "Pinch", 0), { id: "crackle", label: "Crackles a second", min: 0, max: 50, step: 1, def: 8 }, db("crackleLevel", "Crackle level", -48, -6, -24),
+  ] },
+  { kind: "spectrum", name: "Spectrum", like: "Spectrum", view: "spectrum", wide: true, about: "Shows how much of each frequency is in the sound at this point in the chain. It changes nothing.", params: [] },
+  { kind: "tuner", name: "Tuner", like: "Tuner", view: "tuner", about: "Shows the note a single-note sound is playing and how many cents sharp or flat it is. It changes nothing.", params: [] },
   { kind: "reverb", name: "Reverb", like: "Reverb", note: "A plain room made from fading noise: no early reflections, and its character is not tuned by ear.", about: "A room: the sound carries on after it stops, for as long as the decay time.", params: [
     { id: "decay", label: "Decay", min: 0.2, max: 10, step: 0.1, def: 1.8, unit: "s", log: true }, { id: "predelay", label: "Pre-delay", min: 0, max: 250, step: 1, def: 10, unit: "ms" },
     hz("lowcut", "Low cut", 20, 1000, 120), hz("highcut", "High cut", 1000, 20000, 8000), pct("mix", "Dry / wet", 25),
@@ -267,7 +290,7 @@ export function channelEqDb(p: Record<string, number>, f: number, sampleRate = 4
     + toDb(biquadAt("peaking", p.midFreq ?? 1000, CHANNEL_MID_Q, p.mid ?? 0, f, sampleRate)) + toDb(biquadAt("highshelf", CHANNEL_HIGH_HZ, 1, p.high ?? 0, f, sampleRate)) + (p.out ?? 0);
 }
 /** The curve a device draws, when it has one: its level in dB at a frequency. */
-export const CURVES: Record<string, (p: Record<string, number>, f: number, sampleRate?: number) => number> = { eq3: eq3Db, eq8: eq8Db, channeleq: channelEqDb, autofilter: (p, f, sr) => autoFilterDb(p, f, sr) };
+export const CURVES: Record<string, (p: Record<string, number>, f: number, sampleRate?: number) => number> = { eq3: eq3Db, eq8: eq8Db, channeleq: channelEqDb, autofilter: (p, f, sr) => autoFilterDb(p, f, sr), cabinet: cabinetDb };
 
 // ---- Compressor ----
 /** A steady sound at `inDb` comes out of the compressor at this level, make-up left out. */
@@ -331,6 +354,30 @@ export function filterDelayLine(p: Record<string, number>, k: "l" | "m" | "r", b
   const seconds = clamp(p.sync ? ((DELAY_DIVS[p[`${k}div`] ?? 4] ?? DELAY_DIVS[4]!).beats * 60) / bpm : (p[`${k}ms`] ?? 250) / 1000, 0.001, DELAY_MAX_SECONDS);
   return { seconds, feedback: clamp((p[`${k}fb`] ?? 30) / 100, 0, 0.95), hears: (k === "l" ? [1, 0] : k === "r" ? [0, 1] : [0.5, 0.5]) as [number, number], pan: clamp((p[`${k}pan`] ?? 0) / 100, -1, 1),
     level: (p[`${k}on`] ?? 1) ? dbToGain(p[`${k}level`] ?? 0) : 0, freq: p[`${k}freq`] ?? 1000, q: octavesToQ(p[`${k}width`] ?? 3) };
+}
+
+// ---- Amp, pedal, cabinet ----
+const AMP_GAINS: [number, number][] = [[1, 6], [3, 40], [10, 200]], PEDAL_GAINS: [number, number][] = [[1, 30], [2, 100], [5, 300]];
+const between = ([lo, hi]: [number, number], pct: number) => lo * (hi / lo) ** (clamp(pct ?? 50, 0, 100) / 100);
+/** One sample through the amp's drive. The two halves of the wave are treated a little differently, as valves do, which adds even harmonics. */
+export function ampDrive(type: number, gain: number, x: number): number {
+  const g = between(AMP_GAINS[type] ?? AMP_GAINS[0]!, gain);
+  return (x >= 0 ? Math.tanh(g * x) : Math.tanh(0.7 * g * x) / 0.9) / Math.tanh(g);
+}
+/** One sample through the pedal: overdrive rounds, distortion clips flat, fuzz is almost a square. */
+export function pedalDrive(type: number, gain: number, x: number): number {
+  const g = between(PEDAL_GAINS[type] ?? PEDAL_GAINS[0]!, gain);
+  if (type === 1) return clamp(g * x, -1, 1);
+  if (type === 2) return Math.sign(x) * (1 - Math.exp(-g * Math.abs(x)));
+  return Math.tanh(g * x) / Math.tanh(g);
+}
+export const driveTable = (f: (x: number) => number, points = 4097): Float32Array<ArrayBuffer> => { const out = new Float32Array(points); for (let i = 0; i < points; i++) out[i] = f((2 * i) / (points - 1) - 1); return out; };
+export const TONE_LOW_HZ = 120, TONE_MID_HZ = 800, TONE_HIGH_HZ = 3500, PRESENCE_HZ = 4500, CAB_BUMP_Q = 1.2, CAB_FAR = 0.7;
+export const cabinetOf = (p: Record<string, number>) => { const c = CABINETS[p.size ?? 3] ?? CABINETS[3]!; return { ...c, top: c.top * (p.mic ? CAB_FAR : 1), lift: c.lift * (p.mic ? 0.5 : 1) }; };
+/** The cabinet at one frequency, in dB. */
+export function cabinetDb(p: Record<string, number>, f: number, sampleRate = 48000): number {
+  const c = cabinetOf(p);
+  return toDb(biquadAt("highpass", c.low, BUTTER, 0, f, sampleRate)) + toDb(biquadAt("peaking", c.bump, CAB_BUMP_Q, c.lift, f, sampleRate)) + 2 * toDb(biquadAt("lowpass", c.top, BUTTER, 0, f, sampleRate));
 }
 
 // ---- Erosion ----

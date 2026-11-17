@@ -456,19 +456,19 @@ The owner then asked for all the planned stock plugins, one by one. `docs/STOCK_
 thirty, the order and how to add one. The device chain and Utility are built and measured; next is the
 three-band EQ. After each one, report what it does and what was measured, then go on to the next.
 
-**State at the end of 17 Nov 2026 (update this paragraph with every push that adds a device).** Twenty-four
-devices are built and measured: Utility, Three-band EQ, Eight-band EQ, Channel EQ, Compressor (knee and
-meter), Glue compressor, Limiter, Gate, Multiband dynamics, Saturator, Overdrive, Crusher, Drum bus, Erosion,
-Auto filter, Auto pan, Chorus, Phaser and flanger, Delay, Echo, Filter delay, Reverb, Resonators, Shifter.
+**State at the end of 17 Nov 2026 (update this paragraph with every push that adds a device).** Thirty-one
+devices are built and measured: Utility, Three-band EQ, Eight-band EQ, Channel EQ, Compressor (knee, meter,
+sidechain from another track), Glue compressor, Limiter, Gate, Multiband dynamics, Saturator, Overdrive,
+Amp, Cabinet, Pedal, Crusher, Drum bus, Erosion, Vinyl distortion, Auto filter, Auto pan, Chorus, Phaser and
+flanger, Delay, Echo, Filter delay, Beat repeat, Reverb, Resonators, Shifter, Spectrum, Tuner.
 Two kinds of device: ones made from the browser's ready parts (`fxnodes.ts`) and ones worked out sample by
 sample in an AudioWorklet (`dsp.ts`, tested directly in `tests/dsp.test.ts`). Every device was measured by
 building it on an `OfflineAudioContext` in a headless browser; the numbers are in `docs/STOCK_PLUGINS.md`.
-**The owner has heard none of them: ask which sound wrong and fix those first.** Still to build: Beat repeat
-(needs the song's bar position sent to the device), Amp/cabinet/pedal, Vinyl distortion, Spectrum and tuner,
-the MIDI effects (a slot in front of the instrument), a sidechain for the compressor (one track's sound sent
-to another track's device), then the hard ones (vocoder, spectral effects, grain delay). Known weak spots:
-the pitch shifter warbles and can sit a few Hz off the exact interval; the reverb is plain; the phaser has
-no feedback.
+**The owner has heard none of them: ask which sound wrong and fix those first.** Still to build: the MIDI
+effects (a slot in front of the instrument), Dynamic Tube, then the hard ones (vocoder, spectral effects,
+grain delay, looper). Known weak spots: the pitch shifter warbles and can sit a few Hz off the exact
+interval; the reverb is plain; the phaser has no feedback; amp, cabinet, pedal, drum bus and vinyl are
+general shapes with our own numbers, so they most need the owner's ear.
 
 The site can also be installed as a desktop app from the browser (`CLAUDE.md`, "Desktop app"). Not checked
 on the live site behind the password: ask the owner whether Chrome offered Install.

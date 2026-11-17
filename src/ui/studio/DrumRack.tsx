@@ -15,7 +15,7 @@ function Wave({ peaks, start, length, fade, seconds }: { peaks: number[]; start:
   );
 }
 
-export function DrumRack({ pattern, onChange, studio, trackId, picked, onPick, step }: { pattern: Pattern; onChange: (p: Pattern) => void; studio: Studio; trackId: string; picked: number; onPick: (lane: number) => void; step: number }) {
+export function DrumRack({ pattern, onChange, studio, trackId, picked, onPick, step, onStrike }: { /** a pad was struck by hand (for recording) */ onStrike?: (lane: number) => void; pattern: Pattern; onChange: (p: Pattern) => void; studio: Studio; trackId: string; picked: number; onPick: (lane: number) => void; step: number }) {
   const [note, setNote] = useState("");
   const [over, setOver] = useState(-1);
   const picker = useRef<HTMLInputElement>(null);
@@ -34,7 +34,7 @@ export function DrumRack({ pattern, onChange, studio, trackId, picked, onPick, s
       <div className="rack-pads" role="group" aria-label="Pads">
         {pattern.lanes.map((l, i) => (
           <button key={l.id} className={`pad${i === picked ? " picked" : ""}${step >= 0 && on[i] && (l.steps[step] ?? 0) > 0 ? " lit" : ""}${l.mute ? " muted" : ""}${over === i ? " over" : ""}`} aria-pressed={i === picked} aria-label={`Pad ${l.name}`}
-            onMouseDown={() => { onPick(i); hear(i); }}
+            onMouseDown={() => { onPick(i); hear(i); onStrike?.(i); }}
             onKeyDown={(e) => { if (e.key === "Enter") { onPick(i); hear(i); } }}
             onDragOver={(e) => { if (e.dataTransfer.types.includes("Files")) { e.preventDefault(); setOver(i); } }} onDragLeave={() => setOver(-1)}
             onDrop={(e) => { e.preventDefault(); setOver(-1); const f = e.dataTransfer.files[0]; if (f) void take(i, f); }}>

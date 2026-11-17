@@ -437,3 +437,7 @@ learner's own sound files, the practice synth on synth tracks with a piano roll,
 (`CLAUDE.md`, "Studio is now a small DAW"). Timing and trimming were measured; nobody has heard it. Good next
 steps: recording from the keys or a MIDI keyboard, undo, note loudness, per-track effects, export, and the
 first lessons that use the Studio.
+
+Then: undo and redo, recording into the open clip, saved breaks and racks, and MIDI files out and in (the
+only format that moves both ways with Ableton; its own rack and set files are private and are not written).
+Nobody has opened one of our MIDI files in Ableton yet: ask the owner how it went.

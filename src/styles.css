@@ -320,3 +320,12 @@ tr.dim td { opacity: 0.6; }
 .roll-row.black { background: #ffffff0a; } .roll-row.c { border-bottom: 1px solid #45344f; }
 .roll-note { position: absolute; background: #5fe0ff; border: 1px solid #c8f6ff; border-radius: 3px; color: #06222a; font-size: 0.6rem; line-height: 12px; padding-left: 3px; overflow: hidden; white-space: nowrap; pointer-events: none; box-sizing: border-box; }
 .roll-now { position: absolute; top: 0; bottom: 0; width: 2px; background: #ffe66b; pointer-events: none; }
+.daw-rec { border: 2px solid #b00020; color: #b00020; background: var(--panel); border-radius: 10px; padding: 6px 12px; font-weight: 700; cursor: pointer; }
+.daw-rec.on { background: #d4002a; color: #fff; animation: daw-rec 1.2s ease-in-out infinite; }
+@keyframes daw-rec { 50% { box-shadow: 0 0 0 5px #d4002a44; } }
+@media (prefers-reduced-motion: reduce) { .daw-rec.on { animation: none; } }
+.daw-note { margin: 0 0 12px; padding: 8px 12px; border-left: 4px solid var(--accent); background: var(--accent-soft); border-radius: 6px; font-size: 0.9rem; }
+.daw-keep { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 10px; }
+.daw-keep input { padding: 6px 10px; width: 220px; }
+.daw-kept { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+@media (max-width: 800px) { .daw-kept { grid-template-columns: 1fr; } }

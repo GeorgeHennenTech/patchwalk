@@ -1129,8 +1129,39 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
     the same clock time as the first kick; a pad with Start 50%, Length 40% on a 1 s file played from 0.5 s
     for 0.2 s; a looped one-bar clip repeated every 1.935 s; a note was added in the roll by dragging;
     the whole synth opened on a track; everything survived a reload. **Nobody has heard any of it.**
-  - Not built: recording from the keys or a MIDI keyboard, note loudness, copy/paste and undo, automation,
+  - Not built: note loudness in the roll, copy/paste, automation,
     effects per track, a master meter, export to a sound file, dragging clips, lessons that use the Studio.
+- **Studio: undo, recording, saved breaks and racks, MIDI files (17 Nov 2026, owner's request: save "full
+  breaks" and racks, "in the same format that ableton takes so that they can be transitioned back and
+  forth").** **What was answered and must stay honest: only Standard MIDI Files move both ways.** Ableton's
+  own rack, preset, clip and set files (`.adg`, `.adv`, `.alc`, `.als`) are an undocumented private format
+  and our synth is not an Ableton device, so none are written; never claim otherwise. A MIDI file carries
+  notes and tempo, not sounds, swing, mutes or levels.
+  - `src/daw/midi.ts` (pure; `tests/midi.test.ts`): `writeMidi` (format 1, 480 ticks a beat, a tempo track
+    then a track per part), `readMidi` (any tick rate, running status, note-on at zero as note-off; film-frame
+    timing refused), `hitsToMidi` / `midiToHits` (**pad 1 is C1, note 36, pad 2 the next key up, in pad
+    order: where a DAW's drum rack keeps its pads; not the General MIDI drum map**; soft / normal / accent
+    are 50 / 96 / 127 and read back by `hitOf`; drums on channel 10), `notesToMidi` / `midiToNotes` (snapped
+    to sixteenths), `songToMidi`. In the Studio: "Download .mid" and "Bring in .mid" on the open clip (a
+    file replaces the clip's contents and says how many notes did not fit), and "Download .mid" for the
+    whole song. The files were read back by an independent parser (Python `mido`): right type, tempo,
+    tracks, channels and notes. **Not opened in Ableton by anyone yet.**
+  - Saved breaks and racks (`Break`, `Rack`, `withNamed`, `rackOnto` in `src/daw/store.ts`; keys
+    `patchwalk.breaks.v1`, `patchwalk.racks.v1`, 60 each, browser only): a break is a drum clip's rows with
+    its length, tempo and pad names, put back by pad order; a rack is the pads with all their settings,
+    and loading one gives its pads the ids of the pads they replace so the track's clips keep their rows.
+    A rack saved here remembers a sound file by its id, so it finds the file only in the same browser.
+    Synth sounds, with their macros, are saved by the synth's own "My patches".
+  - Undo and redo (`useStudio`: up to 100 earlier songs; changes within half a second of each other count
+    as one, so a dragged slider is one step; Ctrl+Z, Ctrl+Shift+Z and two buttons).
+  - Record (`rec` in `DawView.tsx`): while it is on and the song plays, a key played on a synth track
+    (letter keys or MIDI; `useSynth`'s host takes `onNote`) is written into the open clip from the nearest
+    step to the step it was let go, and a pad struck by hand is written as a hit. `Transport.position()`
+    gives the place in steps and parts of a step, swing left out. Recording does not count in, does not
+    record loudness for pads, and writes only into the open clip.
+  - Checked in a browser: undo and redo put a hit back and forth; a clip downloaded as MIDI and brought
+    into an empty clip gave the same 12 hits; a saved break filled a cleared clip; a key held while
+    recording became a note in the roll; breaks and racks were still there after a reload.
 - **"Walk me through it" (16 Nov 2026, owner's go-ahead with two rules of their own).** A second mode on the
   Ask tab (a switch, remembered): a how-to question becomes a walkthrough of steps shown one at a time.
   `api/walk.ts` answers two kinds of request: `plan` (one call with structured output over ten passages:

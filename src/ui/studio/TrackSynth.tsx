@@ -12,8 +12,8 @@ import type { Panel } from "../../course/types";
 
 const FREE = { id: "studio", title: "Studio", buildsOn: [], minutes: 0, outcome: "", idea: [], cardIds: [], steps: [], recap: [] } as unknown as PlayableLesson;
 
-export function TrackSynth({ engine, patch, bpm, onPatch }: { engine: Engine; patch: SynthState; bpm: number; onPatch: (s: SynthState) => void }) {
-  const synth = useSynth({ engine, initial: patch, onChange: onPatch });
+export function TrackSynth({ engine, patch, bpm, onPatch, onNote }: { engine: Engine; patch: SynthState; bpm: number; onPatch: (s: SynthState) => void; onNote?: (note: number, on: boolean, velocity: number) => void }) {
+  const synth = useSynth({ engine, initial: patch, onChange: onPatch, onNote });
   const [open, setOpen] = useState(false);
   const [views, setViews] = useState<Panel[]>([]);
   const [plain, setPlain] = useState(false);
@@ -22,6 +22,7 @@ export function TrackSynth({ engine, patch, bpm, onPatch }: { engine: Engine; pa
       <div className="track-synth-bar">
         <span>Start from a sound:</span>
         {SOUNDS.map((s) => <button key={s.name} onClick={() => synth.reset({ ...soundPatch(s.name), bpm })}>{s.name}</button>)}
+        {!synth.running && <button onClick={() => void synth.start()}>Switch the keys on</button>}
         <button className="primary" aria-expanded={open} onClick={() => setOpen(!open)}>{open ? "Close the synth" : "Open the synth"}</button>
       </div>
       {open && <>

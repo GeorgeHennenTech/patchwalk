@@ -3,7 +3,7 @@
 // made while it plays is heard the next time that step comes round.
 import { Engine } from "../synth/engine";
 import { Kit } from "./kit";
-import { audibleOf, stepTime, type Pad } from "./drums";
+import { audibleOf, stepSeconds, stepTime, type Pad } from "./drums";
 import { songEvents, type Song } from "./song";
 
 const AHEAD = 0.12, EVERY_MS = 25;
@@ -105,6 +105,14 @@ export class Transport {
     if (this.timer !== undefined) window.clearInterval(this.timer);
     this.timer = undefined; this.due = []; this.shown = -1;
     for (const e of this.engines.values()) e.engine.stopScheduled();
+  }
+  /** Where the song has got to, in steps and parts of a step (swing left out), or -1 when stopped. For writing down what is played. */
+  position(): number {
+    if (!this.playing || !this.ctx) return -1;
+    const song = this.read(), n = (this.ctx.currentTime - this.began) / stepSeconds(song.bpm);
+    if (n < 0) return -1;
+    const first = (this.loop?.start ?? 0) * 16, span = (this.loop?.bars ?? song.bars) * 16;
+    return first + (n % span);
   }
   /** The step of the song that is sounding now, or -1 when stopped. */
   step(): number {

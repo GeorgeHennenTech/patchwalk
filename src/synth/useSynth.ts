@@ -39,7 +39,7 @@ export type MidiStatus = "off" | "unsupported" | "refused" | "none" | "on";
  * `host` lets something else own the engine and the settings (a track in the Studio): the hook then plays
  * and edits that engine, reports every change of settings, and leaves the engine running when it goes.
  */
-export function useSynth(host?: { engine: Engine; initial: SynthState; onChange: (s: SynthState) => void }) {
+export function useSynth(host?: { engine: Engine; initial: SynthState; onChange: (s: SynthState) => void; /** a key went down or came up (for recording) */ onNote?: (note: number, on: boolean, velocity: number) => void }) {
   const engine = useRef<Engine | null>(host?.engine ?? null);
   const hostRef = useRef(host);
   hostRef.current = host;
@@ -132,6 +132,7 @@ export function useSynth(host?: { engine: Engine; initial: SynthState; onChange:
       return;
     }
     down.current.add(note);
+    hostRef.current?.onNote?.(note, true, velocity);
     // With Hold on, a new note replaces whatever was latched.
     // (in mono the engine does the replacing itself, so that legato and glide still work with Hold on)
     const mono = stateRef.current.voiceMode === "mono";
@@ -143,6 +144,7 @@ export function useSynth(host?: { engine: Engine; initial: SynthState; onChange:
 
   const noteOff = useCallback((note: number) => {
     down.current.delete(note);
+    hostRef.current?.onNote?.(note, false, 0);
     if (holdRef.current) return;
     if (stateRef.current.arpOn === "on" || arpKeys.current.length) {
       arpKeys.current = arpKeys.current.filter((n) => n !== note);

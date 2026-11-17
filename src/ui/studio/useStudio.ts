@@ -31,14 +31,27 @@ export function useStudio() {
   }
   const [playing, setPlaying] = useState(false);
   const [step, setStep] = useState(-1);
-  const change = useCallback((next: Song | ((s: Song) => Song)) => {
-    const before = now.current, after = typeof next === "function" ? next(before) : next;
-    if (after === before) return;
+  // Undo: the songs before each change. Changes that follow each other within half a second (a slider being
+  // dragged, a row being painted) count as one.
+  const past = useRef<Song[]>([]), future = useRef<Song[]>([]), lastChange = useRef(0);
+  const [, bump] = useState(0);
+  const put = useCallback((after: Song) => {
+    const before = now.current;
     now.current = after;
     if (before.bpm !== after.bpm || before.swing !== after.swing) transport.current!.retime(before);
     transport.current!.sync();
     setSong(after);
   }, []);
+  const change = useCallback((next: Song | ((s: Song) => Song)) => {
+    const before = now.current, after = typeof next === "function" ? next(before) : next;
+    if (after === before) return;
+    const t = performance.now();
+    if (t - lastChange.current > 500) { past.current.push(before); if (past.current.length > 100) past.current.shift(); }
+    lastChange.current = t; future.current = [];
+    put(after); bump((n) => n + 1);
+  }, [put]);
+  const undo = useCallback(() => { const prev = past.current.pop(); if (!prev) return; future.current.push(now.current); lastChange.current = 0; put(prev); bump((n) => n + 1); }, [put]);
+  const redo = useCallback(() => { const next = future.current.pop(); if (!next) return; past.current.push(now.current); lastChange.current = 0; put(next); bump((n) => n + 1); }, [put]);
   const toggle = useCallback(() => {
     const t = transport.current!;
     if (t.playing) { t.stop(); setPlaying(false); setStep(-1); } else { t.start(); setPlaying(true); }
@@ -80,6 +93,6 @@ export function useStudio() {
     setSamples((list) => list.filter((s) => s.id !== id));
     change((s) => dropSongSample(s, id));
   }, [change]);
-  return { song, change, playing, toggle, step, setLoop, transport: transport.current!, samples, addSample, removeSample };
+  return { undo, redo, canUndo: past.current.length > 0, canRedo: future.current.length > 0, song, change, playing, toggle, step, setLoop, transport: transport.current!, samples, addSample, removeSample };
 }
 export type Studio = ReturnType<typeof useStudio>;

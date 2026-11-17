@@ -414,3 +414,16 @@ export function delayEchoes(p: Record<string, number>, bpm: number, most = 8): {
   else for (let k = 1; k <= most; k++) out.push({ at: k * tl, side: "left", level: fb ** (k - 1) });
   return out;
 }
+
+// ---- the dots on a device's curve: what dragging each one changes ----
+/** A dot on a curve. Dragging it sideways changes `fParam`; up and down changes `dbParam` (in dB), or `qParam` (sharpness) when there is no gain to change. */
+export interface Handle { label: string; /** shown on the dot */ tag: string; f: number; db: number; fParam?: string; dbParam?: string; qParam?: string; /** the group of settings this dot belongs to */ group?: string }
+export const HANDLES: Record<string, (p: Record<string, number>) => Handle[]> = {
+  eq8: (p) => Array.from({ length: 8 }, (_, i) => i + 1).filter((n) => p[`b${n}on`] ?? 1).map((n) => { const gainy = [1, 2, 4].includes(p[`b${n}type`] ?? 2), shelf = [1, 4].includes(p[`b${n}type`] ?? 2);
+    return { label: `Band ${n}`, tag: String(n), group: `Band ${n}`, f: p[`b${n}freq`] ?? 1000, db: gainy ? p[`b${n}gain`] ?? 0 : 0, fParam: `b${n}freq`, dbParam: gainy ? `b${n}gain` : undefined, qParam: shelf ? undefined : `b${n}q` }; }),
+  eq3: (p) => { const f1 = p.freqLow ?? 250, f2 = p.freqHigh ?? 2500; return [
+    { label: "Low", tag: "L", f: Math.sqrt(20 * f1), db: p.low ?? 0, dbParam: "low" }, { label: "Mid", tag: "M", f: Math.sqrt(f1 * f2), db: p.mid ?? 0, dbParam: "mid" }, { label: "High", tag: "H", f: Math.sqrt(f2 * 20000), db: p.high ?? 0, dbParam: "high" },
+    { label: "Low / mid split", tag: "|", f: f1, db: -15, fParam: "freqLow" }, { label: "Mid / high split", tag: "|", f: f2, db: -15, fParam: "freqHigh" }]; },
+  channeleq: (p) => [{ label: "Low", tag: "L", f: CHANNEL_LOW_HZ, db: p.low ?? 0, dbParam: "low" }, { label: "Mid", tag: "M", f: p.midFreq ?? 1000, db: p.mid ?? 0, fParam: "midFreq", dbParam: "mid" }, { label: "High", tag: "H", f: CHANNEL_HIGH_HZ, db: p.high ?? 0, dbParam: "high" }],
+  autofilter: (p) => [{ label: "Filter", tag: "F", f: p.freq ?? 1200, db: 0, fParam: "freq", qParam: "res" }],
+};

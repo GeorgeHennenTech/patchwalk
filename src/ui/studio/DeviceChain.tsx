@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { detectPitch, nearestNote } from "../../daw/dsp";
 import { NOTE_FX } from "../../daw/notefx";
-import { CURVES, noteName, DEVICES, MAX_DEVICES, addDevice, moveDevice, removeDevice, setDeviceParam, specOf, toggleDevice, type Device, type ParamSpec } from "../../daw/devices";
+import { CURVES, HANDLES, noteName, DEVICES, MAX_DEVICES, addDevice, moveDevice, removeDevice, setDeviceParam, specOf, toggleDevice, type Device, type DeviceSpec, type Handle, type ParamSpec } from "../../daw/devices";
 
 const round = (v: number) => (Math.abs(v) >= 100 ? Math.round(v) : Number(v.toFixed(2)));
 const shown = (s: ParamSpec, v: number) => (s.id === "note" ? noteName(v) : s.unit === "Hz" && v >= 1000 ? `${round(v / 1000)} kHz` : s.choices ? s.choices[v] ?? String(v) : s.id.endsWith("pan") ? (v === 0 ? "centre" : v < 0 ? `${-v} left` : `${v} right`) : `${v > 0 && s.min < 0 && s.unit === "dB" ? "+" : ""}${v}${s.unit ? ` ${s.unit}` : ""}`);
@@ -11,9 +11,9 @@ const shown = (s: ParamSpec, v: number) => (s.id === "note" ? noteName(v) : s.un
 const toSlider = (s: ParamSpec, v: number) => Math.round((1000 * Math.log(v / s.min)) / Math.log(s.max / s.min));
 const fromSlider = (s: ParamSpec, x: number) => s.min * (s.max / s.min) ** (x / 1000);
 
-function Params({ spec, d, set }: { spec: { name: string; params: ParamSpec[] }; d: Device; set: (id: string, v: number) => void }) {
-  const groups = [...new Set(spec.params.map((s) => s.group).filter((g): g is string => !!g))];
-  const [group, setGroup] = useState(groups[0]);
+const groupsOf = (spec: { params: ParamSpec[] }) => [...new Set(spec.params.map((s) => s.group).filter((g): g is string => !!g))];
+function Params({ spec, d, set, group, setGroup }: { spec: { name: string; params: ParamSpec[] }; d: Device; set: (id: string, v: number) => void; group?: string; setGroup: (g: string) => void }) {
+  const groups = groupsOf(spec);
   const one = (s: ParamSpec) => { const v = d.p[s.id] ?? s.def, name = `${spec.name} ${s.group ? `${s.group} ` : ""}${s.label}`;
     if (s.choices && s.choices.length === 2) return <button key={s.id} className={`dev-sw${v ? " on" : ""}`} aria-pressed={!!v} aria-label={name} onClick={() => set(s.id, v ? 0 : 1)}>{s.label}</button>;
     if (s.choices) return <label key={s.id} className="dev-knob"><span>{s.label}</span><select value={v} aria-label={name} onChange={(e) => set(s.id, Number(e.target.value))}>{s.choices.map((c, i) => <option key={c} value={i}>{c}</option>)}</select></label>;
@@ -27,22 +27,58 @@ function Params({ spec, d, set }: { spec: { name: string; params: ParamSpec[] };
   </>);
 }
 
-const W = 300, H = 110, LOW = 20, HIGH = 20000, TOP = 18;
+const W = 300, H = 140, LOW = 20, HIGH = 20000, TOP = 18;
 const xOf = (f: number) => (W * Math.log(f / LOW)) / Math.log(HIGH / LOW), yOf = (dB: number) => H / 2 - (dB / TOP) * (H / 2);
-/** The device's level against frequency, drawn from the same maths the sound is made with. */
-function Curve({ kind, p }: { kind: string; p: Record<string, number> }) {
-  const at = CURVES[kind]!, pts: string[] = [];
+const fAt = (x: number) => LOW * (HIGH / LOW) ** (Math.min(W, Math.max(0, x)) / W), dbAt = (y: number) => ((H / 2 - Math.min(H, Math.max(0, y))) / (H / 2)) * TOP;
+/**
+ * The device's level against frequency, drawn from the same maths the sound is made with. Its dots can be
+ * dragged: sideways for frequency, up and down for gain (or sharpness where there is no gain); the mouse
+ * wheel over a dot changes its sharpness; a double-click puts its gain back to zero. Arrow keys work too.
+ */
+function Curve({ spec, d, set, group, onGroup }: { spec: { name: string; params: ParamSpec[] }; d: Device; set: (changes: Record<string, number>) => void; group?: string; onGroup: (g: string) => void }) {
+  const kind = d.kind, p = d.p, at = CURVES[kind]!, pts: string[] = [], handles = HANDLES[kind]?.(p) ?? [], svg = useRef<SVGSVGElement>(null), held = useRef<{ h: Handle; q0: number; y0: number } | null>(null);
   for (let i = 0; i <= 150; i++) { const f = LOW * (HIGH / LOW) ** (i / 150); pts.push(`${xOf(f).toFixed(1)},${Math.min(H + 4, Math.max(-4, yOf(at(p, f)))).toFixed(1)}`); }
+  const range = (id: string) => spec.params.find((s) => s.id === id);
+  const where = (e: { clientX: number; clientY: number }) => { const r = svg.current!.getBoundingClientRect(); return { x: ((e.clientX - r.left) / r.width) * W, y: ((e.clientY - r.top) / r.height) * H }; };
+  const sharper = (h: Handle, q: number, by: number) => { const s = h.qParam ? range(h.qParam) : undefined; return s ? Math.min(s.max, Math.max(s.min, q * by)) : q; };
+  const drag = (e: React.PointerEvent) => { const g = held.current; if (!g) return; const { x, y } = where(e), h = g.h, next: Record<string, number> = {};
+    if (h.fParam) next[h.fParam] = fAt(x);
+    if (h.dbParam) next[h.dbParam] = dbAt(y); else if (h.qParam) next[h.qParam] = sharper(h, g.q0, 2 ** ((g.y0 - y) / 18));     // up is sharper
+    set(next); };
+  const keys = (h: Handle) => (e: React.KeyboardEvent) => { const big = e.shiftKey ? 4 : 1, next: Record<string, number> = {};
+    if (e.key === "ArrowLeft" && h.fParam) next[h.fParam] = h.f / 1.03 ** big; else if (e.key === "ArrowRight" && h.fParam) next[h.fParam] = h.f * 1.03 ** big;
+    else if ((e.key === "ArrowUp" || e.key === "ArrowDown") && h.dbParam) next[h.dbParam] = h.db + (e.key === "ArrowUp" ? 0.5 : -0.5) * big;
+    else if ((e.key === "ArrowUp" || e.key === "ArrowDown") && h.qParam) next[h.qParam] = sharper(h, p[h.qParam] ?? 1, e.key === "ArrowUp" ? 1.1 : 1 / 1.1);
+    else return;
+    e.preventDefault(); e.stopPropagation(); set(next); };
   return (
-    <svg className="dev-curve" viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Level against frequency, 20 Hz to 20 kHz, 18 dB up and down">
+    <svg ref={svg} className="dev-curve" viewBox={`0 0 ${W} ${H}`} role="group" aria-label={`${spec.name}: level against frequency, 20 Hz to 20 kHz, 18 dB up and down. Drag the dots.`}>
       {[100, 1000, 10000].map((f) => <g key={f}><line x1={xOf(f)} x2={xOf(f)} y1={0} y2={H} className="grid" /><text x={xOf(f) + 3} y={H - 3}>{f >= 1000 ? `${f / 1000}k` : f}</text></g>)}
       {[-12, 0, 12].map((g) => <line key={g} x1={0} x2={W} y1={yOf(g)} y2={yOf(g)} className={g ? "grid" : "zero"} />)}
       <polyline points={pts.join(" ")} />
-      {kind === "eq8" && Array.from({ length: 8 }, (_, i) => { const n = i + 1; if (!(p[`b${n}on`] ?? 1)) return null; const f = p[`b${n}freq`] ?? 1000; return <g key={n}><circle cx={xOf(f)} cy={Math.min(H - 6, Math.max(6, yOf(at(p, f))))} r={6} /><text className="num" x={xOf(f)} y={Math.min(H - 6, Math.max(6, yOf(at(p, f)))) + 3}>{n}</text></g>; })}
+      {handles.map((h, i) => { const cx = xOf(h.f), cy = Math.min(H - 8, Math.max(8, yOf(h.db))), on = !!h.group && h.group === group;
+        return <g key={`${h.label}:${i}`} className={`dev-dot${on ? " on" : ""}`} tabIndex={0} role="slider" aria-label={`${spec.name} ${h.label} dot`} aria-valuenow={Math.round(h.fParam ? h.f : h.db)} aria-valuetext={`${h.fParam ? `${round(h.f)} Hz` : ""}${h.dbParam ? ` ${h.db} dB` : ""}`}
+          onPointerDown={(e) => { e.preventDefault(); (e.currentTarget as SVGGElement).setPointerCapture(e.pointerId); (e.currentTarget as SVGGElement).focus(); held.current = { h, q0: h.qParam ? p[h.qParam] ?? 1 : 1, y0: where(e).y }; if (h.group) onGroup(h.group); }}
+          onPointerMove={drag} onPointerUp={() => { held.current = null; }} onPointerCancel={() => { held.current = null; }}
+          onDoubleClick={() => { if (h.dbParam) set({ [h.dbParam]: 0 }); }} onKeyDown={keys(h)} onFocus={() => { if (h.group) onGroup(h.group); }}
+          onWheel={(e) => { if (h.qParam) set({ [h.qParam]: sharper(h, p[h.qParam] ?? 1, e.deltaY < 0 ? 1.12 : 1 / 1.12) }); }}>
+          <circle cx={cx} cy={cy} r={12} className="hit" /><circle cx={cx} cy={cy} r={7} /><text className="num" x={cx} y={cy + 3}>{h.tag}</text>
+        </g>; })}
     </svg>
   );
 }
 
+/** A device's pictures and settings. The curve's dots and the settings below share which band is open. */
+function Body({ spec, d, set, reduction, analyser }: { spec: DeviceSpec; d: Device; set: (changes: Record<string, number>) => void; reduction?: (deviceId: string) => number | undefined; analyser?: (deviceId: string) => AnalyserNode | undefined }) {
+  const [group, setGroup] = useState(groupsOf(spec)[0]);
+  return (<>
+    {CURVES[d.kind] && <Curve spec={spec} d={d} set={set} group={group} onGroup={setGroup} />}
+    {spec.view === "spectrum" && analyser && <SpectrumView read={() => analyser(d.id)} />}
+    {spec.view === "tuner" && analyser && <TunerView read={() => analyser(d.id)} />}
+    {spec.meter && reduction && <Meter read={() => (d.on ? reduction(d.id) : 0)} />}
+    <Params spec={spec} d={d} set={(id, v) => set({ [id]: v })} group={group} setGroup={setGroup} />
+  </>);
+}
 /** How far the device is turning the sound down, read from the audio about thirty times a second. */
 function Meter({ read }: { read: () => number | undefined }) {
   const bar = useRef<HTMLSpanElement>(null), text = useRef<HTMLElement>(null);
@@ -95,11 +131,7 @@ export function DeviceChain({ devices, onChange, reduction, analyser, kind = "au
               <button aria-label={`Move ${spec.name} later`} title="Later in the chain" disabled={i === devices.length - 1} onClick={() => onChange(moveDevice(devices, d.id, 1))}>▶</button>
               <button aria-label={`Remove ${spec.name}`} title="Remove" onClick={() => onChange(removeDevice(devices, d.id))}>×</button>
             </header>
-            {CURVES[d.kind] && <Curve kind={d.kind} p={d.p} />}
-            {spec.view === "spectrum" && analyser && <SpectrumView read={() => analyser(d.id)} />}
-            {spec.view === "tuner" && analyser && <TunerView read={() => analyser(d.id)} />}
-            {spec.meter && reduction && <Meter read={() => (d.on ? reduction(d.id) : 0)} />}
-            <Params spec={spec} d={d} set={(id, v) => onChange(setDeviceParam(devices, d.id, id, v))} />
+            <Body spec={spec} d={d} reduction={reduction} analyser={analyser} set={(changes) => onChange(Object.entries(changes).reduce((c, [id, v]) => setDeviceParam(c, d.id, id, v), devices))} />
             {spec.note && <p className="dev-note">{spec.note}</p>}
           </section>
         ); })}

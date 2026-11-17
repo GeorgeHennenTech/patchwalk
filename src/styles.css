@@ -467,6 +467,9 @@ tr.dim td { opacity: 0.6; }
 .dev-curve .grid { stroke: #333336; stroke-width: 1; } .dev-curve .zero { stroke: #55555a; stroke-width: 1; }
 .dev-curve text { fill: #8a8a90; font-size: 8px; } .dev-curve circle { fill: #1b1b1d; stroke: var(--on); stroke-width: 1.2; }
 .dev-curve text.num { fill: var(--ink); text-anchor: middle; font-size: 8px; font-weight: 700; }
+.dev-curve { touch-action: none; user-select: none; }
+.dev-dot { cursor: grab; outline: none; } .dev-dot:active { cursor: grabbing; } .dev-dot .hit { fill: transparent; stroke: none; }
+.dev-dot.on circle:not(.hit), .dev-dot:hover circle:not(.hit), .dev-dot:focus-visible circle:not(.hit) { fill: var(--on); } .dev-dot.on text.num, .dev-dot:hover text.num, .dev-dot:focus-visible text.num { fill: #1c1c1c; }
 .dev-groups { display: flex; gap: 2px; padding: 6px 8px 0; }
 .daw2 .dev-groups button { flex: 1; padding: 1px 0; font-size: 11px; } .daw2 .dev-groups button.on { background: var(--on); color: #1c1c1c; border-color: var(--on); }
 .dev-knob select { width: 100%; }

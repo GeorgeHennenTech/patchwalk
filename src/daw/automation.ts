@@ -11,7 +11,9 @@ export interface AutoLane { target: string; points: AutoPoint[] }
 export interface AutoTarget { id: string; label: string; min: number; max: number; step: number; unit?: string; log?: boolean; /** the heading it is listed under */ group: string }
 export const MAX_LANES = 4, MAX_POINTS = 64;
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
-type Auto = { level: number; pan: number; devices: Device[]; auto?: AutoLane[]; patch?: object };
+type Auto = { level: number; pan: number; devices: Device[]; auto?: AutoLane[]; patch?: object; sampler?: object };
+/** The sampler's knobs a lane can move (`m:<knob>`). */
+const SAMPLER: AutoTarget[] = [["start", "Start", 0, 99, "%"], ["length", "Length", 1, 100, "%"], ["tune", "Tune", -24, 24, "st"], ["attack", "Fade in", 1, 2000, "ms"], ["release", "Fade out", 1, 5000, "ms"], ["level", "Level", 0, 100, ""]].map(([id, label, min, max, unit]) => ({ id: `m:${id}`, label: label as string, min: min as number, max: max as number, step: 1, unit: (unit as string) || undefined, log: unit === "ms", group: "Sampler" }));
 /**
  * The synth's knobs a lane can move: every continuous one, except the tempo (the song sets it) and two that
  * rebuild something too heavy to do many times a second (random phase, reverb size).
@@ -20,10 +22,10 @@ export const SYNTH_TARGETS: string[] = MACRO_DESTS.filter((id) => !["none", "bpm
 const SYNTH: AutoTarget[] = SYNTH_TARGETS.map((id) => { const p = PARAMS[id]!; return { id: `s:${id}`, label: p.label, min: p.min!, max: p.max!, step: p.step ?? 1, unit: p.unit, log: p.log, group: `Synth: ${p.group}` }; });
 
 /** What can be automated on a track: its level, its pan, and every slider of every effect on it (not menus or switches). */
-export function targetsOf(t: { devices: Device[]; patch?: object }): AutoTarget[] {
+export function targetsOf(t: { devices: Device[]; patch?: object; sampler?: object }): AutoTarget[] {
   const out: AutoTarget[] = [{ id: "level", label: "Track level", min: 0, max: 100, step: 1, group: "Track" }, { id: "pan", label: "Track pan", min: -100, max: 100, step: 1, group: "Track" }];
   t.devices.forEach((d, i) => { const spec = specOf(d.kind); for (const p of spec?.params ?? []) if (!p.choices) out.push({ id: `d:${d.id}:${p.id}`, label: `${i + 1} ${spec!.name}: ${p.group ? `${p.group} ` : ""}${p.label}`, min: p.min, max: p.max, step: p.step, unit: p.unit, log: p.log, group: "Effects" }); });
-  if (t.patch) out.push(...SYNTH);
+  if (t.sampler) out.push(...SAMPLER); else if (t.patch) out.push(...SYNTH);
   return out;
 }
 /** A lane's 0-to-1 value as the setting's own value (a frequency or time moves in ratios, as its slider does). */
@@ -56,6 +58,7 @@ export function automateTrack<T extends Auto>(t: T, step: number): T {
   for (const lane of lanes) { const target = targets.find((x) => x.id === lane.target), v = valueAt(lane.points, step); if (!target || v === undefined) continue; const value = fromUnit(target, v);
     if (lane.target === "level") next = { ...next, level: value }; else if (lane.target === "pan") next = { ...next, pan: value };
     else if (lane.target.startsWith("s:")) knobs.push([lane.target.slice(2), value]);
+    else if (lane.target.startsWith("m:")) { if (next.sampler && (next.sampler as Record<string, unknown>)[lane.target.slice(2)] !== value) next = { ...next, sampler: { ...next.sampler, [lane.target.slice(2)]: value } }; }
     else { const [, id, param] = lane.target.split(":"); next = { ...next, devices: next.devices.map((d) => (d.id === id ? { ...d, p: { ...d.p, [param!]: value } } : d)) }; } }
   if (knobs.length && t.patch) { const patch = withKnobs(t.patch, knobs); if (patch !== t.patch) next = { ...next, patch }; }
   return next;
@@ -71,7 +74,7 @@ export function automate<S extends { tracks: Auto[] }>(song: S, step: number): S
 const sorted = (points: AutoPoint[]) => points.slice().sort((a, b) => a.at - b.at);
 export const tidyPoint = (p: AutoPoint, steps: number): AutoPoint => ({ at: clamp(Math.round(p.at), 0, steps), v: Number(clamp(p.v, 0, 1).toFixed(4)) });
 /** Add a lane for the first setting of the track that has none yet. */
-export function addLane(lanes: AutoLane[], t: { devices: Device[]; patch?: object }, target?: string): AutoLane[] {
+export function addLane(lanes: AutoLane[], t: { devices: Device[]; patch?: object; sampler?: object }, target?: string): AutoLane[] {
   if (lanes.length >= MAX_LANES) return lanes;
   const free = targetsOf(t).find((x) => (target ? x.id === target : !lanes.some((l) => l.target === x.id)));
   return free && !lanes.some((l) => l.target === free.id) ? [...lanes, { target: free.id, points: [] }] : lanes;

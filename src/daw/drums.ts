@@ -38,6 +38,10 @@ export interface Pad {
   fade: number;
   /** Pads in the same choke group (1 to 4) cut each other off; 0 is no group. */
   choke: number;
+  /** Built-in drums only. How long it rings: percent of its usual length, 25 to 400 (left out means 100). */
+  decay?: number;
+  /** Built-in drums only. Darker (below 0) or brighter (above), -100 to 100: it moves the noise and metal parts' filters by up to an octave and a half (left out means 0). */
+  tone?: number;
 }
 export interface Lane extends Pad { steps: Hit[] }
 export const TUNE_MAX = 12, FADE_MAX = 2000, CHOKE_GROUPS = 4, MAX_PADS = 16;
@@ -61,6 +65,12 @@ export interface Pattern {
 export const STEPS_PER_BEAT = 4, STEPS_PER_BAR = 16, BPM_MIN = 60, BPM_MAX = 200, SWING_MAX = 75;
 
 export const newPad = (id: string, voice: Voice, name: string = VOICE_NAMES[voice]): Pad => ({ id, name, voice, level: 80, mute: false, solo: false, tune: 0, pan: 0, start: 0, length: 100, fade: 0, choke: voice === "hat" || voice === "openhat" ? 1 : 0 });
+/**
+ * A sound file cut into equal slices, one pad each, in order: for chopping a break. A pad's length is a share
+ * of what is left after its start, so slice i of n is 100 / (n - i) percent.
+ */
+export const SLICE_COUNTS = [4, 8, 16] as const;
+export const slicePads = (sample: string, name: string, n: number): Pad[] => Array.from({ length: n }, (_, i) => ({ ...newPad(`s${i + 1}`, "kick", `${name.slice(0, 18)} ${i + 1}`), sample, start: Math.round((10000 * i) / n) / 100, length: Math.round(10000 / (n - i)) / 100 }));
 /** The nine pads a new rack starts with. The two hats share a choke group, so a closed hat cuts a ringing open one. */
 export const defaultPads = (): Pad[] => DEFAULT_VOICES.map((v) => newPad(v, v));
 const silent = (length: number): Hit[] => Array.from({ length }, () => 0 as Hit);
@@ -102,12 +112,13 @@ const withLane = (p: Pattern, index: number, change: (l: Lane) => Lane): Pattern
 export const setHit = (p: Pattern, lane: number, step: number, hit: Hit): Pattern => withLane(p, lane, (l) => ({ ...l, steps: l.steps.map((h, i) => (i === step ? hit : h)) }));
 /** A struck cell's next strength: normal, accent, soft, and round again. A silent cell stays silent. */
 export const nextStrength = (hit: Hit): Hit => (hit === 0 ? 0 : hit === 2 ? 3 : hit === 3 ? 1 : 2);
-export type PadChange = Partial<Pick<Pad, "name" | "voice" | "level" | "mute" | "solo" | "tune" | "pan" | "start" | "length" | "fade" | "choke">>;
+export type PadChange = Partial<Pick<Pad, "name" | "voice" | "level" | "mute" | "solo" | "tune" | "pan" | "start" | "length" | "fade" | "choke" | "decay" | "tone">>;
 /** A pad's settings after a change, each kept in its range. */
 export function tidyPad<T extends Pad>(pad: T, change: PadChange = {}): T {
   const l = { ...pad, ...change };
   return { ...l, name: (String(l.name ?? "").slice(0, 24).trim() || VOICE_NAMES[l.voice]), level: clamp(Number(l.level) || 0, 0, 100), tune: clamp(Math.round(Number(l.tune) || 0), -TUNE_MAX, TUNE_MAX), pan: clamp(Math.round(Number(l.pan) || 0), -100, 100),
-    start: clamp(Math.round(Number(l.start) || 0), 0, 95), length: clamp(Math.round(Number(l.length ?? 100) || 0), 5, 100), fade: clamp(Math.round(Number(l.fade) || 0), 0, FADE_MAX), choke: clamp(Math.round(Number(l.choke) || 0), 0, CHOKE_GROUPS), mute: l.mute === true, solo: l.solo === true };
+    start: clamp(Math.round((Number(l.start) || 0) * 100) / 100, 0, 95), length: clamp(Math.round((Number(l.length ?? 100) || 0) * 100) / 100, 5, 100),
+    ...(Number.isFinite(Number(l.decay)) && l.decay !== undefined && Math.round(Number(l.decay)) !== 100 ? { decay: clamp(Math.round(Number(l.decay)), 25, 400) } : { decay: undefined }), ...(Number.isFinite(Number(l.tone)) && l.tone !== undefined && Math.round(Number(l.tone)) !== 0 ? { tone: clamp(Math.round(Number(l.tone)), -100, 100) } : { tone: undefined }), fade: clamp(Math.round(Number(l.fade) || 0), 0, FADE_MAX), choke: clamp(Math.round(Number(l.choke) || 0), 0, CHOKE_GROUPS), mute: l.mute === true, solo: l.solo === true };
 }
 export const setLane = (p: Pattern, lane: number, change: PadChange): Pattern => withLane(p, lane, (l) => tidyPad(l, change));
 /** Give a pad one of the learner's own sounds, or (with no id) go back to the built-in drum. */

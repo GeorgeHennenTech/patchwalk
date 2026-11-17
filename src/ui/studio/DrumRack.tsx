@@ -65,6 +65,10 @@ export function DrumRack({ pattern, onChange, studio, trackId, picked, onPick, s
             <label className="daw-knob"><span>Length <b>{lane.length}</b>%</span><input type="range" min={5} max={100} value={lane.length} onChange={(e) => set({ length: Number(e.target.value) })} /></label>
             <label className="daw-knob"><span>Fade out <b>{lane.fade}</b> ms</span><input type="range" min={0} max={FADE_MAX} step={10} value={lane.fade} onChange={(e) => set({ fade: Number(e.target.value) })} /></label>
           </>}
+          {!own && <>
+            <label className="daw-knob" title="How long the drum rings, against its usual length (double-click for usual)"><span>Decay <b>{lane.decay ?? 100}</b>%</span><input type="range" min={25} max={400} step={5} value={lane.decay ?? 100} onChange={(e) => set({ decay: Number(e.target.value) })} onDoubleClick={() => set({ decay: 100 })} /></label>
+            <label className="daw-knob" title="Darker or brighter: it moves the drum's noise and metal parts (double-click for usual)"><span>Tone <b>{(lane.tone ?? 0) > 0 ? "+" : ""}{lane.tone ?? 0}</b></span><input type="range" min={-100} max={100} step={5} value={lane.tone ?? 0} onChange={(e) => set({ tone: Number(e.target.value) })} onDoubleClick={() => set({ tone: 0 })} /></label>
+          </>}
           <label className="daw-knob"><span>Tune <b>{lane.tune > 0 ? "+" : ""}{lane.tune}</b> semitones</span><input type="range" min={-TUNE_MAX} max={TUNE_MAX} value={lane.tune} onChange={(e) => set({ tune: Number(e.target.value) })} onDoubleClick={() => set({ tune: 0 })} /></label>
           <label className="daw-knob"><span>Level <b>{lane.level}</b></span><input type="range" min={0} max={100} value={lane.level} onChange={(e) => set({ level: Number(e.target.value) })} /></label>
           <label className="daw-knob"><span>Pan <b>{lane.pan === 0 ? "centre" : lane.pan < 0 ? `${-lane.pan} left` : `${lane.pan} right`}</b></span><input type="range" min={-100} max={100} step={5} value={lane.pan} onChange={(e) => set({ pan: Number(e.target.value) })} onDoubleClick={() => set({ pan: 0 })} /></label>

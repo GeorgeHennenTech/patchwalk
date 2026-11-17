@@ -10,6 +10,9 @@ export class Kit {
   /** What is still ringing in each choke group, so the next pad of that group can cut it off. */
   private ringing = new Map<string, GainNode[]>();
   private rate = 1;
+  /** For the built-in drum being struck: how long it rings against its usual length, and how far its filters are moved. */
+  private ring = 1;
+  private bright = 1;
   constructor(readonly ctx: BaseAudioContext, destination: AudioNode = ctx.destination) {
     this.out = ctx.createGain(); this.out.gain.value = 0.8; this.out.connect(destination);
     this.noise = ctx.createBuffer(1, Math.round(ctx.sampleRate * 1.2), ctx.sampleRate);
@@ -41,22 +44,22 @@ export class Kit {
   private tone(to: AudioNode, type: OscillatorType, t: number, from: number, down: number, drop: number, peak: number, decay: number): void {
     const osc = this.ctx.createOscillator(), amp = this.ctx.createGain();
     osc.type = type; osc.frequency.setValueAtTime(from * this.rate, t); osc.frequency.exponentialRampToValueAtTime(Math.max(20, down * this.rate), t + drop);
-    amp.gain.setValueAtTime(0.0001, t); amp.gain.linearRampToValueAtTime(peak, t + 0.002); amp.gain.exponentialRampToValueAtTime(0.0001, t + decay);
-    osc.connect(amp).connect(to); osc.start(t); osc.stop(t + decay + 0.02);
+    amp.gain.setValueAtTime(0.0001, t); amp.gain.linearRampToValueAtTime(peak, t + 0.002); amp.gain.exponentialRampToValueAtTime(0.0001, t + decay * this.ring);
+    osc.connect(amp).connect(to); osc.start(t); osc.stop(t + decay * this.ring + 0.02);
   }
   private hiss(to: AudioNode, t: number, kind: BiquadFilterType, hz: number, q: number, peak: number, decay: number): void {
     const src = this.ctx.createBufferSource(), filter = this.ctx.createBiquadFilter(), amp = this.ctx.createGain();
-    src.buffer = this.noise; filter.type = kind; filter.frequency.value = Math.min(18000, hz * this.rate); filter.Q.value = q;
-    amp.gain.setValueAtTime(0.0001, t); amp.gain.linearRampToValueAtTime(peak, t + 0.001); amp.gain.exponentialRampToValueAtTime(0.0001, t + decay);
-    src.connect(filter).connect(amp).connect(to); src.start(t, (t * 7.3) % 0.5); src.stop(t + decay + 0.02);
+    src.buffer = this.noise; filter.type = kind; filter.frequency.value = Math.min(18000, Math.max(60, hz * this.rate * this.bright)); filter.Q.value = q;
+    amp.gain.setValueAtTime(0.0001, t); amp.gain.linearRampToValueAtTime(peak, t + 0.001); amp.gain.exponentialRampToValueAtTime(0.0001, t + decay * this.ring);
+    src.connect(filter).connect(amp).connect(to); src.loop = true; src.start(t, (t * 7.3) % 0.5); src.stop(t + decay * this.ring + 0.02);
   }
   /** A cymbal's ring: six square waves at ratios that do not line up, with the low part taken off. The ratios and every number are our own. */
   private metal(to: AudioNode, t: number, base: number, floorHz: number, peak: number, decay: number): void {
     const cut = this.ctx.createBiquadFilter(), amp = this.ctx.createGain();
-    cut.type = "highpass"; cut.frequency.value = Math.min(16000, floorHz * this.rate); cut.Q.value = 0.8;
-    amp.gain.setValueAtTime(0.0001, t); amp.gain.linearRampToValueAtTime(peak, t + 0.002); amp.gain.exponentialRampToValueAtTime(peak * 0.35, t + decay * 0.12); amp.gain.exponentialRampToValueAtTime(0.0001, t + decay);
+    cut.type = "highpass"; cut.frequency.value = Math.min(16000, Math.max(60, floorHz * this.rate * this.bright)); cut.Q.value = 0.8;
+    amp.gain.setValueAtTime(0.0001, t); amp.gain.linearRampToValueAtTime(peak, t + 0.002); amp.gain.exponentialRampToValueAtTime(peak * 0.35, t + decay * this.ring * 0.12); amp.gain.exponentialRampToValueAtTime(0.0001, t + decay * this.ring);
     cut.connect(amp).connect(to);
-    for (const ratio of [1, 1.483, 1.764, 2.317, 2.891, 3.469]) { const osc = this.ctx.createOscillator(); osc.type = "square"; osc.frequency.value = base * ratio * this.rate; osc.connect(cut); osc.start(t); osc.stop(t + decay + 0.02); }
+    for (const ratio of [1, 1.483, 1.764, 2.317, 2.891, 3.469]) { const osc = this.ctx.createOscillator(); osc.type = "square"; osc.frequency.value = base * ratio * this.rate; osc.connect(cut); osc.start(t); osc.stop(t + decay * this.ring + 0.02); }
   }
   /** The metronome's click: higher on the first beat of a bar. */
   tick(t: number, first: boolean): void { this.rate = 1; this.tone(this.out, "sine", t, first ? 1760 : 1175, first ? 1760 : 1175, 0.02, 0.22, 0.03); }
@@ -67,7 +70,7 @@ export class Kit {
   hit(pad: Pad, t: number, strength: number, to: AudioNode = this.out, scope = ""): void {
     const v = Math.min(1, Math.max(0, strength));
     if (v <= 0) return;
-    this.rate = tuneRate(pad.tune);
+    this.rate = tuneRate(pad.tune); this.ring = (pad.decay ?? 100) / 100; this.bright = 2 ** (((pad.tone ?? 0) / 100) * 1.5);
     const bus = this.ctx.createGain();
     if (pad.pan) { const pan = this.ctx.createStereoPanner(); pan.pan.value = pad.pan / 100; bus.connect(pan).connect(to); } else bus.connect(to);
     if (pad.choke) {

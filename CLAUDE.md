@@ -1455,6 +1455,21 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   in a browser with a 440 Hz file: 438.7 Hz on the root key, 880.2 an octave up, 220.7 an octave down,
   659.5 a fifth up; a letter key played it; the song played it; nothing was heard from the synth behind it.
   Not built: its own filter and LFO, loop crossfade, slicing a break onto pads, automation of its knobs.
+  **Slicing, drum knobs, sampler automation (17 Nov 2026, owner: "proceed").** (1) **Slice onto pads**: a ✂
+  beside each sound under Samples asks for 4, 8 or 16 and makes a new drum track with one pad for each
+  equal slice and a one-bar clip that plays them in order (`slicePads` in `drums.ts`, `sliceToTrack` in
+  `song.ts`). A pad's `length` is a share of what is left after its `start`, so slice i of n is
+  100 / (n - i) percent; pad start and length now keep two decimals. Equal slices only: nothing looks for
+  the hits. (2) **Decay and Tone on built-in drums** (`pad.decay` 25 to 400 percent of the usual ring,
+  `pad.tone` -100 to 100 moving the noise and metal filters by up to an octave and a half; sliders in the
+  rack for pads with no sound file; `ring` and `bright` in `kit.ts`). Our own choices, like the drums.
+  (3) **The sampler's knobs can be automated** (`m:<knob>`: start, length, tune, fade in, fade out, level),
+  listed in place of the synth's on a sampler track. Measured in a browser: a file of eight equal tones
+  sliced in eight gave pads at 301, 598, 899, 1200, 1502, 1798, 2099 and 2401 Hz; a kick 0.7 s after the
+  hit was silent as usual and at -37 dB with Decay at 400; a closed hat's spectrum centred on 7.2, 9.9 and
+  17 kHz with Tone at -100, 0 and +100. **What can be automated now: a track's level and pan, every knob of
+  every effect on it, every continuous synth knob or the sampler's knobs. Not: returns, the master, drum
+  pads, note effects, menus and switches, the tempo.**
   **Lessons on all of this (owner, 17 Nov 2026: "we are also going to have to make lessons on all of these
   new features. this ableton course will be extensive").** Nothing is written and the lesson engine does
   not know the Studio; the plan is at the top of `docs/ABLETON_GAPS.md`. Every Studio feature needs one.

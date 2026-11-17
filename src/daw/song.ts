@@ -7,7 +7,7 @@ import { addDevice, tidyDevices, type Device } from "./devices";
 import { applyNoteFx, type FxNote } from "./notefx";
 import { tidyAuto, type AutoLane } from "./automation";
 import { tidySampler, type SamplerSet } from "./sampler";
-import { BPM_MAX, BPM_MIN, STEPS_PER_BAR, STRENGTH, SWING_MAX, audibleOf, defaultPads, freeId, stepSeconds, stepTime, tidyPads, tidySteps, type Hit, type Lane, type Pad, type Pattern } from "./drums";
+import { SLICE_COUNTS, slicePads, BPM_MAX, BPM_MIN, STEPS_PER_BAR, STRENGTH, SWING_MAX, audibleOf, defaultPads, freeId, stepSeconds, stepTime, tidyPads, tidySteps, type Hit, type Lane, type Pad, type Pattern } from "./drums";
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
@@ -270,6 +270,17 @@ export function setMarker(s: Song, bar: number, name: string): Song {
 }
 /** Whether a note belongs to a key: `root` is 0 for C up to 11 for B, `steps` the scale's semitones above it. */
 export const inKey = (note: number, root: number, steps: readonly number[]) => steps.includes((((note - root) % 12) + 12) % 12);
+/**
+ * Slice a sound file onto a new drum track: one pad for each equal slice, and a one-bar clip that plays the
+ * slices in order, so the loop sounds as it did and can then be rearranged. Nothing when there is no room for a track.
+ */
+export function sliceToTrack(s: Song, sample: string, name: string, n: number): { song: Song; track: string; clip: string } | undefined {
+  if (s.tracks.length >= MAX_TRACKS || !(SLICE_COUNTS as readonly number[]).includes(n)) return undefined;
+  const id = freeId(s.tracks.map((t) => t.id), "t"), pads = slicePads(sample, name, n), steps = STEPS_PER_BAR;
+  const hits: Record<string, Hit[]> = Object.fromEntries(pads.map((p, i) => [p.id, Array.from({ length: steps }, (_, k) => (k === Math.round((i * steps) / n) ? 2 : 0) as Hit)]));
+  const t: DrumTrack = { id, kind: "drums", name: name.slice(0, 24) || "Slices", level: 80, pan: 0, mute: false, solo: false, auto: [], devices: [], pads, clips: [{ id: "c1", start: 0, bars: 1, hits }] };
+  return { song: { ...s, tracks: [...s.tracks, t] }, track: id, clip: "c1" };
+}
 /** Make a synth track's instrument a sampler (or, with nothing, the synth again). */
 export const setSampler = (s: Song, trackId: string, sampler: SamplerSet | undefined): Song => ({ ...s, tracks: s.tracks.map((t) => { if (t.id !== trackId || t.kind !== "synth") return t; if (sampler) return { ...t, sampler }; const { sampler: _gone, ...rest } = t; return rest; }) });
 /** Put a new chain of note effects on a synth track. */

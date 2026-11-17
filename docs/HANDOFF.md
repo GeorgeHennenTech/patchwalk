@@ -510,3 +510,6 @@ The piano roll now has a finer grid (thirty-seconds and triplets, a Grid menu, Q
 list: break slicing, clips of any length, knobs on the built-in drums.
 A **sampler** is built: click a sound under Samples with a synth track selected and the track plays that
 file across the keys (`src/daw/sampler.ts`, `SamplerPanel.tsx`).
+Also built: slicing a sound onto pads (✂ under Samples), Decay and Tone on the built-in drums, and
+automation of the sampler's knobs. Still open: clips of any length, automation that moves with its clip
+and can be recorded, automation on returns and the master.

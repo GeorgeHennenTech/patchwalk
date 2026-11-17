@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { STARTERS, STRENGTH } from "../src/daw/drums";
-import { quantizeNotes, snapStep, GRIDS, setMarker, doubleClip, inKey, invertNotes, legatoNotes, reverseNotes, scaleTime, setChance, noteKey as keyOf, addReturn, removeReturn, sendGain, setReturn, setSend, addClip, addTrack, clipOf, clipPattern, duplicateClip, isFree, moveClip, newSong, putNote, removeClip, setClipBars, setNotes, setSongBars, setSongTempo, setTrack, songEvents, tidySong, trackOf, withPattern, MAX_TRACKS, type DrumTrack, type DrumClip, type SynthClip, type Song } from "../src/daw/song";
+import { sliceToTrack, quantizeNotes, snapStep, GRIDS, setMarker, doubleClip, inKey, invertNotes, legatoNotes, reverseNotes, scaleTime, setChance, noteKey as keyOf, addReturn, removeReturn, sendGain, setReturn, setSend, addClip, addTrack, clipOf, clipPattern, duplicateClip, isFree, moveClip, newSong, putNote, removeClip, setClipBars, setNotes, setSongBars, setSongTempo, setTrack, songEvents, tidySong, trackOf, withPattern, MAX_TRACKS, type DrumTrack, type DrumClip, type SynthClip, type Song } from "../src/daw/song";
 
 /** A song with one bar of four-on-the-floor on bar 1 and a chord on bars 1 to 2. */
 function demo(): { song: Song; drums: string; synth: string; beat: string; chord: string } {
@@ -329,5 +329,23 @@ describe("a finer grid", () => {
     expect(quantizeNotes(loose, new Set(), 1, 16, 50).notes.map((x) => x.start).sort((a, b) => a - b)).toEqual([0.125, 3.875, 9]);
     expect(quantizeNotes(loose, new Set(["62:3.75"]), 4, 16).notes.map((x) => x.start).sort((a, b) => a - b)).toEqual([0.25, 4, 9]);
     expect(quantizeNotes([n(60, 15.9)], new Set(), 4, 16).notes[0]!.start).toBe(12);   // never onto the clip's end
+  });
+});
+
+describe("slicing a sound onto pads", () => {
+  it("makes a drum track with one pad a slice and a clip that plays them in order", () => {
+    const made = sliceToTrack(newSong(), "habc", "Amen", 8)!, t = made.song.tracks[2] as DrumTrack, c = t.clips[0] as DrumClip;
+    expect(t.pads).toHaveLength(8); expect(t.pads.every((p) => p.sample === "habc")).toBe(true);
+    expect(t.pads.map((p) => p.start)).toEqual([0, 12.5, 25, 37.5, 50, 62.5, 75, 87.5]);
+    // a pad's length is a share of what is left after its start: each slice comes out an eighth of the file
+    for (const p of t.pads) expect(((100 - p.start) * p.length) / 100).toBeCloseTo(12.5, 1);
+    expect(t.pads.map((p) => c.hits[p.id]!.indexOf(2))).toEqual([0, 2, 4, 6, 8, 10, 12, 14]);
+    const back = tidySong(JSON.parse(JSON.stringify(made.song)))!.tracks[2] as DrumTrack;
+    expect(back.pads.map((p) => [p.start, p.length])).toEqual(t.pads.map((p) => [p.start, p.length]));
+  });
+  it("refuses an odd count or a full song", () => {
+    expect(sliceToTrack(newSong(), "habc", "x", 5)).toBeUndefined();
+    let s = newSong(); while (s.tracks.length < MAX_TRACKS) s = addTrack(s, "drums");
+    expect(sliceToTrack(s, "habc", "x", 4)).toBeUndefined();
   });
 });

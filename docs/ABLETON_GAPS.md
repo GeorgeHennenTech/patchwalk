@@ -38,8 +38,8 @@ Live, cited from the manual. Every feature ticked below needs a lesson.
       (p.128, 200-203)
 - [ ] Clips of any length placed anywhere, split anywhere (p.123, 128-130)
 - [x] A sampler instrument: one sound played across the keys, held, looping and one-shot (built 17 Nov; not yet: a filter and LFO of its own, loop crossfade, warp, slicing) (Simpler, p.608-622)
-- [ ] Slice a break to pads by beat division, with a clip that replays the slices (p.229-232, 613-614, 621)
-- [ ] Knobs on the built-in drums (pitch, decay, click, drive...), and a filter and saturator per pad
+- [x] Slice a sound onto pads in 4, 8 or 16 equal slices, with a clip that replays them (built 17 Nov; not yet: slicing at the hits themselves, 32 slices) (p.229-232, 613-614, 621)
+- [ ] Knobs on the built-in drums: Decay and Tone as well as Tune (built 17 Nov); not yet: click and drive per drum, a filter and saturator per pad
       (p.558-560, 657-665)
 - [ ] Automation that moves with its clip, with a lock switch (p.365)
 - [ ] Automation: record knob moves; mark automated controls; "re-enable" after touching one; ready-made

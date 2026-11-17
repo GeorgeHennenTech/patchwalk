@@ -77,3 +77,14 @@ describe("automating the synth's own knobs", () => {
     expect(automateTrack(still, 3).patch).toBe(patch);
   });
 });
+
+describe("automating the sampler's knobs", () => {
+  const sampler = { sample: "h1", start: 0, length: 100, tune: 0, level: 80 };
+  const track = { level: 80, pan: 0, devices: [], patch: {}, sampler, auto: [{ target: "m:start", points: [{ at: 0, v: 0 }, { at: 16, v: 1 }] }] };
+  it("offers them in place of the synth's knobs and moves them", () => {
+    const ids = targetsOf(track).map((t) => t.id);
+    expect(ids).toContain("m:start"); expect(ids.some((x) => x.startsWith("s:"))).toBe(false);
+    expect((automateTrack(track, 8).sampler as typeof sampler).start).toBe(50);
+    expect(automateTrack(track, 0).sampler).toBe(sampler);
+  });
+});

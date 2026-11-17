@@ -1330,6 +1330,27 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   in an exported file, because the file is worked out faster than real time.** Nobody has listened to an
   exported file. Still unlike Ableton: a time marker and free-length clips, zoom and grid sizes, automation
   lanes, Session View, groups, sends and return tracks, audio tracks, note effects on live keys.
+  **Closer to Ableton, third pass (17 Nov 2026): spectrum in the EQs, and automation lanes.** The owner
+  reported that the EQ showed no frequency spectrum: every device with a curve now has a tap on its output
+  (`buildDevice` makes an analyser when `CURVES` has the kind) and `Curve` draws the live spectrum faintly
+  behind the curve while sound passes (20 Hz to 20 kHz, top is -12 dB, bottom -96). **Automation**
+  (`src/daw/automation.ts`, tested in `tests/automation.test.ts`): every track has `auto`, up to four
+  lanes, each `{ target, points }` with points as `{ at (sixteenths from the song's start), v (0 to 1) }`;
+  straight lines between points, held before the first and after the last. Targets (`targetsOf`): the
+  track's level, its pan, and every slider of every effect on it (`d:<device>:<param>`; not menus or
+  switches; frequencies and times move in ratios). `automate(song, step)` gives the song as it stands at
+  a place; `Transport.sync` uses it while playing (the pump sets `place` every 25 ms) and goes back to the
+  knobs on stop; an exported file follows it too (the offline context is paused at every sixteenth).
+  In the arrangement an **A** button on each track shows its lanes (`AutoLaneRow`): click to add a point,
+  drag it (sideways only as far as its neighbours), double-click or Delete to remove, arrow keys to nudge;
+  a menu chooses what the lane moves; "+ Automation lane" adds another. Checked in a browser: a level lane
+  from full to silent across bar 1 took the drum track's gain 1.11, 0.68, 0.21, then 0.04 in bar 2, and
+  back to the fader on stop; the exported file fell from -6.6 dB to -16.9 dB through bar 1 and was silent
+  in bar 2. **Limits: sliders and faders do not move on screen while automated; the synth's own knobs and
+  the note effects cannot be automated yet; lanes follow the song, not clips, so moving a clip leaves its
+  automation behind; no curved segments; automating the reverb's decay rebuilds its room on every change.
+  The owner also wants lessons on automation: not written.** Next candidates: a time marker and
+  free-length clips, zoom and grid sizes, sends and return tracks, Session View, automating synth knobs.
   **Two to-do lists, and both must be updated with every push (owner asked 17 Nov 2026 why the widget was
   behind):** `docs/TODO.md` (what the `/todo` pane in Claude Code reads) and the owner's "Patchwalk To-Do"
   page (https://claude.ai/artifact/7sHF6r2vvBuxa8DSkcfcPz, rows in its `todos` collection, written with

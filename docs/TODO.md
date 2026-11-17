@@ -145,12 +145,11 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [x] Note effects in front of the synth (17 Nov 2026): Arpeggiator, Chord, Note length, Pitch, Random, Scale, Velocity. Every numbered stock plugin is now built except Dynamic Tube
 - [ ] Stock plugins still to build (see `docs/STOCK_PLUGINS.md`): Dynamic Tube; the hard ones (vocoder, spectral effects, grain delay, looper); note effects on keys played live
 - [ ] Owner to listen to the 31 stock plugins and say which sound wrong (known weak spots: the pitch shifter warbles, the reverb is plain)
-- [ ] **Automation (owner asked 17 Nov 2026):** automation lanes in the Studio (a line per track that moves a
-  setting over time: a synth knob, a track's level, an effect), then lessons on automation with many
-  different combinations of automations to try, in the way the macro chapter has many recipes
+- [ ] Lessons on automation with many combinations to try (owner asked 17 Nov 2026; the lanes themselves are built)
 - [x] Studio, closer to Ableton, first pass (17 Nov 2026): EQ dots drag; clips drag to move, Alt-drag to copy, resize from the right edge; Ctrl/Cmd+E split, Ctrl/Cmd+J consolidate; loudness lane under the piano roll
 - [x] Studio, closer to Ableton, second pass (17 Nov 2026): pan and a level meter on every track, a Master row with volume and a meter, and "Download .wav" (the whole song as a sound file)
-- [ ] Studio, closer to Ableton, next (owner's standing instruction): a time marker and free-length clips, zoom and grid sizes, automation lanes, sends and return tracks, Session View, note effects on live keys; slow modulation in exported files
+- [x] Studio, closer to Ableton, third pass (17 Nov 2026): the EQs show the live spectrum behind their curves; automation lanes (an A button on each track: level, pan or any effect slider, live and in exported files)
+- [ ] Studio, closer to Ableton, next (owner's standing instruction): automate the synth's own knobs; sliders that move while automated; a time marker and free-length clips; zoom and grid sizes; sends and return tracks; Session View; note effects on live keys
 - [ ] Owner to try: drop a sample in the Studio and check it shows in Library > Sounds on the live site
 - [ ] Studio next: a kit as a zip of sound files, lessons that use it; earlier list: one clock shared with the synth, piano roll, chaining patterns, mixer, per-drum sound, a lesson using the grid
 - [ ] Mini DAW: tracks, mixer, automation, export

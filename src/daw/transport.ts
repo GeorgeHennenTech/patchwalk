@@ -8,6 +8,7 @@ import { chainShape, type Device } from "./devices";
 import { chainReady, prepareDevices } from "./fxnodes";
 import { buildDevice, type LiveDevice } from "./fxnodes";
 import { masterGain, songEvents, type Song } from "./song";
+import { automate, hasAutomation } from "./automation";
 
 const AHEAD = 0.12, EVERY_MS = 25;
 export interface Loop { start: number; bars: number }
@@ -32,6 +33,8 @@ export class Transport {
   private next = 0;
   private due: { step: number; at: number }[] = [];
   private shown = -1;
+  /** The place in the song (in steps) that automation is read at; -1 when the song is not playing. */
+  private place = -1;
   loop?: Loop;
   /** The metronome: a click on every beat while the song plays. */
   click = false;
@@ -52,7 +55,8 @@ export class Transport {
   /** Bring the audio in line with the song: a gain per track, a synth per synth track, levels, mutes and sounds. */
   sync(): void {
     if (!this.ctx) return;
-    const ctx = this.ctx, song = this.read(), on = audibleOf(song.tracks), t = ctx.currentTime;
+    // while the song plays, automated settings are where their lanes put them at this moment
+    const ctx = this.ctx, song = this.place >= 0 ? automate(this.read(), this.place) : this.read(), on = audibleOf(song.tracks), t = ctx.currentTime;
     this.master!.gain.setTargetAtTime(masterGain(song.volume), t, 0.015);
     for (const track of song.tracks) if (!this.outs.has(track.id)) { const out = ctx.createGain(), pan = ctx.createStereoPanner(), tap = ctx.createAnalyser(); out.gain.value = 0; tap.fftSize = 1024; out.connect(pan); pan.connect(this.master!); pan.connect(tap);
       this.outs.set(track.id, out); this.pans.set(track.id, pan); this.taps.set(track.id, tap); this.ins.set(track.id, ctx.createGain()); }
@@ -121,7 +125,10 @@ export class Transport {
       if (e.kind === "hit") this.kit!.hit(e.pad, at, e.strength, this.ins.get(e.track) ?? this.master!, e.track);
       else this.engines.get(e.track)?.engine.playAt(e.note, at, e.seconds, e.velocity);
     }
-    return ctx.startRendering();
+    // automation: the browser is paused at every sixteenth to move the automated settings, then let go again
+    if (hasAutomation(song)) for (let n = 0; n < song.bars * 16; n++) { const at = this.began + n * stepSeconds(song.bpm); void ctx.suspend(at).then(() => { this.place = n; this.sync(); void ctx.resume(); }).catch(() => undefined); }
+    const buf = await ctx.startRendering(); this.place = -1;
+    return buf;
   }
   /** The sound at a device that shows it (spectrum, tuner). */
   analyser(trackId: string, deviceId: string): AnalyserNode | undefined { return this.chains.get(trackId)?.live.get(deviceId)?.analyser; }
@@ -144,6 +151,7 @@ export class Transport {
     this.sync();                                                   // devices that follow the bar (beat repeat) are told where bar 1 now is
     const pump = () => {
       const ctx = this.ctx!, song = this.read();
+      if (hasAutomation(song)) { this.place = Math.max(0, this.position()); this.sync(); } else if (this.place >= 0) { this.place = -1; this.sync(); }
       while (this.began + stepTime(this.next, song.bpm, song.swing) < ctx.currentTime + AHEAD) {
         let step = -1;
         for (const e of songEvents(song, this.next, this.next + 1, this.loop)) {
@@ -172,6 +180,7 @@ export class Transport {
     if (this.timer !== undefined) window.clearInterval(this.timer);
     this.timer = undefined; this.due = []; this.shown = -1;
     for (const e of this.engines.values()) e.engine.stopScheduled();
+    if (this.place >= 0) { this.place = -1; this.sync(); }      // back to where the knobs were left
   }
   /** Where the song has got to, in steps and parts of a step (swing left out), or -1 when stopped. For writing down what is played. */
   position(): number {

@@ -38,6 +38,7 @@ const KEYS: [string, string][] = [
   [`${MOD}+A`, "Select every note in the open clip"], [`${MOD}+L`, "Loop the selected clip, on and off"], [`${MOD}+Shift+M`, "Add an empty clip to the selected track"],
   ["Drag a clip", "Move it to another bar or another track of the same kind; hold Alt to copy it; drag its right edge to change its length"],
   [`${MOD}+E`, "Split the selected clip into one-bar clips"], [`${MOD}+J`, "Consolidate: join the selected clips into one"],
+  ["A on a track", "Show its automation lanes: click a lane to add a point, drag a point, double-click to remove it"],
   ["Drag in the loudness lane", "Under the piano roll: set how hard a note is played (selected notes move together)"], ["Drag an EQ dot", "Sideways for frequency, up and down for gain; wheel for sharpness; double-click for zero"],
   [`${MOD}+R`, "Rename the selected track"], [`${MOD}+S`, "Save the song"], ["Shift+click a clip", "Select several clips on one track (a break, Delete and 0 then act on all of them)"], ["0", "Switch the selected clip (or track) off and on"], ["S", "Solo the selected track (when the computer keyboard is off)"],
   ["Arrow keys", "Move selected notes a step or a semitone; with nothing selected, move between tracks and clips"], ["Shift+Up / Down", "Move selected notes an octave"], ["Shift+Left / Right", "Make selected notes shorter or longer"],
@@ -310,7 +311,7 @@ export default function DawView() {
               <button onClick={() => { const next = addTrack(song, "synth", SOUNDS[0]!.name); change(next); pick(next.tracks.at(-1)?.id); }} disabled={song.tracks.length >= MAX_TRACKS}>+ Synth track</button>
             </span>
           </div>
-          <Arrangement song={song} onChange={change} levelOf={(id) => transport.trackLevel(id)} masterLevel={() => { const l = transport.levels(); return Math.max(l.left, l.right) + 3; }} picked={picked} also={also} onPick={pick} onAdd={add} onPlace={(from, c, to, bar, copy) => { const made = placeClip(song, from, c, to, bar, copy); if (!made) { studio.mark(); return; }   /* a drop where it already is: the start of a length drag, its own step to undo */ studio.mark(); change(made.song); pick(made.track, made.clip); setNote(copy ? "Copied the clip." : "Moved the clip."); }} onBars={(t, c, bars) => change((s) => setClipBars(s, t, c, bars))} step={step} loop={loop} renaming={renaming} />
+          <Arrangement song={song} onChange={change} onMark={() => studio.mark()} levelOf={(id) => transport.trackLevel(id)} masterLevel={() => { const l = transport.levels(); return Math.max(l.left, l.right) + 3; }} picked={picked} also={also} onPick={pick} onAdd={add} onPlace={(from, c, to, bar, copy) => { const made = placeClip(song, from, c, to, bar, copy); if (!made) { studio.mark(); return; }   /* a drop where it already is: the start of a length drag, its own step to undo */ studio.mark(); change(made.song); pick(made.track, made.clip); setNote(copy ? "Copied the clip." : "Moved the clip."); }} onBars={(t, c, bars) => change((s) => setClipBars(s, t, c, bars))} step={step} loop={loop} renaming={renaming} />
         </div>
       </div>
 

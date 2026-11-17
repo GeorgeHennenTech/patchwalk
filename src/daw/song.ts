@@ -5,6 +5,7 @@ import { INITIAL, type SynthState } from "../synth/params";
 import { clean } from "../synth/patches";
 import { tidyDevices, type Device } from "./devices";
 import { applyNoteFx, type FxNote } from "./notefx";
+import { tidyAuto, type AutoLane } from "./automation";
 import { BPM_MAX, BPM_MIN, STEPS_PER_BAR, STRENGTH, SWING_MAX, audibleOf, defaultPads, freeId, stepSeconds, stepTime, tidyPads, tidySteps, type Hit, type Lane, type Pad, type Pattern } from "./drums";
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
@@ -13,7 +14,7 @@ export interface NoteEv { /** MIDI note number */ note: number; /** steps from t
 interface ClipBase { id: string; /** the bar it starts on, counting from 0 */ start: number; bars: number; /** switched off: it stays on the grid and makes no sound */ off?: boolean }
 export interface DrumClip extends ClipBase { /** for each pad's id, its row of steps */ hits: Record<string, Hit[]> }
 export interface SynthClip extends ClipBase { notes: NoteEv[] }
-interface TrackBase { id: string; name: string; /** 0 to 100 */ level: number; /** -100 (left) to 100 (right) */ pan: number; mute: boolean; solo: boolean; /** the effects after the instrument, in order */ devices: Device[] }
+interface TrackBase { id: string; name: string; /** 0 to 100 */ level: number; /** -100 (left) to 100 (right) */ pan: number; mute: boolean; solo: boolean; /** the effects after the instrument, in order */ devices: Device[]; /** automation: lines along the song that move this track's settings as it plays */ auto: AutoLane[] }
 export interface DrumTrack extends TrackBase { kind: "drums"; pads: Pad[]; clips: DrumClip[] }
 export interface SynthTrack extends TrackBase { kind: "synth"; patch: SynthState; clips: SynthClip[]; /** note effects, in front of the synth: they change the clip's notes before they are played */ noteFx: Device[] }
 export type Track = DrumTrack | SynthTrack;
@@ -39,8 +40,8 @@ export const SOUNDS: { name: string; patch: Partial<SynthState> }[] = [
 export const soundPatch = (name: string): SynthState => ({ ...INITIAL, ...(SOUNDS.find((s) => s.name === name)?.patch ?? {}) });
 
 const track = (id: string, kind: Track["kind"], name: string): Track => (kind === "drums"
-  ? { id, kind, name, level: 80, pan: 0, mute: false, solo: false, devices: [], pads: defaultPads(), clips: [] }
-  : { id, kind, name, level: 80, pan: 0, mute: false, solo: false, devices: [], noteFx: [], patch: soundPatch("Soft pad"), clips: [] });
+  ? { id, kind, name, level: 80, pan: 0, mute: false, solo: false, auto: [], devices: [], pads: defaultPads(), clips: [] }
+  : { id, kind, name, level: 80, pan: 0, mute: false, solo: false, auto: [], devices: [], noteFx: [], patch: soundPatch("Soft pad"), clips: [] });
 export const newSong = (name = "New song"): Song => ({ name, bpm: 120, swing: 0, bars: 8, volume: MASTER_START, tracks: [track("t1", "drums", "Drums"), track("t2", "synth", "Soft pad")] });
 
 const withTrack = (s: Song, id: string, change: (t: Track) => Track): Song => ({ ...s, tracks: s.tracks.map((t) => (t.id === id ? change(t) : t)) });
@@ -222,7 +223,7 @@ export function tidySong(raw: unknown): Song | undefined {
   for (const g of Array.isArray(r.tracks) ? r.tracks.slice(0, MAX_TRACKS) : []) {
     if (!g || typeof g !== "object" || (g.kind !== "drums" && g.kind !== "synth")) continue;
     const id = typeof g.id === "string" && /^[\w-]{1,24}$/.test(g.id) && !song.tracks.some((t) => t.id === g.id) ? g.id : freeId(song.tracks.map((t) => t.id), "t");
-    const base = { id, name: typeof g.name === "string" ? g.name.slice(0, 24) : "Track", level: clamp(Number(g.level ?? 80) || 0, 0, 100), pan: clamp(Math.round(Number((g as { pan?: unknown }).pan) || 0), -100, 100), mute: g.mute === true, solo: g.solo === true, devices: tidyDevices(g.devices) };
+    const base = { id, name: typeof g.name === "string" ? g.name.slice(0, 24) : "Track", level: clamp(Number(g.level ?? 80) || 0, 0, 100), pan: clamp(Math.round(Number((g as { pan?: unknown }).pan) || 0), -100, 100), mute: g.mute === true, solo: g.solo === true, devices: tidyDevices(g.devices), auto: tidyAuto((g as { auto?: unknown }).auto, bars * STEPS_PER_BAR) };
     const t: Track = g.kind === "drums" ? { ...base, kind: "drums", pads: tidyPads(g.pads).length ? tidyPads(g.pads) : defaultPads(), clips: [] } : { ...base, kind: "synth", noteFx: tidyDevices((g as { noteFx?: unknown }).noteFx, "note"), patch: { ...clean(g.patch), bpm: song.bpm }, clips: [] };
     for (const c of Array.isArray(g.clips) ? g.clips : []) {
       if (!c || typeof c !== "object") continue;
@@ -288,3 +289,6 @@ export function joinClips(s: Song, trackId: string, clipIds: readonly string[]):
 }
 /** Set how hard the chosen notes are played (1 to 127). */
 export const setVelocity = (notes: NoteEv[], keys: ReadonlySet<string>, velocity: number): NoteEv[] => { const v = clamp(Math.round(velocity), 1, 127); return notes.map((n) => (keys.has(noteKey(n)) && n.velocity !== v ? { ...n, velocity: v } : n)); };
+
+/** Put new automation lanes on a track. */
+export const setAuto = (s: Song, trackId: string, auto: AutoLane[]): Song => withTrack(s, trackId, (t) => ({ ...t, auto } as Track));

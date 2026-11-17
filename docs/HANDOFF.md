@@ -483,3 +483,7 @@ pass"): pick from the top of it each time, check in a browser with bar 1 looped,
 Second pass, same day: a mixer (pan and a meter on every track, a Master row with volume and a meter) and
 "Download .wav", which renders the whole song to a sound file. Known limit: the synth's slow modulation
 stands still in an exported file. Next candidates are listed in `CLAUDE.md` ("Closer to Ableton, second pass").
+Third pass: the EQ curves show the live spectrum behind them (the owner reported it missing), and
+**automation lanes** exist: an A button on each track opens lines along the song that move its level, pan
+or any effect slider, live and in exported files (`src/daw/automation.ts`). Not yet: automating the synth's
+own knobs, sliders that move on screen, and the automation lessons the owner asked for.

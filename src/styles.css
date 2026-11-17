@@ -504,3 +504,15 @@ tr.dim td { opacity: 0.6; }
 .daw2 .arr-name.master { flex: 1; font-weight: 700; color: var(--ink); background: none; border: 0; padding: 0 4px; font-size: 12.5px; }
 .daw2 .arr-master .arr-mix { width: 150px; }
 .dev-curve path.live { fill: rgba(120, 200, 255, 0.22); stroke: rgba(120, 200, 255, 0.55); stroke-width: 0.8; pointer-events: none; }
+
+/* automation lanes under a track */
+.daw2 .trk-auto { padding: 0 5px; font-size: 11px; font-weight: 700; min-width: 22px; } .daw2 .trk-auto.on { background: #7ec8ff; color: #10202c; border-color: #7ec8ff; }
+.daw2 .arr-auto .arr-bars { min-height: 54px; background: #232326; position: relative; } .daw2 .arr-auto.more .arr-bars { min-height: 26px; }
+.daw2 .arr-auto .arr-side { border-left-color: #7ec8ff; background: var(--s1); gap: 6px; }
+.daw2 .auto-area { position: absolute; inset: 0; cursor: crosshair; }
+.daw2 .auto-area svg { position: absolute; inset: 4px 0; width: 100%; height: calc(100% - 8px); overflow: visible; }
+.daw2 .auto-area polyline { fill: none; stroke: #7ec8ff; stroke-width: 1.6; }
+.daw2 .auto-pt { position: absolute; width: 11px; height: 11px; margin: -5.5px 0 0 -5.5px; padding: 0; border-radius: 50%; background: #10202c; border: 2px solid #7ec8ff; cursor: grab; }
+.daw2 .auto-pt:hover, .daw2 .auto-pt:focus-visible { background: #7ec8ff; }
+.daw2 .auto-empty { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 11px; color: var(--dim); pointer-events: none; }
+.daw2 .auto-target { flex: 1; min-width: 0; font-size: 11.5px; } .daw2 .auto-tip { flex: none; width: 74px; font-size: 11px; color: var(--dim); text-align: right; white-space: nowrap; overflow: hidden; }

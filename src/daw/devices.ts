@@ -118,6 +118,23 @@ export const DEVICES: DeviceSpec[] = [
     { id: "note", label: "Note", min: 24, max: 84, step: 1, def: 48 }, { id: "decay", label: "Rings for", min: 0.05, max: 10, step: 0.05, def: 1.5, unit: "s", log: true }, pct("colour", "Brightness", 70), pct("mix", "Dry / wet", 50),
     ...RES_NAMES.flatMap((group, i): ParamSpec[] => { const n = i + 1; return [sw(`r${n}on`, "On", i < 3 ? 1 : 0, { group }), ...(i ? [{ id: `r${n}pitch`, label: "Semitones from I", min: -24, max: 24, step: 1, def: [0, 7, 12, 16, 19][i]!, group } as ParamSpec] : []), db(`r${n}gain`, "Level", -36, 6, 0, { group })]; }),
   ] },
+  { kind: "multiband", name: "Multiband dynamics", like: "Multiband Dynamics", meter: true, note: "The level in each band is read from peaks. The meter shows the most any band is being turned down.", about: "The sound split into lows, mids and highs, each with its own compressor that can turn loud parts down and lift quiet parts up.", params: [
+    hz("freqLow", "Low / mid at", 50, 500, 120), hz("freqHigh", "Mid / high at", 1000, 10000, 2500),
+    { id: "attack", label: "Attack", min: 0.1, max: 200, step: 0.1, def: 10, unit: "ms", log: true }, { id: "release", label: "Release", min: 10, max: 1000, step: 1, def: 150, unit: "ms", log: true }, pct("amount", "Amount", 100), db("out", "Output", -24, 12),
+    ...([["l", "Low"], ["m", "Mid"], ["h", "High"]] as const).flatMap(([k, group]): ParamSpec[] => [db(`${k}above`, "Turn down above", -60, 0, -24, { group }), { id: `${k}ratio`, label: "by a ratio of", min: 1, max: 20, step: 0.1, def: 3, log: true, group },
+      db(`${k}below`, "Lift up below", -70, -10, -50, { group }), { id: `${k}lift`, label: "by a ratio of", min: 1, max: 5, step: 0.1, def: 1, group }, db(`${k}gain`, "Band level", -12, 12, 0, { group })]),
+  ] },
+  { kind: "drumbus", name: "Drum bus", like: "Drum Buss", note: "A general drum strip; every number in it is our own.", about: "One device for a whole drum track: drive, crunch on the top, sharper or softer hits, a ringing low boom, and a damper.", params: [
+    pct("drive", "Drive", 0), pct("crunch", "Crunch", 0), { id: "transients", label: "Transients", min: -100, max: 100, step: 1, def: 0, unit: "%" },
+    pct("boom", "Boom", 0), hz("boomFreq", "Boom at", 30, 120, 55), pct("boomDecay", "Boom rings", 50), hz("damp", "Damp above", 1000, 20000, 20000), db("out", "Output", -24, 12), pct("mix", "Dry / wet", 100),
+  ] },
+  { kind: "shifter", name: "Shifter", like: "Shifter", note: "Pitch mode warbles a little and can sit a few Hz off the exact interval, more so with a short window; a longer window is smoother but blurs fast hits.", about: "Moves the sound up or down: by a musical interval (pitch), or by a fixed number of Hz, which turns it metallic.", params: [
+    menu("mode", "Mode", ["Pitch", "Frequency"]), { id: "semis", label: "Semitones", min: -24, max: 24, step: 1, def: 7, when: (p) => !p.mode }, { id: "cents", label: "Cents", min: -50, max: 50, step: 1, def: 0, when: (p) => !p.mode },
+    { id: "window", label: "Window", min: 20, max: 200, step: 1, def: 60, unit: "ms", when: (p) => !p.mode }, { id: "hz", label: "Move by", min: -2000, max: 2000, step: 1, def: 100, unit: "Hz", when: (p) => !!p.mode }, pct("mix", "Dry / wet", 100),
+  ] },
+  { kind: "erosion", name: "Erosion", like: "Erosion", note: "How strong the noise settings sound depends on the width; the amount is not an exact measure.", about: "Shakes a very short delay with noise or a sine, which roughens the sound with a hiss-like or buzzing edge.", params: [
+    menu("mode", "Shaken by", ["Noise", "Wide noise", "Sine"]), hz("freq", "Frequency", 200, 16000, 3000), { id: "width", label: "Noise width", min: 0.2, max: 6, step: 0.1, def: 1, unit: "oct", when: (p) => (p.mode ?? 0) < 2 }, pct("amount", "Amount", 40),
+  ] },
   { kind: "reverb", name: "Reverb", like: "Reverb", note: "A plain room made from fading noise: no early reflections, and its character is not tuned by ear.", about: "A room: the sound carries on after it stops, for as long as the decay time.", params: [
     { id: "decay", label: "Decay", min: 0.2, max: 10, step: 0.1, def: 1.8, unit: "s", log: true }, { id: "predelay", label: "Pre-delay", min: 0, max: 250, step: 1, def: 10, unit: "ms" },
     hz("lowcut", "Low cut", 20, 1000, 120), hz("highcut", "High cut", 1000, 20000, 8000), pct("mix", "Dry / wet", 25),
@@ -315,6 +332,11 @@ export function filterDelayLine(p: Record<string, number>, k: "l" | "m" | "r", b
   return { seconds, feedback: clamp((p[`${k}fb`] ?? 30) / 100, 0, 0.95), hears: (k === "l" ? [1, 0] : k === "r" ? [0, 1] : [0.5, 0.5]) as [number, number], pan: clamp((p[`${k}pan`] ?? 0) / 100, -1, 1),
     level: (p[`${k}on`] ?? 1) ? dbToGain(p[`${k}level`] ?? 0) : 0, freq: p[`${k}freq`] ?? 1000, q: octavesToQ(p[`${k}width`] ?? 3) };
 }
+
+// ---- Erosion ----
+export const EROSION_SWING = 0.0005;
+/** How far (seconds) erosion's delay is shaken either side of its resting time. */
+export const erosionSwing = (p: Record<string, number>) => EROSION_SWING * clamp((p.amount ?? 40) / 100, 0, 1);
 
 // ---- Chorus ----
 export const CHORUS_SWING = 0.004;

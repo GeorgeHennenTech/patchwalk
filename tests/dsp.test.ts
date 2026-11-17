@@ -141,3 +141,68 @@ describe("resonators", () => {
     const x = sine(300, 0.4, 0.2), [out] = run(new ResonatorDsp(SR), only(1, { mix: 0 }), x); expect(out[1000]).toBe(x[1000]);
   });
 });
+
+import { DrumBusDsp, MultibandDsp, ShifterDsp, multibandChangeDb, shiftRatio } from "../src/daw/dsp";
+const part = (x: Float32Array, f: number, from: number, to: number) => { let re = 0, im = 0, n = 0; for (let i = Math.round(from * SR); i < to * SR; i++) { re += x[i]! * Math.cos((2 * Math.PI * f * i) / SR); im += x[i]! * Math.sin((2 * Math.PI * f * i) / SR); n++; } return (2 * Math.hypot(re, im)) / n; };
+
+describe("multiband dynamics", () => {
+  const flat: P = { lratio: 1, mratio: 1, hratio: 1 };
+  it("the rule: down above the upper threshold, up below the lower one, nothing between, nothing near silence", () => {
+    expect(multibandChangeDb(-10, -20, 4, -50, 2)).toBe(-7.5);
+    expect(multibandChangeDb(-30, -20, 4, -50, 2)).toBe(0);
+    expect(multibandChangeDb(-60, -20, 4, -50, 2)).toBe(5);
+    expect(multibandChangeDb(-60, -20, 4, -50, 1)).toBe(0);
+    expect(multibandChangeDb(-90, -20, 4, -50, 5)).toBe(0);
+  });
+  it("with every ratio at 1 the three bands add back to the untouched level at any frequency", () => {
+    for (const f of [40, 120, 600, 2500, 9000]) { const [out] = run(new MultibandDsp(SR), flat, sine(f, 0.3, 1)); expect(dB(part(out, f, 0.5, 0.9) / 0.3)).toBeCloseTo(0, 1); }
+  });
+  it("each band is worked on by itself: a loud low tone is turned down by its rule and a quiet high tone alongside is left alone", () => {
+    const both = Float32Array.from(sine(30, 0.5, 2), (v, i) => v + 0.01 * Math.sin((2 * Math.PI * 6000 * i) / SR));
+    const d = new MultibandDsp(SR), [out] = run(d, { ...flat, labove: -26, lratio: 4, release: 600 }, both);
+    expect(dB(part(out, 30, 1.5, 1.9))).toBeCloseTo(-21, 0);                       // a tone well inside the band: near a split, part of it is in the next band too
+    expect(dB(part(out, 6000, 1.5, 1.9) / 0.01)).toBeCloseTo(0, 0);
+    expect(d.reduction()).toBeCloseTo(15, 0);
+  });
+  it("lifts a quiet band towards its lower threshold, and Amount scales how much", () => {
+    const quiet = sine(6000, 0.001, 2);                              // -60 dB
+    const [up] = run(new MultibandDsp(SR), { ...flat, hbelow: -40, hlift: 2 }, quiet), [half] = run(new MultibandDsp(SR), { ...flat, hbelow: -40, hlift: 2, amount: 50 }, quiet);
+    expect(dB(part(up, 6000, 1.5, 1.9))).toBeCloseTo(-50, 0);
+    expect(dB(part(half, 6000, 1.5, 1.9))).toBeCloseTo(-55, 0);
+  });
+});
+
+describe("drum bus", () => {
+  const hit = () => { const x = new Float32Array(SR); for (let i = 4800; i < SR; i++) x[i] = Math.sin((2 * Math.PI * 200 * (i - 4800)) / SR) * Math.exp(-(i - 4800) / 6000); return x; };
+  it("at its starting settings it changes nothing", () => { const x = hit(), [out] = run(new DrumBusDsp(SR), {}, x); for (const i of [5000, 9000, 20000]) expect(out[i]).toBe(x[i]); });
+  it("transients up makes the start of a hit louder than its body, down makes it softer", () => {
+    const x = hit(), [plain] = run(new DrumBusDsp(SR), {}, x), [up] = run(new DrumBusDsp(SR), { transients: 100 }, x), [down] = run(new DrumBusDsp(SR), { transients: -100 }, x);
+    expect(peak(up, 0.1, 0.11)).toBeGreaterThan(peak(plain, 0.1, 0.11) * 1.5); expect(peak(down, 0.1, 0.11)).toBeLessThan(peak(plain, 0.1, 0.11) * 0.8);
+    expect(peak(up, 0.5, 0.6)).toBeCloseTo(peak(plain, 0.5, 0.6), 3);                                                    // the body is left alone
+  });
+  it("drive adds harmonics without passing full level; boom rings at its frequency; damp takes the top off", () => {
+    const tone = sine(200, 0.8, 1), [driven] = run(new DrumBusDsp(SR), { drive: 100 }, tone);
+    expect(part(driven, 600, 0.3, 0.9)).toBeGreaterThan(0.05); expect(peak(driven, 0, 0.99)).toBeLessThanOrEqual(1.0001);
+    const click = new Float32Array(SR); click[100] = 1;
+    const [boom] = run(new DrumBusDsp(SR), { boom: 100, boomFreq: 60, boomDecay: 100 }, click), [none] = run(new DrumBusDsp(SR), {}, click);
+    expect(part(boom, 60, 0.05, 0.3)).toBeGreaterThan(20 * part(none, 60, 0.05, 0.3) + 1e-4); expect(part(boom, 60, 0.05, 0.3)).toBeGreaterThan(5 * part(boom, 95, 0.05, 0.3));
+    const [damped] = run(new DrumBusDsp(SR), { damp: 1000 }, sine(8000, 0.5, 0.5)); expect(dB(peak(damped, 0.2, 0.4) / 0.5)).toBeLessThan(-30);
+    const [crunch] = run(new DrumBusDsp(SR), { crunch: 100 }, sine(3000, 0.5, 0.5)); expect(part(crunch, 9000, 0.2, 0.4)).toBeGreaterThan(0.02);
+    const [low] = run(new DrumBusDsp(SR), { crunch: 100 }, sine(100, 0.5, 0.5)); expect(part(low, 300, 0.2, 0.4)).toBeLessThan(0.002);   // crunch leaves the lows clean
+  });
+});
+
+describe("shifter", () => {
+  const loudest = (x: Float32Array, lo: number, hi: number, step = 1) => { let best = 0, at = 0; for (let f = lo; f <= hi; f += step) { const v = part(x, f, 0.5, 1.5); if (v > best) { best = v; at = f; } } return at; };
+  it("ratios", () => { expect(shiftRatio(12)).toBe(2); expect(shiftRatio(-12)).toBe(0.5); expect(shiftRatio(0, 0)).toBe(1); });
+  it("pitch mode moves a tone by the interval: an octave up, a fifth up, an octave down", () => {
+    const tone = sine(440, 0.5, 2);
+    for (const [semis, want] of [[12, 880], [7, 659.26], [-12, 220]] as [number, number][]) { const [out] = run(new ShifterDsp(SR), { semis }, tone); expect(Math.abs(loudest(out, 150, 1000) - want)).toBeLessThan(10); /* the crossfades put the energy on lines a few Hz apart: the warble */ expect(part(out, 440, 0.5, 1.5)).toBeLessThan(0.1); }
+    const [same] = run(new ShifterDsp(SR), { semis: 0 }, tone); expect(part(same, 440, 0.5, 1.5)).toBeCloseTo(0.5, 2);
+  });
+  it("frequency mode moves a tone by a number of Hz, with the unwanted side at least 40 dB down", () => {
+    const tone = sine(1000, 0.5, 2), [up] = run(new ShifterDsp(SR), { mode: 1, hz: 300 }, tone), [down] = run(new ShifterDsp(SR), { mode: 1, hz: -250 }, tone);
+    expect(part(up, 1300, 0.5, 1.5)).toBeCloseTo(0.5, 1); expect(dB(part(up, 700, 0.5, 1.5) / part(up, 1300, 0.5, 1.5))).toBeLessThan(-40);
+    expect(part(down, 750, 0.5, 1.5)).toBeCloseTo(0.5, 1); expect(dB(part(down, 1250, 0.5, 1.5) / part(down, 750, 0.5, 1.5))).toBeLessThan(-40);
+  });
+});

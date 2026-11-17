@@ -1279,6 +1279,11 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   under "Next" in `docs/STOCK_PLUGINS.md`.
   **Five more the same day (twenty devices):** Auto filter, Phaser and flanger, Echo, Filter delay
   (ready-made parts) and Resonators (`ResonatorDsp` in the worklet). Measurements in `docs/STOCK_PLUGINS.md`.
+  **Four more (twenty-four devices):** Multiband dynamics, Drum bus and Shifter (worklet: `MultibandDsp`,
+  `DrumBusDsp`, `ShifterDsp`) and Erosion (ready parts). The pitch shifter's known flaw: its strongest line
+  can sit a few Hz off the interval (13 cents flat on an octave up). **The owner asked (17 Nov 2026) whether
+  the handoff doc is kept up to date: it had not been for three batches. `docs/HANDOFF.md` now ends with a
+  "State" paragraph for the devices; update it with every push that adds one.**
 - **"Walk me through it" (16 Nov 2026, owner's go-ahead with two rules of their own).** A second mode on the
   Ask tab (a switch, remembered): a how-to question becomes a walkthrough of steps shown one at a time.
   `api/walk.ts` answers two kinds of request: `plan` (one call with structured output over ten passages:

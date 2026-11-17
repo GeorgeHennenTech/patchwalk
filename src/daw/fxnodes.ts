@@ -1,7 +1,7 @@
 // The audio of each device, built from the settings and maths in `devices.ts`. Every device is wrapped the
 // same way: the sound goes both through the effect and straight past it, and switching the device on or off
 // crossfades between the two, so nothing clicks and nothing restarts.
-import { ECHO_WOBBLE, FILTER_DELAY_LINES, autoFilterKind, echoDriveGain, echoSeconds, filterDelayLine, CHANNEL_CUT_HZ, CHANNEL_HIGH_HZ, CHANNEL_LOW_HZ, CHANNEL_MID_Q, DELAY_MAX_SECONDS, CHORUS_SWING, dbToGain, delayRouting, delayTimes, eq3Gains, eq8Band, lfoRateHz, mixGains, octavesToQ, overdriveGain, overdriveToneHz, panHarmonics, satTable, utilityMatrix, type Device } from "./devices";
+import { erosionSwing, ECHO_WOBBLE, FILTER_DELAY_LINES, autoFilterKind, echoDriveGain, echoSeconds, filterDelayLine, CHANNEL_CUT_HZ, CHANNEL_HIGH_HZ, CHANNEL_LOW_HZ, CHANNEL_MID_Q, DELAY_MAX_SECONDS, CHORUS_SWING, dbToGain, delayRouting, delayTimes, eq3Gains, eq8Band, lfoRateHz, mixGains, octavesToQ, overdriveGain, overdriveToneHz, panHarmonics, satTable, utilityMatrix, type Device } from "./devices";
 import { FLANGER_BASE, FLANGER_SWING, PHASER_Q, PHASER_STAGES, PHASER_SWING_CENTS, reverbImpulse } from "../synth/fx";
 import { DSP_KINDS } from "./dsp";
 import workletUrl from "./dsp.worklet.ts?worker&url";
@@ -250,7 +250,29 @@ function filterdelay(ctx: BaseAudioContext): Core {
     m.set(p.mix ?? 40, t);
   } };
 }
-const CORES: Record<string, (ctx: BaseAudioContext, p: P) => Core> = { comp: worklet("comp"), glue: worklet("glue"), limiter: worklet("limiter"), gate: worklet("gate"), crush: worklet("crush"), resonators: worklet("resonators"), autofilter, phaser, echo, filterdelay, utility, eq3, eq8, channeleq, sat, overdrive, autopan, chorus, delay, reverb };
+/** Two seconds of repeatable noise, different on each side. */
+function noiseBuffer(ctx: BaseAudioContext): AudioBuffer {
+  const buf = ctx.createBuffer(2, ctx.sampleRate * 2, ctx.sampleRate); let seed = 4242;
+  for (let ch = 0; ch < 2; ch++) { const d = buf.getChannelData(ch); for (let i = 0; i < d.length; i++) { seed = (seed * 1664525 + 1013904223) >>> 0; d[i] = seed / 2147483648 - 1; } }
+  return buf;
+}
+function erosion(ctx: BaseAudioContext): Core {
+  const input = stereo(ctx), split = ctx.createChannelSplitter(2), merge = ctx.createChannelMerger(2), dl = ctx.createDelay(0.01), dr = ctx.createDelay(0.01);
+  input.connect(split); split.connect(dl, 0); split.connect(dr, 1); dl.connect(merge, 0, 0); dr.connect(merge, 0, 1);
+  const noise = ctx.createBufferSource(), band = biquad(ctx, "bandpass", 3000, 1), ns = ctx.createChannelSplitter(2), sine = ctx.createOscillator();
+  noise.buffer = noiseBuffer(ctx); noise.loop = true; noise.start(ctx.currentTime); sine.start(ctx.currentTime); noise.connect(band).connect(ns);
+  // what shakes each side: the same noise, a different noise for the right, or the sine
+  const sameL = ctx.createGain(), sameR = ctx.createGain(), wideR = ctx.createGain(), sinL = ctx.createGain(), sinR = ctx.createGain();
+  ns.connect(sameL, 0); ns.connect(sameR, 0); ns.connect(wideR, 1); sine.connect(sinL); sine.connect(sinR);
+  sameL.connect(dl.delayTime); sinL.connect(dl.delayTime); sameR.connect(dr.delayTime); wideR.connect(dr.delayTime); sinR.connect(dr.delayTime);
+  return { input, output: merge, nodes: [input, split, merge, dl, dr, noise, band, ns, sine, sameL, sameR, wideR, sinL, sinR], set(p, t) {
+    const swing = erosionSwing(p), mode = p.mode ?? 0;
+    to(dl.delayTime, swing, t); to(dr.delayTime, swing, t);         // rests exactly as far back as it can swing, so with no amount there is no delay at all
+    to(band.frequency, p.freq ?? 3000, t); to(band.Q, octavesToQ(p.width ?? 1), t); to(sine.frequency, p.freq ?? 3000, t);
+    to(sameL.gain, mode < 2 ? swing : 0, t); to(sameR.gain, mode === 0 ? swing : 0, t); to(wideR.gain, mode === 1 ? swing : 0, t); to(sinL.gain, mode === 2 ? swing : 0, t); to(sinR.gain, mode === 2 ? swing : 0, t);
+  } };
+}
+const CORES: Record<string, (ctx: BaseAudioContext, p: P) => Core> = { comp: worklet("comp"), glue: worklet("glue"), limiter: worklet("limiter"), gate: worklet("gate"), crush: worklet("crush"), resonators: worklet("resonators"), multiband: worklet("multiband"), drumbus: worklet("drumbus"), shifter: worklet("shifter"), erosion, autofilter, phaser, echo, filterdelay, utility, eq3, eq8, channeleq, sat, overdrive, autopan, chorus, delay, reverb };
 
 /** The audio for one device, or nothing when the kind is unknown. */
 export function buildDevice(ctx: BaseAudioContext, d: Device, bpm = 120): LiveDevice | undefined {
@@ -263,6 +285,6 @@ export function buildDevice(ctx: BaseAudioContext, d: Device, bpm = 120): LiveDe
   building = true; try { core.set(d.p, ctx.currentTime, bpm); } finally { building = false; }
   return { input, output, reduction: core.reduction,
     update(next, tempo = bpm) { const t = ctx.currentTime; core.set(next.p, t, tempo); wet.gain.setTargetAtTime(next.on ? 1 : 0, t, SMOOTH); dry.gain.setTargetAtTime(next.on ? 0 : 1, t, SMOOTH); },
-    dispose() { for (const n of [input, output, wet, dry, ...core.nodes]) { try { if (n instanceof OscillatorNode) n.stop(); n.disconnect(); } catch { /* already apart */ } } },
+    dispose() { for (const n of [input, output, wet, dry, ...core.nodes]) { try { if (n instanceof OscillatorNode || n instanceof AudioBufferSourceNode) n.stop(); n.disconnect(); } catch { /* already apart */ } } },
   };
 }

@@ -184,7 +184,169 @@ export class ResonatorDsp implements Dsp {
   }
 }
 
-export const DSP_KINDS = ["comp", "glue", "limiter", "gate", "crush", "resonators"] as const;
+/** One two-pole filter, for both sides at once. Low-pass, high-pass or band-pass, by the usual cookbook formulas. */
+class Bq {
+  private b0 = 1; private b1 = 0; private b2 = 0; private a1 = 0; private a2 = 0;
+  private readonly x1 = [0, 0]; private readonly x2 = [0, 0]; private readonly y1 = [0, 0]; private readonly y2 = [0, 0];
+  set(kind: "lowpass" | "highpass" | "bandpass", f: number, q: number, sampleRate: number): void {
+    const w = (2 * Math.PI * Math.min(sampleRate * 0.49, Math.max(1, f))) / sampleRate, cos = Math.cos(w), al = Math.sin(w) / (2 * q), a0 = 1 + al;
+    if (kind === "lowpass") { this.b0 = (1 - cos) / 2 / a0; this.b1 = (1 - cos) / a0; this.b2 = this.b0; }
+    else if (kind === "highpass") { this.b0 = (1 + cos) / 2 / a0; this.b1 = -(1 + cos) / a0; this.b2 = this.b0; }
+    else { this.b0 = al / a0; this.b1 = 0; this.b2 = -al / a0; }
+    this.a1 = (-2 * cos) / a0; this.a2 = (1 - al) / a0;
+  }
+  tick(x: number, ch: number): number {
+    let y = this.b0 * x + this.b1 * this.x1[ch]! + this.b2 * this.x2[ch]! - this.a1 * this.y1[ch]! - this.a2 * this.y2[ch]!;
+    if (Math.abs(y) < 1e-20) y = 0;
+    this.x2[ch] = this.x1[ch]!; this.x1[ch] = x; this.y2[ch] = this.y1[ch]!; this.y1[ch] = y;
+    return y;
+  }
+}
+const BUTTER = Math.SQRT1_2;
+
+export const BANDS = ["l", "m", "h"] as const, MULTI_MAX_LIFT = 30, MULTI_SILENCE = -70;
+/**
+ * Multiband dynamics' rule for one band: how many dB to change a sound at `inDb`. Above the upper threshold
+ * it is turned down (the extra divided by the ratio); below the lower threshold it is lifted towards that
+ * threshold (the shortfall divided by the lift ratio), which brings quiet detail up. Near silence nothing is lifted.
+ */
+export function multibandChangeDb(inDb: number, above: number, ratio: number, below: number, lift: number): number {
+  if (inDb > above) return (inDb - above) * (1 / Math.max(1, ratio) - 1);
+  if (inDb < below && inDb > MULTI_SILENCE) return Math.min(MULTI_MAX_LIFT, (below - inDb) * (1 - 1 / Math.max(1, lift)));
+  return 0;
+}
+/** Multiband dynamics: the sound split in three (the same split as the three-band EQ), each band with its own compressor. */
+export class MultibandDsp implements Dsp {
+  private readonly f = Array.from({ length: 12 }, () => new Bq());
+  private readonly env = [0, 0, 0]; private readonly y = [0, 0, 0]; private worst = 0;
+  private p = { above: [-24, -24, -24], ratio: [1, 1, 1], below: [-50, -50, -50], lift: [1, 1, 1], gain: [1, 1, 1], amount: 1, out: 1, att: 1, relDecay: 1 };
+  private readonly band = [[0, 0], [0, 0], [0, 0]];
+  constructor(private readonly sampleRate: number) { this.set({}); }
+  set(p: P): void {
+    const f1 = p.freqLow ?? 120, f2 = p.freqHigh ?? 2500, sr = this.sampleRate, f = this.f;
+    f[0]!.set("lowpass", f1, BUTTER, sr); f[1]!.set("lowpass", f1, BUTTER, sr); f[2]!.set("highpass", f1, BUTTER, sr); f[3]!.set("highpass", f1, BUTTER, sr);
+    for (const i of [4, 5, 8, 9]) f[i]!.set("lowpass", f2, BUTTER, sr);
+    for (const i of [6, 7, 10, 11]) f[i]!.set("highpass", f2, BUTTER, sr);
+    const each = (name: string, def: number) => BANDS.map((k) => p[`${k}${name}`] ?? def);
+    this.p = { above: each("above", -24), ratio: each("ratio", 3), below: each("below", -50), lift: each("lift", 1), gain: each("gain", 0).map(dbToGain), amount: Math.min(1, Math.max(0, (p.amount ?? 100) / 100)), out: dbToGain(p.out ?? 0),
+      att: stepFor(p.attack ?? 10, sr), relDecay: Math.exp(-1 / (((p.release ?? 150) / 1000) * sr)) };
+  }
+  run(inL: Float32Array, inR: Float32Array, outL: Float32Array, outR: Float32Array): void {
+    const f = this.f, p = this.p, band = this.band; let worst = 0;
+    for (let i = 0; i < inL.length; i++) {
+      for (let ch = 0; ch < 2; ch++) {
+        const x = ch ? inR[i]! : inL[i]!, low = f[1]!.tick(f[0]!.tick(x, ch), ch), rest = f[3]!.tick(f[2]!.tick(x, ch), ch);
+        band[0]![ch] = f[5]!.tick(f[4]!.tick(low, ch), ch) + f[7]!.tick(f[6]!.tick(low, ch), ch);   // the lows, through both halves of the upper split, which only turns their phase
+        band[1]![ch] = f[9]!.tick(f[8]!.tick(rest, ch), ch); band[2]![ch] = f[11]!.tick(f[10]!.tick(rest, ch), ch);
+      }
+      let l = 0, r = 0;
+      for (let b = 0; b < 3; b++) {
+        const bl = band[b]![0]!, br = band[b]![1]!, a = Math.max(Math.abs(bl), Math.abs(br));
+        this.env[b] = a > this.env[b]! ? a : this.env[b]! * p.relDecay;
+        const want = multibandChangeDb(toDb(this.env[b]!), p.above[b]!, p.ratio[b]!, p.below[b]!, p.lift[b]!) * p.amount;
+        this.y[b] = this.y[b]! + (want - this.y[b]!) * (want < this.y[b]! ? p.att : p.att * 0.25);
+        if (this.y[b]! < worst) worst = this.y[b]!;
+        const g = dbToGain(this.y[b]!) * p.gain[b]!;
+        l += bl * g; r += br * g;
+      }
+      outL[i] = l * p.out; outR[i] = r * p.out;
+    }
+    for (let b = 0; b < 3; b++) if (this.env[b]! < 1e-9) this.env[b] = 0;
+    this.worst = -worst;
+  }
+  reduction(): number { return this.worst; }
+}
+
+export const BUS_MARGIN = 0.25, BUS_MAX_DRIVE = 8, BUS_CRUNCH_HZ = 1500, BUS_PUNCH = 2, BUS_SOFTEN = 0.8;
+/**
+ * Drum bus: a channel strip for a drum track. Drive rounds the peaks; crunch distorts only the top;
+ * transients makes the very start of each hit louder or softer than its body (it compares a fast reading of
+ * the level with a slow one: they differ only while a hit is arriving); boom is a ringing low tone set off
+ * by the drums; damp takes the top off. Every number here is our own.
+ */
+export class DrumBusDsp implements Dsp {
+  private readonly hp = new Bq(); private readonly boom = new Bq(); private readonly lp = new Bq();
+  private fast = 0; private slow = 0;
+  private p = { g: 1, norm: 1, crunch: 0, tr: 0, boom: 0, damp: false, out: 1, dry: 0, wet: 1 };
+  private readonly cf: number; private readonly cr: number; private readonly cs: number;
+  constructor(private readonly sampleRate: number) { this.cf = stepFor(0.5, sampleRate); this.cr = stepFor(40, sampleRate); this.cs = stepFor(15, sampleRate); this.set({}); }
+  set(p: P): void {
+    const g = 1 + (Math.min(100, Math.max(0, p.drive ?? 0)) / 100) * (BUS_MAX_DRIVE - 1), mix = Math.min(1, Math.max(0, (p.mix ?? 100) / 100)), damp = p.damp ?? 20000;
+    this.hp.set("highpass", BUS_CRUNCH_HZ, BUTTER, this.sampleRate); this.boom.set("bandpass", p.boomFreq ?? 55, 2 + ((p.boomDecay ?? 50) / 100) * 28, this.sampleRate); this.lp.set("lowpass", damp, BUTTER, this.sampleRate);
+    this.p = { g, norm: g === 1 ? 1 : 1 / Math.tanh(g), crunch: (p.crunch ?? 0) / 100, tr: (p.transients ?? 0) / 100, boom: ((p.boom ?? 0) / 100) * 4, damp: damp < 19900, out: dbToGain(p.out ?? 0), dry: 1 - mix, wet: mix };
+  }
+  run(inL: Float32Array, inR: Float32Array, outL: Float32Array, outR: Float32Array): void {
+    const p = this.p; let { fast, slow } = this;
+    for (let i = 0; i < inL.length; i++) {
+      const a = Math.max(Math.abs(inL[i]!), Math.abs(inR[i]!));
+      fast += (a - fast) * (a > fast ? this.cf : this.cr); slow += (a - slow) * (a > slow ? this.cs : this.cr);
+      // a steady sound keeps the two readings a little apart, so only a clear gap counts as a hit arriving
+      const t = Math.max(0, (fast - slow) / (fast + 1e-6) - BUS_MARGIN) / (1 - BUS_MARGIN), punch = 1 + p.tr * (p.tr > 0 ? BUS_PUNCH : BUS_SOFTEN) * t;
+      for (let ch = 0; ch < 2; ch++) {
+        const x = ch ? inR[i]! : inL[i]!;
+        let v = p.g === 1 ? x : Math.tanh(x * p.g) * p.norm;
+        if (p.crunch > 0) { const top = this.hp.tick(v, ch); v += p.crunch * (Math.tanh(top * 6) - top); }
+        v *= punch;
+        if (p.boom > 0) v += this.boom.tick(x, ch) * p.boom;
+        if (p.damp) v = this.lp.tick(v, ch);
+        (ch ? outR : outL)[i] = x * p.dry + v * p.out * p.wet;
+      }
+    }
+    this.fast = fast < 1e-9 ? 0 : fast; this.slow = slow < 1e-9 ? 0 : slow;
+  }
+}
+
+// The two all-pass chains that turn a sound into a pair a quarter-cycle apart (a "Hilbert" pair), from which a
+// sound can be moved up or down by a fixed number of Hz. The eight numbers are the widely published
+// half-band set (O. Niemitalo); each stage is y[n] = c squared times (x[n] + y[n-2]), minus x[n-2].
+const HILBERT_A = [0.6923878, 0.9360654322959, 0.988229522686, 0.9987488452737], HILBERT_B = [0.4021921162426, 0.856171088242, 0.9722909545651, 0.9952884791278];
+class AllpassChain {
+  private readonly x1 = new Float64Array(4); private readonly x2 = new Float64Array(4); private readonly y1 = new Float64Array(4); private readonly y2 = new Float64Array(4);
+  private readonly c: number[];
+  constructor(c: number[]) { this.c = c.map((v) => v * v); }
+  tick(x: number): number {
+    for (let k = 0; k < 4; k++) { const y = this.c[k]! * (x + this.y2[k]!) - this.x2[k]!; this.x2[k] = this.x1[k]!; this.x1[k] = x; this.y2[k] = this.y1[k]!; this.y1[k] = y; x = y; }
+    return x;
+  }
+}
+/** The ratio between two notes `semis` semitones and `cents` cents apart. */
+export const shiftRatio = (semis: number, cents = 0) => 2 ** ((semis + cents / 100) / 12);
+/**
+ * Shifter. Pitch mode: the sound is read back from a short delay that keeps getting shorter (higher) or
+ * longer (lower); two such readings half a window apart are crossfaded so the jumps back are never heard
+ * alone. It multiplies every frequency, so chords stay chords, but it warbles a little. Frequency mode:
+ * every frequency is moved by the same number of Hz, so harmonics stop lining up and the sound turns metallic.
+ */
+export class ShifterDsp implements Dsp {
+  private readonly size: number; private readonly buf: Float32Array[]; private at = 0; private phase = 0; private turn = 0;
+  private readonly ha = [new AllpassChain(HILBERT_A), new AllpassChain(HILBERT_A)]; private readonly hb = [new AllpassChain(HILBERT_B), new AllpassChain(HILBERT_B)]; private readonly held = [0, 0];
+  private p = { freq: false, window: 2880, step: 0, hz: 0, dry: 0, wet: 1 };
+  constructor(private readonly sampleRate: number) { this.size = Math.ceil(sampleRate * 0.25) + 4; this.buf = [new Float32Array(this.size), new Float32Array(this.size)]; this.set({}); }
+  set(p: P): void {
+    const mix = Math.min(1, Math.max(0, (p.mix ?? 100) / 100)), window = Math.max(64, ((p.window ?? 60) / 1000) * this.sampleRate);
+    this.p = { freq: !!p.mode, window, step: (1 - shiftRatio(p.semis ?? 0, p.cents ?? 0)) / window, hz: p.hz ?? 0, dry: 1 - mix, wet: mix };
+  }
+  run(inL: Float32Array, inR: Float32Array, outL: Float32Array, outR: Float32Array): void {
+    const p = this.p, size = this.size; let { at, phase, turn } = this;
+    for (let i = 0; i < inL.length; i++) {
+      const sin = Math.sin(turn), cos = Math.cos(turn), g1 = Math.sin(Math.PI * phase) ** 2, second = phase + 0.5 - Math.floor(phase + 0.5);
+      for (let ch = 0; ch < 2; ch++) {
+        const x = ch ? inR[i]! : inL[i]!; let v: number;
+        if (p.freq) { const a = this.ha[ch]!.tick(x), b = this.hb[ch]!.tick(x); v = this.held[ch]! * cos + b * sin; this.held[ch] = a; }
+        else { const b = this.buf[ch]!; b[at] = x;
+          const read = (ph: number) => { const where = at - 1 - ph * p.window + size * 2, i0 = Math.floor(where), f = where - i0; return b[i0 % size]! * (1 - f) + b[(i0 + 1) % size]! * f; };
+          v = read(phase) * g1 + read(second) * (1 - g1); }
+        (ch ? outR : outL)[i] = x * p.dry + v * p.wet;
+      }
+      at = (at + 1) % size; phase += p.step; phase -= Math.floor(phase);
+      turn += (2 * Math.PI * p.hz) / this.sampleRate; if (turn > Math.PI) turn -= 2 * Math.PI; else if (turn < -Math.PI) turn += 2 * Math.PI;
+    }
+    this.at = at; this.phase = phase; this.turn = turn;
+  }
+}
+
+export const DSP_KINDS = ["comp", "glue", "limiter", "gate", "crush", "resonators", "multiband", "drumbus", "shifter"] as const;
 export function makeDsp(kind: string, sampleRate: number): Dsp | undefined {
-  return kind === "comp" ? new CompDsp(sampleRate) : kind === "glue" ? new CompDsp(sampleRate, true) : kind === "limiter" ? new LimiterDsp(sampleRate) : kind === "gate" ? new GateDsp(sampleRate) : kind === "crush" ? new CrushDsp(sampleRate) : kind === "resonators" ? new ResonatorDsp(sampleRate) : undefined;
+  return kind === "comp" ? new CompDsp(sampleRate) : kind === "glue" ? new CompDsp(sampleRate, true) : kind === "limiter" ? new LimiterDsp(sampleRate) : kind === "gate" ? new GateDsp(sampleRate) : kind === "crush" ? new CrushDsp(sampleRate) : kind === "resonators" ? new ResonatorDsp(sampleRate)
+    : kind === "multiband" ? new MultibandDsp(sampleRate) : kind === "drumbus" ? new DrumBusDsp(sampleRate) : kind === "shifter" ? new ShifterDsp(sampleRate) : undefined;
 }

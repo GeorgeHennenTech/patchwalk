@@ -61,6 +61,25 @@ maths, and a measurement in a browser (`transport.levels()` reads the left and r
   it), ring time, brightness, level each. In the worklet (`ResonatorDsp`). Measured: set to A3 it rang at
   220 Hz; tests hold it in tune within 8 cents and to its ring time.
 
+- [x] 11. **Erosion** (Erosion): a delay of up to half a millisecond shaken by band-passed noise, a
+  different noise each side, or a sine. Measured: amount 0 is the untouched sound; at full, the tone fell
+  7 dB and the added roughness sat 1 dB under it; the sine at 3 kHz put sidebands 3 kHz either side of a
+  2 kHz tone; "wide" made the two sides differ.
+- [x] 20. **Drum bus** (Drum Buss): drive, crunch (distorts above 1.5 kHz only), transients (compares a
+  fast and a slow reading of the level), boom (a ringing low band-pass), damp, output, dry/wet. Every
+  number our own. Tested: unchanged at its starting settings; transients up raised a hit's start by over
+  half and left its body alone; boom rang at its frequency; crunch left a 100 Hz tone clean.
+- [x] 21. **Multiband dynamics** (Multiband Dynamics): the three-band EQ's split, each band turned down
+  above one threshold and lifted below another; attack, release, amount, output, meter. Measured: with
+  ratios of 1 the bands add back to 0.00 dB; a low tone 20 dB over at 4:1 came out at -20.8 dB (rule -21)
+  while a quiet high tone alongside was untouched. A tone near a split is partly in the next band, so it
+  is turned down less than the rule alone says.
+- [x] 24. **Shifter** (Shifter): pitch (semitones, cents, window) or frequency (Hz). Measured: +300 Hz
+  moved a 1 kHz tone to 1.3 kHz at full level with the other side 49 dB down. **Pitch mode's weak spot:**
+  +12 on 440 Hz kept its level but its strongest line was at 873.5 Hz, not 880 (13 cents flat): the two
+  crossfaded readings do not line up in phase, which is the warble. A better method (lining the readings
+  up, or a phase vocoder) is the fix if the owner's ear objects.
+
 These five run in an AudioWorklet (`src/daw/dsp.ts` is the code, with no browser parts, so
 `tests/dsp.test.ts` runs exactly what the sound is made with; `dsp.worklet.ts` wraps it; `prepareDevices`
 loads it, and a chain passes such a device by until it has loaded). A new sample-by-sample device: a class
@@ -91,12 +110,8 @@ changes glide. Each was measured by building it on an `OfflineAudioContext` in a
 (`buildDevice(ctx, device, bpm)`), which is the quickest way to measure the next ones.
 
 ## To build, in this order
-- [ ] 11. **Erosion** (Erosion): a short delay shaken by noise or a sine
-- [ ] 20. **Drum bus** (Drum Buss): drive, crunch, transient shaping and a low boom, for a drum track
-- [ ] 21. **Multiband dynamics** (Multiband Dynamics): three bands, each compressed or expanded
 - [ ] 22. **Beat repeat** (Beat Repeat): catches a slice and repeats it on the grid
 - [ ] 23. **Grain delay** (Grain Delay)
-- [ ] 24. **Shifter** (Shifter, Frequency Shifter): pitch or frequency shift
 - [ ] 26. **Amp, cabinet and pedal** (Amp, Cabinet, Pedal, Dynamic Tube): guitar-style drive and speaker colour
 - [ ] 27. **Vinyl distortion** (Vinyl Distortion)
 - [ ] 28. **Spectrum and tuner** (Spectrum, Tuner): devices that only show, not change, the sound
@@ -113,7 +128,7 @@ changes glide. Each was measured by building it on an `OfflineAudioContext` in a
 Distortion, three-band EQ, compressor, chorus, flanger, phaser, delay, reverb (`src/synth/fx.ts`). The Studio's devices are separate from these.
 
 ## Next
-11 Erosion, 20 Drum bus, 21 Multiband dynamics (reuse `CompDsp` with the three-band split), 22 Beat repeat,
-24 Shifter, 26-28, 30 MIDI effects. A sidechain for the compressor needs the transport to carry one track's
-sound to another track's device. A level follower made from ready parts must smooth with `createIIRFilter`:
+22 Beat repeat (the device must be told the song's bar position), 26 Amp/cabinet/pedal, 27 Vinyl distortion,
+28 Spectrum and tuner, 30 MIDI effects, and a sidechain for the compressor (the transport must carry one
+track's sound to another track's device). A level follower made from ready parts must smooth with `createIIRFilter`:
 the ordinary low-pass set to a few Hz read a tenth short (`follower` in `fxnodes.ts`).

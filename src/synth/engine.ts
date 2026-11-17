@@ -75,7 +75,7 @@ export class Engine {
   readonly clickBus: GainNode;
   private curve: { drive: number; data: Float32Array<ArrayBuffer> } | undefined;
 
-  constructor(state: SynthState, ctx: AudioContext = new AudioContext()) {
+  constructor(state: SynthState, ctx: AudioContext = new AudioContext(), destination: AudioNode = ctx.destination) {
     this.ctx = ctx;
     this.base = applyMacros(state);
     this.state = this.base;
@@ -92,7 +92,7 @@ export class Engine {
     this.analyser = ctx.createAnalyser();
     this.analyser.fftSize = 4096;
     this.analyser.smoothingTimeConstant = 0.6;
-    this.master.connect(guard).connect(this.analyser).connect(ctx.destination);
+    this.master.connect(guard).connect(this.analyser).connect(destination);
     this.fx = new FxChain(ctx, this.state);
     this.fx.output.connect(this.master);
   }
@@ -692,6 +692,16 @@ export class Engine {
     const v = this.build(note, s.phase / 360, start, velocity);
     this.releaseAt(v, s, start + seconds);
     this.auditions.push({ voice: v, base: this.base, played: s, until: start + seconds + s.envR / 1000 + 0.5 });
+  }
+
+  /** Let go, now, of every note that was scheduled ahead with `playAt` (a song has been stopped). */
+  stopScheduled(): void {
+    const t = this.ctx.currentTime;
+    for (const a of this.auditions) {
+      if (a.until <= t) continue;
+      try { this.releaseAt(a.voice, a.played, t); } catch { /* already ended */ }
+      a.until = t + a.played.envR / 1000 + 0.5;
+    }
   }
 
   /** Play a whole patch for a moment, without disturbing held notes or the learner's settings. */

@@ -431,3 +431,9 @@ recipes. Next pieces, in this order unless the owner says otherwise: a lesson or
 audio clock shared with the practice synth; a piano roll so the synth plays notes; chaining patterns; a mixer.
 Also built since the last entry and described in `CLAUDE.md`: "Draw this" playable models, the shared
 Walkthroughs library, side threads by highlighting, and "Build this lesson in Serum 2".
+
+Later the same day the Studio became a small DAW: a song of tracks and clips, a 16-pad drum rack with the
+learner's own sound files, the practice synth on synth tracks with a piano roll, all on one audio clock
+(`CLAUDE.md`, "Studio is now a small DAW"). Timing and trimming were measured; nobody has heard it. Good next
+steps: recording from the keys or a MIDI keyboard, undo, note loudness, per-track effects, export, and the
+first lessons that use the Studio.

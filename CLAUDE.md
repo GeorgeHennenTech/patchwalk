@@ -1088,6 +1088,49 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   drum to built-in. Not heard by anyone. **Agreed next piece: an Ableton-style pad rack** (a grid of pads,
   any number of sounds, per pad: start, length, fade, tune, level, pan, choke group; the step grid then
   programs the pads). Arrangement only, our own look, as with the synth.
+- **Studio is now a small DAW: tracks, clips, a drum rack and the synth on tracks (17 Nov 2026, owner's request:
+  "build the drum rack, then build the actual grid where i can open the synthesizer on tracks and build pads
+  and also lay down drums"). This replaces the single-pattern page described in the two entries above; what
+  they say about the kit, timing, samples and starters still holds.**
+  - **Song** (`src/daw/song.ts`, pure, tested in `tests/song.test.ts`): `Song { name, bpm, swing, bars (4, 8,
+    16 or 32), tracks }`, up to 8 tracks. A **drum track** owns `pads` and its clips hold `hits` (a row of
+    steps per pad id; 1 or 2 bars). A **synth track** owns `patch` (the practice synth's whole `SynthState`)
+    and its clips hold `notes` (`{ note, start, length, velocity }` in sixteenth steps; 1, 2 or 4 bars).
+    Clips sit on whole bars and cannot overlap (`isFree`); `addClip`, `duplicateClip` (next free place),
+    `moveClip`, `setClipBars`, `removeClip`. `songEvents(song, from, until, loop?)` is the one place that
+    decides what sounds and when (hits and notes together; track and pad mute/solo). `clipPattern` /
+    `withPattern` show a drum clip to the step grid as a `Pattern` and put it back (pads to the track, rows
+    to the clip). `setSongTempo` writes the tempo into every synth track's patch. `SOUNDS` are five starting
+    sounds for a synth track (Soft pad, Bass, Pluck, Lead, Plain saw): our own settings.
+  - **Drum rack** (`src/ui/studio/DrumRack.tsx`; `Pad` in `drums.ts`): up to 16 pads in a 4-wide block; a
+    pad plays a built-in drum (chosen from a menu) or one of the learner's sound files, with name, start,
+    length, fade out (files only; `padWindow`), tune, level, pan and a choke group (1 to 4: pads of a group
+    cut each other; the two hats start in group 1). A file's shape is drawn with the part that plays lit.
+    Files can be dropped on a pad. The step grid (`src/ui/DrumGrid.tsx`, now only a component) has a row per pad.
+  - **Transport** (`src/daw/transport.ts`): one `AudioContext` for everything. One `Kit` for all drum
+    tracks, a gain per track (level, mute, solo), and **one synth `Engine` per synth track on the shared
+    context** (`Engine` takes a destination now; `stopScheduled` lets go of notes when the song stops).
+    Steps are handed to the audio clock 0.12 s ahead; notes go through `engine.playAt`. "Loop the open
+    clip" plays only that clip's bars. In development it is on `window.__patchwalkTransport`.
+  - **The synth on a track** (`src/ui/studio/TrackSynth.tsx`): `useSynth(host)` can now be given an engine,
+    starting settings and an `onChange`, so the same hook and the lessons' whole-synth panel (`SynthPanel`,
+    exported from `PlayView.tsx`) edit a track's sound; letter keys play it live; saved sounds load into it.
+    The synth's own tempo knob is overridden by the song. **Class names `synth` and `rack` belong to the
+    synth's skin: do not reuse them** (the track grid uses `k-drums` / `k-synth`, the drum rack `drack`).
+  - **Piano roll** (`src/ui/studio/PianoRoll.tsx`): C2 to C6, click to add a note (drag right for length),
+    drag to move, drag the right end to resize, double-click or right-click to remove; every note is 100
+    loud for now.
+  - **Track grid** (`src/ui/studio/Arrangement.tsx`): tracks down the side (name, M, S, level, delete),
+    bars along the top, + on an empty bar adds a clip, clips show a small picture of their contents, a
+    play line moves across. Songs are kept in the browser (`patchwalk.song.v1` as you go,
+    `patchwalk.songs.v1` saved by name, 20 at most; not with the account). A first visit gets an example
+    song built from the pattern the learner had before.
+  - Measured in a browser: kicks 0.4839 s apart at 124 bpm; the synth chord's first note started at exactly
+    the same clock time as the first kick; a pad with Start 50%, Length 40% on a 1 s file played from 0.5 s
+    for 0.2 s; a looped one-bar clip repeated every 1.935 s; a note was added in the roll by dragging;
+    the whole synth opened on a track; everything survived a reload. **Nobody has heard any of it.**
+  - Not built: recording from the keys or a MIDI keyboard, note loudness, copy/paste and undo, automation,
+    effects per track, a master meter, export to a sound file, dragging clips, lessons that use the Studio.
 - **"Walk me through it" (16 Nov 2026, owner's go-ahead with two rules of their own).** A second mode on the
   Ask tab (a switch, remembered): a how-to question becomes a walkthrough of steps shown one at a time.
   `api/walk.ts` answers two kinds of request: `plan` (one call with structured output over ten passages:

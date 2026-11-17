@@ -35,11 +35,17 @@ export function midiMessage(data: ArrayLike<number>): MidiEvent | null {
 }
 export type MidiStatus = "off" | "unsupported" | "refused" | "none" | "on";
 
-export function useSynth() {
-  const engine = useRef<Engine | null>(null);
-  const [state, setStateRaw] = useState<SynthState>(INITIAL);
+/**
+ * `host` lets something else own the engine and the settings (a track in the Studio): the hook then plays
+ * and edits that engine, reports every change of settings, and leaves the engine running when it goes.
+ */
+export function useSynth(host?: { engine: Engine; initial: SynthState; onChange: (s: SynthState) => void }) {
+  const engine = useRef<Engine | null>(host?.engine ?? null);
+  const hostRef = useRef(host);
+  hostRef.current = host;
+  const [state, setStateRaw] = useState<SynthState>(host?.initial ?? INITIAL);
   const stateRef = useRef(state);
-  const [running, setRunning] = useState(false);
+  const [running, setRunning] = useState(() => host?.engine.running ?? false);
   const [held, setHeld] = useState<number[]>([]);
   const [holdOn, setHoldOn] = useState(false);
   const holdRef = useRef(false);
@@ -62,6 +68,7 @@ export function useSynth() {
     track.current = trackState(track.current, prev, next);
     engine.current?.update(next);
     setStateRaw(next);
+    hostRef.current?.onChange(next);
   }, []);
 
   const start = useCallback(async () => {
@@ -219,6 +226,7 @@ export function useSynth() {
     stateRef.current = to;
     engine.current?.update(to);
     setStateRaw(to);
+    hostRef.current?.onChange(to);
     track.current = newTrack(to);
   }, []);
 
@@ -275,7 +283,7 @@ export function useSynth() {
   }, [noteOn, noteOff]);
 
   // Silence on unmount so sound never outlives the lesson screen.
-  useEffect(() => () => { engine.current?.dispose(); void engine.current?.ctx.suspend(); }, []);
+  useEffect(() => () => { if (hostRef.current) { engine.current?.allNotesOff(); return; } engine.current?.dispose(); void engine.current?.ctx.suspend(); }, []);
 
   /**
    * The settings as they are at this instant, with every source's movement applied: what the pictures and

@@ -52,7 +52,7 @@ function loadViews(): Panel[] {
   try { const v = JSON.parse(localStorage.getItem(VIEWS_KEY) ?? "[]"); return Array.isArray(v) ? VIEWS.map((x) => x.id).filter((id) => v.includes(id)) : []; } catch { return []; }
 }
 
-function SynthPanel({ synth, show, lesson, all, lastNote, extra = [], onExtra, plain, onSkin }: { synth: Synth; show: Panel[]; lesson: PlayableLesson; all: boolean; lastNote?: number | null; extra?: Panel[]; onExtra?: (p: Panel) => void; plain?: boolean; onSkin?: () => void }) {
+export function SynthPanel({ synth, show, lesson, all, lastNote, extra = [], onExtra, plain, onSkin }: { synth: Synth; show: Panel[]; lesson: PlayableLesson; all: boolean; lastNote?: number | null; extra?: Panel[]; onExtra?: (p: Panel) => void; plain?: boolean; onSkin?: () => void }) {
   const on = (p: Panel) => all || show.includes(p) || extra.includes(p);
   // Views are opened by the step or from the Show row; the whole synth does not open them all by itself.
   const view = (p: Panel) => show.includes(p) || extra.includes(p);

@@ -244,3 +244,79 @@ tr.dim td { opacity: 0.6; }
 .daw-sound-label { margin: 12px 0 6px; font-size: 0.85rem; }
 .daw-sound-small { margin: 10px 0 0; font-size: 0.82rem; }
 .daw-chip.on button { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+/* Studio: tracks and clips */
+.daw-check { display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; }
+.daw-bar .linkish { margin-left: auto; background: none; border: 0; color: var(--accent); text-decoration: underline; cursor: pointer; box-shadow: none; padding: 0; }
+.arr { background: #17101c; color: #f4e9f7; border-radius: 14px; padding: 10px 12px 12px; overflow-x: auto; display: grid; gap: 5px; }
+.arr-row { display: flex; gap: 8px; align-items: stretch; min-width: max-content; }
+.arr-side { width: 258px; flex: none; display: flex; align-items: center; gap: 5px; padding: 4px 6px; border-radius: 8px; border: 1px solid transparent; }
+.arr-row.picked .arr-side { border-color: #ff7ab8; background: #2a1d33; }
+.arr-kind { width: 18px; text-align: center; color: #b9a6c2; }
+.arr-row.k-drums .arr-kind { color: #ffb347; } .arr-row.k-synth .arr-kind { color: #5fe0ff; }
+.arr .arr-name { flex: 1; min-width: 0; background: #2a1d33; color: inherit; border: 1px solid #4b3a55; border-radius: 6px; padding: 4px 6px; font-weight: 600; font-size: 0.85rem; }
+.arr .drum-flag { width: 24px; height: 24px; flex: none; padding: 0; border-radius: 6px; border: 1px solid #4b3a55; background: #2a1d33; color: #b9a6c2; font-size: 0.72rem; font-weight: 700; cursor: pointer; }
+.arr .drum-flag.on { background: #ffb347; color: #17101c; border-color: #ffb347; } .arr .drum-flag.solo.on { background: #5fe0ff; border-color: #5fe0ff; }
+.arr .arr-level { width: 54px; flex: none; }
+.arr .drum-clear { width: 20px; flex: none; padding: 0; border: 0; background: none; color: #8d7a97; font-size: 1.05rem; cursor: pointer; }
+.arr-bars { flex: 1; display: grid; gap: 3px; position: relative; grid-auto-rows: 42px; }
+.arr-top .arr-bars { grid-auto-rows: auto; }
+.arr-bar-n { font-size: 0.72rem; color: #8d7a97; padding-left: 3px; border-left: 1px solid #45344f; }
+.arr-bar-n.now { color: #ffe66b; font-weight: 700; }
+.arr .arr-slot { border: 1px dashed #3a2b44; background: #1e1525; color: transparent; border-radius: 6px; cursor: pointer; padding: 0; font-size: 1rem; box-shadow: none; }
+.arr .arr-slot.four { background: #241a2c; }
+.arr .arr-slot:hover, .arr .arr-slot:focus-visible { color: #ff7ab8; border-color: #ff7ab8; }
+.arr .arr-clip { border: 1px solid #ffb347; background: #4a3413; border-radius: 6px; padding: 3px; cursor: pointer; overflow: hidden; box-shadow: none; min-width: 0; }
+.arr-row.k-synth .arr-clip { border-color: #5fe0ff; background: #123742; }
+.arr .arr-clip { height: 42px; }
+.arr .arr-clip svg { width: 100%; height: 34px; display: block; fill: #ffcf8a; }
+.arr-row.k-synth .arr-clip svg { fill: #a8efff; }
+.arr .arr-clip.picked { outline: 2px solid #fff; outline-offset: 1px; }
+.arr-row.muted .arr-bars { opacity: 0.4; }
+.arr-now { position: absolute; top: 0; bottom: 0; width: 2px; background: #ffe66b; pointer-events: none; box-shadow: 0 0 6px #ffe66b; }
+.daw-add { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 10px 0 16px; font-size: 0.9rem; }
+.daw-edit { border: 2px solid var(--thread, #2a1730); border-radius: 14px; padding: 14px 16px; background: var(--panel); }
+.daw-edit-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 12px; }
+.daw-edit-head h3 { margin: 0 8px 0 0; font-size: 1.1rem; }
+.daw-edit-head h3 small { font-weight: 400; opacity: 0.75; }
+.daw-edit-head .linkish, .rack-head .linkish { margin-left: auto; background: none; border: 0; color: var(--accent); text-decoration: underline; cursor: pointer; box-shadow: none; padding: 0; }
+.daw-hint { margin: 0 0 12px; }
+.daw-starters { margin-top: 6px; }
+/* the drum rack */
+.drack { display: grid; grid-template-columns: minmax(300px, 380px) 1fr; gap: 16px; margin-bottom: 14px; }
+@media (max-width: 860px) { .drack { grid-template-columns: 1fr; } }
+.rack-pads { align-self: start; display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; align-content: start; padding: 10px; background: #17101c; border-radius: 12px; }
+.rack-pads .pad { aspect-ratio: 1.15; display: flex; flex-direction: column; justify-content: space-between; text-align: left; padding: 6px 7px; border-radius: 9px; border: 1px solid #4b3a55; background: linear-gradient(160deg, #3a2946, #241a2c); color: #f4e9f7; cursor: pointer; box-shadow: inset 0 1px 0 #ffffff22, 0 2px 0 #0b0610; overflow: hidden; }
+.rack-pads .pad b { font-size: 0.8rem; line-height: 1.1; overflow: hidden; text-overflow: ellipsis; }
+.rack-pads .pad small { font-size: 0.62rem; color: #b9a6c2; line-height: 1.1; }
+.rack-pads .pad:active { transform: translateY(1px); }
+.rack-pads .pad.picked { border-color: #ff7ab8; box-shadow: 0 0 0 2px #ff7ab8; }
+.rack-pads .pad.lit { background: linear-gradient(160deg, #ff8fc2, #c2186b); }
+.rack-pads .pad.lit small { color: #fff; }
+.rack-pads .pad.muted { opacity: 0.45; }
+.rack-pads .pad.over { outline: 2px dashed #7dffb0; outline-offset: 1px; }
+.rack-pads .pad.add { justify-content: center; text-align: center; border-style: dashed; background: none; color: #b9a6c2; font-size: 0.78rem; box-shadow: none; }
+.rack-head { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
+.rack-name { font-weight: 700; padding: 6px 10px; width: 190px; }
+.rack-source { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; margin-bottom: 10px; font-size: 0.9rem; }
+.rack-knobs { display: flex; flex-wrap: wrap; gap: 12px 18px; margin-top: 10px; }
+.rack-knobs .daw-knob input { width: 130px; }
+.pad-wave { width: 100%; height: 70px; background: #17101c; border-radius: 8px; display: block; }
+.pad-wave .in { fill: #ff7ab8; } .pad-wave .out { fill: #5a4865; }
+.pad-wave .edge { stroke: #ffe66b; stroke-width: 1; vector-effect: non-scaling-stroke; }
+.pad-wave .fade { fill: none; stroke: #5fe0ff; stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.drum-lane.picked .drum-name { border-color: #ff7ab8; }
+/* the synth on a track, and the piano roll */
+.track-synth-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; font-size: 0.9rem; }
+.track-synth-bar .primary { margin-left: auto; }
+.roll { max-height: 360px; overflow: auto; background: #17101c; border-radius: 12px; margin-top: 12px; user-select: none; }
+.roll-inner { display: flex; position: relative; }
+.roll-keys { position: sticky; left: 0; z-index: 2; width: 52px; flex: none; }
+.roll .roll-key { display: block; width: 52px; padding: 0 4px; border: 0; border-bottom: 1px solid #2c2034; border-radius: 0; background: #efe6f3; color: #2a1730; font-size: 0.62rem; text-align: right; cursor: pointer; box-shadow: none; line-height: 1; }
+.roll .roll-key.black { background: #2a1d33; }
+.roll-area { position: relative; flex: none; cursor: crosshair;
+  background-image: linear-gradient(to right, #2c2034 1px, transparent 1px), linear-gradient(to right, #4b3a55 1px, transparent 1px), linear-gradient(to right, #8d7a97 1px, transparent 1px); }
+.roll-row { position: absolute; left: 0; right: 0; pointer-events: none; }
+.roll-row.black { background: #ffffff0a; } .roll-row.c { border-bottom: 1px solid #45344f; }
+.roll-note { position: absolute; background: #5fe0ff; border: 1px solid #c8f6ff; border-radius: 3px; color: #06222a; font-size: 0.6rem; line-height: 12px; padding-left: 3px; overflow: hidden; white-space: nowrap; pointer-events: none; box-sizing: border-box; }
+.roll-now { position: absolute; top: 0; bottom: 0; width: 2px; background: #ffe66b; pointer-events: none; }

@@ -5,23 +5,30 @@ hardware chapters and licensing were left out) against the Studio as it stood th
 manual's. Sizes are guesses: S = hours, M = a day, L = several days, XL = a week or more. Tick an item off
 here when it is built. Everything built stays our own device or feature doing the same job.
 
+## Lessons (owner, 17 Nov 2026)
+The owner wants lessons on every one of these features: "this ableton course will be extensive". Nothing is
+written yet and the lesson engine does not know the Studio. Plan it as its own course (how a DAW works, the
+arrangement, clips and the piano roll, drums and the rack, mixing, each device, automation, recording,
+sidechain, returns, exporting), each lesson done in the Studio and ending with the same thing in Ableton
+Live, cited from the manual. Every feature ticked below needs a lesson.
+
 ## Suggested order
 
 ### 1. Quick wins (each S, together about two sessions)
 - [x] Tap tempo (p.176)
 - [x] Note tools in the piano roll: transpose, double and halve speed, reverse, invert, legato (p.172)
 - [x] Duplicate loop: double a clip's length and contents (p.161, 200)
-- [ ] Scale mode: choose root and scale, in-scale rows highlighted (DONE 17 Nov), Fold to scale and Fold (not yet) (p.163, 197-199)
+- [x] Scale mode: choose root and scale, in-scale rows highlighted, Fold to the key (p.163, 197-199). Plain Fold (rows with notes only) not built.
 - [ ] Note chance: a probability per note, in a lane under velocity (DONE 17 Nov); randomize velocity (not yet) (p.205-209)
 - [ ] Hear a note as you click or move it (p.194)
-- [ ] Count-in of 1 to 4 bars; overdub or replace when recording (p.290, 296)
+- [ ] Count-in: one bar of clicks when Record starts the song (DONE 17 Nov); a choice of 1 to 4 bars and overdub against replace (not yet) (p.290, 296)
 - [x] Click a bar number to play from there; Shift+Space plays on from the bar where it stopped (p.115-116)
-- [ ] Locators: named markers, jump to next and previous (p.117-119)
-- [ ] Browser: search box (DONE 17 Nov), and hear a sample or break before loading it (not yet) (p.76-78)
+- [ ] Locators: name a bar by right-clicking its number, click to play from it (DONE 17 Nov); jump to next and previous (not yet) (p.117-119)
+- [ ] Browser: search box, hear a drum or sample before loading it (DONE 17 Nov); hear a break or sound before loading (not yet) (p.76-78)
 - [ ] Shortcuts: F1-F8 track on/off (DONE 17 Nov), Ctrl/Cmd+Up/Down halve or double the loop, Ctrl/Cmd+I insert silence,
       A show automation, H and W fit, Ctrl/Cmd+Alt+T return track, Ctrl/Cmd+Shift+E export MIDI (p.845-856)
 - [x] Note Echo note effect (p.676)
-- [ ] Sidechain on Gate, Glue compressor, Auto filter and Multiband (the wiring exists for the Compressor)
+- [ ] Sidechain on Gate and Glue compressor (DONE 17 Nov); Auto filter and Multiband (not yet)
       (p.393, 442, 445, 467)
 - [ ] Utility: bass mono, left-only / right-only, DC filter; Saturator: soft clip and colour (p.489, 509-510)
 - [x] Effects on the master (p.281)

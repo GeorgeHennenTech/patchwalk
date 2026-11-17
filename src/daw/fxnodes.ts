@@ -306,7 +306,7 @@ function cabinet(ctx: BaseAudioContext): Core {
 function viewer(size: number) {
   return (ctx: BaseAudioContext): Core => { const pass = ctx.createGain(), a = ctx.createAnalyser(); a.fftSize = size; a.smoothingTimeConstant = 0.7; pass.connect(a); return { input: pass, output: pass, nodes: [pass, a], analyser: a, set() { /* nothing to set */ } }; };
 }
-const CORES: Record<string, (ctx: BaseAudioContext, p: P) => Core> = { comp: worklet("comp", 2), beatrepeat: worklet("beatrepeat"), vinyl: worklet("vinyl"), amp, pedal, cabinet, spectrum: viewer(4096), tuner: viewer(4096), glue: worklet("glue"), limiter: worklet("limiter"), gate: worklet("gate"), crush: worklet("crush"), resonators: worklet("resonators"), multiband: worklet("multiband"), drumbus: worklet("drumbus"), shifter: worklet("shifter"), erosion, autofilter, phaser, echo, filterdelay, utility, eq3, eq8, channeleq, sat, overdrive, autopan, chorus, delay, reverb };
+const CORES: Record<string, (ctx: BaseAudioContext, p: P) => Core> = { comp: worklet("comp", 2), beatrepeat: worklet("beatrepeat"), vinyl: worklet("vinyl"), amp, pedal, cabinet, spectrum: viewer(4096), tuner: viewer(4096), glue: worklet("glue", 2), limiter: worklet("limiter"), gate: worklet("gate", 2), crush: worklet("crush"), resonators: worklet("resonators"), multiband: worklet("multiband"), drumbus: worklet("drumbus"), shifter: worklet("shifter"), erosion, autofilter, phaser, echo, filterdelay, utility, eq3, eq8, channeleq, sat, overdrive, autopan, chorus, delay, reverb };
 
 /** The audio for one device, or nothing when the kind is unknown. */
 export function buildDevice(ctx: BaseAudioContext, d: Device, bpm = 120, origin = 0): LiveDevice | undefined {

@@ -503,3 +503,6 @@ First batch of its quick wins is built (tap tempo, note tools, clip doubling, ke
 chance, play from a bar, F1-F8, browser search, effects on the master, note echo). Still open in the
 quick-win group: count-in and overdub, locators, hearing a sample before loading, sidechain on more
 devices, Utility and Saturator extras, fold to scale, the rest of the shortcuts.
+Second batch: sidechain on the gate and glue compressor, markers, a one-bar count-in when recording,
+hear-before-loading in the browser, and Fold to the key. **The owner wants an extensive Ableton course:
+a lesson for every Studio feature. Not started; the plan is at the top of `docs/ABLETON_GAPS.md`.**

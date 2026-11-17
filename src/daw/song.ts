@@ -27,7 +27,7 @@ export interface DrumTrack extends TrackBase { kind: "drums"; pads: Pad[]; clips
 export interface SynthTrack extends TrackBase { kind: "synth"; patch: SynthState; clips: SynthClip[]; /** note effects, in front of the synth: they change the clip's notes before they are played */ noteFx: Device[] }
 export type Track = DrumTrack | SynthTrack;
 export type Clip = DrumClip | SynthClip;
-export interface Song { name: string; bpm: number; swing: number; /** length in bars */ bars: number; tracks: Track[]; /** the master volume, 0 to 100 */ volume: number; /** return tracks: A, then B */ returns: ReturnTrack[]; /** effects on everything, just before the master volume */ masterFx?: Device[]; /** the key the song is in: the piano roll lights these notes' rows */ scale?: { root: number; name: string } }
+export interface Song { name: string; bpm: number; swing: number; /** length in bars */ bars: number; tracks: Track[]; /** the master volume, 0 to 100 */ volume: number; /** return tracks: A, then B */ returns: ReturnTrack[]; /** effects on everything, just before the master volume */ masterFx?: Device[]; /** the key the song is in: the piano roll lights these notes' rows */ scale?: { root: number; name: string }; /** named places along the song (intro, drop, break), by the bar they sit on */ markers?: { bar: number; name: string }[] }
 export const MASTER_START = 85;
 /** The master volume as a gain: its starting place is a little under full, to leave room when tracks add up. */
 export const masterGain = (volume: number) => 0.9 * (clamp(volume, 0, 100) / MASTER_START);
@@ -241,6 +241,14 @@ export function doubleClip(s: Song, trackId: string, clipId: string): Song {
     ? { ...x, bars, hits: Object.fromEntries(Object.entries(x.hits).map(([id, row]) => { const one = row.slice(0, steps); while (one.length < steps) one.push(0); return [id, [...one, ...one]]; })) }
     : { ...x, bars, notes: [...x.notes, ...x.notes.map((n) => ({ ...n, start: n.start + steps }))] }));
 }
+/** Name the bar a marker sits on, rename it, or (with an empty name) take it away. */
+export function setMarker(s: Song, bar: number, name: string): Song {
+  const rest = (s.markers ?? []).filter((m) => m.bar !== bar), n = name.trim().slice(0, 20);
+  if (bar < 0 || bar >= s.bars) return s;
+  const markers = (n ? [...rest, { bar, name: n }] : rest).sort((a, b) => a.bar - b.bar);
+  if (!markers.length) { const { markers: _none, ...without } = s; return without; }
+  return { ...s, markers };
+}
 /** Whether a note belongs to a key: `root` is 0 for C up to 11 for B, `steps` the scale's semitones above it. */
 export const inKey = (note: number, root: number, steps: readonly number[]) => steps.includes((((note - root) % 12) + 12) % 12);
 /** Put a new chain of note effects on a synth track. */
@@ -285,6 +293,7 @@ export function tidySong(raw: unknown): Song | undefined {
   }
   song.returns.sort((a, b) => a.id.localeCompare(b.id));
   const mfx = tidyDevices((r as { masterFx?: unknown }).masterFx); if (mfx.length) song.masterFx = mfx;
+  const marks = (r as { markers?: unknown }).markers; if (Array.isArray(marks)) { const out: { bar: number; name: string }[] = []; for (const m of marks) if (m && Number.isInteger(m.bar) && m.bar >= 0 && m.bar < bars && typeof m.name === "string" && m.name.trim() && !out.some((x) => x.bar === m.bar)) out.push({ bar: m.bar, name: m.name.trim().slice(0, 20) }); if (out.length) song.markers = out.sort((a, b) => a.bar - b.bar); }
   const sc = (r as { scale?: { root?: unknown; name?: unknown } }).scale; if (sc && typeof sc.name === "string" && Number.isInteger(sc.root) && (sc.root as number) >= 0 && (sc.root as number) < 12) song.scale = { root: sc.root as number, name: sc.name.slice(0, 30) };
   const tidySends = (raw: unknown) => { const out: Record<string, number> = {}; if (raw && typeof raw === "object") for (const x of song.returns) { const v = Number((raw as Record<string, unknown>)[x.id]); if (Number.isFinite(v) && v > 0) out[x.id] = clamp(Math.round(v), 0, 100); } return out; };
   for (const g of Array.isArray(r.tracks) ? r.tracks.slice(0, MAX_TRACKS) : []) {

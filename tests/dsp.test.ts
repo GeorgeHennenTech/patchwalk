@@ -280,3 +280,14 @@ describe("tuner", () => {
     expect(nearestNote(261.63).name).toBe("C4"); expect(nearestNote(445).cents).toBe(20); expect(nearestNote(435).cents).toBe(-20);
   });
 });
+
+describe("gate listening to another track", () => {
+  it("opens on the other track's level, not its own", () => {
+    const g = new GateDsp(48000); g.set({ threshold: -20, back: 3, attack: 0.1, hold: 0, release: 5, floor: -80, side: 1 });
+    const n = 4800, tone = Float32Array.from({ length: n }, (_, i) => 0.5 * Math.sin((2 * Math.PI * 220 * i) / 48000)), quiet = new Float32Array(n), loud = new Float32Array(n).fill(0.5);
+    const run = (side: Float32Array) => { const l = new Float32Array(n), r = new Float32Array(n); for (let k = 0; k < n; k += 128) g.run(tone.subarray(k, k + 128), tone.subarray(k, k + 128), l.subarray(k, k + 128), r.subarray(k, k + 128), { sideL: side.subarray(k, k + 128) }); return Math.max(...l.slice(n / 2).map(Math.abs)); };
+    expect(run(quiet)).toBeLessThan(0.001);       // its own sound is loud, but the track it listens to is silent
+    expect(run(loud)).toBeGreaterThan(0.45);      // the other track is loud: the gate lets it through
+    expect(run(quiet)).toBeLessThan(0.001);
+  });
+});

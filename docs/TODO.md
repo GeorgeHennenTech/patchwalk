@@ -153,7 +153,9 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [x] Studio: the effect chain drawn like Ableton's device view (knobs, grey panels, drag to reorder, drag in from the browser); the synth is a small device at the front of the rack that opens on demand (17 Nov 2026)
 - [x] Read the whole Ableton manual against the Studio and list what is missing, in a suggested order: `docs/ABLETON_GAPS.md` (17 Nov 2026)
 - [x] Studio quick wins, first batch (17 Nov 2026): tap tempo, note tools, ×2 clip length, key highlighting, note chance, play from a bar and Shift+Space, F1-F8, browser search, effects on the master, note echo
-- [ ] Studio quick wins still open: count-in and overdub, locators, hear a sample before loading, sidechain on gate / glue / auto filter, Utility and Saturator extras, fold to scale (see `docs/ABLETON_GAPS.md`)
+- [x] Studio quick wins, second batch (17 Nov 2026): sidechain on gate and glue compressor, markers, count-in when recording, hear a drum or sample before loading, Fold to the key
+- [ ] Studio quick wins still open: overdub against replace, jump between markers, sidechain on auto filter and multiband, Utility and Saturator extras, randomize velocity (see `docs/ABLETON_GAPS.md`)
+- [ ] An extensive Ableton course: a lesson for every Studio feature, done in the Studio and ending with the same thing in Ableton Live (owner asked 17 Nov 2026; needs the lesson engine to know the Studio)
 - [ ] Studio, closer to Ableton, next (owner's standing instruction): a time marker and free-length clips; grid sizes; Session View; note effects on live keys; synth knobs that move on screen while automated; automation on return tracks
 - [ ] Owner to try: drop a sample in the Studio and check it shows in Library > Sounds on the live site
 - [ ] Studio next: a kit as a zip of sound files, lessons that use it; earlier list: one clock shared with the synth, piano roll, chaining patterns, mixer, per-drum sound, a lesson using the grid

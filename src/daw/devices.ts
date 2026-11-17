@@ -63,14 +63,14 @@ export const DEVICES: DeviceSpec[] = [
   ] },
   { kind: "glue", name: "Glue compressor", like: "Glue Compressor", meter: true, note: "A general bus compressor with fixed choices, not a model of any hardware. It reads the average level, so its threshold sits about 3 dB lower than a peak reading.", about: "A gentler compressor for a whole drum track or mix: it reads the average level and has a few fixed choices for each setting.", params: [
     db("threshold", "Threshold", -40, 0, -15), menu("ratio", "Ratio", GLUE_RATIOS.map((r) => `${r} : 1`), 1), menu("attack", "Attack", GLUE_ATTACKS.map((a) => `${a} ms`), 3), menu("release", "Release", GLUE_RELEASES.map((r) => `${r / 1000} s`), 2),
-    db("makeup", "Make-up", 0, 20), sw("clip", "Soft clip"), pct("mix", "Dry / wet", 100),
+    db("makeup", "Make-up", 0, 20), sw("clip", "Soft clip"), pct("mix", "Dry / wet", 100), menu("side", "Listens to", ["Itself", ...Array.from({ length: 8 }, (_, i) => `Track ${i + 1}`)]),
   ] },
   { kind: "limiter", name: "Limiter", like: "Limiter", meter: true, note: "It looks 1.5 ms ahead, so this track comes out 1.5 ms late.", about: "A ceiling the sound cannot pass. Turn the gain up to push more of the sound against it.", params: [
     db("gain", "Gain", 0, 24), { id: "ceiling", label: "Ceiling", min: -24, max: 0, step: 0.1, def: -0.3, unit: "dB" }, { id: "release", label: "Release", min: 1, max: 1000, step: 1, def: 100, unit: "ms", log: true },
   ] },
-  { kind: "gate", name: "Gate", like: "Gate", meter: true, about: "Silences the sound while it is quieter than the threshold: for cutting the tail off a drum or the noise between notes.", params: [
+  { kind: "gate", name: "Gate", like: "Gate", meter: true, note: "Listening to another track opens the gate when that track is loud: put it on a held pad and let the drums chop it. It hears that track before its effects and level.", about: "Silences the sound while it is quieter than the threshold: for cutting the tail off a drum or the noise between notes.", params: [
     db("threshold", "Threshold", -80, 0, -40), db("back", "Closes this far under", 0, 24, 3), { id: "attack", label: "Attack", min: 0.1, max: 100, step: 0.1, def: 1, unit: "ms", log: true },
-    { id: "hold", label: "Hold", min: 0, max: 500, step: 1, def: 20, unit: "ms" }, { id: "release", label: "Release", min: 1, max: 2000, step: 1, def: 80, unit: "ms", log: true }, db("floor", "Floor", -80, 0, -80),
+    { id: "hold", label: "Hold", min: 0, max: 500, step: 1, def: 20, unit: "ms" }, { id: "release", label: "Release", min: 1, max: 2000, step: 1, def: 80, unit: "ms", log: true }, db("floor", "Floor", -80, 0, -80), menu("side", "Listens to", ["Itself", ...Array.from({ length: 8 }, (_, i) => `Track ${i + 1}`)]),
   ] },
   { kind: "crush", name: "Crusher", like: "Redux", note: "Plain rounding and holding, with none of the smoothing a converter has: it is meant to sound rough.", about: "Fewer levels and fewer samples a second: the grit of old samplers and games.", params: [
     { id: "bits", label: "Bits", min: 1, max: 16, step: 1, def: 8 }, { id: "hold", label: "Keep one sample in", min: 1, max: 64, step: 1, def: 4, log: true }, pct("mix", "Dry / wet", 100),

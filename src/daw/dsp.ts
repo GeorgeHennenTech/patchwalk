@@ -108,17 +108,18 @@ export const GATE_LEVEL_MS = 8;
  */
 export class GateDsp implements Dsp {
   private env = 0; private open = false; private quiet = 0; private g = 0; private worst = 0;
-  private p = { on: 1, off: 1, hold: 0, floor: 0, att: 1, rel: 1 };
+  private p = { on: 1, off: 1, hold: 0, floor: 0, att: 1, rel: 1, side: false };
   private readonly decay: number;
   constructor(private readonly sampleRate: number) { this.decay = Math.exp(-1 / ((GATE_LEVEL_MS / 1000) * sampleRate)); }
   set(p: P): void {
     const th = p.threshold ?? -40;
-    this.p = { on: dbToGain(th), off: dbToGain(th - (p.back ?? 3)), hold: ((p.hold ?? 20) / 1000) * this.sampleRate, floor: (p.floor ?? -80) <= -80 ? 0 : dbToGain(p.floor ?? -80), att: stepFor(p.attack ?? 1, this.sampleRate), rel: stepFor(p.release ?? 80, this.sampleRate) };
+    this.p = { on: dbToGain(th), off: dbToGain(th - (p.back ?? 3)), hold: ((p.hold ?? 20) / 1000) * this.sampleRate, floor: (p.floor ?? -80) <= -80 ? 0 : dbToGain(p.floor ?? -80), att: stepFor(p.attack ?? 1, this.sampleRate), rel: stepFor(p.release ?? 80, this.sampleRate), side: (p.side ?? 0) > 0 };
   }
-  run(inL: Float32Array, inR: Float32Array, outL: Float32Array, outR: Float32Array): void {
-    const p = this.p; let { env, open, quiet, g } = this, worst = 1;
+  run(inL: Float32Array, inR: Float32Array, outL: Float32Array, outR: Float32Array, extra?: Extra): void {
+    const p = this.p, sl = extra?.sideL, sr = extra?.sideR ?? sl; let { env, open, quiet, g } = this, worst = 1;
     for (let i = 0; i < inL.length; i++) {
-      const l = inL[i]!, r = inR[i]!, a = Math.max(Math.abs(l), Math.abs(r));
+      // told to listen to another track, the gate opens and closes on that track's level (silence when it is not there)
+      const l = inL[i]!, r = inR[i]!, a = p.side ? Math.max(Math.abs(sl?.[i] ?? 0), Math.abs(sr?.[i] ?? 0)) : Math.max(Math.abs(l), Math.abs(r));
       env = a > env ? a : env * this.decay;
       if (env >= p.on) { open = true; quiet = 0; } else if (open && env < p.off && ++quiet > p.hold) open = false; else if (env >= p.off) quiet = 0;
       const want = open ? 1 : p.floor;

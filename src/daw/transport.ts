@@ -164,11 +164,13 @@ export class Transport {
   /** Where the song was when it was last stopped, in steps: Shift+Space carries on from the start of that bar. */
   stoppedAt = 0;
   /** Play. `from`: the step of the song to start on (ignored while a loop is set: a loop starts at its own beginning). */
-  start(from = 0): void {
+  start(from = 0, /** bars of clicks before the song starts (for recording) */ countIn = 0): void {
     if (this.playing) return;
     this.ready();
     const song0 = this.read(), first = this.loop ? 0 : Math.max(0, Math.min(song0.bars * 16 - 1, Math.round(from)));
-    this.began = this.ctx!.currentTime + 0.08 - stepTime(first, song0.bpm, song0.swing); this.next = first; this.due = []; this.shown = -1;
+    const lead = Math.max(0, Math.round(countIn)) * 16 * stepSeconds(song0.bpm), t0 = this.ctx!.currentTime + 0.08;
+    for (let k = 0; k < Math.round(countIn) * 4; k++) this.kit!.tick(t0 + k * 4 * stepSeconds(song0.bpm), k % 4 === 0);
+    this.began = t0 + lead - stepTime(first, song0.bpm, song0.swing); this.next = first; this.due = []; this.shown = -1;
     this.sync();                                                   // devices that follow the bar (beat repeat) are told where bar 1 now is
     const pump = () => {
       const ctx = this.ctx!, song = this.read();

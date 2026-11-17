@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { STARTERS, STRENGTH } from "../src/daw/drums";
-import { doubleClip, inKey, invertNotes, legatoNotes, reverseNotes, scaleTime, setChance, noteKey as keyOf, addReturn, removeReturn, sendGain, setReturn, setSend, addClip, addTrack, clipOf, clipPattern, duplicateClip, isFree, moveClip, newSong, putNote, removeClip, setClipBars, setNotes, setSongBars, setSongTempo, setTrack, songEvents, tidySong, trackOf, withPattern, MAX_TRACKS, type DrumTrack, type DrumClip, type SynthClip, type Song } from "../src/daw/song";
+import { setMarker, doubleClip, inKey, invertNotes, legatoNotes, reverseNotes, scaleTime, setChance, noteKey as keyOf, addReturn, removeReturn, sendGain, setReturn, setSend, addClip, addTrack, clipOf, clipPattern, duplicateClip, isFree, moveClip, newSong, putNote, removeClip, setClipBars, setNotes, setSongBars, setSongTempo, setTrack, songEvents, tidySong, trackOf, withPattern, MAX_TRACKS, type DrumTrack, type DrumClip, type SynthClip, type Song } from "../src/daw/song";
 
 /** A song with one bar of four-on-the-floor on bar 1 and a chord on bars 1 to 2. */
 function demo(): { song: Song; drums: string; synth: string; beat: string; chord: string } {
@@ -294,5 +294,16 @@ describe("note tools, chance, doubling and key", () => {
     const s = tidySong(JSON.parse(JSON.stringify({ ...newSong(), scale: { root: 9, name: "Minor" }, masterFx: [{ id: "d1", kind: "limiter", on: true, p: {} }] })))!;
     expect(s.scale).toEqual({ root: 9, name: "Minor" }); expect(s.masterFx?.[0]?.kind).toBe("limiter");
     expect(tidySong(JSON.parse(JSON.stringify({ ...newSong(), scale: { root: 40, name: "x" } })))!.scale).toBeUndefined();
+  });
+});
+
+describe("markers", () => {
+  it("names a bar, renames it, removes it with an empty name, and survives storage", () => {
+    let s = setMarker(setMarker(newSong(), 4, "Drop"), 0, " Intro ");
+    expect(s.markers).toEqual([{ bar: 0, name: "Intro" }, { bar: 4, name: "Drop" }]);
+    s = setMarker(s, 4, "Break"); expect(s.markers![1]).toEqual({ bar: 4, name: "Break" });
+    expect(tidySong(JSON.parse(JSON.stringify(s)))!.markers).toEqual(s.markers);
+    s = setMarker(setMarker(s, 4, ""), 0, ""); expect(s.markers).toBeUndefined();
+    expect(setMarker(newSong(), 99, "x").markers).toBeUndefined();
   });
 });

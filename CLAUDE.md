@@ -1417,6 +1417,21 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   Shift+Space resumed there, F2 muted track 2, Invert and ÷2 changed the notes, the key lit 29 rows, a
   chance of 50 was written, search narrowed the list, and a Utility on the master at -6 dB took 5.5 dB off
   the whole song. **Nobody has heard it.**
+  **Quick wins, second batch (17 Nov 2026, owner: "proceed").** (1) **Sidechain on the Gate and the Glue
+  compressor**: each has a "Listens to" menu like the Compressor's (their worklets have a second input; the
+  gate opens on the other track's level). (2) **Markers**: `song.markers [{ bar, name }]`, `setMarker`;
+  right-click or double-click a bar number to name, rename or (empty name) remove; the name shows beside
+  the number; a click still plays from there. (3) **Count-in**: pressing Record while stopped plays one bar
+  of clicks first and starts at the selected clip's bar (`Transport.start(from, countIn)`; the position
+  reads -1 during the count). (4) **Hear before loading**: a ▶ beside every drum and sample in the browser
+  (`br-hear`). (5) **Fold** in the piano roll (shown when the song has a key): only the key's rows, plus any
+  row that already has a note; `shown` / `rowOf` replace the fixed row arithmetic, and a dragged note moves
+  by rows of the key. Checked in a browser: a marker was written and shown; after Record the position
+  stayed at -1 for a bar and then ran; fold took 49 rows to 23 and a note added there was in key; a pad
+  through a gate listening to the drums swung between -47 and -21 dB against -29 and -17 listening to itself.
+  **Lessons on all of this (owner, 17 Nov 2026: "we are also going to have to make lessons on all of these
+  new features. this ableton course will be extensive").** Nothing is written and the lesson engine does
+  not know the Studio; the plan is at the top of `docs/ABLETON_GAPS.md`. Every Studio feature needs one.
   **Two to-do lists, and both must be updated with every push (owner asked 17 Nov 2026 why the widget was
   behind):** `docs/TODO.md` (what the `/todo` pane in Claude Code reads) and the owner's "Patchwalk To-Do"
   page (https://claude.ai/artifact/7sHF6r2vvBuxa8DSkcfcPz, rows in its `todos` collection, written with

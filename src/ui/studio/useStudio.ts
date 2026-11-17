@@ -60,7 +60,7 @@ export function useStudio() {
     if (t.playing) { t.stop(); setPlaying(false); setStep(-1); } else { t.start(); setPlaying(true); }
   }, []);
   /** Play from a step of the song (stopping first if it is playing). */
-  const playFrom = useCallback((from: number) => { const t = transport.current!; if (t.playing) t.stop(); t.start(from); setPlaying(true); }, []);
+  const playFrom = useCallback((from: number, countIn = 0) => { const t = transport.current!; if (t.playing) t.stop(); t.start(from, countIn); setPlaying(true); }, []);
   const setLoop = useCallback((loop: Loop | undefined) => { transport.current!.loop = loop; }, []);
   useEffect(() => {
     if (!playing) return;

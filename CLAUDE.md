@@ -1429,6 +1429,18 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   by rows of the key. Checked in a browser: a marker was written and shown; after Record the position
   stayed at -1 for a bar and then ran; fold took 49 rows to 23 and a note added there was in key; a pad
   through a gate listening to the drums swung between -47 and -21 dB against -29 and -17 listening to itself.
+  **A finer grid (17 Nov 2026, owner: "continue building features").** Notes no longer have to sit on
+  sixteenths. A note's start and length are kept to twenty-fourths of a step (`FINE`, `snapStep` in
+  `song.ts`), which holds thirty-seconds, sixty-fourths and their triplets exactly; `MIN_NOTE` (a quarter of
+  a step) is the shortest note. The piano roll has a **Grid** menu (`GRIDS`: 1/4, 1/8, 1/16, 1/32 and the
+  1/8, 1/16 and 1/32 triplets; remembered as `patchwalk.grid.v1`; held in `DawView.tsx` and passed down): it
+  sets what a written or moved note snaps to, the length of a new note, how far an arrow key moves the
+  selection, and where a recorded note lands. **Quantize** (button, Ctrl/Cmd+U; `quantizeNotes`, which also
+  takes an amount the page does not offer yet) pulls starts onto the grid. A MIDI file brought in keeps its
+  triplets (`midiToNotes`). Drum clips are still sixteen steps a bar. Checked in a browser: a 1/32 note
+  landed on step 1.5, triplet notes on 2 and 2.667, an arrow moved one a triplet on, Quantize pulled all
+  three onto sixteenths, and the notes were played 0.1815, 0.2419 and 0.4032 s into the bar at a step of
+  0.1210 s, which is exactly their places.
   **Lessons on all of this (owner, 17 Nov 2026: "we are also going to have to make lessons on all of these
   new features. this ableton course will be extensive").** Nothing is written and the lesson engine does
   not know the Studio; the plan is at the top of `docs/ABLETON_GAPS.md`. Every Studio feature needs one.

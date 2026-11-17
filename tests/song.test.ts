@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { STARTERS, STRENGTH } from "../src/daw/drums";
-import { setMarker, doubleClip, inKey, invertNotes, legatoNotes, reverseNotes, scaleTime, setChance, noteKey as keyOf, addReturn, removeReturn, sendGain, setReturn, setSend, addClip, addTrack, clipOf, clipPattern, duplicateClip, isFree, moveClip, newSong, putNote, removeClip, setClipBars, setNotes, setSongBars, setSongTempo, setTrack, songEvents, tidySong, trackOf, withPattern, MAX_TRACKS, type DrumTrack, type DrumClip, type SynthClip, type Song } from "../src/daw/song";
+import { quantizeNotes, snapStep, GRIDS, setMarker, doubleClip, inKey, invertNotes, legatoNotes, reverseNotes, scaleTime, setChance, noteKey as keyOf, addReturn, removeReturn, sendGain, setReturn, setSend, addClip, addTrack, clipOf, clipPattern, duplicateClip, isFree, moveClip, newSong, putNote, removeClip, setClipBars, setNotes, setSongBars, setSongTempo, setTrack, songEvents, tidySong, trackOf, withPattern, MAX_TRACKS, type DrumTrack, type DrumClip, type SynthClip, type Song } from "../src/daw/song";
 
 /** A song with one bar of four-on-the-floor on bar 1 and a chord on bars 1 to 2. */
 function demo(): { song: Song; drums: string; synth: string; beat: string; chord: string } {
@@ -61,7 +61,7 @@ describe("a song", () => {
     const { song, synth, chord } = demo();
     const s = setNotes(song, synth, chord, [{ note: 60, start: 30, length: 9, velocity: 300 }, { note: 60, start: 30, length: 1, velocity: 80 }, { note: 200, start: -4, length: 0, velocity: 0 }]);
     const notes = (clipOf(trackOf(s, synth), chord) as SynthClip).notes;
-    expect(notes).toEqual([{ note: 96, start: 0, length: 1, velocity: 1 }, { note: 60, start: 30, length: 2, velocity: 127 }]);
+    expect(notes).toEqual([{ note: 96, start: 0, length: 0.25, velocity: 1 }, { note: 60, start: 30, length: 2, velocity: 127 }]);
   });
 });
 
@@ -151,8 +151,8 @@ describe("editing with the keys: selected notes and clips", () => {
     expect(Math.max(...far.notes.map((n) => n.note))).toBeLessThanOrEqual(96);
     expect(far.notes).toHaveLength(3);
   });
-  it("makes the selection longer or shorter, never under a step or past the end", () => {
-    expect(stretchNotes(notes, two, -9, 16).filter((n) => two.has(noteKey(n))).map((n) => n.length)).toEqual([1, 1]);
+  it("makes the selection longer or shorter, never under the shortest note or past the end", () => {
+    expect(stretchNotes(notes, two, -9, 16).filter((n) => two.has(noteKey(n))).map((n) => n.length)).toEqual([0.25, 0.25]);
     expect(stretchNotes(notes, new Set(["67:8"]), 99, 16)[2]!.length).toBe(8);
   });
   it("a clip that is switched off stays on the grid and is silent", () => {
@@ -265,7 +265,7 @@ describe("note tools, chance, doubling and key", () => {
     expect(sorted(r.notes)).toEqual([[60, 0, 2], [67, 2, 1], [64, 4, 4]]); expect(r.keys.size).toBe(2);
   });
   it("plays twice as fast or half as fast, dropping what no longer fits", () => {
-    expect(sorted(scaleTime(tune, new Set(), 0.5, 16).notes)).toEqual([[60, 0, 1], [64, 1, 1], [67, 2, 2]]);
+    expect(sorted(scaleTime(tune, new Set(), 0.5, 16).notes)).toEqual([[60, 0, 1], [64, 1, 0.5], [67, 2, 2]]);
     expect(sorted(scaleTime(tune, new Set(), 2, 16).notes)).toEqual([[60, 0, 4], [64, 4, 2], [67, 8, 8]]);
     expect(sorted(scaleTime(tune, new Set(), 2, 8).notes)).toEqual([[60, 0, 4], [64, 4, 2]]);
   });
@@ -305,5 +305,29 @@ describe("markers", () => {
     expect(tidySong(JSON.parse(JSON.stringify(s)))!.markers).toEqual(s.markers);
     s = setMarker(setMarker(s, 4, ""), 0, ""); expect(s.markers).toBeUndefined();
     expect(setMarker(newSong(), 99, "x").markers).toBeUndefined();
+  });
+});
+
+describe("a finer grid", () => {
+  const n = (note: number, start: number, length = 1) => ({ note, start, length, velocity: 100 });
+  it("keeps thirty-seconds and triplets exactly, through storage too", () => {
+    let s = newSong(); s = addClip(s, "t2", 0)!.song; const id = s.tracks[1]!.clips[0]!.id;
+    s = setNotes(s, "t2", id, [n(60, 0.5, 0.5), n(62, 2 / 3, 2 / 3), n(64, 4 / 3, 1 / 3), n(65, 3.26, 0.01)]);
+    const got = (tidySong(JSON.parse(JSON.stringify(s)))!.tracks[1]!.clips[0] as SynthClip).notes.map((x) => [x.note, x.start, x.length]);
+    expect(got).toEqual([[60, 0.5, 0.5], [62, snapStep(2 / 3), snapStep(2 / 3)], [64, snapStep(4 / 3), snapStep(1 / 3)], [65, 3.25, 0.25]]);
+    expect(GRIDS.every((g) => snapStep(g.steps) === g.steps || Math.abs(snapStep(g.steps) - g.steps) < 1e-12)).toBe(true);
+  });
+  it("plays an off-grid note at its own moment", () => {
+    let s = newSong(); s = addClip(s, "t2", 0)!.song; s = setNotes(s, "t2", s.tracks[1]!.clips[0]!.id, [n(60, 2.5, 0.5)]);
+    const ev = songEvents(s, 0, 16).filter((e) => e.kind === "note");
+    expect(ev).toHaveLength(1); expect(ev[0]!.at).toBeCloseTo(2.5 * (60 / s.bpm / 4), 6);
+  });
+  it("quantizes to a grid, all the way or part of the way, and keeps the rest", () => {
+    const loose = [n(60, 0.25), n(62, 3.75), n(64, 9)];
+    const full = quantizeNotes(loose, new Set(), 1, 16).notes.map((x) => x.start).sort((a, b) => a - b);
+    expect(full).toEqual([0, 4, 9]);
+    expect(quantizeNotes(loose, new Set(), 1, 16, 50).notes.map((x) => x.start).sort((a, b) => a - b)).toEqual([0.125, 3.875, 9]);
+    expect(quantizeNotes(loose, new Set(["62:3.75"]), 4, 16).notes.map((x) => x.start).sort((a, b) => a - b)).toEqual([0.25, 4, 9]);
+    expect(quantizeNotes([n(60, 15.9)], new Set(), 4, 16).notes[0]!.start).toBe(12);   // never onto the clip's end
   });
 });

@@ -21,7 +21,7 @@ import { firstSong, useStudio } from "./studio/useStudio";
 import { libPut } from "../guide/library";
 import { newPad, BPM_MAX, BPM_MIN, GENRE_STARTERS, STARTERS, STEPS_PER_BAR, SWING_MAX, VOICES, VOICE_NAMES, addPad, clearAll, setHit, setSample, tidySteps, type Pattern, type Voice } from "../daw/drums";
 import { PPQ, hitsToMidi, midiBars, midiToHits, midiToNotes, notesToMidi, readMidi, songToMidi, writeMidi } from "../daw/midi";
-import { CLIP_BARS, MAX_RETURNS, MAX_TRACKS, addReturn, setReturn, SONG_BARS, SOUNDS, addClip, addTrack, clipOf, clipPattern, duplicateClip, duplicateNotes, doubleClip, setMarker, invertNotes, legatoNotes, reverseNotes, scaleTime, hasOtherMusic, moveClip, newSong, noteKey, pasteClip, removeClip, setClipBars, joinClips, placeClip, splitClip, setDevices, setNoteFx, setNotes, setPatch, setSongBars, setSongSwing, setSongTempo, setTrack, shiftNotes, soundPatch, stretchNotes, toggleClipOff, trackOf, withPads, withPattern, type Clip, type DrumClip, type DrumTrack, type NoteEv, type Song } from "../daw/song";
+import { CLIP_BARS, MAX_RETURNS, MAX_TRACKS, addReturn, setReturn, SONG_BARS, SOUNDS, addClip, addTrack, clipOf, clipPattern, duplicateClip, duplicateNotes, doubleClip, setMarker, quantizeNotes, GRIDS, invertNotes, legatoNotes, reverseNotes, scaleTime, hasOtherMusic, moveClip, newSong, noteKey, pasteClip, removeClip, setClipBars, joinClips, placeClip, splitClip, setDevices, setNoteFx, setNotes, setPatch, setSongBars, setSongSwing, setSongTempo, setTrack, shiftNotes, soundPatch, stretchNotes, toggleClipOff, trackOf, withPads, withPattern, type Clip, type DrumClip, type DrumTrack, type NoteEv, type Song } from "../daw/song";
 import { loadBreaks, loadRacks, loadSaved, loadSongs, rackOnto, saveSong, storeBreaks, storeRacks, storeSongs, withNamed, withSavedSong, withoutSavedSong, type Break, type Rack } from "../daw/store";
 import { loadPatches } from "../synth/patches";
 import type { SynthState } from "../synth/params";
@@ -36,7 +36,7 @@ const mac = typeof navigator !== "undefined" && /mac/i.test(navigator.platform);
 const MOD = mac ? "Cmd" : "Ctrl";
 /** The shortcuts, as shown in the list. Each is the one Ableton Live uses for the same thing. */
 const KEYS: [string, string][] = [
-  ["Space", "Play and stop"], ["Shift+Space", "Play on from the bar where the song was stopped"], ["F1 to F8", "Switch tracks 1 to 8 on and off"], ["Home", "Play again from the start"], ["F9", "Record on and off"],
+  ["Space", "Play and stop"], [`${MOD}+U`, "Quantize the selected notes (or all of them) onto the grid"], ["Shift+Space", "Play on from the bar where the song was stopped"], ["F1 to F8", "Switch tracks 1 to 8 on and off"], ["Home", "Play again from the start"], ["F9", "Record on and off"],
   [`${MOD}+Z`, "Undo"], [mac ? "Cmd+Shift+Z" : "Ctrl+Y", "Redo"],
   [`${MOD}+D`, "Duplicate the selected notes, or the selected clip"], [`${MOD}+C / X / V`, "Copy, cut and paste notes or a clip"], ["Delete", "Delete the selected notes, or the selected clip"],
   [`${MOD}+A`, "Select every note in the open clip"], [`${MOD}+L`, "Loop the selected clip, on and off"], [`${MOD}+Shift+M`, "Add an empty clip to the selected track"],
@@ -105,6 +105,9 @@ export default function DawView() {
   const tap = () => { const now = performance.now(), t = taps.current.filter((x) => now - x < 2500); t.push(now); taps.current = t.slice(-6);
     if (t.length >= 3) { const gaps = taps.current.slice(1).map((x, i) => x - taps.current[i]!), bpm = 60000 / (gaps.reduce((a, b) => a + b, 0) / gaps.length); change((s) => setSongTempo(s, bpm)); } };
   const [find, setFind] = useState("");
+  // the piano roll's grid, in sixteenth steps: what notes snap to, how far an arrow key moves them, what Quantize pulls them onto
+  const [grid, setGridState] = useState(() => { try { const g = Number(localStorage.getItem("patchwalk.grid.v1")); return GRIDS.some((x) => x.steps === g) ? g : 1; } catch { return 1; } });
+  const setGrid = (g: number) => { setGridState(g); try { localStorage.setItem("patchwalk.grid.v1", String(g)); } catch { /* not remembered */ } };
   const pick = (t?: string, c?: string, add = false) => {
     setRet(undefined);
     if (add && c && t === picked.track && picked.clip && c !== picked.clip) { setAlso((a) => (a.includes(c) ? a.filter((x) => x !== c) : [...a, c])); return; }
@@ -147,11 +150,11 @@ export default function DawView() {
   const onNote = (key: number, on: boolean, velocity: number) => {
     const p = spot();
     if (!p || !track || !clip || !("notes" in clip)) { if (!on) heldKeys.current.delete(key); return; }
-    if (on) { if (p.at > -0.5 && p.at < p.steps - 0.5) heldKeys.current.set(key, { start: Math.max(0, Math.round(p.at)), velocity }); return; }
+    if (on) { if (p.at > -0.5 && p.at < p.steps - 0.5) heldKeys.current.set(key, { start: Math.max(0, Math.round(p.at / grid) * grid), velocity }); return; }
     const h = heldKeys.current.get(key);
     if (!h) return;
     heldKeys.current.delete(key);
-    const end = p.at < h.start - 0.5 ? p.steps : Math.max(h.start + 1, Math.min(p.steps, Math.round(p.at)));
+    const end = p.at < h.start - 0.5 ? p.steps : Math.max(h.start + grid, Math.min(p.steps, Math.round(p.at / grid) * grid));
     change((s) => { const c = clipOf(trackOf(s, track.id), clip.id); return c && "notes" in c ? setNotes(s, track.id, clip.id, [...c.notes.filter((n) => !(n.note === key && n.start === h.start)), { note: key, start: h.start, length: end - h.start, velocity: h.velocity }]) : s; });
   };
   const onStrike = (lane: number) => { const p = spot(); if (!p || !pattern || !clip || !("hits" in clip) || p.at <= -0.5) return; setPattern(setHit(pattern, lane, Math.round(p.at) % p.steps, 2)); };
@@ -216,8 +219,9 @@ export default function DawView() {
       if (b.kind === "notes") { if (!notesNow) { setNote("Open a synth clip to paste notes into."); return; } const fit = b.notes.filter((n) => n.start < steps), keys = new Set(fit.map(noteKey)); putNotes([...notesNow.filter((n) => !keys.has(noteKey(n))), ...fit], keys); return; }
       const made = pasteClip(song, track.id, b.clip, clip ? clip.start + clip.bars : 0); if (made) { change(made.song); pick(track.id, made.clip); } else setNote(("hits" in b.clip) !== (track.kind === "drums") ? "A drum clip goes on a drum track and a note clip on a synth track." : "There is no free place on this track to paste the clip."); },
     all: () => { if (notesNow) setSel(new Set(notesNow.map(noteKey))); },
+    quantize: () => { if (notesNow) tool(quantizeNotes(notesNow, sel, grid, steps)); },
     arrow: (dx: number, dy: number, shift: boolean) => {
-      if (hasSel) { if (shift && dx) putNotes(stretchNotes(notesNow!, sel, dx, steps)); else { const r = shiftNotes(notesNow!, sel, dx, dy * (shift ? 12 : 1), steps); if (r.notes !== notesNow) { putNotes(r.notes, r.keys); if (dy && track) { const n = r.notes.find((x) => r.keys.has(noteKey(x))); if (n) transport.note(track.id, n.note, 0.2); } } } return; }
+      if (hasSel) { if (shift && dx) putNotes(stretchNotes(notesNow!, sel, dx * grid, steps)); else { const r = shiftNotes(notesNow!, sel, dx * grid, dy * (shift ? 12 : 1), steps); if (r.notes !== notesNow) { putNotes(r.notes, r.keys); if (dy && track) { const n = r.notes.find((x) => r.keys.has(noteKey(x))); if (n) transport.note(track.id, n.note, 0.2); } } } return; }
       if (dy) { const i = song.tracks.findIndex((t) => t.id === picked.track), t = song.tracks[Math.min(song.tracks.length - 1, Math.max(0, i - dy))]; if (t) pick(t.id, t.clips.slice().sort((a, b) => a.start - b.start)[0]?.id); }
       else if (track) { const order = track.clips.slice().sort((a, b) => a.start - b.start), i = order.findIndex((c) => c.id === picked.clip), c = order[i < 0 ? 0 : Math.min(order.length - 1, Math.max(0, i + dx))]; if (c) pick(track.id, c.id); }
     },
@@ -253,6 +257,7 @@ export default function DawView() {
         else if (k === "l") { done(); setLoopClip((v) => !v); }
         else if (k === "s") { done(); a.keepSong(); }
         else if (k === "r") { done(); a.rename(); }
+        else if (k === "u") { done(); a.quantize(); }
         else if (k === "e") { done(); a.split(); }
         else if (k === "j") { done(); a.join(); }
         else if (k === "m" && e.shiftKey) { done(); a.insert(); }
@@ -358,6 +363,8 @@ export default function DawView() {
             {"hits" in clip && pattern && <button onClick={() => setPattern(clearAll(pattern))}>Clear</button>}
             {"notes" in clip && <button onClick={() => putNotes([], new Set())}>Clear</button>}
             {"notes" in clip && <span className="note-tools" role="group" aria-label="Note tools: they change the selected notes, or all of them when none is selected">
+              <label title="The grid: what notes snap to when you write or move them, and how far an arrow key moves them">Grid <select value={grid} aria-label="Grid" onChange={(e) => setGrid(Number(e.target.value))}>{GRIDS.map((g) => <option key={g.name} value={g.steps}>{g.name}</option>)}</select></label>
+              <button onClick={() => tool(quantizeNotes(clip.notes, sel, grid, clip.bars * STEPS_PER_BAR))} title={`Quantize: pull the notes' starts onto the grid (${MOD}+U)`}>Quantize</button>
               <button onClick={() => tool(reverseNotes(clip.notes, sel))} title="Play the notes backwards">Reverse</button>
               <button onClick={() => tool(invertNotes(clip.notes, sel))} title="Turn the notes upside down: the highest becomes the lowest">Invert</button>
               <button onClick={() => tool(scaleTime(clip.notes, sel, 0.5, clip.bars * STEPS_PER_BAR))} title="Twice as fast">÷2</button>
@@ -383,7 +390,7 @@ export default function DawView() {
         {track.kind === "synth" && engine && <TrackSynth key={`${track.id}:${nonce}`} engine={engine} patch={track.patch} bpm={song.bpm} show={view === "device" && synthOpen && !back} keysOff={() => keysOff.current} onNote={onNote} onPatch={(p) => change((s) => setPatch(s, track.id, { ...p, bpm: s.bpm }))} />}
         {view === "clip" && !clip && <p className="daw-hint">No clip is selected. Double-click an empty bar of this track to add one ({MOD}+Shift+M){track.clips.length ? ", or click one of its clips" : ""}.</p>}
         {view === "clip" && clip && "notes" in clip && <>
-          <PianoRoll clip={clip} scale={song.scale ? { root: song.scale.root, steps: (SCALES.find((x) => x.name === song.scale!.name) ?? SCALES[0]!).steps } : undefined} step={local} sel={sel} onSel={setSel} draw={draw} onNotes={(notes) => change((s) => setNotes(s, track.id, clip.id, notes))} onHear={(n) => transport.note(track.id, n)} />
+          <PianoRoll clip={clip} grid={grid} scale={song.scale ? { root: song.scale.root, steps: (SCALES.find((x) => x.name === song.scale!.name) ?? SCALES[0]!).steps } : undefined} step={local} sel={sel} onSel={setSel} draw={draw} onNotes={(notes) => change((s) => setNotes(s, track.id, clip.id, notes))} onHear={(n) => transport.note(track.id, n)} />
           <p className="daw-roll-help">{draw ? "Draw mode: click or drag to write notes, click a note to remove it." : "Drag to select notes, drag a note to move it, drag its right end for length. Double-click an empty place to add a note, double-click a note to remove it."} {sel.size > 0 && <b>{sel.size} selected.</b>}</p>
         </>}
         {view === "clip" && clip && "hits" in clip && pattern && <>

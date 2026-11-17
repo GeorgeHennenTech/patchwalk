@@ -88,7 +88,9 @@ export function midiToHits(notes: MidiNote[], ppq: number, pads: number, steps: 
 export function midiToNotes(notes: MidiNote[], ppq: number, steps: number): { notes: NoteEv[]; left: number } {
   const out: NoteEv[] = [];
   let left = 0;
-  for (const n of notes) { const start = stepOf(n.start, ppq); if (start < 0 || start >= steps) { left++; continue; } out.push({ note: n.note, start, length: Math.max(1, Math.min(steps - start, stepOf(n.length, ppq))), velocity: n.velocity }); }
+  // notes keep triplets and thirty-seconds: places are kept to twenty-fourths of a step, not pulled onto sixteenths
+  const fine = (ticks: number) => Math.round((ticks / ppq) * 4 * 24) / 24;
+  for (const n of notes) { const start = fine(n.start); if (start < 0 || start >= steps) { left++; continue; } out.push({ note: n.note, start, length: Math.max(0.25, Math.min(steps - start, fine(n.length))), velocity: n.velocity }); }
   return { notes: out, left };
 }
 /** How many bars a file's notes run to (at least one). */

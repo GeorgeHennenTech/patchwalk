@@ -158,7 +158,15 @@ export const withPads = (s: Song, trackId: string, pads: Pad[]): Song => withTra
 
 // Notes in a synth clip
 const sameNote = (a: NoteEv, b: NoteEv) => a.note === b.note && a.start === b.start;
-export const tidyNote = (n: NoteEv, steps: number): NoteEv => { const start = clamp(Math.round(n.start), 0, steps - 1); return { note: clamp(Math.round(n.note), NOTE_LOW, NOTE_HIGH), start, length: clamp(Math.round(n.length), 1, steps - start), velocity: clamp(Math.round(n.velocity), 1, 127), ...(Number.isFinite(n.chance) && n.chance! < 100 ? { chance: clamp(Math.round(n.chance!), 0, 99) } : {}) }; };
+/**
+ * Notes need not sit on sixteenths. A place or a length is kept to twenty-fourths of a step, which holds
+ * thirty-seconds, sixty-fourths and the triplets of each exactly. `MIN_NOTE` is the shortest a note can be.
+ */
+export const FINE = 24, MIN_NOTE = 0.25;
+export const snapStep = (x: number) => Math.round(x * FINE) / FINE;
+/** The grids the piano roll can be set to, in sixteenth steps. */
+export const GRIDS: { name: string; steps: number }[] = [{ name: "1/4", steps: 4 }, { name: "1/8", steps: 2 }, { name: "1/16", steps: 1 }, { name: "1/32", steps: 0.5 }, { name: "1/8 triplet", steps: 4 / 3 }, { name: "1/16 triplet", steps: 2 / 3 }, { name: "1/32 triplet", steps: 1 / 3 }];
+export const tidyNote = (n: NoteEv, steps: number): NoteEv => { const start = clamp(snapStep(n.start), 0, steps - MIN_NOTE); return { note: clamp(Math.round(n.note), NOTE_LOW, NOTE_HIGH), start, length: clamp(snapStep(n.length), MIN_NOTE, steps - start), velocity: clamp(Math.round(n.velocity), 1, 127), ...(Number.isFinite(n.chance) && n.chance! < 100 ? { chance: clamp(Math.round(n.chance!), 0, 99) } : {}) }; };
 /** Add a note, or replace the one that starts at the same place on the same key. */
 export const putNote = (s: Song, trackId: string, clipId: string, n: NoteEv): Song => withClip(s, trackId, clipId, (c) => ("notes" in c ? { ...c, notes: [...c.notes.filter((x) => !sameNote(x, n)), tidyNote(n, c.bars * STEPS_PER_BAR)].sort((a, b) => a.start - b.start || a.note - b.note) } : c));
 export const dropNote = (s: Song, trackId: string, clipId: string, n: Pick<NoteEv, "note" | "start">): Song => withClip(s, trackId, clipId, (c) => ("notes" in c ? { ...c, notes: c.notes.filter((x) => !(x.note === n.note && x.start === n.start)) } : c));
@@ -171,13 +179,13 @@ const span = (picked: NoteEv[]) => ({ from: Math.min(...picked.map((n) => n.star
 export function shiftNotes(notes: NoteEv[], keys: ReadonlySet<string>, bySteps: number, bySemis: number, steps: number): { notes: NoteEv[]; keys: Set<string> } {
   const picked = notes.filter((n) => keys.has(noteKey(n)));
   if (!picked.length) return { notes, keys: new Set(keys) };
-  const s = span(picked), dx = clamp(Math.round(bySteps), -s.from, steps - s.to), dy = clamp(Math.round(bySemis), NOTE_LOW - s.low, NOTE_HIGH - s.high);
+  const s = span(picked), dx = snapStep(clamp(bySteps, -s.from, steps - s.to)), dy = clamp(Math.round(bySemis), NOTE_LOW - s.low, NOTE_HIGH - s.high);
   if (!dx && !dy) return { notes, keys: new Set(keys) };
-  const moved = picked.map((n) => ({ ...n, start: n.start + dx, note: n.note + dy })), taken = new Set(moved.map(noteKey));
+  const moved = picked.map((n) => ({ ...n, start: snapStep(n.start + dx), note: n.note + dy })), taken = new Set(moved.map(noteKey));
   return { notes: [...notes.filter((n) => !keys.has(noteKey(n)) && !taken.has(noteKey(n))), ...moved], keys: taken };
 }
 /** Make the chosen notes longer or shorter by steps; none goes under one step or past the end of the clip. */
-export const stretchNotes = (notes: NoteEv[], keys: ReadonlySet<string>, bySteps: number, steps: number): NoteEv[] => notes.map((n) => (keys.has(noteKey(n)) ? { ...n, length: clamp(n.length + Math.round(bySteps), 1, steps - n.start) } : n));
+export const stretchNotes = (notes: NoteEv[], keys: ReadonlySet<string>, bySteps: number, steps: number): NoteEv[] => notes.map((n) => (keys.has(noteKey(n)) ? { ...n, length: clamp(snapStep(n.length + bySteps), MIN_NOTE, steps - n.start) } : n));
 /** Copy the chosen notes to straight after themselves (what "duplicate" does). Copies that would start past the end are left out. */
 export function duplicateNotes(notes: NoteEv[], keys: ReadonlySet<string>, steps: number): { notes: NoteEv[]; keys: Set<string> } {
   const picked = notes.filter((n) => keys.has(noteKey(n)));
@@ -221,7 +229,7 @@ export function invertNotes(notes: NoteEv[], keys: ReadonlySet<string>): { notes
 /** Twice as fast (factor 0.5) or half as fast (factor 2), from the first chosen note. Notes that no longer fit in the clip are dropped. */
 export function scaleTime(notes: NoteEv[], keys: ReadonlySet<string>, factor: number, steps: number): { notes: NoteEv[]; keys: Set<string> } {
   const picked = chosen(notes, keys); if (!picked.length) return { notes, keys: new Set(keys) };
-  const from = span(picked).from, made = picked.map((n) => ({ ...n, start: from + Math.round((n.start - from) * factor), length: Math.max(1, Math.round(n.length * factor)) })).filter((n) => n.start < steps).map((n) => ({ ...n, length: Math.min(n.length, steps - n.start) }));
+  const from = span(picked).from, made = picked.map((n) => ({ ...n, start: snapStep(from + (n.start - from) * factor), length: Math.max(MIN_NOTE, snapStep(n.length * factor)) })).filter((n) => n.start < steps).map((n) => ({ ...n, length: Math.min(n.length, steps - n.start) }));
   const seen = new Set<string>(); return swap(notes, keys, made.filter((n) => { const k = noteKey(n); if (seen.has(k)) return false; seen.add(k); return true; }));
 }
 /** Make each chosen note last until the next one starts (the last one to the end of the clip), so nothing is left silent between them. */
@@ -229,6 +237,16 @@ export function legatoNotes(notes: NoteEv[], keys: ReadonlySet<string>, steps: n
   const picked = chosen(notes, keys); if (!picked.length) return { notes, keys: new Set(keys) };
   const starts = [...new Set(picked.map((n) => n.start))].sort((a, b) => a - b);
   return swap(notes, keys, picked.map((n) => ({ ...n, length: (starts[starts.indexOf(n.start) + 1] ?? steps) - n.start })));
+}
+/**
+ * Quantize: pull the chosen notes' starts onto a grid (all of them when none is chosen). `amount` is how far
+ * each goes, 100 being all the way. A note pulled onto another of the same key takes its place.
+ */
+export function quantizeNotes(notes: NoteEv[], keys: ReadonlySet<string>, grid: number, steps: number, amount = 100): { notes: NoteEv[]; keys: Set<string> } {
+  const picked = chosen(notes, keys); if (!picked.length || grid <= 0) return { notes, keys: new Set(keys) };
+  const a = clamp(amount, 0, 100) / 100, seen = new Set<string>(), made: NoteEv[] = [];
+  for (const n of picked) { let to = Math.round(n.start / grid) * grid; if (to > steps - MIN_NOTE) to -= grid; const start = snapStep(n.start + (to - n.start) * a), m = { ...n, start, length: Math.min(n.length, steps - start) }; if (!seen.has(noteKey(m))) { seen.add(noteKey(m)); made.push(m); } }
+  return swap(notes, keys, made);
 }
 /** Set the chance of the chosen notes (100 or more means always). */
 export const setChance = (notes: NoteEv[], keys: ReadonlySet<string>, chance: number): NoteEv[] => notes.map((n) => { if (!keys.has(noteKey(n))) return n; const c = clamp(Math.round(chance), 0, 100); if (c >= 100) { if (n.chance === undefined) return n; const { chance: _always, ...rest } = n; return rest; } return n.chance === c ? n : { ...n, chance: c }; });

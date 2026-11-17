@@ -34,7 +34,7 @@ Live, cited from the manual. Every feature ticked below needs a lesson.
 - [x] Effects on the master (p.281)
 
 ### 2. The biggest limits today (M to L each)
-- [ ] Grid sizes with triplets and snap off, notes off the sixteenth grid, then Quantize with an amount
+- [x] Grid sizes with triplets, notes off the sixteenth grid, Quantize (built 17 Nov; not yet: snap off, a quantize amount in the page, Ctrl/Cmd+1 to 4)
       (p.128, 200-203)
 - [ ] Clips of any length placed anywhere, split anywhere (p.123, 128-130)
 - [ ] A sampler instrument: one sound played across the keys, looping and one-shot modes (Simpler, p.608-622)

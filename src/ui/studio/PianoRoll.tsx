@@ -5,7 +5,7 @@
 // notes, click a note to remove it. Right-click always removes.
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { STEPS_PER_BAR } from "../../daw/drums";
-import { inKey, noteKey, setChance, setVelocity, shiftNotes, stretchNotes, type NoteEv, type SynthClip } from "../../daw/song";
+import { MIN_NOTE, snapStep, inKey, noteKey, setChance, setVelocity, shiftNotes, stretchNotes, type NoteEv, type SynthClip } from "../../daw/song";
 
 const TOP = 84, BOTTOM = 36, ROW = 15, COL = 26, LANE = 58;
 const NAMES = ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"];
@@ -13,7 +13,7 @@ export const noteName = (n: number) => `${NAMES[n % 12]}${Math.floor(n / 12) - 1
 const isBlack = (n: number) => [1, 3, 6, 8, 10].includes(n % 12);
 type Drag = { mode: "draw"; now: NoteEv } | { mode: "move" | "size"; keys: Set<string>; col: number; row: number } | { mode: "box"; c0: number; r0: number; base: Set<string> };
 
-export function PianoRoll({ clip, onNotes, onHear, step, sel, onSel, draw, scale }: { /** the song's key: rows that belong to it are lit, its key note more strongly */ scale?: { root: number; steps: readonly number[] }; clip: SynthClip; onNotes: (notes: NoteEv[]) => void; onHear: (note: number) => void; step: number; sel: ReadonlySet<string>; onSel: (keys: Set<string>) => void; draw: boolean }) {
+export function PianoRoll({ clip, onNotes, onHear, step, sel, onSel, draw, scale, grid = 1 }: { /** the grid notes snap to, in sixteenth steps (1 is a sixteenth, 0.5 a thirty-second, 2/3 a sixteenth triplet) */ grid?: number; /** the song's key: rows that belong to it are lit, its key note more strongly */ scale?: { root: number; steps: readonly number[] }; clip: SynthClip; onNotes: (notes: NoteEv[]) => void; onHear: (note: number) => void; step: number; sel: ReadonlySet<string>; onSel: (keys: Set<string>) => void; draw: boolean }) {
   const steps = clip.bars * STEPS_PER_BAR;
   // Fold: show only the rows of the song's key (and any row that already has a note), so a wrong note cannot be written.
   const [fold, setFold] = useState(false);
@@ -33,7 +33,8 @@ export function PianoRoll({ clip, onNotes, onHear, step, sel, onSel, draw, scale
   }, [clip.id, fold]);
   const at = (e: { clientX: number; clientY: number }) => {
     const r = area.current!.getBoundingClientRect();
-    return { col: Math.min(steps - 1, Math.max(0, Math.floor((e.clientX - r.left) / COL))), row: Math.min(rows - 1, Math.max(0, Math.floor((e.clientY - r.top) / ROW))), x: e.clientX - r.left };
+    const pos = Math.min(steps - 0.001, Math.max(0, (e.clientX - r.left) / COL));
+    return { pos, col: snapStep(Math.min(Math.floor((steps - MIN_NOTE) / grid + 1e-9), Math.floor(pos / grid + 1e-9)) * grid), row: Math.min(rows - 1, Math.max(0, Math.floor((e.clientY - r.top) / ROW))), x: e.clientX - r.left };
   };
   const without = (n: NoteEv) => notes.current.filter((x) => noteKey(x) !== noteKey(n));
   useEffect(() => {
@@ -42,13 +43,13 @@ export function PianoRoll({ clip, onNotes, onHear, step, sel, onSel, draw, scale
       if (!d) return;
       const p = at(e);
       if (d.mode === "draw") {
-        const next = { ...d.now, length: Math.max(1, p.col - d.now.start + 1) };
+        const next = { ...d.now, length: snapStep(Math.min(steps - d.now.start, Math.max(grid, p.col - d.now.start + grid))) };
         if (next.length === d.now.length) return;
         onNotes([...without(d.now), next]); drag.current = { mode: "draw", now: next }; lastLength.current = next.length;
       } else if (d.mode === "box") {
         const c0 = Math.min(d.c0, p.col), c1 = Math.max(d.c0, p.col), r0 = Math.min(d.r0, p.row), r1 = Math.max(d.r0, p.row);
         setRect({ c0, c1, r0, r1 });
-        onSel(new Set([...d.base, ...notes.current.filter((n) => { const r = rowOf(n.note); return r >= r0 && r <= r1 && n.start <= c1 && n.start + n.length - 1 >= c0; }).map(noteKey)]));
+        onSel(new Set([...d.base, ...notes.current.filter((n) => { const r = rowOf(n.note); return r >= r0 && r <= r1 && n.start < c1 + grid && n.start + n.length > c0; }).map(noteKey)]));
       } else if (d.mode === "move") {
         const by = p.col - d.col, up = (shownRef.current[p.row] ?? 0) - (shownRef.current[d.row] ?? 0);
         if (!by && !up) return;
@@ -72,8 +73,8 @@ export function PianoRoll({ clip, onNotes, onHear, step, sel, onSel, draw, scale
   // the lane under the notes shows loudness or chance: chance is how often a note plays, 100% being always
   const [laneOf, setLaneOf] = useState<"vel" | "chance">("vel");
   const setLane = (e: { clientX: number; clientY: number }) => {
-    const r = lane.current!.getBoundingClientRect(), col = Math.floor((e.clientX - r.left) / COL), part = Math.min(1, Math.max(0, 1 - (e.clientY - r.top - 4) / (LANE - 8))), v = Math.round(127 * Math.max(0.008, part));
-    const here = notes.current.filter((n) => n.start === col);
+    const r = lane.current!.getBoundingClientRect(), pos = (e.clientX - r.left) / COL, part = Math.min(1, Math.max(0, 1 - (e.clientY - r.top - 4) / (LANE - 8))), v = Math.round(127 * Math.max(0.008, part));
+    const here = notes.current.filter((n) => pos >= n.start - 0.15 && pos < n.start + Math.min(1, Math.max(0.35, n.length)));
     if (!here.length) return;
     const keys = here.some((n) => sel.has(noteKey(n))) ? new Set(sel) : new Set(here.map(noteKey)), next = laneOf === "chance" ? setChance(notes.current, keys, Math.round(part * 20) * 5) : setVelocity(notes.current, keys, v);
     if (laneOf === "vel") lastVel.current = v;
@@ -84,10 +85,10 @@ export function PianoRoll({ clip, onNotes, onHear, step, sel, onSel, draw, scale
     window.addEventListener("mousemove", move); window.addEventListener("mouseup", up);
     return () => { window.removeEventListener("mousemove", move); window.removeEventListener("mouseup", up); };
   });
-  const add = (note: number, col: number): NoteEv => { const made: NoteEv = { note, start: col, length: Math.min(lastLength.current, steps - col), velocity: lastVel.current }; onNotes([...without(made), made]); onHear(note); return made; };
+  const add = (note: number, col: number): NoteEv => { const made: NoteEv = { note, start: col, length: snapStep(Math.min(Math.max(grid, MIN_NOTE), steps - col)), velocity: lastVel.current }; onNotes([...without(made), made]); onHear(note); return made; };
   const down = (e: React.MouseEvent) => {
     e.preventDefault();
-    const p = at(e), note = shown[p.row]!, hit = notes.current.find((n) => n.note === note && p.col >= n.start && p.col < n.start + n.length);
+    const p = at(e), note = shown[p.row]!, hit = notes.current.find((n) => n.note === note && p.pos >= n.start && p.pos < n.start + n.length);
     if (e.button === 2) { if (hit) { onNotes(without(hit)); onSel(new Set([...sel].filter((k) => k !== noteKey(hit)))); } return; }
     if (draw) { if (hit) onNotes(without(hit)); else { const made = add(note, p.col); onSel(new Set([noteKey(made)])); drag.current = { mode: "draw", now: made }; } return; }
     if (hit) {
@@ -110,11 +111,11 @@ export function PianoRoll({ clip, onNotes, onHear, step, sel, onSel, draw, scale
         <div className="roll-keys">
           {shown.map((n) => { return <button key={n} className={`roll-key${isBlack(n) ? " black" : ""}`} style={{ height: ROW }} onMouseDown={() => onHear(n)} aria-label={`Hear ${noteName(n)}`} tabIndex={-1}>{(fold && scale) || n % 12 === 0 ? noteName(n) : ""}</button>; })}
         </div>
-        <div className="roll-area" ref={area} onMouseDown={down} onContextMenu={(e) => e.preventDefault()} style={{ width: steps * COL, backgroundSize: `${COL}px ${ROW}px, ${COL * 4}px ${ROW}px, ${COL * 16}px ${ROW}px` }} role="application" aria-label="Piano roll">
+        <div className="roll-area" ref={area} onMouseDown={down} onContextMenu={(e) => e.preventDefault()} style={{ width: steps * COL, backgroundSize: `${COL * grid}px ${ROW}px, ${COL * 4}px ${ROW}px, ${COL * 16}px ${ROW}px` }} role="application" aria-label="Piano roll">
           {shown.map((n, i) => { return isBlack(n) || n % 12 === 0 ? <div key={n} className={isBlack(n) ? "roll-row black" : "roll-row c"} style={{ top: i * ROW, height: ROW }} /> : null; })}
           {scale && shown.map((n, i) => { return inKey(n, scale.root, scale.steps) ? <div key={`k${n}`} className={`roll-row key${((n - scale.root) % 12 + 12) % 12 === 0 ? " root" : ""}`} style={{ top: i * ROW, height: ROW }} /> : null; })}
-          {clip.notes.map((n) => <div key={noteKey(n)} className={`roll-note${sel.has(noteKey(n)) ? " picked" : ""}${n.chance !== undefined ? " maybe" : ""}`} style={{ left: n.start * COL + 1, top: rowOf(n.note) * ROW + 1, width: n.length * COL - 2, height: ROW - 2, opacity: 0.45 + 0.55 * (n.velocity / 127) }} title={`${noteName(n.note)}, ${n.length} step${n.length === 1 ? "" : "s"}, played at ${n.velocity} of 127`}>{n.length > 1 ? noteName(n.note) : ""}</div>)}
-          {rect && <div className="roll-box" style={{ left: rect.c0 * COL, top: rect.r0 * ROW, width: (rect.c1 - rect.c0 + 1) * COL, height: (rect.r1 - rect.r0 + 1) * ROW }} />}
+          {clip.notes.map((n) => <div key={noteKey(n)} className={`roll-note${sel.has(noteKey(n)) ? " picked" : ""}${n.chance !== undefined ? " maybe" : ""}`} style={{ left: n.start * COL + 1, top: rowOf(n.note) * ROW + 1, width: Math.max(3, n.length * COL - 2), height: ROW - 2, opacity: 0.45 + 0.55 * (n.velocity / 127) }} title={`${noteName(n.note)}, ${n.length} step${n.length === 1 ? "" : "s"}, played at ${n.velocity} of 127`}>{n.length > 1 ? noteName(n.note) : ""}</div>)}
+          {rect && <div className="roll-box" style={{ left: rect.c0 * COL, top: rect.r0 * ROW, width: (rect.c1 - rect.c0 + grid) * COL, height: (rect.r1 - rect.r0 + 1) * ROW }} />}
           {step >= 0 && <div className="roll-now" style={{ left: step * COL }} />}
         </div>
       </div>

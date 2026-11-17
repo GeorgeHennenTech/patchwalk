@@ -506,3 +506,5 @@ devices, Utility and Saturator extras, fold to scale, the rest of the shortcuts.
 Second batch: sidechain on the gate and glue compressor, markers, a one-bar count-in when recording,
 hear-before-loading in the browser, and Fold to the key. **The owner wants an extensive Ableton course:
 a lesson for every Studio feature. Not started; the plan is at the top of `docs/ABLETON_GAPS.md`.**
+The piano roll now has a finer grid (thirty-seconds and triplets, a Grid menu, Quantize). Next from the
+list: a sampler instrument and break slicing, clips of any length, knobs on the built-in drums.

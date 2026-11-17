@@ -148,9 +148,10 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [ ] **Automation (owner asked 17 Nov 2026):** automation lanes in the Studio (a line per track that moves a
   setting over time: a synth knob, a track's level, an effect), then lessons on automation with many
   different combinations of automations to try, in the way the macro chapter has many recipes
-- [ ] Studio, Ableton-like, still missing: drag clips with the mouse, split and consolidate, zoom, grid sizes, Session View
+- [x] Studio, closer to Ableton, first pass (17 Nov 2026): EQ dots drag; clips drag to move, Alt-drag to copy, resize from the right edge; Ctrl/Cmd+E split, Ctrl/Cmd+J consolidate; loudness lane under the piano roll
+- [ ] Studio, closer to Ableton, next (owner's standing instruction): a time marker and free-length clips, zoom and grid sizes, a mixer with pan and meters, a master track, automation lanes, Session View, export to a sound file, note effects on live keys
 - [ ] Owner to try: drop a sample in the Studio and check it shows in Library > Sounds on the live site
-- [ ] Studio next: note loudness, export to a sound file, a kit as a zip of sound files, lessons that use it; earlier list: one clock shared with the synth, piano roll, chaining patterns, mixer, per-drum sound, a lesson using the grid
+- [ ] Studio next: export to a sound file, a kit as a zip of sound files, lessons that use it; earlier list: one clock shared with the synth, piano roll, chaining patterns, mixer, per-drum sound, a lesson using the grid
 - [ ] Mini DAW: tracks, mixer, automation, export
 - [ ] Genre lessons, starting with glitch-hop, breakbeat and psydub
 - [ ] Lessons on Serum itself: the matrix tab and the rest of its specialist features (50 planned)

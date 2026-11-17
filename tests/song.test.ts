@@ -186,3 +186,44 @@ describe("when a break may set the song's tempo", () => {
     expect(hasOtherMusic(second.song, drums, [beat, second.clip])).toBe(false);
   });
 });
+
+import { joinClips, placeClip, setVelocity, splitClip } from "../src/daw/song";
+describe("moving, copying, splitting and joining clips", () => {
+  const base = () => { let s = addTrack(addTrack({ ...newSong(), tracks: [], bars: 8 }, "synth"), "synth"); s = addTrack(s, "drums"); const [a, b, d] = s.tracks.map((t) => t.id) as [string, string, string];
+    const made = addClip(s, a, 0)!; s = setNotes(made.song, a, made.clip, [{ note: 60, start: 0, length: 4, velocity: 100 }, { note: 64, start: 14, length: 2, velocity: 80 }]); return { s, a, b, d, c: made.clip }; };
+  it("a clip moves to a free bar, to another track of the same kind, or is copied; never onto a taken place or the wrong kind", () => {
+    const { s, a, b, d, c } = base(), moved = placeClip(s, a, c, a, 3)!;
+    expect(moved.song.tracks[0]!.clips.map((x) => [x.id, x.start])).toEqual([[c, 3]]);
+    const across = placeClip(s, a, c, b, 2)!; expect(across.song.tracks[0]!.clips).toHaveLength(0); expect(across.song.tracks[1]!.clips[0]).toMatchObject({ start: 2, bars: 1 });
+    const copy = placeClip(s, a, c, a, 5, true)!; expect(copy.song.tracks[0]!.clips.map((x) => x.start).sort()).toEqual([0, 5]); expect(copy.clip).not.toBe(c);
+    expect(placeClip(copy.song, a, c, a, 5)).toBeUndefined();          // taken
+    expect(placeClip(s, a, c, a, 0)).toBeUndefined();                  // where it already is
+    expect(placeClip(s, a, c, d, 1)).toBeUndefined();                  // notes do not go on a drum track
+    expect(placeClip(s, a, c, a, 8)).toBeUndefined(); expect(placeClip(s, a, c, a, -1)).toBeUndefined();
+  });
+  it("a long clip splits into bars, cutting notes at the bar line, and the bars join back", () => {
+    const { s, a, c } = base(), long = setClipBars(setNotes(s, a, c, [{ note: 60, start: 0, length: 4, velocity: 100 }]), a, c, 2), withNote = setNotes(long, a, c, [{ note: 60, start: 0, length: 4, velocity: 100 }, { note: 62, start: 14, length: 6, velocity: 90 }, { note: 65, start: 20, length: 2, velocity: 70 }]);
+    const cut = splitClip(withNote, a, c)!; expect(cut.clips).toHaveLength(2);
+    const [one, two] = cut.song.tracks[0]!.clips.slice().sort((x, y) => x.start - y.start) as [SynthClip2, SynthClip2];
+    expect(one.notes).toEqual([{ note: 60, start: 0, length: 4, velocity: 100 }, { note: 62, start: 14, length: 2, velocity: 90 }]);
+    expect(two.notes).toEqual([{ note: 65, start: 4, length: 2, velocity: 70 }]); expect(two.start).toBe(1);
+    expect(splitClip(s, a, c)).toBeUndefined();                        // one bar: nothing to split
+    const back = joinClips(cut.song, a, cut.clips)!; expect(back.song.tracks[0]!.clips).toHaveLength(1);
+    expect((back.song.tracks[0]!.clips[0] as SynthClip2).notes.map((n) => n.start)).toEqual([0, 14, 20]); expect(back.song.tracks[0]!.clips[0]!.bars).toBe(2);
+    const apart = placeClip(cut.song, a, cut.clips[1]!, a, 4)!; expect(joinClips(apart.song, a, cut.clips)).toBeUndefined();   // not next to each other
+  });
+  it("drum clips split and join too, keeping every hit", () => {
+    const { s, d } = base(), made = addClip(s, d, 0)!, pad = (made.song.tracks[2] as DrumTrack2).pads[0]!.id;
+    const two = setClipBars(made.song, d, made.clip, 2), hits = (two.tracks[2]!.clips[0] as DrumClip2).hits, row = Array.from({ length: 32 }, (_, i) => (i === 0 || i === 20 ? 2 : 0));
+    const filled = { ...two, tracks: two.tracks.map((t) => (t.id === d ? { ...t, clips: [{ ...t.clips[0]!, hits: { ...hits, [pad]: row } }] } : t)) } as typeof two;
+    const cut = splitClip(filled, d, made.clip)!, parts = cut.song.tracks[2]!.clips.slice().sort((x, y) => x.start - y.start) as DrumClip2[];
+    expect(parts[0]!.hits[pad]![0]).toBe(2); expect(parts[1]!.hits[pad]![4]).toBe(2); expect(parts[0]!.hits[pad]).toHaveLength(16);
+    expect((joinClips(cut.song, d, cut.clips)!.song.tracks[2]!.clips[0] as DrumClip2).hits[pad]).toEqual(row);
+  });
+  it("sets how hard the chosen notes are played", () => {
+    const notes = [{ note: 60, start: 0, length: 1, velocity: 100 }, { note: 62, start: 1, length: 1, velocity: 100 }];
+    expect(setVelocity(notes, new Set(["60:0"]), 300).map((n) => n.velocity)).toEqual([127, 100]);
+    expect(setVelocity(notes, new Set(["62:1"]), 0)[1]!.velocity).toBe(1);
+  });
+});
+type SynthClip2 = import("../src/daw/song").SynthClip; type DrumClip2 = import("../src/daw/song").DrumClip; type DrumTrack2 = import("../src/daw/song").DrumTrack;

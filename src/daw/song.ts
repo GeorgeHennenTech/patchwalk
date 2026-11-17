@@ -234,3 +234,54 @@ export function tidySong(raw: unknown): Song | undefined {
   }
   return song.tracks.length ? song : undefined;
 }
+
+// ---- moving, copying, splitting and joining clips, as a DAW's arrangement does ----
+/** A clip's contents fitted to another track: drum rows go to the pads in the same places; notes go as they are. */
+function fitted(c: Clip, from: Track, to: Track): Clip | undefined {
+  if (("hits" in c) !== (to.kind === "drums") || !CLIP_BARS[to.kind].includes(c.bars)) return undefined;
+  if (!("hits" in c) || from.id === to.id || from.kind !== "drums" || to.kind !== "drums") return c;
+  const steps = c.bars * STEPS_PER_BAR;
+  return { ...c, hits: Object.fromEntries(to.pads.map((p, i) => [p.id, (c.hits[from.pads[i]?.id ?? ""] ?? Array.from({ length: steps }, () => 0 as Hit)).slice()])) };
+}
+/**
+ * Put a clip at a bar of the same track or another track of the same kind: moved, or copied when `copy` is set.
+ * Nothing happens (undefined) when the place is taken, off the end of the song, or the track is the wrong kind.
+ */
+export function placeClip(s: Song, fromTrack: string, clipId: string, toTrack: string, bar: number, copy = false): { song: Song; track: string; clip: string } | undefined {
+  const from = trackOf(s, fromTrack), to = trackOf(s, toTrack), c = clipOf(from, clipId);
+  if (!from || !to || !c || bar < 0 || bar + c.bars > s.bars) return undefined;
+  const same = from.id === to.id, body = fitted(c, from, to);
+  if (!body || (same && !copy && bar === c.start) || !isFree(s, to, bar, c.bars, same && !copy ? c.id : undefined)) return undefined;
+  const id = same && !copy ? c.id : freeId(to.clips.map((x) => x.id), "c"), placed = JSON.parse(JSON.stringify({ ...body, id, start: bar })) as Clip;
+  let song = copy ? s : withTrack(s, from.id, (t) => ({ ...t, clips: t.clips.filter((x) => x.id !== c.id) } as Track));
+  song = withTrack(song, to.id, (t) => ({ ...t, clips: [...t.clips, placed] } as Track));
+  return { song, track: to.id, clip: id };
+}
+/** Cut a clip of several bars into one-bar clips. A note that crosses a bar line is cut off at it. */
+export function splitClip(s: Song, trackId: string, clipId: string): { song: Song; clips: string[] } | undefined {
+  const t = trackOf(s, trackId), c = clipOf(t, clipId);
+  if (!t || !c || c.bars < 2) return undefined;
+  const taken = t.clips.map((x) => x.id), ids: string[] = [], parts: Clip[] = [];
+  for (let b = 0; b < c.bars; b++) {
+    const id = b === 0 ? c.id : freeId([...taken, ...ids], "c"), lo = b * STEPS_PER_BAR, hi = lo + STEPS_PER_BAR; ids.push(id);
+    const base = { id, start: c.start + b, bars: 1, ...(c.off ? { off: true } : {}) };
+    parts.push("hits" in c ? { ...base, hits: Object.fromEntries(Object.entries(c.hits).map(([k, row]) => [k, row.slice(lo, hi)])) }
+      : { ...base, notes: c.notes.filter((n) => n.start >= lo && n.start < hi).map((n) => ({ ...n, start: n.start - lo, length: Math.min(n.length, hi - n.start) })) });
+  }
+  return { song: withTrack(s, trackId, (x) => ({ ...x, clips: [...x.clips.filter((y) => y.id !== c.id), ...parts] } as Track)), clips: ids };
+}
+/** Join clips that sit next to each other on one track into a single clip, if a clip may be that long. */
+export function joinClips(s: Song, trackId: string, clipIds: readonly string[]): { song: Song; clip: string } | undefined {
+  const t = trackOf(s, trackId), cs = (t?.clips ?? []).filter((c) => clipIds.includes(c.id)).sort((a, b) => a.start - b.start);
+  if (!t || cs.length < 2) return undefined;
+  const bars = cs.reduce((n, c) => n + c.bars, 0), first = cs[0]!;
+  if (!CLIP_BARS[t.kind].includes(bars) || cs.some((c, i) => i > 0 && c.start !== cs[i - 1]!.start + cs[i - 1]!.bars)) return undefined;
+  let at = 0; const steps = bars * STEPS_PER_BAR;
+  const joined: Clip = "hits" in first
+    ? { id: first.id, start: first.start, bars, hits: Object.fromEntries((t as DrumTrack).pads.map((p) => [p.id, cs.flatMap((c) => { const row = (c as DrumClip).hits[p.id] ?? []; return Array.from({ length: c.bars * STEPS_PER_BAR }, (_, i) => (c.off ? 0 : row[i] ?? 0) as Hit); })])) }
+    : { id: first.id, start: first.start, bars, notes: cs.flatMap((c) => { const off = at; at += c.bars * STEPS_PER_BAR; return c.off ? [] : (c as SynthClip).notes.map((n) => ({ ...n, start: n.start + off })); }).filter((n) => n.start < steps) };
+  const gone = new Set(cs.map((c) => c.id));
+  return { song: withTrack(s, trackId, (x) => ({ ...x, clips: [...x.clips.filter((y) => !gone.has(y.id)), joined] } as Track)), clip: first.id };
+}
+/** Set how hard the chosen notes are played (1 to 127). */
+export const setVelocity = (notes: NoteEv[], keys: ReadonlySet<string>, velocity: number): NoteEv[] => { const v = clamp(Math.round(velocity), 1, 127); return notes.map((n) => (keys.has(noteKey(n)) && n.velocity !== v ? { ...n, velocity: v } : n)); };

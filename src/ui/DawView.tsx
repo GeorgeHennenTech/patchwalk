@@ -15,7 +15,7 @@ import { firstSong, useStudio } from "./studio/useStudio";
 import { libPut } from "../guide/library";
 import { BPM_MAX, BPM_MIN, GENRE_STARTERS, STARTERS, STEPS_PER_BAR, SWING_MAX, VOICES, VOICE_NAMES, addPad, clearAll, setHit, setSample, tidySteps, type Pattern, type Voice } from "../daw/drums";
 import { PPQ, hitsToMidi, midiBars, midiToHits, midiToNotes, notesToMidi, readMidi, songToMidi, writeMidi } from "../daw/midi";
-import { CLIP_BARS, MAX_TRACKS, SONG_BARS, SOUNDS, addClip, addTrack, clipOf, clipPattern, duplicateClip, duplicateNotes, hasOtherMusic, moveClip, newSong, noteKey, pasteClip, removeClip, setClipBars, setDevices, setNoteFx, setNotes, setPatch, setSongBars, setSongSwing, setSongTempo, setTrack, shiftNotes, soundPatch, stretchNotes, toggleClipOff, trackOf, withPads, withPattern, type Clip, type DrumClip, type DrumTrack, type NoteEv, type Song } from "../daw/song";
+import { CLIP_BARS, MAX_TRACKS, SONG_BARS, SOUNDS, addClip, addTrack, clipOf, clipPattern, duplicateClip, duplicateNotes, hasOtherMusic, moveClip, newSong, noteKey, pasteClip, removeClip, setClipBars, joinClips, placeClip, splitClip, setDevices, setNoteFx, setNotes, setPatch, setSongBars, setSongSwing, setSongTempo, setTrack, shiftNotes, soundPatch, stretchNotes, toggleClipOff, trackOf, withPads, withPattern, type Clip, type DrumClip, type DrumTrack, type NoteEv, type Song } from "../daw/song";
 import { loadBreaks, loadRacks, loadSaved, loadSongs, rackOnto, saveSong, storeBreaks, storeRacks, storeSongs, withNamed, withSavedSong, withoutSavedSong, type Break, type Rack } from "../daw/store";
 import { loadPatches } from "../synth/patches";
 import type { SynthState } from "../synth/params";
@@ -34,6 +34,9 @@ const KEYS: [string, string][] = [
   [`${MOD}+Z`, "Undo"], [mac ? "Cmd+Shift+Z" : "Ctrl+Y", "Redo"],
   [`${MOD}+D`, "Duplicate the selected notes, or the selected clip"], [`${MOD}+C / X / V`, "Copy, cut and paste notes or a clip"], ["Delete", "Delete the selected notes, or the selected clip"],
   [`${MOD}+A`, "Select every note in the open clip"], [`${MOD}+L`, "Loop the selected clip, on and off"], [`${MOD}+Shift+M`, "Add an empty clip to the selected track"],
+  ["Drag a clip", "Move it to another bar or another track of the same kind; hold Alt to copy it; drag its right edge to change its length"],
+  [`${MOD}+E`, "Split the selected clip into one-bar clips"], [`${MOD}+J`, "Consolidate: join the selected clips into one"],
+  ["Drag in the loudness lane", "Under the piano roll: set how hard a note is played (selected notes move together)"], ["Drag an EQ dot", "Sideways for frequency, up and down for gain; wheel for sharpness; double-click for zero"],
   [`${MOD}+R`, "Rename the selected track"], [`${MOD}+S`, "Save the song"], ["Shift+click a clip", "Select several clips on one track (a break, Delete and 0 then act on all of them)"], ["0", "Switch the selected clip (or track) off and on"], ["S", "Solo the selected track (when the computer keyboard is off)"],
   ["Arrow keys", "Move selected notes a step or a semitone; with nothing selected, move between tracks and clips"], ["Shift+Up / Down", "Move selected notes an octave"], ["Shift+Left / Right", "Make selected notes shorter or longer"],
   ["B", "Draw mode on and off"], ["M", "Computer keyboard plays notes, on and off"], ["Z / X, C / V", "Computer keyboard: octave down and up, softer and harder"],
@@ -189,13 +192,15 @@ export default function DawView() {
     solo: () => { if (track) change((s) => setTrack(s, track.id, { solo: !track.solo })); },
     insert: () => { if (!track) return; for (let b = clip ? clip.start + clip.bars : 0; b < song.bars; b++) if (addClip(song, track.id, b)) { add(track.id, b); return; } setNote("This track has no free bar for a new clip."); },
     rename: () => { if (track) setRenaming(track.id); },
+    split: () => { if (!track || !clip) return; const made = splitClip(song, track.id, clip.id); if (!made) { setNote("A one-bar clip cannot be split further: the Studio's clips sit on whole bars."); return; } change(made.song); pick(track.id, made.clips[0]); setNote(`Split into ${made.clips.length} one-bar clips.`); },
+    join: () => { if (!track || targets.length < 2) { setNote("Select two or more clips on one track first (Shift-click), then consolidate."); return; } const made = joinClips(song, track.id, targets); if (!made) { setNote(`To consolidate, the clips must sit next to each other and add up to ${track.kind === "drums" ? "2 bars" : "2 or 4 bars"}.`); return; } change(made.song); pick(track.id, made.clip); setNote("Joined into one clip."); },
     record: () => { if (!rec && !playing) toggle(); setRec(!rec); },
     restart: () => { if (playing) toggle(); window.setTimeout(toggle, 30); },
     browser: () => setBrowser((b) => { remember("patchwalk.studio.browser", b ? "shut" : "open"); return !b; }),
     keepSong,
   };
   // each command is its own step to undo
-  for (const name of ["duplicate", "del", "paste", "off", "solo", "insert"] as const) { const run = act[name] as () => unknown; (act as Record<string, unknown>)[name] = () => { studio.mark(); return run(); }; }
+  for (const name of ["duplicate", "del", "paste", "off", "solo", "insert", "split", "join"] as const) { const run = act[name] as () => unknown; (act as Record<string, unknown>)[name] = () => { studio.mark(); return run(); }; }
   const acts = useRef(act); acts.current = act;
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
@@ -215,6 +220,8 @@ export default function DawView() {
         else if (k === "l") { done(); setLoopClip((v) => !v); }
         else if (k === "s") { done(); a.keepSong(); }
         else if (k === "r") { done(); a.rename(); }
+        else if (k === "e") { done(); a.split(); }
+        else if (k === "j") { done(); a.join(); }
         else if (k === "m" && e.shiftKey) { done(); a.insert(); }
         else if (k === "b" && e.altKey) { done(); a.browser(); }
         return;
@@ -290,7 +297,7 @@ export default function DawView() {
               <button onClick={() => { const next = addTrack(song, "synth", SOUNDS[0]!.name); change(next); pick(next.tracks.at(-1)?.id); }} disabled={song.tracks.length >= MAX_TRACKS}>+ Synth track</button>
             </span>
           </div>
-          <Arrangement song={song} onChange={change} picked={picked} also={also} onPick={pick} onAdd={add} step={step} loop={loop} renaming={renaming} />
+          <Arrangement song={song} onChange={change} picked={picked} also={also} onPick={pick} onAdd={add} onPlace={(from, c, to, bar, copy) => { const made = placeClip(song, from, c, to, bar, copy); if (!made) { studio.mark(); return; }   /* a drop where it already is: the start of a length drag, its own step to undo */ studio.mark(); change(made.song); pick(made.track, made.clip); setNote(copy ? "Copied the clip." : "Moved the clip."); }} onBars={(t, c, bars) => change((s) => setClipBars(s, t, c, bars))} step={step} loop={loop} renaming={renaming} />
         </div>
       </div>
 

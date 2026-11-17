@@ -5,9 +5,9 @@
 // notes, click a note to remove it. Right-click always removes.
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { STEPS_PER_BAR } from "../../daw/drums";
-import { noteKey, shiftNotes, stretchNotes, type NoteEv, type SynthClip } from "../../daw/song";
+import { noteKey, setVelocity, shiftNotes, stretchNotes, type NoteEv, type SynthClip } from "../../daw/song";
 
-const TOP = 84, BOTTOM = 36, ROW = 15, COL = 26;
+const TOP = 84, BOTTOM = 36, ROW = 15, COL = 26, LANE = 58;
 const NAMES = ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"];
 export const noteName = (n: number) => `${NAMES[n % 12]}${Math.floor(n / 12) - 1}`;
 const isBlack = (n: number) => [1, 3, 6, 8, 10].includes(n % 12);
@@ -59,7 +59,24 @@ export function PianoRoll({ clip, onNotes, onHear, step, sel, onSel, draw }: { c
     window.addEventListener("mousemove", move); window.addEventListener("mouseup", up);
     return () => { window.removeEventListener("mousemove", move); window.removeEventListener("mouseup", up); };
   });
-  const add = (note: number, col: number): NoteEv => { const made: NoteEv = { note, start: col, length: Math.min(lastLength.current, steps - col), velocity: 100 }; onNotes([...without(made), made]); onHear(note); return made; };
+  // The loudness lane: each note has a stem as tall as how hard it is played. Drag in the lane to set it; if the
+  // note under the pointer is selected, every selected note is set together.
+  const lane = useRef<HTMLDivElement>(null), laning = useRef(false);
+  const lastVel = useRef(100);
+  const setLane = (e: { clientX: number; clientY: number }) => {
+    const r = lane.current!.getBoundingClientRect(), col = Math.floor((e.clientX - r.left) / COL), v = Math.round(127 * Math.min(1, Math.max(0.008, 1 - (e.clientY - r.top - 4) / (LANE - 8))));
+    const here = notes.current.filter((n) => n.start === col);
+    if (!here.length) return;
+    const keys = here.some((n) => sel.has(noteKey(n))) ? new Set(sel) : new Set(here.map(noteKey)), next = setVelocity(notes.current, keys, v);
+    lastVel.current = v;
+    if (next.some((n, i) => n !== notes.current[i])) onNotes(next);
+  };
+  useEffect(() => {
+    const move = (e: MouseEvent) => { if (laning.current) setLane(e); }, up = () => { laning.current = false; };
+    window.addEventListener("mousemove", move); window.addEventListener("mouseup", up);
+    return () => { window.removeEventListener("mousemove", move); window.removeEventListener("mouseup", up); };
+  });
+  const add = (note: number, col: number): NoteEv => { const made: NoteEv = { note, start: col, length: Math.min(lastLength.current, steps - col), velocity: lastVel.current }; onNotes([...without(made), made]); onHear(note); return made; };
   const down = (e: React.MouseEvent) => {
     e.preventDefault();
     const p = at(e), note = TOP - p.row, hit = notes.current.find((n) => n.note === note && p.col >= n.start && p.col < n.start + n.length);
@@ -86,9 +103,15 @@ export function PianoRoll({ clip, onNotes, onHear, step, sel, onSel, draw }: { c
         </div>
         <div className="roll-area" ref={area} onMouseDown={down} onContextMenu={(e) => e.preventDefault()} style={{ width: steps * COL, backgroundSize: `${COL}px ${ROW}px, ${COL * 4}px ${ROW}px, ${COL * 16}px ${ROW}px` }} role="application" aria-label="Piano roll">
           {Array.from({ length: rows }, (_, i) => { const n = TOP - i; return isBlack(n) || n % 12 === 0 ? <div key={n} className={isBlack(n) ? "roll-row black" : "roll-row c"} style={{ top: i * ROW, height: ROW }} /> : null; })}
-          {clip.notes.map((n) => <div key={noteKey(n)} className={`roll-note${sel.has(noteKey(n)) ? " picked" : ""}`} style={{ left: n.start * COL + 1, top: (TOP - n.note) * ROW + 1, width: n.length * COL - 2, height: ROW - 2 }} title={`${noteName(n.note)}, ${n.length} step${n.length === 1 ? "" : "s"}`}>{n.length > 1 ? noteName(n.note) : ""}</div>)}
+          {clip.notes.map((n) => <div key={noteKey(n)} className={`roll-note${sel.has(noteKey(n)) ? " picked" : ""}`} style={{ left: n.start * COL + 1, top: (TOP - n.note) * ROW + 1, width: n.length * COL - 2, height: ROW - 2, opacity: 0.45 + 0.55 * (n.velocity / 127) }} title={`${noteName(n.note)}, ${n.length} step${n.length === 1 ? "" : "s"}, played at ${n.velocity} of 127`}>{n.length > 1 ? noteName(n.note) : ""}</div>)}
           {rect && <div className="roll-box" style={{ left: rect.c0 * COL, top: rect.r0 * ROW, width: (rect.c1 - rect.c0 + 1) * COL, height: (rect.r1 - rect.r0 + 1) * ROW }} />}
           {step >= 0 && <div className="roll-now" style={{ left: step * COL }} />}
+        </div>
+      </div>
+      <div className="roll-vel" style={{ width: 52 + steps * COL, height: LANE }}>
+        <span className="roll-vel-name" title="How hard each note is played. Drag a stem up or down.">Loud</span>
+        <div className="roll-vel-area" ref={lane} style={{ width: steps * COL, backgroundSize: `${COL * 4}px 100%` }} onMouseDown={(e) => { e.preventDefault(); laning.current = true; setLane(e); }} role="group" aria-label="How hard each note is played">
+          {clip.notes.map((n) => <i key={noteKey(n)} className={sel.has(noteKey(n)) ? "picked" : ""} style={{ left: n.start * COL + 4, height: 4 + (LANE - 8) * (n.velocity / 127) }} title={`${noteName(n.note)}: ${n.velocity} of 127`} />)}
         </div>
       </div>
     </div>

@@ -481,3 +481,15 @@ tr.dim td { opacity: 0.6; }
 .dev-tuner-bar span { position: absolute; top: 1px; bottom: 1px; width: 4px; margin-left: -2px; background: var(--on); border-radius: 1px; transition: left 0.1s linear; } .dev-tuner-bar span.in { background: #6fdc8c; }
 .dev-note { margin: 0; padding: 0 8px 8px; font-size: 11px; color: var(--dim); line-height: 1.35; }
 .dev-add { flex: none; align-self: center; color: var(--dim); display: grid; gap: 4px; font-size: 12px; padding: 0 8px; }
+
+/* the piano roll's loudness lane: stays at the bottom of the roll while the keys scroll */
+.daw2 .roll-vel { position: sticky; bottom: 0; left: 0; display: flex; background: #232325; border-top: 1px solid var(--line); z-index: 3; }
+.daw2 .roll-vel-name { position: sticky; left: 0; flex: none; width: 52px; font-size: 10px; color: var(--dim); padding: 4px 6px; background: #232325; z-index: 1; }
+.daw2 .roll-vel-area { position: relative; flex: none; cursor: ns-resize; background-image: linear-gradient(to right, #3a3a3d 1px, transparent 1px); }
+.daw2 .roll-vel-area i { position: absolute; bottom: 0; width: 5px; background: var(--tc, var(--on)); border-radius: 2px 2px 0 0; opacity: 0.75; pointer-events: none; }
+.daw2 .roll-vel-area i.picked { background: #fff; opacity: 1; }
+/* a clip being dragged, and where it would land */
+.daw2 .arr-ghost { grid-row: 1; border: 2px dashed #fff; border-radius: 3px; background: rgba(255, 255, 255, 0.12); pointer-events: none; z-index: 4; } .daw2 .arr-ghost.no { border-color: #ff6b6b; background: rgba(255, 107, 107, 0.12); }
+.daw2 .arr-clip.moving { opacity: 0.45; }
+.daw2 .arr-grip { position: absolute; top: 0; right: 0; bottom: 0; width: 7px; cursor: ew-resize; }
+.daw2 .arr-clip { position: relative; }

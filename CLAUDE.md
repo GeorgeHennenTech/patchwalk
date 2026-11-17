@@ -1300,6 +1300,21 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   `songEvents` plays (cached per notes array and chain); a note may now start part-way through a step.
   `tidyDevices(raw, "note")` keeps the two families apart. They change clip notes only: not live keys, not
   MIDI export. Every numbered item in `docs/STOCK_PLUGINS.md` is built except Dynamic Tube.
+  **Closer to Ableton, first pass (17 Nov 2026; the owner reported the EQ's dots could not be dragged and
+  asked to "continue to go through this daw and continue to get it functioning closer and closer to how
+  ableton works": a standing instruction).** (1) The dots on every curve drag: `HANDLES` in `devices.ts`
+  says what each dot changes (sideways frequency, up and down gain, or sharpness where there is no gain;
+  wheel for sharpness; double-click for zero; arrow keys); `Curve` in `DeviceChain.tsx` handles the pointer;
+  eight-band, three-band and channel EQ and the auto filter. (2) Clips drag in the arrangement: to another
+  bar, to another track of the same kind, Alt to copy, right edge to change length (`placeClip` in
+  `song.ts`; a ghost shows where it will land, red when it cannot). (3) Ctrl/Cmd+E splits a clip into
+  one-bar clips and Ctrl/Cmd+J consolidates neighbouring clips (`splitClip`, `joinClips`; clips still sit
+  on whole bars, so a split is at bar lines, not at a time marker). (4) A loudness lane under the piano
+  roll sets each note's velocity (`setVelocity`; selected notes move together; notes are drawn fainter when
+  soft; new notes take the last velocity set). Checked in a browser. **Still unlike Ableton, next
+  candidates:** a time marker and free-length clips (clips are whole bars), zoom and grid sizes, a mixer
+  with pan and meters per track, a master track, automation lanes, Session View, groups, track freeze,
+  audio tracks, export to a sound file, note effects on live keys.
   **Two to-do lists, and both must be updated with every push (owner asked 17 Nov 2026 why the widget was
   behind):** `docs/TODO.md` (what the `/todo` pane in Claude Code reads) and the owner's "Patchwalk To-Do"
   page (https://claude.ai/artifact/7sHF6r2vvBuxa8DSkcfcPz, rows in its `todos` collection, written with

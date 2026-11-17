@@ -474,3 +474,9 @@ general shapes with our own numbers, so they most need the owner's ear.
 
 The site can also be installed as a desktop app from the browser (`CLAUDE.md`, "Desktop app"). Not checked
 on the live site behind the password: ask the owner whether Chrome offered Install.
+
+**Standing instruction from the owner (17 Nov 2026): keep going through the Studio and make it work more and
+more like Ableton.** First pass done the same day: EQ dots drag; clips drag to move, Alt-drag to copy, and
+resize from the right edge; Ctrl/Cmd+E split and Ctrl/Cmd+J consolidate; a loudness (velocity) lane under
+the piano roll. The list of what is still unlike Ableton is in `CLAUDE.md` ("Closer to Ableton, first
+pass"): pick from the top of it each time, check in a browser with bar 1 looped, and update both to-do lists.

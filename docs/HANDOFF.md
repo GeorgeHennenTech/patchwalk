@@ -497,3 +497,5 @@ arcs, orange switches, dark displays; drag a title bar to reorder, drag effects 
 the synth is a small device at the front of the rack that opens only when "Open" is clicked. The owner
 asked for the Ableton look here, which replaces the "our own look" rule for the chain only; no Ableton
 artwork, fonts or logo. See `CLAUDE.md` ("The effect chain drawn like Live's device view").
+**`docs/ABLETON_GAPS.md` (17 Nov 2026) lists everything in the Ableton manual the Studio lacks, in a
+suggested order with page numbers; pick the next Studio work from it and tick items off there.**

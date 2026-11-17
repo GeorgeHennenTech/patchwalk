@@ -1393,6 +1393,11 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   way. Checked in a browser: knob drag and reset, Delete, drag to reorder, drag from the browser, open and
   close. Real mouse dragging was checked with drag events sent by script, not by hand. Not done: the drum
   rack as a device in the row, small level meters between devices, typing a value into a knob.
+  **`docs/ABLETON_GAPS.md` (17 Nov 2026, owner: "read the whole ableton manual and see what else we could
+  add").** Four helpers read the manual in the library (pages 49-690 and 811-856; not the Push chapters)
+  against the Studio and listed what it lacks, with page numbers and rough sizes; the file puts it in a
+  suggested order (quick wins, the biggest limits, bigger pieces, deeper versions of our devices, missing
+  devices, what a browser cannot do). **Choose the next Studio work from it and tick items off there.**
   **Two to-do lists, and both must be updated with every push (owner asked 17 Nov 2026 why the widget was
   behind):** `docs/TODO.md` (what the `/todo` pane in Claude Code reads) and the owner's "Patchwalk To-Do"
   page (https://claude.ai/artifact/7sHF6r2vvBuxa8DSkcfcPz, rows in its `todos` collection, written with

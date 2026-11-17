@@ -151,6 +151,7 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [x] Studio, closer to Ableton, third pass (17 Nov 2026): the EQs show the live spectrum behind their curves; automation lanes (an A button on each track: level, pan or any effect slider, live and in exported files)
 - [x] Studio, closer to Ableton, fourth pass (17 Nov 2026): automation of the synth's own knobs; faders and effect sliders that move while automated; zoom (+ and −); return tracks with sends
 - [x] Studio: the effect chain drawn like Ableton's device view (knobs, grey panels, drag to reorder, drag in from the browser); the synth is a small device at the front of the rack that opens on demand (17 Nov 2026)
+- [x] Read the whole Ableton manual against the Studio and list what is missing, in a suggested order: `docs/ABLETON_GAPS.md` (17 Nov 2026)
 - [ ] Studio, closer to Ableton, next (owner's standing instruction): a time marker and free-length clips; grid sizes; Session View; note effects on live keys; synth knobs that move on screen while automated; automation on return tracks
 - [ ] Owner to try: drop a sample in the Studio and check it shows in Library > Sounds on the live site
 - [ ] Studio next: a kit as a zip of sound files, lessons that use it; earlier list: one clock shared with the synth, piano roll, chaining patterns, mixer, per-drum sound, a lesson using the grid

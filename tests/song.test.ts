@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { STARTERS, STRENGTH } from "../src/daw/drums";
-import { addClip, addTrack, clipOf, clipPattern, duplicateClip, isFree, moveClip, newSong, putNote, removeClip, setClipBars, setNotes, setSongBars, setSongTempo, setTrack, songEvents, tidySong, trackOf, withPattern, MAX_TRACKS, type DrumTrack, type DrumClip, type SynthClip, type Song } from "../src/daw/song";
+import { addReturn, removeReturn, sendGain, setReturn, setSend, addClip, addTrack, clipOf, clipPattern, duplicateClip, isFree, moveClip, newSong, putNote, removeClip, setClipBars, setNotes, setSongBars, setSongTempo, setTrack, songEvents, tidySong, trackOf, withPattern, MAX_TRACKS, type DrumTrack, type DrumClip, type SynthClip, type Song } from "../src/daw/song";
 
 /** A song with one bar of four-on-the-floor on bar 1 and a chord on bars 1 to 2. */
 function demo(): { song: Song; drums: string; synth: string; beat: string; chord: string } {
@@ -227,3 +227,25 @@ describe("moving, copying, splitting and joining clips", () => {
   });
 });
 type SynthClip2 = import("../src/daw/song").SynthClip; type DrumClip2 = import("../src/daw/song").DrumClip; type DrumTrack2 = import("../src/daw/song").DrumTrack;
+
+describe("return tracks and sends", () => {
+  it("adds A with a reverb and B with a delay, each giving only the effect, and no third", () => {
+    const a = addReturn(newSong()), b = addReturn(a), c = addReturn(b);
+    expect(a.returns.map((r) => r.id)).toEqual(["ra"]); expect(b.returns.map((r) => r.id)).toEqual(["ra", "rb"]); expect(c).toBe(b);
+    expect(b.returns[0]!.devices[0]!.kind).toBe("reverb"); expect(b.returns[1]!.devices[0]!.kind).toBe("delay");
+    expect(b.returns.every((r) => r.devices[0]!.p.mix === 100)).toBe(true);
+  });
+  it("sets a send, keeps it within range, and forgets it when its return goes", () => {
+    let s = setSend(addReturn(newSong()), "t1", "ra", 140);
+    expect(s.tracks[0]!.sends).toEqual({ ra: 100 });
+    s = removeReturn(s, "ra");
+    expect(s.returns).toEqual([]); expect(s.tracks[0]!.sends).toEqual({});
+  });
+  it("a send of 100 passes the track whole and 50 a quarter of it", () => { expect(sendGain(100)).toBe(1); expect(sendGain(50)).toBeCloseTo(0.25); expect(sendGain(0)).toBe(0); });
+  it("comes back from storage with its returns and sends, and drops sends to returns that are not there", () => {
+    const s = setReturn(setSend(addReturn(newSong()), "t2", "ra", 40), "ra", { level: 60 }), back = tidySong(JSON.parse(JSON.stringify(s)))!;
+    expect(back.returns[0]).toMatchObject({ id: "ra", level: 60 }); expect(back.tracks[1]!.sends).toEqual({ ra: 40 });
+    const odd = tidySong({ ...JSON.parse(JSON.stringify(newSong())), tracks: [{ ...JSON.parse(JSON.stringify(newSong().tracks[0])), sends: { rb: 50, zz: 9 } }] })!;
+    expect(odd.returns).toEqual([]); expect(odd.tracks[0]!.sends).toBeUndefined();
+  });
+});

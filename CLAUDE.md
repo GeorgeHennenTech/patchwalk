@@ -1351,6 +1351,26 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   automation behind; no curved segments; automating the reverb's decay rebuilds its room on every change.
   The owner also wants lessons on automation: not written.** Next candidates: a time marker and
   free-length clips, zoom and grid sizes, sends and return tracks, Session View, automating synth knobs.
+  **Closer to Ableton, fourth pass (17 Nov 2026, owner: "continue with next candidates").** (1) **Automation
+  reaches the synth's own knobs**: on a synth track the lane menu (now grouped: Track, Effects, Synth: Filter
+  and so on) lists every continuous knob (`SYNTH_TARGETS`, ids `s:<knob>`; not tempo, random phase or reverb
+  size). `automateTrack` writes them into the track's `patch` and hands back the same object while values
+  stand still, so the engine is only told when something moved. (2) **Faders, pan and effect sliders are
+  drawn where automation has put them while the song plays** (`live` in `DawView.tsx`, passed to
+  `Arrangement` and the effect chain). The synth's own knobs do not move on screen yet. (3) **Zoom**: − and
+  + beside "Tracks", or the + and − keys; five widths (`ZOOMS`, remembered as `patchwalk.zoom.v1`); zoomed in,
+  the bars scroll sideways, the track column stays at the right and the view follows the play line.
+  (4) **Return tracks and sends**: "+ Return track" adds up to two (`song.returns`, ids `ra` and `rb`; A
+  starts with a reverb and B with a delay, both at Dry / wet 100); every track gets a send slider per return
+  (`track.sends`, `sendGain`: 100 is the whole track, 50 a quarter; taken after the track's level and pan).
+  `Transport.sync` treats tracks and returns as the same "strip" and keeps send wires in `sends`. Clicking a
+  return row shows its effects in the detail view (`ret` in `DawView.tsx`); effects clicked in the browser
+  then go onto it. Returns have no automation, no solo and no sends of their own. Checked in a browser: an
+  automated cutoff ran 172 Hz to 5.9 kHz through bar 1 and went back to 1800 on stop while the drum fader
+  moved 89 to 21 on screen; zoom widened the bars from 1308 to 1930 px with the track column still in view;
+  a return was silent at send 0, -21.8 dB at 100, about 11 dB lower at 50, silent when switched off.
+  **Nobody has heard it.** Next candidates: a time marker and free-length clips, grid sizes, Session View,
+  note effects on live keys, synth knobs that move on screen, automation on returns.
   **Two to-do lists, and both must be updated with every push (owner asked 17 Nov 2026 why the widget was
   behind):** `docs/TODO.md` (what the `/todo` pane in Claude Code reads) and the owner's "Patchwalk To-Do"
   page (https://claude.ai/artifact/7sHF6r2vvBuxa8DSkcfcPz, rows in its `todos` collection, written with

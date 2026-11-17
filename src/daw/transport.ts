@@ -7,7 +7,7 @@ import { audibleOf, stepSeconds, stepTime, type Pad } from "./drums";
 import { chainShape, type Device } from "./devices";
 import { chainReady, prepareDevices } from "./fxnodes";
 import { buildDevice, type LiveDevice } from "./fxnodes";
-import { masterGain, songEvents, type Song } from "./song";
+import { masterGain, sendGain, songEvents, type Song } from "./song";
 import { automate, hasAutomation } from "./automation";
 
 const AHEAD = 0.12, EVERY_MS = 25;
@@ -27,6 +27,8 @@ export class Transport {
   /** Per track, after its level: where it sits between left and right, and a tap for its meter. */
   private pans = new Map<string, StereoPannerNode>();
   private taps = new Map<string, AnalyserNode>();
+  /** Send wires, by "track>return": a gain from the track (after its level and pan) into the return's input. */
+  private sends = new Map<string, GainNode>();
   private timer?: number;
   /** The audio-clock time of step 0 of this run, and the next step (counting on for ever) not yet handed over. */
   private began = 0;
@@ -58,33 +60,46 @@ export class Transport {
     // while the song plays, automated settings are where their lanes put them at this moment
     const ctx = this.ctx, song = this.place >= 0 ? automate(this.read(), this.place) : this.read(), on = audibleOf(song.tracks), t = ctx.currentTime;
     this.master!.gain.setTargetAtTime(masterGain(song.volume), t, 0.015);
-    for (const track of song.tracks) if (!this.outs.has(track.id)) { const out = ctx.createGain(), pan = ctx.createStereoPanner(), tap = ctx.createAnalyser(); out.gain.value = 0; tap.fftSize = 1024; out.connect(pan); pan.connect(this.master!); pan.connect(tap);
-      this.outs.set(track.id, out); this.pans.set(track.id, pan); this.taps.set(track.id, tap); this.ins.set(track.id, ctx.createGain()); }
-    song.tracks.forEach((track, i) => {
-      const out = this.outs.get(track.id)!, input = this.ins.get(track.id)!;
-      out.gain.setTargetAtTime(on[i] ? track.level / 80 : 0, t, 0.015);
-      this.pans.get(track.id)?.pan.setTargetAtTime(track.pan / 100, t, 0.015);
+    // every track and every return track has the same strip: input -> effects -> level -> pan -> master
+    const strips: { id: string; level: number; pan: number; devices: Device[]; heard: boolean }[] = [...song.tracks.map((x, i) => ({ id: x.id, level: x.level, pan: x.pan, devices: x.devices, heard: on[i]! })), ...song.returns.map((x) => ({ id: x.id, level: x.level, pan: x.pan, devices: x.devices, heard: !x.mute }))];
+    for (const strip of strips) if (!this.outs.has(strip.id)) { const out = ctx.createGain(), pan = ctx.createStereoPanner(), tap = ctx.createAnalyser(); out.gain.value = 0; tap.fftSize = 1024; out.connect(pan); pan.connect(this.master!); pan.connect(tap);
+      this.outs.set(strip.id, out); this.pans.set(strip.id, pan); this.taps.set(strip.id, tap); this.ins.set(strip.id, ctx.createGain()); }
+    for (const strip of strips) {
+      const out = this.outs.get(strip.id)!, input = this.ins.get(strip.id)!;
+      out.gain.setTargetAtTime(strip.heard ? strip.level / 80 : 0, t, 0.015);
+      this.pans.get(strip.id)?.pan.setTargetAtTime(strip.pan / 100, t, 0.015);
       // The effects: wired again only when a device is added, removed or moved, or told to listen to a different
       // track; a setting is changed in place. "~": some devices are still loading and are passed by until they are.
       const listens = (d: Device) => ((d.p.side ?? 0) > 0 ? song.tracks[d.p.side! - 1]?.id : undefined);
-      const shape = chainShape(track.devices) + (chainReady(ctx, track.devices) ? "" : "~") + track.devices.map((d) => `@${listens(d) ?? ""}`).join(""), have0 = this.chains.get(track.id);
+      const shape = chainShape(strip.devices) + (chainReady(ctx, strip.devices) ? "" : "~") + strip.devices.map((d) => `@${listens(d) ?? ""}`).join(""), have0 = this.chains.get(strip.id);
       if (!have0 || have0.shape !== shape) {
         if (have0) { try { input.disconnect(have0.first); } catch { /* already apart */ } for (const [from, to] of have0.sides) { try { from.disconnect(to, 0, 1); } catch { /* already apart */ } } have0.live.forEach((l) => l.dispose()); }
         const live = new Map<string, LiveDevice>(), sides: [AudioNode, AudioNode][] = [];
         let from: AudioNode = input, first: AudioNode | undefined;
-        for (const d of track.devices) { const l = buildDevice(ctx, d, song.bpm, this.began); if (!l) continue; from.connect(l.input); first ??= l.input; from = l.output; live.set(d.id, l);
+        for (const d of strip.devices) { const l = buildDevice(ctx, d, song.bpm, this.began); if (!l) continue; from.connect(l.input); first ??= l.input; from = l.output; live.set(d.id, l);
           const heard = listens(d), source = heard ? this.ins.get(heard) : undefined;       // a sidechain: the other track's sound before its effects and level
           if (l.side && source) { source.connect(l.side, 0, 1); sides.push([source, l.side]); } }
         from.connect(out);
-        this.chains.set(track.id, { shape, live, first: first ?? out, sides });
-      } else for (const d of track.devices) have0.live.get(d.id)?.update(d, song.bpm, this.began);
-      if (track.kind !== "synth") return;
-      const have = this.engines.get(track.id);
+        this.chains.set(strip.id, { shape, live, first: first ?? out, sides });
+      } else for (const d of strip.devices) have0.live.get(d.id)?.update(d, song.bpm, this.began);
+    }
+    // Sends: some of a track, after its level and pan, into a return track's input. A wire is made the first
+    // time a send is turned up and taken away when its track or its return goes.
+    const wanted = new Set<string>();
+    for (const track of song.tracks) for (const ret of song.returns) {
+      const v = track.sends?.[ret.id] ?? 0, key = `${track.id}>${ret.id}`; let wire = this.sends.get(key);
+      if (!wire && v > 0) { wire = ctx.createGain(); wire.gain.value = 0; this.pans.get(track.id)!.connect(wire); wire.connect(this.ins.get(ret.id)!); this.sends.set(key, wire); }
+      if (wire) { wire.gain.setTargetAtTime(sendGain(v), t, 0.015); wanted.add(key); }
+    }
+    for (const [key, wire] of this.sends) if (!wanted.has(key)) { wire.disconnect(); const from = this.pans.get(key.split(">")[0]!); try { from?.disconnect(wire); } catch { /* already apart */ } this.sends.delete(key); }
+    for (const track of song.tracks) {
+      if (track.kind !== "synth") continue;
+      const have = this.engines.get(track.id), input = this.ins.get(track.id)!;
       if (!have) { const engine = new Engine(track.patch, ctx, input); if (ctx.state === "running") void engine.start(); this.engines.set(track.id, { engine, patch: track.patch }); }
       else if (have.patch !== track.patch) { have.engine.update(track.patch); have.patch = track.patch; }
-    });
+    }
     for (const [id, out] of this.outs) {
-      if (song.tracks.some((x) => x.id === id)) continue;
+      if (strips.some((x) => x.id === id)) continue;
       const e = this.engines.get(id);
       if (e) { e.engine.stopScheduled(); e.engine.dispose(); this.engines.delete(id); }
       out.disconnect(); this.pans.get(id)?.disconnect(); this.pans.delete(id); this.taps.delete(id); this.outs.delete(id); this.ins.get(id)?.disconnect(); this.ins.delete(id); this.chains.get(id)?.live.forEach((l) => l.dispose()); this.chains.delete(id);

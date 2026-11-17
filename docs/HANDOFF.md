@@ -487,3 +487,8 @@ Third pass: the EQ curves show the live spectrum behind them (the owner reported
 **automation lanes** exist: an A button on each track opens lines along the song that move its level, pan
 or any effect slider, live and in exported files (`src/daw/automation.ts`). Not yet: automating the synth's
 own knobs, sliders that move on screen, and the automation lessons the owner asked for.
+Fourth pass: automation now reaches every continuous knob of a synth track's synth; faders, pan and effect
+sliders move on screen while automated (the synth's own knobs do not yet); the arrangement zooms (+ and −);
+and there are **return tracks with sends** (up to two; A starts with a reverb, B with a delay). Details and
+measurements are in `CLAUDE.md` ("Closer to Ableton, fourth pass"). Still to do there: a time marker and
+free-length clips, grid sizes, Session View, note effects on live keys, and the automation lessons.

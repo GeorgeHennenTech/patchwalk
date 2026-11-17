@@ -5,7 +5,7 @@ import { INITIAL, type SynthState } from "../synth/params";
 import { clean } from "../synth/patches";
 import { addDevice, tidyDevices, type Device } from "./devices";
 import { applyNoteFx, type FxNote } from "./notefx";
-import { tidyAuto, type AutoLane } from "./automation";
+import { carryAuto, tidyAuto, type AutoLane } from "./automation";
 import { tidySampler, type SamplerSet } from "./sampler";
 import { SLICE_COUNTS, slicePads, BPM_MAX, BPM_MIN, STEPS_PER_BAR, STRENGTH, SWING_MAX, audibleOf, defaultPads, freeId, stepSeconds, stepTime, tidyPads, tidySteps, type Hit, type Lane, type Pad, type Pattern } from "./drums";
 
@@ -20,7 +20,7 @@ interface TrackBase { id: string; name: string; /** 0 to 100 */ level: number; /
  * A return track: it has no clips and no instrument. Tracks send some of their sound to it (after their own
  * level and pan), it runs that through its effects, and the result joins the song. One reverb can then serve every track.
  */
-export interface ReturnTrack { id: string; name: string; level: number; pan: number; mute: boolean; devices: Device[] }
+export interface ReturnTrack { id: string; name: string; level: number; pan: number; mute: boolean; devices: Device[]; /** automation of its level, pan and effects */ auto?: AutoLane[] }
 export const MAX_RETURNS = 2, RETURN_IDS = ["ra", "rb"] as const;
 /** A send's 0-to-100 as a gain: 100 sends the track at its full level, 50 a quarter of that (12 dB less). Our own choice of curve. */
 export const sendGain = (v: number) => (clamp(v, 0, 100) / 100) ** 2;
@@ -28,7 +28,7 @@ export interface DrumTrack extends TrackBase { kind: "drums"; pads: Pad[]; clips
 export interface SynthTrack extends TrackBase { kind: "synth"; patch: SynthState; clips: SynthClip[]; /** note effects, in front of the synth: they change the clip's notes before they are played */ noteFx: Device[]; /** when set, the track's instrument is a sampler playing this sound file, and the synth is silent */ sampler?: SamplerSet }
 export type Track = DrumTrack | SynthTrack;
 export type Clip = DrumClip | SynthClip;
-export interface Song { name: string; bpm: number; swing: number; /** length in bars */ bars: number; tracks: Track[]; /** the master volume, 0 to 100 */ volume: number; /** return tracks: A, then B */ returns: ReturnTrack[]; /** effects on everything, just before the master volume */ masterFx?: Device[]; /** the key the song is in: the piano roll lights these notes' rows */ scale?: { root: number; name: string }; /** named places along the song (intro, drop, break), by the bar they sit on */ markers?: { bar: number; name: string }[] }
+export interface Song { name: string; bpm: number; swing: number; /** length in bars */ bars: number; tracks: Track[]; /** the master volume, 0 to 100 */ volume: number; /** return tracks: A, then B */ returns: ReturnTrack[]; /** effects on everything, just before the master volume */ masterFx?: Device[]; /** the key the song is in: the piano roll lights these notes' rows */ scale?: { root: number; name: string }; /** named places along the song (intro, drop, break), by the bar they sit on */ markers?: { bar: number; name: string }[]; /** automation of the master volume and the master's effects */ masterAuto?: AutoLane[]; /** when true, a clip that is moved leaves its automation where it was */ lockAuto?: boolean }
 export const MASTER_START = 85;
 /** The master volume as a gain: its starting place is a little under full, to leave room when tracks add up. */
 export const masterGain = (volume: number) => 0.9 * (clamp(volume, 0, 100) / MASTER_START);
@@ -128,8 +128,11 @@ export const toggleClipOff = (s: Song, trackId: string, clipId: string): Song =>
 /** Move a clip by whole bars, if the place is free. */
 export function moveClip(s: Song, trackId: string, clipId: string, by: number): Song {
   const t = trackOf(s, trackId), c = clipOf(t, clipId);
-  return t && c && isFree(s, t, c.start + by, c.bars, c.id) ? withClip(s, trackId, clipId, (x) => ({ ...x, start: x.start + by })) : s;
+  if (!t || !c || !isFree(s, t, c.start + by, c.bars, c.id)) return s;
+  return carried(withClip(s, trackId, clipId, (x) => ({ ...x, start: x.start + by })), trackId, c.start, c.start + by, c.bars, false);
 }
+/** A clip moved along its track: its automation goes with it, unless the song says automation is locked in place. */
+const carried = (s: Song, trackId: string, fromBar: number, toBar: number, bars: number, copy: boolean): Song => (s.lockAuto ? s : withTrack(s, trackId, (t) => { const auto = carryAuto(t.auto, fromBar * STEPS_PER_BAR, toBar * STEPS_PER_BAR, bars * STEPS_PER_BAR, copy); return auto === t.auto ? t : { ...t, auto }; }));
 /** Change a clip's length, if the kind of track allows it and there is room. A drum clip made longer repeats itself. */
 export function setClipBars(s: Song, trackId: string, clipId: string, bars: number): Song {
   const t = trackOf(s, trackId), c = clipOf(t, clipId);
@@ -321,10 +324,12 @@ export function tidySong(raw: unknown): Song | undefined {
   const song: Song = { name: typeof r.name === "string" ? r.name.slice(0, 40) : "Song", bpm: clamp(Math.round(Number(r.bpm) || 120), BPM_MIN, BPM_MAX), swing: clamp(Math.round(Number(r.swing) || 0), 0, SWING_MAX), bars, tracks: [], returns: [], volume: r.volume === undefined ? MASTER_START : clamp(Math.round(Number(r.volume) || 0), 0, 100) };
   for (const g of Array.isArray(r.returns) ? r.returns : []) {
     if (!g || typeof g !== "object" || !(RETURN_IDS as readonly string[]).includes(g.id) || song.returns.some((x) => x.id === g.id)) continue;
-    song.returns.push({ id: g.id, name: typeof g.name === "string" ? g.name.slice(0, 24) : "Return", level: clamp(Number(g.level ?? 80) || 0, 0, 100), pan: clamp(Math.round(Number(g.pan) || 0), -100, 100), mute: g.mute === true, devices: tidyDevices(g.devices) });
+    song.returns.push({ id: g.id, name: typeof g.name === "string" ? g.name.slice(0, 24) : "Return", level: clamp(Number(g.level ?? 80) || 0, 0, 100), pan: clamp(Math.round(Number(g.pan) || 0), -100, 100), mute: g.mute === true, devices: tidyDevices(g.devices), ...(tidyAuto((g as { auto?: unknown }).auto, bars * STEPS_PER_BAR).length ? { auto: tidyAuto((g as { auto?: unknown }).auto, bars * STEPS_PER_BAR) } : {}) });
   }
   song.returns.sort((a, b) => a.id.localeCompare(b.id));
   const mfx = tidyDevices((r as { masterFx?: unknown }).masterFx); if (mfx.length) song.masterFx = mfx;
+  const ma = tidyAuto((r as { masterAuto?: unknown }).masterAuto, bars * STEPS_PER_BAR); if (ma.length) song.masterAuto = ma;
+  if ((r as { lockAuto?: unknown }).lockAuto === true) song.lockAuto = true;
   const marks = (r as { markers?: unknown }).markers; if (Array.isArray(marks)) { const out: { bar: number; name: string }[] = []; for (const m of marks) if (m && Number.isInteger(m.bar) && m.bar >= 0 && m.bar < bars && typeof m.name === "string" && m.name.trim() && !out.some((x) => x.bar === m.bar)) out.push({ bar: m.bar, name: m.name.trim().slice(0, 20) }); if (out.length) song.markers = out.sort((a, b) => a.bar - b.bar); }
   const sc = (r as { scale?: { root?: unknown; name?: unknown } }).scale; if (sc && typeof sc.name === "string" && Number.isInteger(sc.root) && (sc.root as number) >= 0 && (sc.root as number) < 12) song.scale = { root: sc.root as number, name: sc.name.slice(0, 30) };
   const tidySends = (raw: unknown) => { const out: Record<string, number> = {}; if (raw && typeof raw === "object") for (const x of song.returns) { const v = Number((raw as Record<string, unknown>)[x.id]); if (Number.isFinite(v) && v > 0) out[x.id] = clamp(Math.round(v), 0, 100); } return out; };
@@ -367,6 +372,7 @@ export function placeClip(s: Song, fromTrack: string, clipId: string, toTrack: s
   const id = same && !copy ? c.id : freeId(to.clips.map((x) => x.id), "c"), placed = JSON.parse(JSON.stringify({ ...body, id, start: bar })) as Clip;
   let song = copy ? s : withTrack(s, from.id, (t) => ({ ...t, clips: t.clips.filter((x) => x.id !== c.id) } as Track));
   song = withTrack(song, to.id, (t) => ({ ...t, clips: [...t.clips, placed] } as Track));
+  if (same) song = carried(song, to.id, c.start, bar, c.bars, copy);          // on another track the settings are different ones, so the lines stay
   return { song, track: to.id, clip: id };
 }
 /** Cut a clip of several bars into one-bar clips. A note that crosses a bar line is cut off at it. */

@@ -26,8 +26,9 @@ const ZOOMS = [0, 70, 120, 200, 320], ZOOM_KEY = "patchwalk.zoom.v1", SIDE = 330
  * One automation lane: a line along the song. Click an empty place to add a point, drag a point to move it
  * (sideways only as far as its neighbours), double-click a point to remove it.
  */
-function AutoLaneRow({ track, lane, index, steps, cols, onLanes, onMark }: { track: Track; lane: AutoLane; index: number; steps: number; cols: React.CSSProperties; onLanes: (next: AutoLane[]) => void; onMark: () => void }) {
-  const area = useRef<HTMLDivElement>(null), held = useRef<number | null>(null), lanes = useRef(track.auto); lanes.current = track.auto;
+type Strip = { name: string; auto?: AutoLane[]; devices: Track["devices"]; patch?: object; sampler?: object; master?: boolean };
+function AutoLaneRow({ track, lane, index, steps, cols, onLanes, onMark }: { track: Strip; lane: AutoLane; index: number; steps: number; cols: React.CSSProperties; onLanes: (next: AutoLane[]) => void; onMark: () => void }) {
+  const area = useRef<HTMLDivElement>(null), held = useRef<number | null>(null), lanes = useRef(track.auto ?? []); lanes.current = track.auto ?? [];
   const [tip, setTip] = useState("");
   const targets = targetsOf(track), target = targets.find((t) => t.id === lane.target);
   const at = (e: { clientX: number; clientY: number }) => { const r = area.current!.getBoundingClientRect(); return { at: ((e.clientX - r.left) / r.width) * steps, v: 1 - (e.clientY - r.top - 4) / (r.height - 8) }; };
@@ -53,7 +54,7 @@ function AutoLaneRow({ track, lane, index, steps, cols, onLanes, onMark }: { tra
       <div className="arr-side">
         <select className="auto-target" value={lane.target} aria-label={`What this lane on ${track.name} moves`} onChange={(e) => onLanes(retargetLane(lanes.current, index, e.target.value))}>
           {!target && <option value={lane.target}>(setting no longer there)</option>}
-          {[...new Set(targets.map((t) => t.group))].map((g) => <optgroup key={g} label={g}>{targets.filter((t) => t.group === g).map((t) => <option key={t.id} value={t.id} disabled={t.id !== lane.target && track.auto.some((l) => l.target === t.id)}>{t.label}</option>)}</optgroup>)}
+          {[...new Set(targets.map((t) => t.group))].map((g) => <optgroup key={g} label={g}>{targets.filter((t) => t.group === g).map((t) => <option key={t.id} value={t.id} disabled={t.id !== lane.target && (track.auto ?? []).some((l) => l.target === t.id)}>{t.label}</option>)}</optgroup>)}
         </select>
         <span className="auto-tip">{tip || (target && pts.length ? `${pts.length} point${pts.length === 1 ? "" : "s"}` : "")}</span>
         <button aria-label="Remove this lane" title="Remove this lane and its points" onClick={() => { onMark(); onLanes(removeLane(lanes.current, index)); }}>×</button>
@@ -103,6 +104,13 @@ export function Arrangement({ song, live, back, onBack, onSeek, onMarker, onChan
   // zoomed in, the window follows the play line
   const bar = step >= 0 ? Math.floor(step / STEPS_PER_BAR) : -1;
   useEffect(() => { const el = box.current; if (!el || !zoom || bar < 0) return; const x = bar * zoom, seen = el.clientWidth - SIDE - (song.returns.length ? 80 : 0); if (x < el.scrollLeft || x + zoom > el.scrollLeft + seen) el.scrollLeft = Math.max(0, x - zoom); }, [bar, zoom]);
+  // automation for a return track or the master: the A button and the lanes under the row
+  const autoButton = (id: string, strip: Strip, set: (next: AutoLane[]) => void) => <button className={`trk-auto${open.has(id) ? " on" : ""}`} aria-pressed={open.has(id)} aria-label={`Automation for ${strip.name}`} title="Show its automation: lines along the song that move its settings as it plays" onMouseDown={(e) => e.stopPropagation()} onClick={() => { setOpen((o) => { const n = new Set(o); if (n.has(id)) n.delete(id); else n.add(id); return n; }); if (!open.has(id) && !(strip.auto ?? []).length) set(addLane([], strip)); }}>A{(strip.auto ?? []).some((l) => l.points.length) ? "•" : ""}</button>;
+  const lanesFor = (id: string, strip: Strip, set: (next: AutoLane[]) => void) => open.has(id) && <>
+    {(strip.auto ?? []).map((lane, li) => <AutoLaneRow key={lane.target} track={strip} lane={lane} index={li} steps={song.bars * STEPS_PER_BAR} cols={cols} onMark={onMark} onLanes={set} />)}
+    {(strip.auto ?? []).length < MAX_LANES && <div className="arr-row arr-auto more"><div className="arr-bars" style={cols} /><div className="arr-side"><button onClick={() => set(addLane(strip.auto ?? [], strip))} title="Another line, for another setting">+ Automation lane</button></div></div>}
+  </>;
+  const master: Strip = { name: "Master", auto: song.masterAuto, devices: song.masterFx ?? [], master: true }, setMaster = (next: AutoLane[]) => onChange((s) => ({ ...s, masterAuto: next }));
   return (
     <div className={`arr${zoom ? " zoomed" : ""}${song.returns.length ? " sends" : ""}`} role="group" aria-label="Arrangement" ref={box} style={{ "--barsw": zoom ? `${song.bars * zoom}px` : "0px" } as React.CSSProperties}>
       <div className="arr-row arr-top">
@@ -150,8 +158,9 @@ export function Arrangement({ song, live, back, onBack, onSeek, onMarker, onChan
         </>}
         </Fragment>
       ); })}
-      {song.returns.map((r) => (
-        <div key={r.id} className={`arr-row arr-return${back === r.id ? " picked" : ""}${r.mute ? " muted" : ""}`}>
+      {song.returns.map((r) => { const setR = (next: AutoLane[]) => onChange((s) => setReturn(s, r.id, { auto: next })); return (
+        <Fragment key={r.id}>
+        <div className={`arr-row arr-return${back === r.id ? " picked" : ""}${r.mute ? " muted" : ""}`}>
           <div className="arr-bars" style={cols} onMouseDown={() => onBack?.(r.id)}><span className="arr-return-note">Return track: tracks send sound here with their {r.id === "ra" ? "first" : "second"} send slider; it comes back through these effects.</span></div>
           <div className="arr-side" onMouseDown={() => onBack?.(r.id)}>
             <input type="text" className="arr-name" value={r.name} maxLength={24} aria-label="Return track name" onChange={(e) => onChange((s) => setReturn(s, r.id, { name: e.target.value }))} onKeyDown={(e) => { if (e.key === "Enter" || e.key === "Escape") (e.target as HTMLInputElement).blur(); }} />
@@ -161,20 +170,25 @@ export function Arrangement({ song, live, back, onBack, onSeek, onMarker, onChan
               {levelOf && <LevelBar read={() => levelOf(r.id)} />}
             </span>
             <input type="range" className="arr-pan" min={-100} max={100} step={5} value={r.pan} aria-label={`${r.name} pan`} title="Pan (double-click to centre)" onChange={(e) => onChange((s) => setReturn(s, r.id, { pan: Number(e.target.value) }))} onDoubleClick={() => onChange((s) => setReturn(s, r.id, { pan: 0 }))} />
+            {autoButton(r.id, r, setR)}
             <button className="arr-x" aria-label={`Delete return track ${r.name}`} title="Delete this return track" onClick={() => { if (window.confirm(`Delete the return track “${r.name}”?`)) { onMark(); onChange((s) => removeReturn(s, r.id)); } }}>×</button>
           </div>
         </div>
-      ))}
+        {lanesFor(r.id, r, setR)}
+        </Fragment>
+      ); })}
       <div className={`arr-row arr-master${back === "master" ? " picked" : ""}`}>
         <div className="arr-bars" style={cols} onMouseDown={() => onBack?.("master")}><span className="arr-return-note">{song.masterFx?.length ? `Master: ${song.masterFx.length} effect${song.masterFx.length === 1 ? "" : "s"} on everything. Click to see them.` : "Master: click here to put effects on everything (a limiter, an EQ)."}</span></div>
         <div className="arr-side" onMouseDown={() => onBack?.("master")}>
           <span className="arr-name master">Master</span>
           <span className="arr-mix">
-            <input type="range" className="arr-level" min={0} max={100} value={song.volume} aria-label="Master volume" title={`Master volume ${song.volume}`} onChange={(e) => onChange((s) => ({ ...s, volume: Number(e.target.value) }))} onDoubleClick={() => onChange((s) => ({ ...s, volume: MASTER_START }))} />
+            <input type="range" className="arr-level" min={0} max={100} value={live?.volume ?? song.volume} aria-label="Master volume" title={`Master volume ${live?.volume ?? song.volume}`} onChange={(e) => onChange((s) => ({ ...s, volume: Number(e.target.value) }))} onDoubleClick={() => onChange((s) => ({ ...s, volume: MASTER_START }))} />
             {masterLevel && <LevelBar read={masterLevel} wide />}
           </span>
+          {autoButton("master", master, setMaster)}
         </div>
       </div>
+      {lanesFor("master", master, setMaster)}
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { MAX_LANES, SYNTH_TARGETS, addLane, automate, automateTrack, dropPoint, fromUnit, hasAutomation, movePoint, putPoint, removeLane, retargetLane, targetsOf, tidyAuto, toUnit, valueAt } from "../src/daw/automation";
+import { carryAuto, recordMoves, masterStrip, MAX_LANES, SYNTH_TARGETS, addLane, automate, automateTrack, dropPoint, fromUnit, hasAutomation, movePoint, putPoint, removeLane, retargetLane, targetsOf, tidyAuto, toUnit, valueAt } from "../src/daw/automation";
 import { addDevice, setDeviceParam } from "../src/daw/devices";
-import { newSong, setAuto, setDevices, tidySong } from "../src/daw/song";
+import { addClip, addReturn, moveClip, placeClip, newSong, setAuto, setDevices, tidySong } from "../src/daw/song";
 
 const pts = [{ at: 16, v: 0 }, { at: 32, v: 1 }, { at: 48, v: 0.5 }];
 describe("automation", () => {
@@ -86,5 +86,45 @@ describe("automating the sampler's knobs", () => {
     expect(ids).toContain("m:start"); expect(ids.some((x) => x.startsWith("s:"))).toBe(false);
     expect((automateTrack(track, 8).sampler as typeof sampler).start).toBe(50);
     expect(automateTrack(track, 0).sampler).toBe(sampler);
+  });
+});
+
+describe("automation that goes with its clip", () => {
+  const lane = { target: "level", points: [{ at: 2, v: 0.2 }, { at: 10, v: 0.9 }, { at: 20, v: 0.5 }, { at: 40, v: 0.1 }] };
+  it("moves the points under the old stretch and replaces what was where they land", () => {
+    expect(carryAuto([lane], 0, 32, 16)[0]!.points).toEqual([{ at: 20, v: 0.5 }, { at: 34, v: 0.2 }, { at: 42, v: 0.9 }]);
+    expect(carryAuto([lane], 0, 32, 16, true)[0]!.points.map((p) => p.at)).toEqual([2, 10, 20, 34, 42]);
+    const empty = [{ target: "pan", points: [{ at: 50, v: 1 }] }]; expect(carryAuto(empty, 0, 16, 16)).toBe(empty);
+  });
+  it("a clip dragged along its track takes its automation, unless the song locks it", () => {
+    let s = addClip(newSong(), "t1", 0)!.song; const id = s.tracks[0]!.clips[0]!.id;
+    s = setAuto(s, "t1", [{ target: "level", points: [{ at: 4, v: 0.3 }] }]);
+    expect(placeClip(s, "t1", id, "t1", 3)!.song.tracks[0]!.auto[0]!.points).toEqual([{ at: 52, v: 0.3 }]);
+    expect(moveClip(s, "t1", id, 1).tracks[0]!.auto[0]!.points).toEqual([{ at: 20, v: 0.3 }]);
+    expect(placeClip({ ...s, lockAuto: true }, "t1", id, "t1", 3)!.song.tracks[0]!.auto[0]!.points).toEqual([{ at: 4, v: 0.3 }]);
+  });
+});
+describe("automation on return tracks and the master", () => {
+  it("moves a return's level and the master volume, and counts as automation", () => {
+    let s = addReturn(newSong());
+    s = { ...s, returns: s.returns.map((r) => ({ ...r, auto: [{ target: "level", points: [{ at: 0, v: 0 }, { at: 16, v: 1 }] }] })), masterAuto: [{ target: "level", points: [{ at: 0, v: 1 }, { at: 16, v: 0 }] }] };
+    expect(hasAutomation(s)).toBe(true);
+    const at8 = automate(s, 8);
+    expect(at8.returns[0]!.level).toBe(50); expect(at8.volume).toBe(50); expect(s.volume).toBe(85);
+    expect(targetsOf(masterStrip(s)).map((t) => t.label)).toEqual(["Master volume"]);
+    const back = tidySong(JSON.parse(JSON.stringify(s)))!;
+    expect(back.masterAuto).toEqual(s.masterAuto); expect(back.returns[0]!.auto).toEqual(s.returns[0]!.auto);
+  });
+});
+describe("recording automation", () => {
+  it("writes a point for each setting that was moved, making a lane when there is room", () => {
+    const a = newSong(), b = { ...a, volume: 40, tracks: a.tracks.map((t, i) => (i === 0 ? { ...t, level: 20, pan: -50 } : t)) };
+    const r = recordMoves(a, b, 12, 128);
+    expect(r.tracks[0]!.auto.map((l) => [l.target, l.points])).toEqual([["level", [{ at: 12, v: 0.2 }]], ["pan", [{ at: 12, v: 0.25 }]]]);
+    expect(r.masterAuto).toEqual([{ target: "level", points: [{ at: 12, v: 0.4 }] }]);
+    expect(r.tracks[1]!.auto).toEqual([]);
+    expect(recordMoves(a, a, 12, 128)).toBe(a);
+    const later = recordMoves(r, { ...r, tracks: r.tracks.map((t, i) => (i === 0 ? { ...t, level: 60 } : t)) }, 20, 128);
+    expect(later.tracks[0]!.auto[0]!.points).toEqual([{ at: 12, v: 0.2 }, { at: 20, v: 0.6 }]);
   });
 });

@@ -6,7 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { DrumGrid } from "./DrumGrid";
 import { Arrangement } from "./studio/Arrangement";
 import { DrumRack } from "./studio/DrumRack";
-import { automate } from "../daw/automation";
+import { automate, recordMoves } from "../daw/automation";
 import { DRAG_DEVICE, DeviceChain } from "./studio/DeviceChain";
 import { SamplerPanel } from "./studio/SamplerPanel";
 import { newSampler } from "../daw/sampler";
@@ -59,13 +59,17 @@ const remember = (key: string, value: string) => { try { localStorage.setItem(ke
 
 export default function DawView() {
   const studio = useStudio();
-  const { song, change, playing, toggle, playFrom, step, transport, undo, redo, samples } = studio;
+  const { song, playing, toggle, playFrom, step, transport, undo, redo, samples } = studio;
+  // While Record is on and the song plays, a fader or knob that is moved writes automation where the song has got to.
+  const recRef = useRef(false);
+  const change: typeof studio.change = (next) => studio.change((s) => { const made = typeof next === "function" ? next(s) : next; const at = recRef.current ? transport.position() : -1; return at >= 0 && made !== s ? recordMoves(s, made, Math.round(at), made.bars * STEPS_PER_BAR) : made; });
   const [picked, setPicked] = useState<{ track?: string; clip?: string }>(() => ({ track: song.tracks[0]?.id, clip: song.tracks[0]?.clips[0]?.id }));
   const [pad, setPad] = useState(0);
   /** more clips of the selected track, picked with Shift or Ctrl/Cmd: a break, Delete and 0 act on all of them */
   const [also, setAlso] = useState<string[]>([]);
   const [loopClip, setLoopClip] = useState(false);
   const [rec, setRec] = useState(false);
+  recRef.current = rec;
   const [click, setClick] = useState(false);
   const [draw, setDraw] = useState(false);
   const [keysOn, setKeysOn] = useState(true);
@@ -294,6 +298,7 @@ export default function DawView() {
         <div className="tb-group">
           <label className="tb-num" title="Tempo, in beats a minute"><input type="number" min={BPM_MIN} max={BPM_MAX} value={song.bpm} aria-label="Tempo" onChange={(e) => change((s) => setSongTempo(s, Number(e.target.value) || s.bpm))} /> bpm</label>
           <label className="tb-num" title="Swing: plays every second step late. 0 is straight; around 55 to 65 is a shuffle."><input type="number" min={0} max={SWING_MAX} value={song.swing} aria-label="Swing" onChange={(e) => change((s) => setSongSwing(s, Number(e.target.value) || 0))} /> % swing</label>
+          <button className={`tb-tog${song.lockAuto ? " on" : ""}`} aria-pressed={!!song.lockAuto} onClick={() => change((s) => (s.lockAuto ? (({ lockAuto: _off, ...rest }) => rest)(s) as Song : { ...s, lockAuto: true }))} title="Lock automation: when on, a clip that is moved leaves its automation where it was. When off, the automation under a clip moves with it.">Lock auto</button>
           <button className="tb-tog" onClick={tap} title="Tap tempo: click in time with the beat you want, three or more times">Tap</button>
           <button className={`tb-tog${click ? " on" : ""}`} aria-pressed={click} onClick={() => setClick(!click)} title="Metronome: a click on every beat while the song plays">Click</button>
         </div>

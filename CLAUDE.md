@@ -1468,8 +1468,22 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   sliced in eight gave pads at 301, 598, 899, 1200, 1502, 1798, 2099 and 2401 Hz; a kick 0.7 s after the
   hit was silent as usual and at -37 dB with Decay at 400; a closed hat's spectrum centred on 7.2, 9.9 and
   17 kHz with Tone at -100, 0 and +100. **What can be automated now: a track's level and pan, every knob of
-  every effect on it, every continuous synth knob or the sampler's knobs. Not: returns, the master, drum
-  pads, note effects, menus and switches, the tempo.**
+  every effect on it, every continuous synth knob or the sampler's knobs; since the next entry also returns and the master.
+  Not: drum pads, note effects, menus and switches, the tempo.**
+  **Automation: follows clips, returns and master, recording (17 Nov 2026, owner: "proceed").** (1) **A clip
+  moved along its track takes its automation with it** (`carryAuto` in `automation.ts`, called from
+  `moveClip` and `placeClip`; Alt-copy copies the points; what was drawn where it lands is replaced; a move
+  to another track leaves the lines, because the settings there are different ones). **Lock auto** in the
+  control bar (`song.lockAuto`) keeps automation where it is. (2) **Lanes on return tracks and the master**:
+  an A button on each (`ReturnTrack.auto`, `song.masterAuto`; the master's first target is "Master
+  volume"); `automate` moves `song.returns`, `song.volume` and `song.masterFx`, so playback and export
+  follow them. `Strip` in `Arrangement.tsx` is what a lane row needs to know. (3) **Recording automation**:
+  with Record on and the song playing, moving a fader, pan, effect knob, synth knob or sampler knob writes
+  a point where the song has got to (`recordMoves`, through the wrapped `change` in `DawView.tsx`); a lane
+  is made if the track has room for one. The knob's resting value changes too. Checked in a browser: a
+  master lane took the master gain 0.89, 0.72, 0.55, 0.39, 0.24 through bar 1 and back to 0.9 on stop; the
+  drum fader moved to 30 and then 70 while recording gave points at steps 5 and 10. **Not built: marking
+  automated controls, a "back to automation" button after touching one, ready-made shapes, curves.**
   **Lessons on all of this (owner, 17 Nov 2026: "we are also going to have to make lessons on all of these
   new features. this ableton course will be extensive").** Nothing is written and the lesson engine does
   not know the Studio; the plan is at the top of `docs/ABLETON_GAPS.md`. Every Studio feature needs one.

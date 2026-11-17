@@ -157,6 +157,7 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [x] Studio: a finer grid in the piano roll (1/32 and triplets, a Grid menu, Quantize with Ctrl/Cmd+U) (17 Nov 2026)
 - [x] Studio: a sampler instrument (one sound file played across the keys; held, looping or one-shot) (17 Nov 2026)
 - [x] Studio: slice a sound onto pads (4, 8 or 16), Decay and Tone on built-in drums, automation of the sampler's knobs (17 Nov 2026)
+- [x] Studio: automation moves with its clip (with a Lock switch), lanes on return tracks and the master, automation recorded by moving a control (17 Nov 2026)
 - [ ] Studio quick wins still open: overdub against replace, jump between markers, sidechain on auto filter and multiband, Utility and Saturator extras, randomize velocity (see `docs/ABLETON_GAPS.md`)
 - [ ] An extensive Ableton course: a lesson for every Studio feature, done in the Studio and ending with the same thing in Ableton Live (owner asked 17 Nov 2026; needs the lesson engine to know the Studio)
 - [ ] Studio, closer to Ableton, next (owner's standing instruction): a time marker and free-length clips; grid sizes; Session View; note effects on live keys; synth knobs that move on screen while automated; automation on return tracks

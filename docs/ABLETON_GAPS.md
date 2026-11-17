@@ -41,8 +41,8 @@ Live, cited from the manual. Every feature ticked below needs a lesson.
 - [x] Slice a sound onto pads in 4, 8 or 16 equal slices, with a clip that replays them (built 17 Nov; not yet: slicing at the hits themselves, 32 slices) (p.229-232, 613-614, 621)
 - [ ] Knobs on the built-in drums: Decay and Tone as well as Tune (built 17 Nov); not yet: click and drive per drum, a filter and saturator per pad
       (p.558-560, 657-665)
-- [ ] Automation that moves with its clip, with a lock switch (p.365)
-- [ ] Automation: record knob moves; mark automated controls; "re-enable" after touching one; ready-made
+- [x] Automation that moves with its clip, with a lock switch (p.365)
+- [ ] Automation: record knob moves (DONE 17 Nov; also lanes on returns and the master); not yet: mark automated controls; "re-enable" after touching one; ready-made
       shapes (sine, ramps, square); curved segments (p.353-365)
 - [ ] Loop brace you drag, with numeric start and length; cut, duplicate and delete time (p.121-129)
 

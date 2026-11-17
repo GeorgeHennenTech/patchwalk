@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { MAX_LANES, addLane, automate, automateTrack, dropPoint, fromUnit, hasAutomation, movePoint, putPoint, removeLane, retargetLane, targetsOf, tidyAuto, toUnit, valueAt } from "../src/daw/automation";
+import { MAX_LANES, SYNTH_TARGETS, addLane, automate, automateTrack, dropPoint, fromUnit, hasAutomation, movePoint, putPoint, removeLane, retargetLane, targetsOf, tidyAuto, toUnit, valueAt } from "../src/daw/automation";
 import { addDevice, setDeviceParam } from "../src/daw/devices";
 import { newSong, setAuto, setDevices, tidySong } from "../src/daw/song";
 
@@ -53,5 +53,27 @@ describe("automation", () => {
     expect(tidySong(JSON.parse(JSON.stringify(song)))).toEqual(song);
     expect(tidyAuto([{ target: "level", points: [{ at: 9999, v: 5 }, { at: "x", v: 0 }, { at: 3, v: -1 }, { at: 3, v: 0.5 }] }, { target: "level", points: [] }, { target: "<script>" }, null], 128)).toEqual([{ target: "level", points: [{ at: 3, v: 0 }, { at: 128, v: 1 }] }]);
     const old = JSON.parse(JSON.stringify(newSong())); delete old.tracks[0].auto; expect(tidySong(old)!.tracks[0]!.auto).toEqual([]);
+  });
+});
+
+describe("automating the synth's own knobs", () => {
+  const patch = { cutoff: 2000, resonance: 10, bpm: 120 };
+  const track = { level: 80, pan: 0, devices: [], patch, auto: [{ target: "s:cutoff", points: [{ at: 0, v: 0 }, { at: 16, v: 1 }] }] };
+  it("offers them on a track that has a synth, and not on one without", () => {
+    const ids = targetsOf(track).map((t) => t.id);
+    expect(ids).toContain("s:cutoff"); expect(ids).not.toContain("s:bpm"); expect(ids).not.toContain("s:none");
+    expect(targetsOf({ devices: [] }).some((t) => t.id.startsWith("s:"))).toBe(false);
+    expect(SYNTH_TARGETS.length).toBeGreaterThan(40);
+  });
+  it("moves the knob along its travel and leaves the rest of the sound alone", () => {
+    const lo = automateTrack(track, 0).patch as typeof patch, hi = automateTrack(track, 16).patch as typeof patch, mid = automateTrack(track, 8).patch as typeof patch;
+    expect(lo.cutoff).toBeLessThan(mid.cutoff); expect(mid.cutoff).toBeLessThan(hi.cutoff);
+    expect(mid.cutoff / lo.cutoff).toBeCloseTo(hi.cutoff / mid.cutoff, 1); // a frequency moves in ratios
+    expect(mid.resonance).toBe(10); expect(patch.cutoff).toBe(2000);
+  });
+  it("hands back the same sound while the value stands still, so the synth is not disturbed", () => {
+    expect(automateTrack(track, 40).patch).toBe(automateTrack(track, 50).patch);
+    const still = { ...track, auto: [{ target: "s:resonance", points: [{ at: 0, v: 0.1 }] }] };
+    expect(automateTrack(still, 3).patch).toBe(patch);
   });
 });

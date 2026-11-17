@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { DrumGrid } from "./DrumGrid";
 import { Arrangement } from "./studio/Arrangement";
 import { DrumRack } from "./studio/DrumRack";
+import { automate } from "../daw/automation";
 import { DeviceChain } from "./studio/DeviceChain";
 import { NOTE_FX } from "../daw/notefx";
 import { renderSong } from "../daw/render";
@@ -42,7 +43,7 @@ const KEYS: [string, string][] = [
   ["Drag in the loudness lane", "Under the piano roll: set how hard a note is played (selected notes move together)"], ["Drag an EQ dot", "Sideways for frequency, up and down for gain; wheel for sharpness; double-click for zero"],
   [`${MOD}+R`, "Rename the selected track"], [`${MOD}+S`, "Save the song"], ["Shift+click a clip", "Select several clips on one track (a break, Delete and 0 then act on all of them)"], ["0", "Switch the selected clip (or track) off and on"], ["S", "Solo the selected track (when the computer keyboard is off)"],
   ["Arrow keys", "Move selected notes a step or a semitone; with nothing selected, move between tracks and clips"], ["Shift+Up / Down", "Move selected notes an octave"], ["Shift+Left / Right", "Make selected notes shorter or longer"],
-  ["B", "Draw mode on and off"], ["M", "Computer keyboard plays notes, on and off"], ["Z / X, C / V", "Computer keyboard: octave down and up, softer and harder"],
+  ["+ / -", "Zoom the arrangement in and out"], ["B", "Draw mode on and off"], ["M", "Computer keyboard plays notes, on and off"], ["Z / X, C / V", "Computer keyboard: octave down and up, softer and harder"],
   ["Shift+Tab", "Switch the detail view between Clip and Device"], [`${MOD}+Alt+B`, "Show and hide the browser"], ["Esc", "Deselect"],
 ];
 const CATS = ["Sounds", "Drums", "Samples", "Effects", "Breaks", "Racks", "Songs"] as const;
@@ -96,6 +97,9 @@ export default function DawView() {
   };
   const open = (s: Song) => { if (playing) toggle(); change(s); pick(s.tracks[0]?.id, s.tracks[0]?.clips[0]?.id); };
   const add = (trackId: string, bar: number) => { const made = addClip(song, trackId, bar); if (made) { change(made.song); pick(trackId, made.clip); setView("clip"); } };
+  // while the song plays, sliders and faders are drawn where their automation has put them
+  const live = useMemo(() => (playing && step >= 0 ? automate(song, step) : song), [song, playing, step]);
+  const liveTrack = live.tracks.find((t) => t.id === track?.id) ?? track;
   const local = clip && step >= clip.start * STEPS_PER_BAR && step < (clip.start + clip.bars) * STEPS_PER_BAR ? step - clip.start * STEPS_PER_BAR : -1;
   const steps = clip ? clip.bars * STEPS_PER_BAR : 16;
 
@@ -311,7 +315,7 @@ export default function DawView() {
               <button onClick={() => { const next = addTrack(song, "synth", SOUNDS[0]!.name); change(next); pick(next.tracks.at(-1)?.id); }} disabled={song.tracks.length >= MAX_TRACKS}>+ Synth track</button>
             </span>
           </div>
-          <Arrangement song={song} onChange={change} onMark={() => studio.mark()} levelOf={(id) => transport.trackLevel(id)} masterLevel={() => { const l = transport.levels(); return Math.max(l.left, l.right) + 3; }} picked={picked} also={also} onPick={pick} onAdd={add} onPlace={(from, c, to, bar, copy) => { const made = placeClip(song, from, c, to, bar, copy); if (!made) { studio.mark(); return; }   /* a drop where it already is: the start of a length drag, its own step to undo */ studio.mark(); change(made.song); pick(made.track, made.clip); setNote(copy ? "Copied the clip." : "Moved the clip."); }} onBars={(t, c, bars) => change((s) => setClipBars(s, t, c, bars))} step={step} loop={loop} renaming={renaming} />
+          <Arrangement song={song} live={live} onChange={change} onMark={() => studio.mark()} levelOf={(id) => transport.trackLevel(id)} masterLevel={() => { const l = transport.levels(); return Math.max(l.left, l.right) + 3; }} picked={picked} also={also} onPick={pick} onAdd={add} onPlace={(from, c, to, bar, copy) => { const made = placeClip(song, from, c, to, bar, copy); if (!made) { studio.mark(); return; }   /* a drop where it already is: the start of a length drag, its own step to undo */ studio.mark(); change(made.song); pick(made.track, made.clip); setNote(copy ? "Copied the clip." : "Moved the clip."); }} onBars={(t, c, bars) => change((s) => setClipBars(s, t, c, bars))} step={step} loop={loop} renaming={renaming} />
         </div>
       </div>
 
@@ -335,7 +339,7 @@ export default function DawView() {
         </div>
         {view === "device" && track.kind === "synth" && <DeviceChain kind="note" devices={track.noteFx} onChange={(next) => change((s) => setNoteFx(s, track.id, next))} />}
         {track.kind === "synth" && engine && <TrackSynth key={`${track.id}:${nonce}`} engine={engine} patch={track.patch} bpm={song.bpm} show={view === "device"} keysOff={() => keysOff.current} onNote={onNote} onPatch={(p) => change((s) => setPatch(s, track.id, { ...p, bpm: s.bpm }))} />}
-        {view === "device" && <DeviceChain devices={track.devices} reduction={(id) => studio.transport.reduction(track.id, id)} analyser={(id) => studio.transport.analyser(track.id, id)} onChange={(next) => change((s) => setDevices(s, track.id, next))} />}
+        {view === "device" && <DeviceChain devices={(liveTrack ?? track).devices} reduction={(id) => studio.transport.reduction(track.id, id)} analyser={(id) => studio.transport.analyser(track.id, id)} onChange={(next) => change((s) => setDevices(s, track.id, next))} />}
         {view === "clip" && !clip && <p className="daw-hint">No clip is selected. Double-click an empty bar of this track to add one ({MOD}+Shift+M){track.clips.length ? ", or click one of its clips" : ""}.</p>}
         {view === "clip" && clip && "notes" in clip && <>
           <PianoRoll clip={clip} step={local} sel={sel} onSel={setSel} draw={draw} onNotes={(notes) => change((s) => setNotes(s, track.id, clip.id, notes))} onHear={(n) => transport.note(track.id, n)} />

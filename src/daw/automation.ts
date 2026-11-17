@@ -1,21 +1,29 @@
-// Automation: a line drawn along the song that moves a setting while it plays (a track's level or pan, or any
-// numeric setting of one of its effects). Plain data and rules; `Transport` reads `automate` as the song plays.
+// Automation: a line drawn along the song that moves a setting while it plays (a track's level or pan, any
+// numeric setting of one of its effects, or, on a synth track, any knob of the synth: `s:<knob>`). Plain data and rules; `Transport` reads `automate` as the song plays.
 // A lane is a list of points; between two points the setting moves in a straight line, before the first and
 // after the last it stays where that point put it. A lane with no points leaves the setting alone.
-import { specOf, type Device, type ParamSpec } from "./devices";
+import { specOf, type Device } from "./devices";
+import { MACRO_DESTS, PARAMS } from "../synth/params";
 
 /** `at`: sixteenth steps from the start of the song. `v`: 0 (the setting's lowest) to 1 (its highest). */
 export interface AutoPoint { at: number; v: number }
 export interface AutoLane { target: string; points: AutoPoint[] }
-export interface AutoTarget { id: string; label: string; min: number; max: number; step: number; unit?: string; log?: boolean }
+export interface AutoTarget { id: string; label: string; min: number; max: number; step: number; unit?: string; log?: boolean; /** the heading it is listed under */ group: string }
 export const MAX_LANES = 4, MAX_POINTS = 64;
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
-type Auto = { level: number; pan: number; devices: Device[]; auto?: AutoLane[] };
+type Auto = { level: number; pan: number; devices: Device[]; auto?: AutoLane[]; patch?: object };
+/**
+ * The synth's knobs a lane can move: every continuous one, except the tempo (the song sets it) and two that
+ * rebuild something too heavy to do many times a second (random phase, reverb size).
+ */
+export const SYNTH_TARGETS: string[] = MACRO_DESTS.filter((id) => !["none", "bpm", "randomPhase", "reverbSize"].includes(id));
+const SYNTH: AutoTarget[] = SYNTH_TARGETS.map((id) => { const p = PARAMS[id]!; return { id: `s:${id}`, label: p.label, min: p.min!, max: p.max!, step: p.step ?? 1, unit: p.unit, log: p.log, group: `Synth: ${p.group}` }; });
 
 /** What can be automated on a track: its level, its pan, and every slider of every effect on it (not menus or switches). */
-export function targetsOf(t: { devices: Device[] }): AutoTarget[] {
-  const out: AutoTarget[] = [{ id: "level", label: "Track level", min: 0, max: 100, step: 1 }, { id: "pan", label: "Track pan", min: -100, max: 100, step: 1 }];
-  t.devices.forEach((d, i) => { const spec = specOf(d.kind); for (const p of spec?.params ?? []) if (!p.choices) out.push({ id: `d:${d.id}:${p.id}`, label: `${i + 1} ${spec!.name}: ${p.group ? `${p.group} ` : ""}${p.label}`, min: p.min, max: p.max, step: p.step, unit: p.unit, log: p.log }); });
+export function targetsOf(t: { devices: Device[]; patch?: object }): AutoTarget[] {
+  const out: AutoTarget[] = [{ id: "level", label: "Track level", min: 0, max: 100, step: 1, group: "Track" }, { id: "pan", label: "Track pan", min: -100, max: 100, step: 1, group: "Track" }];
+  t.devices.forEach((d, i) => { const spec = specOf(d.kind); for (const p of spec?.params ?? []) if (!p.choices) out.push({ id: `d:${d.id}:${p.id}`, label: `${i + 1} ${spec!.name}: ${p.group ? `${p.group} ` : ""}${p.label}`, min: p.min, max: p.max, step: p.step, unit: p.unit, log: p.log, group: "Effects" }); });
+  if (t.patch) out.push(...SYNTH);
   return out;
 }
 /** A lane's 0-to-1 value as the setting's own value (a frequency or time moves in ratios, as its slider does). */
@@ -29,14 +37,27 @@ export function valueAt(points: readonly AutoPoint[], step: number): number | un
   return points[points.length - 1]!.v;
 }
 export const hasAutomation = (s: { tracks: { auto?: AutoLane[] }[] }) => s.tracks.some((t) => (t.auto ?? []).some((l) => l.points.length > 0));
+// A synth track's sound with its automated knobs moved. The last answer for each sound is kept, so that while
+// the values stand still the same object comes back and the synth is not told to change when nothing has.
+const patched = new WeakMap<object, { key: string; out: object }>();
+function withKnobs(patch: object, moves: [string, number][]): object {
+  const real = moves.filter(([id, v]) => (patch as Record<string, unknown>)[id] !== v);
+  if (!real.length) return patch;
+  const key = real.map(([id, v]) => `${id}=${v}`).join(","), had = patched.get(patch);
+  if (had?.key === key) return had.out;
+  const out = { ...patch, ...Object.fromEntries(real) }; patched.set(patch, { key, out });
+  return out;
+}
 /** One track with its automation applied for a place in the song. The same object when nothing is automated. */
 export function automateTrack<T extends Auto>(t: T, step: number): T {
   const lanes = (t.auto ?? []).filter((l) => l.points.length);
   if (!lanes.length) return t;
-  const targets = targetsOf(t); let next: T = t;
+  const targets = targetsOf(t), knobs: [string, number][] = []; let next: T = t;
   for (const lane of lanes) { const target = targets.find((x) => x.id === lane.target), v = valueAt(lane.points, step); if (!target || v === undefined) continue; const value = fromUnit(target, v);
     if (lane.target === "level") next = { ...next, level: value }; else if (lane.target === "pan") next = { ...next, pan: value };
+    else if (lane.target.startsWith("s:")) knobs.push([lane.target.slice(2), value]);
     else { const [, id, param] = lane.target.split(":"); next = { ...next, devices: next.devices.map((d) => (d.id === id ? { ...d, p: { ...d.p, [param!]: value } } : d)) }; } }
+  if (knobs.length && t.patch) { const patch = withKnobs(t.patch, knobs); if (patch !== t.patch) next = { ...next, patch }; }
   return next;
 }
 /** The song as it stands at a place along it: every automated setting moved to where its lane says. */
@@ -50,7 +71,7 @@ export function automate<S extends { tracks: Auto[] }>(song: S, step: number): S
 const sorted = (points: AutoPoint[]) => points.slice().sort((a, b) => a.at - b.at);
 export const tidyPoint = (p: AutoPoint, steps: number): AutoPoint => ({ at: clamp(Math.round(p.at), 0, steps), v: Number(clamp(p.v, 0, 1).toFixed(4)) });
 /** Add a lane for the first setting of the track that has none yet. */
-export function addLane(lanes: AutoLane[], t: { devices: Device[] }, target?: string): AutoLane[] {
+export function addLane(lanes: AutoLane[], t: { devices: Device[]; patch?: object }, target?: string): AutoLane[] {
   if (lanes.length >= MAX_LANES) return lanes;
   const free = targetsOf(t).find((x) => (target ? x.id === target : !lanes.some((l) => l.target === x.id)));
   return free && !lanes.some((l) => l.target === free.id) ? [...lanes, { target: free.id, points: [] }] : lanes;

@@ -516,3 +516,9 @@ tr.dim td { opacity: 0.6; }
 .daw2 .auto-pt:hover, .daw2 .auto-pt:focus-visible { background: #7ec8ff; }
 .daw2 .auto-empty { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 11px; color: var(--dim); pointer-events: none; }
 .daw2 .auto-target { flex: 1; min-width: 0; font-size: 11.5px; } .daw2 .auto-tip { flex: none; width: 74px; font-size: 11px; color: var(--dim); text-align: right; white-space: nowrap; overflow: hidden; }
+
+/* zoom: bars drawn wider than the window scroll sideways; the track column stays in view at the right */
+.daw2 .arr-bars { min-width: var(--barsw, 0px); }
+.daw2 .arr.zoomed .arr-bars { flex: none; width: var(--barsw); }
+.daw2 .arr.zoomed .arr-side { position: sticky; right: 0; z-index: 6; margin-left: auto; }
+.daw2 .arr-zoom { margin-left: auto; display: flex; gap: 2px; } .daw2 .arr-zoom button { width: 22px; height: 18px; padding: 0; line-height: 1; border: 1px solid var(--line); background: var(--s2); color: var(--ink); border-radius: 3px; font-size: 13px; } .daw2 .arr-zoom button:disabled { opacity: 0.35; }

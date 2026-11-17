@@ -203,7 +203,7 @@ tr.dim td { opacity: 0.6; }
 .drum-grid .drum-clear { width: 24px; flex: none; padding: 0; border: 0; background: none; color: #8d7a97; font-size: 1.1rem; cursor: pointer; }
 .drum-grid .drum-clear:hover { color: #ff7ab8; }
 .drum-cells { display: flex; gap: 4px; flex: 1; min-width: 0; }
-.drum-cells > * { width: var(--cell); flex: none; }
+.drum-cells > * { width: auto; flex: 1 1 0; min-width: 12px; max-width: 38px; }
 .drum-cells > :nth-child(4n+1):not(:first-child) { margin-left: 8px; }
 .drum-grid .cell, .daw-key .cell { height: var(--cell, 16px); padding: 0; border-radius: 6px; border: 1px solid #45344f; background: #2c2034; cursor: pointer; box-shadow: none; }
 .drum-grid .cell.odd { background: #231929; }
@@ -232,3 +232,15 @@ tr.dim td { opacity: 0.6; }
 .daw-save { display: flex; gap: 8px; margin-bottom: 10px; }
 .daw-save input { flex: 1; min-width: 0; padding: 6px 10px; }
 .daw-missing { margin-top: 16px; font-size: 0.9rem; }
+.drum-grid .drum-flag.sound.own { color: #7dffb0; border-color: #7dffb0; }
+.drum-grid .drum-flag.sound.on { background: #7dffb0; color: #17101c; border-color: #7dffb0; }
+.drum-lane.over { outline: 2px dashed #7dffb0; outline-offset: 2px; border-radius: 8px; }
+.daw-sound { margin-top: 10px; padding: 14px 16px; border: 2px solid var(--thread, #2a1730); border-radius: 12px; background: var(--panel); }
+.daw-sound-head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 10px; }
+.daw-sound-head h3 { margin: 0; font-size: 1.05rem; }
+.daw-sound-head .linkish { margin-left: auto; background: none; border: 0; color: var(--accent); text-decoration: underline; cursor: pointer; box-shadow: none; padding: 0; }
+.daw-sound-row { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 18px; }
+.daw-sound-note { color: var(--err, #b00020); margin: 10px 0 0; }
+.daw-sound-label { margin: 12px 0 6px; font-size: 0.85rem; }
+.daw-sound-small { margin: 10px 0 0; font-size: 0.82rem; }
+.daw-chip.on button { outline: 2px solid var(--accent); outline-offset: -2px; }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { STARTERS, STRENGTH, VOICES, audible, clearAll, emptyPattern, fromRows, nextStrength, setHit, setLane, setLength, setSwing, setTempo, stepSeconds, stepTime, strikes, tidyPattern } from "../src/daw/drums";
+import { GENRE_STARTERS, STARTERS, STRENGTH, VOICES, audible, clearAll, emptyPattern, fromRows, nextStrength, setHit, setLane, setLength, setSwing, setTempo, stepSeconds, stepTime, strikes, tidyPattern } from "../src/daw/drums";
 import { withSaved, withoutSaved } from "../src/daw/store";
 
 describe("drum pattern", () => {
@@ -52,7 +52,7 @@ describe("drum pattern", () => {
     expect(setSwing(emptyPattern(), 200).swing).toBe(75);
   });
   it("every starter has all the drums, the right length and something to play", () => {
-    for (const s of STARTERS) {
+    for (const s of [...STARTERS, ...GENRE_STARTERS]) {
       expect(s.lanes.map((l) => l.voice)).toEqual([...VOICES]);
       for (const l of s.lanes) expect(l.steps).toHaveLength(s.length);
       expect(strikes(s, 0, s.length).length).toBeGreaterThan(6);
@@ -75,5 +75,48 @@ describe("drum pattern", () => {
     expect(list.map((p) => p.name)).toEqual(["A", "B"]);
     expect(list[0]!.bpm).toBe(90);
     expect(withoutSaved(list, "A").map((p) => p.name)).toEqual(["B"]);
+  });
+});
+
+import { dropSample, setSample, tuneRate } from "../src/daw/drums";
+import { checkFile, sampleName, SAMPLE_MAX_BYTES } from "../src/daw/samples";
+describe("the learner's own drum sounds", () => {
+  it("a drum's sound and tuning travel with each hit", () => {
+    let p = setSample(fromRows("t", 120, { kick: "x...", snare: "x..." }), 0, "abc");
+    p = setLane(p, 0, { tune: 7 });
+    const [kick, snare] = strikes(p, 0, 1);
+    expect(kick).toMatchObject({ voice: "kick", sample: "abc", tune: 7 });
+    expect(snare!.sample).toBeUndefined();
+    expect("sample" in setSample(p, 0).lanes[0]!).toBe(false);
+    expect(dropSample(p, "abc").lanes[0]!.sample).toBeUndefined();
+    expect(dropSample(p, "other").lanes[0]!.sample).toBe("abc");
+  });
+  it("tuning is kept in range, and twelve semitones is double speed", () => {
+    expect(setLane(emptyPattern(), 0, { tune: 99 }).lanes[0]!.tune).toBe(12);
+    expect(tuneRate(12)).toBeCloseTo(2, 10); expect(tuneRate(-12)).toBeCloseTo(0.5, 10); expect(tuneRate(0)).toBe(1);
+  });
+  it("a stored pattern keeps its sounds and tuning, and loses nonsense", () => {
+    const p = setLane(setSample(emptyPattern("s"), 2, "id1"), 2, { tune: -5 });
+    expect(tidyPattern(JSON.parse(JSON.stringify(p)))).toEqual(p);
+    const t = tidyPattern({ lanes: [{ voice: "kick", sample: 42, tune: "high" }, { voice: "snare", sample: "x".repeat(200), tune: 400 }] })!;
+    expect(t.lanes[0]!.sample).toBeUndefined(); expect(t.lanes[0]!.tune).toBe(0);
+    expect(t.lanes[1]!.sample).toBeUndefined(); expect(t.lanes[1]!.tune).toBe(12);
+  });
+  it("says in words why a file is refused", () => {
+    expect(checkFile("kick.wav", "audio/wav", 5000)).toBeUndefined();
+    expect(checkFile("kick.WAV", "", 5000)).toBeUndefined();
+    expect(checkFile("notes.txt", "text/plain", 5000)).toMatch(/sound file/);
+    expect(checkFile("a.wav", "audio/wav", 0)).toMatch(/empty/);
+    expect(checkFile("a.wav", "audio/wav", SAMPLE_MAX_BYTES + 1)).toMatch(/12 MB/);
+    expect(checkFile("a.wav", "audio/wav", 10, 64)).toMatch(/Delete one/);
+    expect(sampleName("My Kick 01.wav")).toBe("My Kick 01");
+  });
+});
+
+describe("genre starting points", () => {
+  it("have different names and sensible tempos", () => {
+    const names = [...STARTERS, ...GENRE_STARTERS].map((s) => s.name);
+    expect(new Set(names).size).toBe(names.length);
+    for (const s of GENRE_STARTERS) { expect(s.bpm).toBeGreaterThanOrEqual(60); expect(s.bpm).toBeLessThanOrEqual(200); expect(tidyPattern(JSON.parse(JSON.stringify(s)))).toEqual(s); }
   });
 });

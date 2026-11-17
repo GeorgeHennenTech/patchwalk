@@ -1071,6 +1071,23 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   **Not heard by anyone.** It has its own audio context, separate from the practice synth: joining them
   (one clock, the synth as an instrument, a mixer) is the next piece. Not built: choosing or shaping each
   drum's sound, notes for the synth (piano roll), chaining patterns, effects, and any lesson that uses the grid.
+- **Studio: your own drum sounds, and genre starting points (17 Nov 2026, owner's requests).** The ♪ button
+  on a drum's row opens its sound drawer: "Upload a sound…", "Use the built-in drum", a Tune slider (-12 to
+  12 semitones: `tuneRate`, playback speed for a file, pitch of the tones for a built-in drum), and the
+  learner's stored sounds to click onto that drum or delete. A file can also be dragged onto a row.
+  `src/daw/samples.ts` keeps the files in the browser's IndexedDB (`patchwalk-samples`; 12 MB a file, 64
+  files; `checkFile` says in words why a file is refused). **Files never leave the browser: nothing uploads
+  them, and they are not stored with the account**, so a pattern opened in another browser plays the
+  built-in drum and says the sound is not there. A lane carries `sample` (the stored file's id) and `tune`;
+  `Kit.load` decodes a file once and `hit` plays it whole (no trim, fade or start point yet).
+  `GENRE_STARTERS` (Glitch-hop, Breakbeat, Psydub, Trip-hop, Dubstep half-time, Drum and bass, Two-step
+  garage, Glitch stutter over two bars) sit under the basic starting points: common shapes for each style
+  written for this page, not anyone's recorded beat. Checked in a browser with a generated WAV: a text file
+  was refused with its reason; the kick row then played the file, not the built-in kick, 0.4839 s apart at
+  124 bpm, at double speed with Tune at +12; it was still there after a reload; deleting it returned the
+  drum to built-in. Not heard by anyone. **Agreed next piece: an Ableton-style pad rack** (a grid of pads,
+  any number of sounds, per pad: start, length, fade, tune, level, pan, choke group; the step grid then
+  programs the pads). Arrangement only, our own look, as with the synth.
 - **"Walk me through it" (16 Nov 2026, owner's go-ahead with two rules of their own).** A second mode on the
   Ask tab (a switch, remembered): a how-to question becomes a walkthrough of steps shown one at a time.
   `api/walk.ts` answers two kinds of request: `plan` (one call with structured output over ten passages:

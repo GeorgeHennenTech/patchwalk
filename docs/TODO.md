@@ -133,7 +133,8 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [ ] Listening lab: acoustics, psychoacoustics, ear training
 - [ ] Extended synthesis methods (FM, granular and others)
 - [x] Studio tab: drum programmer (17 Nov 2026): grid, swing, strengths, saved patterns; drums synthesized
-- [ ] Studio next: one clock shared with the synth, piano roll, chaining patterns, mixer, per-drum sound, a lesson using the grid
+- [x] Studio: upload your own drum sounds (kept in the browser), tune per drum, genre starting points (17 Nov 2026)
+- [ ] Studio next: Ableton-style pad rack (pads, trim/start/fade, pan, choke groups), then: one clock shared with the synth, piano roll, chaining patterns, mixer, per-drum sound, a lesson using the grid
 - [ ] Mini DAW: tracks, mixer, automation, export
 - [ ] Genre lessons, starting with glitch-hop, breakbeat and psydub
 - [ ] Lessons on Serum itself: the matrix tab and the rest of its specialist features (50 planned)

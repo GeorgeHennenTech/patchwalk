@@ -2,7 +2,10 @@
 // today, and a lesson can show the same grid with its own pattern.
 import { useCallback, useEffect, useRef, useState } from "react";
 import { DrumMachine } from "../daw/machine";
-import { VOICE_NAMES, nextStrength, setHit, setLane, clearLane, type Hit, type Pattern, type Voice } from "../daw/drums";
+import { VOICE_NAMES, nextStrength, setHit, setLane, clearLane, dropSample, type Hit, type Pattern, type Voice } from "../daw/drums";
+import { checkFile, deleteSample, listSamples, putSample, sampleName } from "../daw/samples";
+
+export interface SampleInfo { id: string; name: string }
 
 export function useDrumMachine(initial: () => Pattern) {
   const [pattern, setPattern] = useState(initial);
@@ -30,13 +33,41 @@ export function useDrumMachine(initial: () => Pattern) {
     return () => cancelAnimationFrame(frame);
   }, [playing]);
   useEffect(() => () => { machine.current?.stop(); }, []);
-  return { pattern, change, playing, toggle, step, audition };
+  // the learner's own sounds: read from this browser's storage once, decoded so they can be struck
+  const [samples, setSamples] = useState<SampleInfo[]>([]);
+  useEffect(() => {
+    let live = true;
+    listSamples().then(async (all) => {
+      const ok: SampleInfo[] = [];
+      for (const s of all) { try { await machine.current!.load(s.id, s.bytes); ok.push({ id: s.id, name: s.name }); } catch { /* a file the browser can no longer read is left out */ } }
+      if (live) setSamples(ok);
+    }).catch(() => { /* no storage here: built-in drums still work */ });
+    return () => { live = false; };
+  }, []);
+  /** Take in a sound file. Gives back its id, or throws an Error whose message can be shown. */
+  const addSample = useCallback(async (file: File, have: number): Promise<SampleInfo> => {
+    const no = checkFile(file.name, file.type, file.size, have);
+    if (no) throw new Error(no);
+    const bytes = await file.arrayBuffer(), id = `s${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+    try { await machine.current!.load(id, bytes); } catch { throw new Error("The browser could not read that file as sound. Try saving it as a WAV."); }
+    const info = { id, name: sampleName(file.name) };
+    try { await putSample({ ...info, bytes, added: Date.now() }); } catch { machine.current!.forget(id); throw new Error("The browser would not store the file (its storage may be full or switched off)."); }
+    setSamples((list) => [...list, info]);
+    return info;
+  }, []);
+  const removeSample = useCallback((id: string) => {
+    machine.current!.forget(id); void deleteSample(id).catch(() => undefined);
+    setSamples((list) => list.filter((s) => s.id !== id));
+    change((p) => dropSample(p, id));
+  }, [change]);
+  return { pattern, change, playing, toggle, step, audition, samples, addSample, removeSample };
 }
 
 const WORDS: Record<Hit, string> = { 0: "off", 1: "soft", 2: "normal", 3: "accent" };
 
 /** One lane per drum, one cell per step. Click to put a hit in or take it out, drag to paint, Shift-click (or right-click) a hit to change how hard it is struck. */
-export function DrumGrid({ pattern, onChange, step, onAudition, lanes }: { pattern: Pattern; onChange: (p: Pattern) => void; step: number; onAudition: (v: Voice) => void; /** show only these drums (for lessons) */ lanes?: Voice[] }) {
+export function DrumGrid({ pattern, onChange, step, onAudition, lanes, onSound, open, onFile }: { pattern: Pattern; onChange: (p: Pattern) => void; step: number; onAudition: (v: Voice) => void; /** show only these drums (for lessons) */ lanes?: Voice[]; /** open this drum's sound settings */ onSound?: (lane: number) => void; open?: number; /** a sound file was dropped on this drum */ onFile?: (lane: number, file: File) => void }) {
+  const [over, setOver] = useState(-1);
   const paint = useRef<Hit | null>(null);
   useEffect(() => { const up = () => { paint.current = null; }; window.addEventListener("mouseup", up); return () => window.removeEventListener("mouseup", up); }, []);
   const press = (lane: number, i: number, hit: Hit, harder: boolean) => {
@@ -49,8 +80,12 @@ export function DrumGrid({ pattern, onChange, step, onAudition, lanes }: { patte
   return (
     <div className={`drum-grid len${pattern.length}`} onContextMenu={(e) => e.preventDefault()}>
       {pattern.lanes.map((lane, li) => (lanes && !lanes.includes(lane.voice) ? null : (
-        <div className={`drum-lane${lane.mute ? " muted" : ""}`} key={lane.voice}>
+        <div className={`drum-lane${lane.mute ? " muted" : ""}${over === li ? " over" : ""}`} key={lane.voice}
+          onDragOver={onFile ? (e) => { if (e.dataTransfer.types.includes("Files")) { e.preventDefault(); setOver(li); } } : undefined}
+          onDragLeave={onFile ? () => setOver(-1) : undefined}
+          onDrop={onFile ? (e) => { e.preventDefault(); setOver(-1); const f = e.dataTransfer.files[0]; if (f) onFile(li, f); } : undefined}>
           <button className="drum-name" onClick={() => onAudition(lane.voice)} title="Hear this drum">{VOICE_NAMES[lane.voice]}</button>
+          {onSound && <button className={`drum-flag sound${lane.sample ? " own" : ""}${open === li ? " on" : ""}`} aria-pressed={open === li} onClick={() => onSound(li)} title={lane.sample ? "Your own sound. Click to change it" : "Choose this drum's sound"} aria-label={`${VOICE_NAMES[lane.voice]} sound`}>♪</button>}
           <button className={`drum-flag${lane.mute ? " on" : ""}`} aria-pressed={lane.mute} onClick={() => onChange(setLane(pattern, li, { mute: !lane.mute }))} title="Mute: silence this drum">M</button>
           <button className={`drum-flag solo${lane.solo ? " on" : ""}`} aria-pressed={lane.solo} onClick={() => onChange(setLane(pattern, li, { solo: !lane.solo }))} title="Solo: hear only this drum">S</button>
           <input className="drum-level" type="range" min={0} max={100} value={lane.level} aria-label={`${VOICE_NAMES[lane.voice]} level`} title={`Level ${lane.level}`} onChange={(e) => onChange(setLane(pattern, li, { level: Number(e.target.value) }))} />
@@ -72,7 +107,7 @@ export function DrumGrid({ pattern, onChange, step, onAudition, lanes }: { patte
         </div>
       )))}
       <div className="drum-lane drum-count" aria-hidden="true">
-        <span className="drum-name" /><span className="drum-flag" /><span className="drum-flag" /><span className="drum-level" />
+        <span className="drum-name" />{onSound && <span className="drum-flag" />}<span className="drum-flag" /><span className="drum-flag" /><span className="drum-level" />
         <div className="drum-cells">{Array.from({ length: pattern.length }, (_, i) => <span key={i} className={`count${i % 4 === 0 ? " beat" : ""}${i === step ? " now" : ""}`}>{i % 4 === 0 ? (i / 4) % 4 + 1 : "·"}</span>)}</div>
         <span className="drum-clear" />
       </div>

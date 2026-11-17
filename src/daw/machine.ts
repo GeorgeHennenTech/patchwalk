@@ -23,8 +23,14 @@ export class DrumMachine {
     void this.ctx.resume();
     return this.kit!;
   }
+  /** Decode one of the learner's sounds. Works before anything has been played. Gives back its length in seconds. */
+  load(id: string, bytes: ArrayBuffer): Promise<number> {
+    if (!this.ctx) { this.ctx = new AudioContext(); this.kit = new Kit(this.ctx); }
+    return this.kit!.load(id, bytes);
+  }
+  forget(id: string): void { this.kit?.forget(id); }
   /** Strike one drum now, for trying a sound. */
-  audition(voice: Voice, strength = 0.85): void { const kit = this.ready(); kit.hit(voice, this.ctx!.currentTime + 0.005, strength); }
+  audition(voice: Voice, strength = 0.85): void { const kit = this.ready(), lane = this.read().lanes.find((l) => l.voice === voice); kit.hit(voice, this.ctx!.currentTime + 0.005, strength, lane?.sample, lane?.tune ?? 0); }
   start(): void {
     if (this.playing) return;
     this.ready();
@@ -33,7 +39,7 @@ export class DrumMachine {
       const ctx = this.ctx!, p = this.read();
       // tempo and swing may have been changed since the last step: keep time from the step last handed over, not from the start
       while (this.began + stepTime(this.next, p.bpm, p.swing) < ctx.currentTime + AHEAD) {
-        for (const s of strikes(p, this.next, this.next + 1)) this.kit!.hit(s.voice, this.began + s.at, s.strength);
+        for (const s of strikes(p, this.next, this.next + 1)) this.kit!.hit(s.voice, this.began + s.at, s.strength, s.sample, s.tune);
         this.due.push({ step: this.next % p.length, at: this.began + stepTime(this.next, p.bpm, p.swing) });
         this.next++;
       }

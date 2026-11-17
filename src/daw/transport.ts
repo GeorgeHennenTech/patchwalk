@@ -7,7 +7,7 @@ import { audibleOf, stepSeconds, stepTime, type Pad } from "./drums";
 import { chainShape, type Device } from "./devices";
 import { chainReady, prepareDevices } from "./fxnodes";
 import { buildDevice, type LiveDevice } from "./fxnodes";
-import { songEvents, type Song } from "./song";
+import { masterGain, songEvents, type Song } from "./song";
 
 const AHEAD = 0.12, EVERY_MS = 25;
 export interface Loop { start: number; bars: number }
@@ -23,6 +23,9 @@ export class Transport {
   private meterL?: AnalyserNode;
   private meterR?: AnalyserNode;
   private engines = new Map<string, { engine: Engine; patch: unknown }>();
+  /** Per track, after its level: where it sits between left and right, and a tap for its meter. */
+  private pans = new Map<string, StereoPannerNode>();
+  private taps = new Map<string, AnalyserNode>();
   private timer?: number;
   /** The audio-clock time of step 0 of this run, and the next step (counting on for ever) not yet handed over. */
   private began = 0;
@@ -32,11 +35,12 @@ export class Transport {
   loop?: Loop;
   /** The metronome: a click on every beat while the song plays. */
   click = false;
-  constructor(private read: () => Song) {}
+  /** `given`: a context to make the sound in instead of the speakers' own (used to work a whole song out as a file). */
+  constructor(private read: () => Song, private readonly given?: BaseAudioContext) {}
   get playing(): boolean { return this.timer !== undefined; }
   private boot(): void {
     if (this.ctx) return;
-    this.ctx = new AudioContext();
+    this.ctx = (this.given ?? new AudioContext()) as AudioContext;
     this.master = this.ctx.createGain(); this.master.gain.value = 0.9; this.master.connect(this.ctx.destination);
     const split = this.ctx.createChannelSplitter(2);
     this.meterL = this.ctx.createAnalyser(); this.meterR = this.ctx.createAnalyser();
@@ -49,10 +53,13 @@ export class Transport {
   sync(): void {
     if (!this.ctx) return;
     const ctx = this.ctx, song = this.read(), on = audibleOf(song.tracks), t = ctx.currentTime;
-    for (const track of song.tracks) if (!this.outs.has(track.id)) { const out = ctx.createGain(); out.gain.value = 0; out.connect(this.master!); this.outs.set(track.id, out); this.ins.set(track.id, ctx.createGain()); }
+    this.master!.gain.setTargetAtTime(masterGain(song.volume), t, 0.015);
+    for (const track of song.tracks) if (!this.outs.has(track.id)) { const out = ctx.createGain(), pan = ctx.createStereoPanner(), tap = ctx.createAnalyser(); out.gain.value = 0; tap.fftSize = 1024; out.connect(pan); pan.connect(this.master!); pan.connect(tap);
+      this.outs.set(track.id, out); this.pans.set(track.id, pan); this.taps.set(track.id, tap); this.ins.set(track.id, ctx.createGain()); }
     song.tracks.forEach((track, i) => {
       const out = this.outs.get(track.id)!, input = this.ins.get(track.id)!;
       out.gain.setTargetAtTime(on[i] ? track.level / 80 : 0, t, 0.015);
+      this.pans.get(track.id)?.pan.setTargetAtTime(track.pan / 100, t, 0.015);
       // The effects: wired again only when a device is added, removed or moved, or told to listen to a different
       // track; a setting is changed in place. "~": some devices are still loading and are passed by until they are.
       const listens = (d: Device) => ((d.p.side ?? 0) > 0 ? song.tracks[d.p.side! - 1]?.id : undefined);
@@ -76,7 +83,7 @@ export class Transport {
       if (song.tracks.some((x) => x.id === id)) continue;
       const e = this.engines.get(id);
       if (e) { e.engine.stopScheduled(); e.engine.dispose(); this.engines.delete(id); }
-      out.disconnect(); this.outs.delete(id); this.ins.get(id)?.disconnect(); this.ins.delete(id); this.chains.get(id)?.live.forEach((l) => l.dispose()); this.chains.delete(id);
+      out.disconnect(); this.pans.get(id)?.disconnect(); this.pans.delete(id); this.taps.delete(id); this.outs.delete(id); this.ins.get(id)?.disconnect(); this.ins.delete(id); this.chains.get(id)?.live.forEach((l) => l.dispose()); this.chains.delete(id);
     }
   }
   /** Make sure sound can be made (call from a click or a key press). */
@@ -96,6 +103,25 @@ export class Transport {
   levels(): { left: number; right: number } {
     const read = (a?: AnalyserNode) => { if (!a) return -120; const b = new Float32Array(a.fftSize); a.getFloatTimeDomainData(b); let s = 0; for (const v of b) s += v * v; return 10 * Math.log10(s / b.length + 1e-12); };
     return { left: read(this.meterL), right: read(this.meterR) };
+  }
+  /** How loud one track is right now, after its level and pan: its peak in dB (very low when silent). */
+  trackLevel(trackId: string): number { const a = this.taps.get(trackId); if (!a) return -120; const b = new Float32Array(a.fftSize); a.getFloatTimeDomainData(b); let m = 0; for (const v of b) { const x = Math.abs(v); if (x > m) m = x; } return 20 * Math.log10(m + 1e-6); }
+  /**
+   * Work the whole song out as sound, start to finish, faster than it plays: for saving it as a file. Only on a
+   * transport that was given an offline context. Every hit and note is handed over at once, then the browser
+   * renders. `tail` seconds are left at the end for echoes and reverb to die away.
+   */
+  async render(): Promise<AudioBuffer> {
+    this.boot();
+    const ctx = this.ctx as unknown as OfflineAudioContext, song = this.read();
+    await prepareDevices(ctx);
+    this.began = 0.05; this.sync();
+    for (let n = 0; n < song.bars * 16; n++) for (const e of songEvents(song, n, n + 1)) {
+      const at = this.began + e.at;
+      if (e.kind === "hit") this.kit!.hit(e.pad, at, e.strength, this.ins.get(e.track) ?? this.master!, e.track);
+      else this.engines.get(e.track)?.engine.playAt(e.note, at, e.seconds, e.velocity);
+    }
+    return ctx.startRendering();
   }
   /** The sound at a device that shows it (spectrum, tuner). */
   analyser(trackId: string, deviceId: string): AnalyserNode | undefined { return this.chains.get(trackId)?.live.get(deviceId)?.analyser; }
@@ -165,6 +191,6 @@ export class Transport {
     this.stop();
     for (const e of this.engines.values()) e.engine.dispose();
     this.engines.clear(); this.outs.clear(); this.ins.clear(); this.chains.clear();
-    void this.ctx?.close(); this.ctx = undefined; this.kit = undefined; this.master = undefined;
+    void (this.ctx as { close?: () => Promise<void> } | undefined)?.close?.(); this.ctx = undefined;   // an offline context has nothing to close this.kit = undefined; this.master = undefined;
   }
 }

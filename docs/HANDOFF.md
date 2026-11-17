@@ -480,3 +480,6 @@ more like Ableton.** First pass done the same day: EQ dots drag; clips drag to m
 resize from the right edge; Ctrl/Cmd+E split and Ctrl/Cmd+J consolidate; a loudness (velocity) lane under
 the piano roll. The list of what is still unlike Ableton is in `CLAUDE.md` ("Closer to Ableton, first
 pass"): pick from the top of it each time, check in a browser with bar 1 looped, and update both to-do lists.
+Second pass, same day: a mixer (pan and a meter on every track, a Master row with volume and a meter) and
+"Download .wav", which renders the whole song to a sound file. Known limit: the synth's slow modulation
+stands still in an exported file. Next candidates are listed in `CLAUDE.md` ("Closer to Ableton, second pass").

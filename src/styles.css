@@ -493,3 +493,13 @@ tr.dim td { opacity: 0.6; }
 .daw2 .arr-clip.moving { opacity: 0.45; }
 .daw2 .arr-grip { position: absolute; top: 0; right: 0; bottom: 0; width: 7px; cursor: ew-resize; }
 .daw2 .arr-clip { position: relative; }
+
+/* the mixer in each track's header: level with a meter under it, pan, and the master row */
+.daw2 .arr-side { width: 330px; }
+.daw2 .arr-mix { display: grid; gap: 2px; flex: none; width: 74px; } .daw2 .arr .arr-mix .arr-level { width: 100%; margin: 0; }
+.daw2 .lvl { display: block; height: 4px; background: #1b1b1d; border-radius: 2px; overflow: hidden; } .daw2 .lvl.wide { height: 6px; }
+.daw2 .lvl span { display: block; height: 100%; width: 0; background: #6fdc8c; } .daw2 .lvl span.hot { background: #f5c04a; } .daw2 .lvl span.over { background: #ff5b5b; }
+.daw2 .arr-pan { width: 46px; flex: none; accent-color: #9aa0a6; }
+.daw2 .arr-master .arr-bars { background: var(--s1); min-height: 30px; } .daw2 .arr-master .arr-side { border-left-color: #8a8a90; background: var(--s1); }
+.daw2 .arr-name.master { flex: 1; font-weight: 700; color: var(--ink); background: none; border: 0; padding: 0 4px; font-size: 12.5px; }
+.daw2 .arr-master .arr-mix { width: 150px; }

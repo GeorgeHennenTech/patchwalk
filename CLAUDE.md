@@ -1315,6 +1315,21 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   candidates:** a time marker and free-length clips (clips are whole bars), zoom and grid sizes, a mixer
   with pan and meters per track, a master track, automation lanes, Session View, groups, track freeze,
   audio tracks, export to a sound file, note effects on live keys.
+  **Closer to Ableton, second pass (17 Nov 2026, owner: "proceed"): mixer and export.** Every track has a
+  pan (`track.pan`, a `StereoPannerNode` after its level) and a level meter under its fader
+  (`transport.trackLevel`, `LevelBar` in `Arrangement.tsx`: green, amber within 6 dB of full, red over); a
+  **Master** row under the tracks has the song's `volume` (`masterGain`; 85 is the starting place) and its
+  own meter. **"Download .wav"** beside "Download .mid" saves the whole song as a 16-bit, 44.1 kHz stereo
+  file: `renderSong` in `src/daw/render.ts` plays the song on a second `Transport` given an
+  `OfflineAudioContext` (`Transport.render` hands over every hit and note at once), with a 2.5 s tail, and
+  `encodeWav` in `wav.ts` writes the file; the status line gives its length and loudest moment and says if
+  it clips. Checked in a browser: hard-left pan took the right side down 24 dB within the reading window,
+  halving the master took about 6 dB off, the file opened in Python's `wave` as 2 channels, 16 bit, 18.03 s
+  with sound in the bars that have clips, and drums alone, synth alone and synth through a limiter and
+  reverb all rendered. **Limit: knobs moved by the synth's "slow" modulation (the 20 ms timer) stand still
+  in an exported file, because the file is worked out faster than real time.** Nobody has listened to an
+  exported file. Still unlike Ableton: a time marker and free-length clips, zoom and grid sizes, automation
+  lanes, Session View, groups, sends and return tracks, audio tracks, note effects on live keys.
   **Two to-do lists, and both must be updated with every push (owner asked 17 Nov 2026 why the widget was
   behind):** `docs/TODO.md` (what the `/todo` pane in Claude Code reads) and the owner's "Patchwalk To-Do"
   page (https://claude.ai/artifact/7sHF6r2vvBuxa8DSkcfcPz, rows in its `todos` collection, written with

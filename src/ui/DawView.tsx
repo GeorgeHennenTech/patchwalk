@@ -8,6 +8,8 @@ import { Arrangement } from "./studio/Arrangement";
 import { DrumRack } from "./studio/DrumRack";
 import { DeviceChain } from "./studio/DeviceChain";
 import { NOTE_FX } from "../daw/notefx";
+import { renderSong } from "../daw/render";
+import { listSamples } from "../daw/samples";
 import { DEVICES, addDevice } from "../daw/devices";
 import { PianoRoll } from "./studio/PianoRoll";
 import { TrackSynth } from "./studio/TrackSynth";
@@ -21,9 +23,9 @@ import { loadPatches } from "../synth/patches";
 import type { SynthState } from "../synth/params";
 
 const fileName = (name: string) => (name.trim().replace(/[^\w-]+/g, "_") || "patchwalk");
-function download(bytes: Uint8Array, name: string): void {
+function download(bytes: Uint8Array, name: string, kind: "mid" | "wav" = "mid"): void {
   const a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([bytes as BlobPart], { type: "audio/midi" })); a.download = `${fileName(name)}.mid`; a.click();
+  a.href = URL.createObjectURL(new Blob([bytes as BlobPart], { type: kind === "wav" ? "audio/wav" : "audio/midi" })); a.download = `${fileName(name)}.${kind}`; a.click();
   window.setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 const mac = typeof navigator !== "undefined" && /mac/i.test(navigator.platform);
@@ -135,6 +137,16 @@ export default function DawView() {
   const onStrike = (lane: number) => { const p = spot(); if (!p || !pattern || !clip || !("hits" in clip) || p.at <= -0.5) return; setPattern(setHit(pattern, lane, Math.round(p.at) % p.steps, 2)); };
 
   // MIDI files out and in
+  const [exporting, setExporting] = useState(false);
+  const wavOut = async () => {
+    setExporting(true); setNote("Working the song out as a sound file…");
+    try {
+      const stored = new Map((await listSamples().catch(() => [])).map((x) => [x.id, x.bytes])), r = await renderSong(song, (id) => stored.get(id));
+      download(r.wav, song.name, "wav");
+      setNote(`Saved ${Math.round(r.seconds)} seconds of sound. Its loudest moment is ${r.peak > 0 ? `${r.peak.toFixed(1)} dB over full level, so it clips there: turn the master down by that much and download again` : `${(-r.peak).toFixed(1)} dB under full level`}.${r.missing ? ` ${r.missing} sound file${r.missing === 1 ? " was" : "s were"} not in this browser and played as the built-in drum.` : ""}`);
+    } catch { setNote("The song could not be worked out as a sound file in this browser."); }
+    setExporting(false);
+  };
   const clipOut = () => { if (!track || !clip) return; download(writeMidi({ ppq: PPQ, bpm: song.bpm, tracks: [{ name: track.name, channel: track.kind === "drums" ? 9 : 0, notes: "hits" in clip && pattern ? hitsToMidi(pattern.lanes.map((l) => l.steps)) : "notes" in clip ? notesToMidi(clip.notes) : [] }] }), `${track.name}_bar${clip.start + 1}`); };
   const clipIn = async (f: File) => {
     if (!track || !clip) return;
@@ -291,13 +303,14 @@ export default function DawView() {
             <input type="text" value={song.name} maxLength={40} aria-label="Song name" onChange={(e) => change((s) => ({ ...s, name: e.target.value }))} />
             <button onClick={keepSong} title={`Save the song here and in the library (${MOD}+S)`}>{songs.some((s) => s.name === song.name.trim()) ? "Save over it" : "Save"}</button>
             <button onClick={() => download(songToMidi(song), song.name)} title="The whole song as one MIDI file: a track per track. It carries the notes and the tempo, not the sounds.">Download .mid</button>
+            <button disabled={exporting} onClick={() => { void wavOut(); }} title="The whole song as a sound file (WAV, 16-bit, 44.1 kHz) with every track, effect and the master volume, plus a short tail for echoes. Any DAW or player opens it.">{exporting ? "Working it out…" : "Download .wav"}</button>
             <label>Length <select value={song.bars} onChange={(e) => { const bars = Number(e.target.value); if (bars > song.bars || !song.tracks.some((t) => t.clips.some((c) => c.start + c.bars > bars)) || window.confirm("Clips past the new end will be removed. Go on?")) change((s) => setSongBars(s, bars)); }}>{SONG_BARS.map((b) => <option key={b} value={b}>{b} bars</option>)}</select></label>
             <span className="daw-song-add">
               <button onClick={() => { const next = addTrack(song, "drums"); change(next); pick(next.tracks.at(-1)?.id); }} disabled={song.tracks.length >= MAX_TRACKS}>+ Drum track</button>
               <button onClick={() => { const next = addTrack(song, "synth", SOUNDS[0]!.name); change(next); pick(next.tracks.at(-1)?.id); }} disabled={song.tracks.length >= MAX_TRACKS}>+ Synth track</button>
             </span>
           </div>
-          <Arrangement song={song} onChange={change} picked={picked} also={also} onPick={pick} onAdd={add} onPlace={(from, c, to, bar, copy) => { const made = placeClip(song, from, c, to, bar, copy); if (!made) { studio.mark(); return; }   /* a drop where it already is: the start of a length drag, its own step to undo */ studio.mark(); change(made.song); pick(made.track, made.clip); setNote(copy ? "Copied the clip." : "Moved the clip."); }} onBars={(t, c, bars) => change((s) => setClipBars(s, t, c, bars))} step={step} loop={loop} renaming={renaming} />
+          <Arrangement song={song} onChange={change} levelOf={(id) => transport.trackLevel(id)} masterLevel={() => { const l = transport.levels(); return Math.max(l.left, l.right) + 3; }} picked={picked} also={also} onPick={pick} onAdd={add} onPlace={(from, c, to, bar, copy) => { const made = placeClip(song, from, c, to, bar, copy); if (!made) { studio.mark(); return; }   /* a drop where it already is: the start of a length drag, its own step to undo */ studio.mark(); change(made.song); pick(made.track, made.clip); setNote(copy ? "Copied the clip." : "Moved the clip."); }} onBars={(t, c, bars) => change((s) => setClipBars(s, t, c, bars))} step={step} loop={loop} renaming={renaming} />
         </div>
       </div>
 

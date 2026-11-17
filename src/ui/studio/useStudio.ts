@@ -51,6 +51,8 @@ export function useStudio() {
     lastChange.current = t; future.current = [];
     put(after); bump((n) => n + 1);
   }, [put]);
+  /** The next change is its own step to undo, however soon after the last one it comes (a command, not a drag). */
+  const mark = useCallback(() => { lastChange.current = 0; }, []);
   const undo = useCallback(() => { const prev = past.current.pop(); if (!prev) return; future.current.push(now.current); lastChange.current = 0; put(prev); bump((n) => n + 1); }, [put]);
   const redo = useCallback(() => { const next = future.current.pop(); if (!next) return; past.current.push(now.current); lastChange.current = 0; put(next); bump((n) => n + 1); }, [put]);
   const toggle = useCallback(() => {
@@ -132,6 +134,6 @@ export function useStudio() {
     setSamples((list) => list.filter((s) => s.id !== id));
     change((s) => dropSongSample(s, id));
   }, [change]);
-  return { undo, redo, canUndo: past.current.length > 0, canRedo: future.current.length > 0, song, change, playing, toggle, step, setLoop, transport: transport.current!, samples, addSample, removeSample };
+  return { mark, undo, redo, canUndo: past.current.length > 0, canRedo: future.current.length > 0, song, change, playing, toggle, step, setLoop, transport: transport.current!, samples, addSample, removeSample };
 }
 export type Studio = ReturnType<typeof useStudio>;

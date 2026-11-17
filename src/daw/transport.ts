@@ -22,6 +22,8 @@ export class Transport {
   private due: { step: number; at: number }[] = [];
   private shown = -1;
   loop?: Loop;
+  /** The metronome: a click on every beat while the song plays. */
+  click = false;
   constructor(private read: () => Song) {}
   get playing(): boolean { return this.timer !== undefined; }
   private boot(): void {
@@ -87,6 +89,7 @@ export class Transport {
           else this.engines.get(e.track)?.engine.playAt(e.note, at, e.seconds, e.velocity);
           step = e.step;
         }
+        if (this.click && this.next % 4 === 0) this.kit!.tick(this.began + stepTime(this.next, song.bpm, song.swing), this.next % 16 === 0);
         if (step < 0) { const first = (this.loop?.start ?? 0) * 16, span = (this.loop?.bars ?? song.bars) * 16; step = first + (this.next % span); }
         this.due.push({ step, at: this.began + stepTime(this.next, song.bpm, song.swing) });
         this.next++;

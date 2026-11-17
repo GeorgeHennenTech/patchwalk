@@ -8,7 +8,7 @@ import { BPM_MAX, BPM_MIN, STEPS_PER_BAR, STRENGTH, SWING_MAX, audibleOf, defaul
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
 export interface NoteEv { /** MIDI note number */ note: number; /** steps from the clip's start */ start: number; /** steps */ length: number; /** 1 to 127 */ velocity: number }
-interface ClipBase { id: string; /** the bar it starts on, counting from 0 */ start: number; bars: number }
+interface ClipBase { id: string; /** the bar it starts on, counting from 0 */ start: number; bars: number; /** switched off: it stays on the grid and makes no sound */ off?: boolean }
 export interface DrumClip extends ClipBase { /** for each pad's id, its row of steps */ hits: Record<string, Hit[]> }
 export interface SynthClip extends ClipBase { notes: NoteEv[] }
 interface TrackBase { id: string; name: string; /** 0 to 100 */ level: number; mute: boolean; solo: boolean }
@@ -82,6 +82,19 @@ export function duplicateClip(s: Song, trackId: string, clipId: string): { song:
   }
   return undefined;
 }
+/** Put a copy of a clip (from anywhere) on a track, in the first free place at or after a bar. Nothing when the kinds differ or there is no room. */
+export function pasteClip(s: Song, trackId: string, clip: Clip, atBar: number): { song: Song; clip: string } | undefined {
+  const t = trackOf(s, trackId);
+  if (!t || ("hits" in clip) !== (t.kind === "drums")) return undefined;
+  for (let bar = Math.max(0, atBar); bar + clip.bars <= s.bars; bar++) {
+    if (!isFree(s, t, bar, clip.bars)) continue;
+    const id = freeId(t.clips.map((x) => x.id), "c"), copy = JSON.parse(JSON.stringify({ ...clip, id, start: bar })) as Clip;
+    return { song: withTrack(s, trackId, (x) => ({ ...x, clips: [...x.clips, copy] } as Track)), clip: id };
+  }
+  return undefined;
+}
+/** Switch a clip off (it stays where it is and is silent) or back on. */
+export const toggleClipOff = (s: Song, trackId: string, clipId: string): Song => withClip(s, trackId, clipId, (c) => { const { off, ...rest } = c; return (off ? rest : { ...rest, off: true }) as Clip; });
 /** Move a clip by whole bars, if the place is free. */
 export function moveClip(s: Song, trackId: string, clipId: string, by: number): Song {
   const t = trackOf(s, trackId), c = clipOf(t, clipId);
@@ -122,6 +135,28 @@ export const putNote = (s: Song, trackId: string, clipId: string, n: NoteEv): So
 export const dropNote = (s: Song, trackId: string, clipId: string, n: Pick<NoteEv, "note" | "start">): Song => withClip(s, trackId, clipId, (c) => ("notes" in c ? { ...c, notes: c.notes.filter((x) => !(x.note === n.note && x.start === n.start)) } : c));
 /** Replace a clip's notes (each kept inside the clip; two notes cannot start at the same place on the same key). */
 export const setNotes = (s: Song, trackId: string, clipId: string, notes: NoteEv[]): Song => withClip(s, trackId, clipId, (c) => { if (!("notes" in c)) return c; const steps = c.bars * STEPS_PER_BAR, seen = new Set<string>(), out: NoteEv[] = []; for (const n of notes.map((x) => tidyNote(x, steps))) { const k = `${n.note}:${n.start}`; if (!seen.has(k)) { seen.add(k); out.push(n); } } return { ...c, notes: out.sort((x, y) => x.start - y.start || x.note - y.note) }; });
+// Working on a chosen set of notes (the piano roll's selection). A note is known by its key and where it starts.
+export const noteKey = (n: Pick<NoteEv, "note" | "start">) => `${n.note}:${n.start}`;
+const span = (picked: NoteEv[]) => ({ from: Math.min(...picked.map((n) => n.start)), to: Math.max(...picked.map((n) => n.start + n.length)), low: Math.min(...picked.map((n) => n.note)), high: Math.max(...picked.map((n) => n.note)) });
+/** Move the chosen notes by steps and semitones, as far as the clip and the keyboard allow. Gives back the notes and the chosen notes' new keys. */
+export function shiftNotes(notes: NoteEv[], keys: ReadonlySet<string>, bySteps: number, bySemis: number, steps: number): { notes: NoteEv[]; keys: Set<string> } {
+  const picked = notes.filter((n) => keys.has(noteKey(n)));
+  if (!picked.length) return { notes, keys: new Set(keys) };
+  const s = span(picked), dx = clamp(Math.round(bySteps), -s.from, steps - s.to), dy = clamp(Math.round(bySemis), NOTE_LOW - s.low, NOTE_HIGH - s.high);
+  if (!dx && !dy) return { notes, keys: new Set(keys) };
+  const moved = picked.map((n) => ({ ...n, start: n.start + dx, note: n.note + dy })), taken = new Set(moved.map(noteKey));
+  return { notes: [...notes.filter((n) => !keys.has(noteKey(n)) && !taken.has(noteKey(n))), ...moved], keys: taken };
+}
+/** Make the chosen notes longer or shorter by steps; none goes under one step or past the end of the clip. */
+export const stretchNotes = (notes: NoteEv[], keys: ReadonlySet<string>, bySteps: number, steps: number): NoteEv[] => notes.map((n) => (keys.has(noteKey(n)) ? { ...n, length: clamp(n.length + Math.round(bySteps), 1, steps - n.start) } : n));
+/** Copy the chosen notes to straight after themselves (what "duplicate" does). Copies that would start past the end are left out. */
+export function duplicateNotes(notes: NoteEv[], keys: ReadonlySet<string>, steps: number): { notes: NoteEv[]; keys: Set<string> } {
+  const picked = notes.filter((n) => keys.has(noteKey(n)));
+  if (!picked.length) return { notes, keys: new Set(keys) };
+  const s = span(picked), by = Math.max(1, s.to - s.from);
+  const copies = picked.map((n) => ({ ...n, start: n.start + by })).filter((n) => n.start < steps).map((n) => ({ ...n, length: Math.min(n.length, steps - n.start) })), taken = new Set(copies.map(noteKey));
+  return copies.length ? { notes: [...notes.filter((n) => !taken.has(noteKey(n))), ...copies], keys: taken } : { notes, keys: new Set(keys) };
+}
 /** The note of a clip that covers a key at a step. */
 export const noteAt = (c: SynthClip, note: number, step: number): NoteEv | undefined => c.notes.find((n) => n.note === note && step >= n.start && step < n.start + n.length);
 
@@ -138,7 +173,7 @@ export function songEvents(s: Song, from: number, until: number, loop?: { start:
     s.tracks.forEach((t, i) => {
       if (!on[i] || t.level <= 0) return;
       const c = clipAt(t, bar);
-      if (!c) return;
+      if (!c || c.off) return;
       const local = step - c.start * STEPS_PER_BAR;
       if (t.kind === "drums") {
         const sounding = audibleOf(t.pads);
@@ -172,8 +207,9 @@ export function tidySong(raw: unknown): Song | undefined {
       const cb = CLIP_BARS[t.kind].includes(c.bars) ? c.bars : 1, start = Math.round(Number(c.start));
       if (!Number.isFinite(start) || !isFree(song, t, start, cb)) continue;
       const cid = typeof c.id === "string" && /^[\w-]{1,24}$/.test(c.id) && !t.clips.some((x) => x.id === c.id) ? c.id : freeId(t.clips.map((x) => x.id), "c"), steps = cb * STEPS_PER_BAR;
-      if (t.kind === "drums") { const hits = (c as DrumClip).hits; t.clips.push({ id: cid, start, bars: cb, hits: Object.fromEntries(t.pads.map((p) => [p.id, tidySteps(hits && typeof hits === "object" ? hits[p.id] : undefined, steps)])) }); }
-      else { const notes = (c as SynthClip).notes; t.clips.push({ id: cid, start, bars: cb, notes: (Array.isArray(notes) ? notes : []).filter((n) => n && [n.note, n.start, n.length].every(Number.isFinite) && n.start >= 0 && n.start < steps).slice(0, 512).map((n) => tidyNote({ ...n, velocity: Number(n.velocity) || 100 }, steps)) }); }
+      const off = c.off === true ? { off: true } : {};
+      if (t.kind === "drums") { const hits = (c as DrumClip).hits; t.clips.push({ id: cid, start, bars: cb, ...off, hits: Object.fromEntries(t.pads.map((p) => [p.id, tidySteps(hits && typeof hits === "object" ? hits[p.id] : undefined, steps)])) }); }
+      else { const notes = (c as SynthClip).notes; t.clips.push({ id: cid, start, bars: cb, ...off, notes: (Array.isArray(notes) ? notes : []).filter((n) => n && [n.note, n.start, n.length].every(Number.isFinite) && n.start >= 0 && n.start < steps).slice(0, 512).map((n) => tidyNote({ ...n, velocity: Number(n.velocity) || 100 }, steps)) }); }
     }
     song.tracks.push(t);
   }

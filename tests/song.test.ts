@@ -129,3 +129,45 @@ describe("keeping a song", () => {
     expect(removeClip(song, drums, beat).tracks[0]!.clips).toHaveLength(0);
   });
 });
+
+import { duplicateNotes, noteKey, pasteClip, shiftNotes, stretchNotes, toggleClipOff } from "../src/daw/song";
+describe("editing with the keys: selected notes and clips", () => {
+  const notes = [{ note: 60, start: 0, length: 2, velocity: 100 }, { note: 64, start: 2, length: 2, velocity: 100 }, { note: 67, start: 8, length: 4, velocity: 100 }];
+  const two = new Set([noteKey(notes[0]!), noteKey(notes[1]!)]);
+  it("duplicate puts a copy of the selection straight after it and selects the copy", () => {
+    const r = duplicateNotes(notes, two, 16);
+    expect(r.notes).toHaveLength(5);
+    expect([...r.keys].sort()).toEqual(["60:4", "64:6"]);
+    expect(duplicateNotes(notes, new Set(["67:8"]), 16).notes.find((n) => n.start === 12)).toMatchObject({ note: 67, length: 4 });
+    expect(duplicateNotes(notes, new Set(["67:8"]), 12).notes).toBe(notes); // no room: nothing changes
+    expect(duplicateNotes(notes, new Set(), 16).notes).toBe(notes);
+  });
+  it("moves the selection by steps and semitones, and stops at the clip's edges and the keyboard's", () => {
+    const r = shiftNotes(notes, two, 1, 12, 16);
+    expect(r.notes.filter((n) => r.keys.has(noteKey(n))).map((n) => [n.note, n.start])).toEqual([[72, 1], [76, 3]]);
+    expect(shiftNotes(notes, two, -5, 0, 16).notes).toBe(notes); // already at the start
+    const far = shiftNotes(notes, two, 99, 99, 16);
+    expect(Math.max(...far.notes.map((n) => n.start + n.length))).toBeLessThanOrEqual(16);
+    expect(Math.max(...far.notes.map((n) => n.note))).toBeLessThanOrEqual(96);
+    expect(far.notes).toHaveLength(3);
+  });
+  it("makes the selection longer or shorter, never under a step or past the end", () => {
+    expect(stretchNotes(notes, two, -9, 16).filter((n) => two.has(noteKey(n))).map((n) => n.length)).toEqual([1, 1]);
+    expect(stretchNotes(notes, new Set(["67:8"]), 99, 16)[2]!.length).toBe(8);
+  });
+  it("a clip that is switched off stays on the grid and is silent", () => {
+    const { song, drums, beat } = demo(), off = toggleClipOff(song, drums, beat);
+    expect(clipOf(trackOf(off, drums), beat)!.off).toBe(true);
+    expect(songEvents(off, 0, 16).some((e) => e.kind === "hit")).toBe(false);
+    expect(tidySong(JSON.parse(JSON.stringify(off)))).toEqual(off);
+    expect("off" in clipOf(trackOf(toggleClipOff(off, drums, beat), drums), beat)!).toBe(false);
+  });
+  it("a copied clip is pasted into the first free place, on a track of its own kind only", () => {
+    const { song, drums, synth, beat } = demo(), c = clipOf(trackOf(song, drums), beat)!;
+    const made = pasteClip(song, drums, c, 0)!;
+    expect(clipOf(trackOf(made.song, drums), made.clip)!.start).toBe(1);
+    expect((clipOf(trackOf(made.song, drums), made.clip) as DrumClip).hits.kick).toEqual((c as DrumClip).hits.kick);
+    expect(pasteClip(song, synth, c, 0)).toBeUndefined();
+    expect(pasteClip(song, drums, c, 8)).toBeUndefined();
+  });
+});

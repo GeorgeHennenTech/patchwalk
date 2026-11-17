@@ -39,7 +39,7 @@ export type MidiStatus = "off" | "unsupported" | "refused" | "none" | "on";
  * `host` lets something else own the engine and the settings (a track in the Studio): the hook then plays
  * and edits that engine, reports every change of settings, and leaves the engine running when it goes.
  */
-export function useSynth(host?: { engine: Engine; initial: SynthState; onChange: (s: SynthState) => void; /** a key went down or came up (for recording) */ onNote?: (note: number, on: boolean, velocity: number) => void }) {
+export function useSynth(host?: { engine: Engine; initial: SynthState; onChange: (s: SynthState) => void; /** when this says true, the computer's letter keys do not play notes (they are shortcuts instead) */ keysOff?: () => boolean; /** a key went down or came up (for recording) */ onNote?: (note: number, on: boolean, velocity: number) => void }) {
   const engine = useRef<Engine | null>(host?.engine ?? null);
   const hostRef = useRef(host);
   hostRef.current = host;
@@ -243,6 +243,7 @@ export function useSynth(host?: { engine: Engine; initial: SynthState; onChange:
     const onDown = (e: KeyboardEvent) => {
       const key = e.key.toLowerCase();
       if (e.repeat || e.metaKey || e.ctrlKey || e.altKey || typing(e)) return;
+      if (hostRef.current?.keysOff?.()) return;
       // a menu that still has focus would otherwise jump to an entry starting with the letter pressed
       const inMenu = e.target instanceof HTMLSelectElement;
       if (inMenu && (key === "z" || key === "x" || key === "c" || key === "v" || KEY_MAP[key] !== undefined)) { e.preventDefault(); e.target.blur(); }

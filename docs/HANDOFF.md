@@ -446,3 +446,8 @@ Later still: the Walkthroughs tab became the Library tab, with shelves for sound
 kept in the site's database (the owner asked for dropped-in samples to be stored and shared). Not yet run
 against the real database. Drum-pattern literature leads are in `docs/LITERATURE.md`; the owner's wishes for
 eastern drums and late-2000s club pop are in `docs/CURRICULUM.md`.
+
+The Studio was then rebuilt in the organisation of Ableton's Arrangement View (control bar, browser, track
+headers at the right, Clip/Device detail view) with Live's keyboard shortcuts for everything it has
+(`CLAUDE.md`, "Studio laid out like Ableton's Arrangement View"). The owner wants it to keep moving toward
+Ableton's look and organisation; likely next: dragging clips with the mouse, split, zoom, Session View.

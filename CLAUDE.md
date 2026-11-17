@@ -1200,6 +1200,41 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
     (Hockman's McGill thesis on breakbeats, Butler's book and article, Witek 2014, the Groove MIDI Dataset);
     nothing was taken in. The owner's wishes for eastern drums and late-2000s club pop are in
     `docs/CURRICULUM.md`.
+- **Studio laid out like Ableton's Arrangement View, with its shortcuts (17 Nov 2026, owner's request: "copy all
+  of the ableton shortcuts into our studio... make this DAW look more like ableton and be organized like
+  ableton").** `src/ui/DawView.tsx` was rewritten; root class `daw2` (flat neutral greys, dense, clips in
+  their track's colour; all its CSS is under `.daw2` at the end of `styles.css`; it breaks out of the page
+  column to about 1,560 px). **It is Ableton's organisation and a plain flat look in that spirit: no Ableton
+  artwork, logo or fonts are used.**
+  - **Layout:** a control bar (tempo and swing as number boxes, Click, position as bar.beat.sixteenth, play,
+    stop, record, Loop, Draw, Keys, undo, redo, Shortcuts); a **browser** on the left (Sounds, Drums, Samples,
+    Breaks, Racks, Songs: one click puts the thing on the selected track or clip; `Ctrl+Alt+B` hides it);
+    the **arrangement** (`Arrangement.tsx`) with bars on the left and each track's name, on/off, solo, level
+    and delete **at the right end of its lane**; a **detail view** along the bottom with **Clip** (piano roll
+    or step grid, clip commands) and **Device** (the synth or the drum rack) tabs; a status line. A clip is
+    added by **double-clicking** an empty bar. `TrackSynth` stays mounted in both tabs (`show`), so the keys
+    play the selected synth track either way.
+  - **Shortcuts (checked against the "Live Keyboard Shortcuts" chapter of the manual in the library):** Space;
+    Home (play from the start); F9 record; Ctrl/Cmd+Z, Ctrl+Y or Cmd+Shift+Z; **Ctrl/Cmd+D duplicate**; Ctrl/
+    Cmd+C, X, V; Delete; Ctrl/Cmd+A; Ctrl/Cmd+L loop the selection; Ctrl/Cmd+Shift+M insert a clip; Ctrl/Cmd+R
+    rename; Ctrl/Cmd+S save; 0 deactivate (a clip, or with none selected the track); S solo; arrows (move
+    notes; Shift+up/down an octave; Shift+left/right length; with no notes selected, move between tracks and
+    clips); B draw mode; M computer MIDI keyboard; Z/X and C/V; Shift+Tab Clip/Device; Ctrl/Cmd+Alt+B browser;
+    Esc. Each acts on the selected notes if there are any, otherwise on the selected clip. Each command is
+    its own undo step (`studio.mark()`). **Not possible in a browser: Ctrl/Cmd+T (new track), and anything
+    else the browser keeps for tabs and windows. Not built because the Studio lacks the thing: split (Ctrl+E),
+    consolidate (Ctrl+J), quantize (notes are always on the grid), grid sizes (Ctrl+1 to 5), zoom, automation,
+    Session View (Tab), groups.** The list is shown by the Shortcuts button (`KEYS`).
+  - **Piano roll** (`PianoRoll.tsx`) now works as Live's does: with Draw off, drag on empty space selects notes
+    with a box, click selects (Shift adds or removes), drag moves the selection, a right end resizes it,
+    double-click adds or removes; with Draw on (B), click or drag writes notes and a click removes one.
+    `noteKey`, `shiftNotes`, `stretchNotes`, `duplicateNotes` in `song.ts` are the rules (tested).
+  - **Also new:** a clip can be switched off (`off`, silent but kept; `toggleClipOff`); `pasteClip`; a
+    metronome (`transport.click`, `Kit.tick`); `useSynth`'s host takes `keysOff` (the M switch: with the
+    computer keyboard off, letters are shortcuts, so S solos).
+  - Checked in a browser: Ctrl+D, copy/paste, Delete and undo on clips; 0; Ctrl+Shift+M; Ctrl+A, click and box
+    selection, Ctrl+D, arrows and Delete on notes; B, M then S, Shift+Tab, Ctrl+R, Ctrl+L; the browser filled
+    a clip with a break and added a synth track. Cmd on a Mac was not tried (the test browser is Linux).
 - **"Walk me through it" (16 Nov 2026, owner's go-ahead with two rules of their own).** A second mode on the
   Ask tab (a switch, remembered): a how-to question becomes a walkthrough of steps shown one at a time.
   `api/walk.ts` answers two kinds of request: `plan` (one call with structured output over ten passages:

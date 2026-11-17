@@ -56,6 +56,8 @@ export class Kit {
     cut.connect(amp).connect(to);
     for (const ratio of [1, 1.483, 1.764, 2.317, 2.891, 3.469]) { const osc = this.ctx.createOscillator(); osc.type = "square"; osc.frequency.value = base * ratio * this.rate; osc.connect(cut); osc.start(t); osc.stop(t + decay + 0.02); }
   }
+  /** The metronome's click: higher on the first beat of a bar. */
+  tick(t: number, first: boolean): void { this.rate = 1; this.tone(this.out, "sine", t, first ? 1760 : 1175, first ? 1760 : 1175, 0.02, 0.22, 0.03); }
   /**
    * Strike a pad at time `t` (the audio clock's seconds), `strength` 0..1, into `to`. `scope` keeps one
    * track's choke groups apart from another's.

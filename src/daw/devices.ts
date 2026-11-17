@@ -1,12 +1,13 @@
 // The devices (effects) that can sit on a track, after its instrument, in a row: the Studio's own versions of
 // a DAW's stock plugins. This file is the plain data and rules: what devices exist, their settings and ranges,
 // and the edits to a track's chain. No sound here; `fxnodes.ts` makes the audio from the same settings.
+import { NOTE_FX } from "./notefx";
 import { GLUE_ATTACKS, GLUE_RATIOS, GLUE_RELEASES, RES_NAMES, compCurveDb } from "./dsp";
 // The devices are our own, built from what each kind of effect does. They are named for what they do, the
 // way every DAW names them; they are not copies of any maker's code, sound or look.
 
 export interface ParamSpec { id: string; label: string; min: number; max: number; step: number; def: number; unit?: string; /** for a switch or a menu: the names of the values 0, 1, 2... */ choices?: string[]; /** the slider moves in ratios (for frequencies and times) */ log?: boolean; /** settings with the same group are shown together, one group at a time */ group?: string; /** shown only while this is true */ when?: (p: Record<string, number>) => boolean }
-export interface DeviceSpec { /** a device that shows the sound instead of changing it */ view?: "spectrum" | "tuner"; /** shows how many dB it is turning the sound down */ meter?: boolean; kind: string; name: string; about: string; /** the stock device in Ableton Live that does the same job, so a chain built here can be rebuilt there */ like: string; params: ParamSpec[]; /** a wider card, for a device with a picture */ wide?: boolean; /** what the page must admit about this device */ note?: string }
+export interface DeviceSpec { /** a note effect: it sits in front of the instrument and changes notes, not sound */ midi?: boolean; /** a device that shows the sound instead of changing it */ view?: "spectrum" | "tuner"; /** shows how many dB it is turning the sound down */ meter?: boolean; kind: string; name: string; about: string; /** the stock device in Ableton Live that does the same job, so a chain built here can be rebuilt there */ like: string; params: ParamSpec[]; /** a wider card, for a device with a picture */ wide?: boolean; /** what the page must admit about this device */ note?: string }
 export interface Device { id: string; kind: string; on: boolean; /** each setting's value, by its id */ p: Record<string, number> }
 
 const sw = (id: string, label: string, def = 0, extra: Partial<ParamSpec> = {}): ParamSpec => ({ id, label, min: 0, max: 1, step: 1, def, choices: ["Off", "On"], ...extra });
@@ -164,7 +165,7 @@ export const DEVICES: DeviceSpec[] = [
   ] },
 ];
 export const MAX_DEVICES = 8;
-export const specOf = (kind: string): DeviceSpec | undefined => DEVICES.find((d) => d.kind === kind);
+export const specOf = (kind: string): DeviceSpec | undefined => DEVICES.find((d) => d.kind === kind) ?? NOTE_FX.find((d) => d.kind === kind);
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 /** A setting's value kept inside its range and on its step. */
 export const tidyParam = (s: ParamSpec, v: unknown): number => { const n = Number(v); return Number.isFinite(n) ? Number(clamp(Math.round(n / s.step) * s.step, s.min, s.max).toFixed(4)) : s.def; };
@@ -192,11 +193,11 @@ export function moveDevice(chain: Device[], id: string, by: -1 | 1): Device[] {
   return next;
 }
 /** A chain read back from storage, made safe: unknown devices dropped, every setting in range, ids different. */
-export function tidyDevices(raw: unknown): Device[] {
+export function tidyDevices(raw: unknown, kind: "audio" | "note" = "audio"): Device[] {
   const out: Device[] = [];
   for (const g of Array.isArray(raw) ? raw : []) {
     const spec = g && typeof g === "object" ? specOf((g as Device).kind) : undefined;
-    if (!spec || out.length >= MAX_DEVICES) continue;
+    if (!spec || !!spec.midi !== (kind === "note") || out.length >= MAX_DEVICES) continue;
     const taken = out.map((d) => d.id), id = typeof g.id === "string" && /^[\w-]{1,16}$/.test(g.id) && !taken.includes(g.id) ? g.id : freeId(taken);
     out.push({ id, kind: spec.kind, on: g.on !== false, p: Object.fromEntries(spec.params.map((s) => [s.id, tidyParam(s, (g.p ?? {})[s.id] ?? s.def)])) });
   }

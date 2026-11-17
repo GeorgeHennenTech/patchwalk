@@ -4,6 +4,7 @@
 import { INITIAL, type SynthState } from "../synth/params";
 import { clean } from "../synth/patches";
 import { tidyDevices, type Device } from "./devices";
+import { applyNoteFx, type FxNote } from "./notefx";
 import { BPM_MAX, BPM_MIN, STEPS_PER_BAR, STRENGTH, SWING_MAX, audibleOf, defaultPads, freeId, stepSeconds, stepTime, tidyPads, tidySteps, type Hit, type Lane, type Pad, type Pattern } from "./drums";
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
@@ -14,7 +15,7 @@ export interface DrumClip extends ClipBase { /** for each pad's id, its row of s
 export interface SynthClip extends ClipBase { notes: NoteEv[] }
 interface TrackBase { id: string; name: string; /** 0 to 100 */ level: number; mute: boolean; solo: boolean; /** the effects after the instrument, in order */ devices: Device[] }
 export interface DrumTrack extends TrackBase { kind: "drums"; pads: Pad[]; clips: DrumClip[] }
-export interface SynthTrack extends TrackBase { kind: "synth"; patch: SynthState; clips: SynthClip[] }
+export interface SynthTrack extends TrackBase { kind: "synth"; patch: SynthState; clips: SynthClip[]; /** note effects, in front of the synth: they change the clip's notes before they are played */ noteFx: Device[] }
 export type Track = DrumTrack | SynthTrack;
 export type Clip = DrumClip | SynthClip;
 export interface Song { name: string; bpm: number; swing: number; /** length in bars */ bars: number; tracks: Track[] }
@@ -36,7 +37,7 @@ export const soundPatch = (name: string): SynthState => ({ ...INITIAL, ...(SOUND
 
 const track = (id: string, kind: Track["kind"], name: string): Track => (kind === "drums"
   ? { id, kind, name, level: 80, mute: false, solo: false, devices: [], pads: defaultPads(), clips: [] }
-  : { id, kind, name, level: 80, mute: false, solo: false, devices: [], patch: soundPatch("Soft pad"), clips: [] });
+  : { id, kind, name, level: 80, mute: false, solo: false, devices: [], noteFx: [], patch: soundPatch("Soft pad"), clips: [] });
 export const newSong = (name = "New song"): Song => ({ name, bpm: 120, swing: 0, bars: 8, tracks: [track("t1", "drums", "Drums"), track("t2", "synth", "Soft pad")] });
 
 const withTrack = (s: Song, id: string, change: (t: Track) => Track): Song => ({ ...s, tracks: s.tracks.map((t) => (t.id === id ? change(t) : t)) });
@@ -169,6 +170,18 @@ export type SongEvent = { track: string; /** seconds from the start of playing *
  * moment Play was pressed; the song (or the looped stretch of it, `loop`, in bars) goes round and round.
  * This is the one place that decides what is heard and when.
  */
+const played = new WeakMap<NoteEv[], { chain: Device[]; bars: number; out: FxNote[] }>();
+/** A clip's notes as they are actually played: after the track's note effects. Worked out once per change. */
+export function playedNotes(t: SynthTrack, c: SynthClip): FxNote[] {
+  if (!t.noteFx.some((d) => d.on)) return c.notes;
+  const have = played.get(c.notes);
+  if (have && have.chain === t.noteFx && have.bars === c.bars) return have.out;
+  const out = applyNoteFx(t.noteFx, c.notes, c.bars * STEPS_PER_BAR);
+  played.set(c.notes, { chain: t.noteFx, bars: c.bars, out });
+  return out;
+}
+/** Put a new chain of note effects on a synth track. */
+export const setNoteFx = (s: Song, trackId: string, noteFx: Device[]): Song => ({ ...s, tracks: s.tracks.map((t) => (t.id === trackId && t.kind === "synth" ? { ...t, noteFx } : t)) });
 export function songEvents(s: Song, from: number, until: number, loop?: { start: number; bars: number }): SongEvent[] {
   const first = (loop?.start ?? 0) * STEPS_PER_BAR, span = Math.max(1, (loop?.bars ?? s.bars)) * STEPS_PER_BAR, on = audibleOf(s.tracks), out: SongEvent[] = [];
   for (let n = from; n < until; n++) {
@@ -182,7 +195,8 @@ export function songEvents(s: Song, from: number, until: number, loop?: { start:
         const sounding = audibleOf(t.pads);
         t.pads.forEach((pad, j) => { const hit = (c as DrumClip).hits[pad.id]?.[local] ?? 0; if (hit && sounding[j] && pad.level > 0) out.push({ track: t.id, at, step, kind: "hit", pad, strength: STRENGTH[hit] * (pad.level / 100) }); });
       } else {
-        for (const note of (c as SynthClip).notes) if (note.start === local) out.push({ track: t.id, at, step, kind: "note", note: note.note, seconds: Math.max(0.03, Math.min(note.length, c.bars * STEPS_PER_BAR - local) * stepSeconds(s.bpm) - 0.01), velocity: note.velocity });
+        // a note that starts part-way through a step (an arpeggiator's triplet, say) is played that much later
+        for (const note of playedNotes(t, c as SynthClip)) if (Math.floor(note.start + 1e-9) === local) out.push({ track: t.id, at: at + (note.start - local) * stepSeconds(s.bpm), step, kind: "note", note: note.note, seconds: Math.max(0.03, Math.min(note.length, c.bars * STEPS_PER_BAR - note.start) * stepSeconds(s.bpm) - 0.01), velocity: note.velocity });
       }
     });
   }
@@ -206,7 +220,7 @@ export function tidySong(raw: unknown): Song | undefined {
     if (!g || typeof g !== "object" || (g.kind !== "drums" && g.kind !== "synth")) continue;
     const id = typeof g.id === "string" && /^[\w-]{1,24}$/.test(g.id) && !song.tracks.some((t) => t.id === g.id) ? g.id : freeId(song.tracks.map((t) => t.id), "t");
     const base = { id, name: typeof g.name === "string" ? g.name.slice(0, 24) : "Track", level: clamp(Number(g.level ?? 80) || 0, 0, 100), mute: g.mute === true, solo: g.solo === true, devices: tidyDevices(g.devices) };
-    const t: Track = g.kind === "drums" ? { ...base, kind: "drums", pads: tidyPads(g.pads).length ? tidyPads(g.pads) : defaultPads(), clips: [] } : { ...base, kind: "synth", patch: { ...clean(g.patch), bpm: song.bpm }, clips: [] };
+    const t: Track = g.kind === "drums" ? { ...base, kind: "drums", pads: tidyPads(g.pads).length ? tidyPads(g.pads) : defaultPads(), clips: [] } : { ...base, kind: "synth", noteFx: tidyDevices((g as { noteFx?: unknown }).noteFx, "note"), patch: { ...clean(g.patch), bpm: song.bpm }, clips: [] };
     for (const c of Array.isArray(g.clips) ? g.clips : []) {
       if (!c || typeof c !== "object") continue;
       const cb = CLIP_BARS[t.kind].includes(c.bars) ? c.bars : 1, start = Math.round(Number(c.start));

@@ -142,7 +142,8 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [x] Stock plugins, first 24 of 30, each measured (17 Nov 2026; none heard by the owner yet): Utility, Three-band EQ, Eight-band EQ, Channel EQ, Compressor with knee and meter, Glue compressor, Limiter, Gate, Multiband dynamics, Saturator, Overdrive, Crusher, Drum bus, Erosion, Auto filter, Auto pan, Chorus, Phaser and flanger, Delay, Echo, Filter delay, Reverb, Resonators, Shifter
 - [x] Patchwalk installs as a desktop app from the browser (17 Nov 2026; owner to check Chrome offers Install on the live site)
 - [x] Stock plugins, seven more (17 Nov 2026): Beat repeat, Amp, Cabinet, Pedal, Vinyl distortion, Spectrum, Tuner; and the compressor can listen to another track (sidechain). 31 devices in all
-- [ ] Stock plugins still to build (see `docs/STOCK_PLUGINS.md`): the MIDI effects (Arpeggiator, Chord, Note length, Pitch, Random, Scale, Velocity), Dynamic Tube; then the hard ones (vocoder, spectral effects, grain delay, looper)
+- [x] Note effects in front of the synth (17 Nov 2026): Arpeggiator, Chord, Note length, Pitch, Random, Scale, Velocity. Every numbered stock plugin is now built except Dynamic Tube
+- [ ] Stock plugins still to build (see `docs/STOCK_PLUGINS.md`): Dynamic Tube; the hard ones (vocoder, spectral effects, grain delay, looper); note effects on keys played live
 - [ ] Owner to listen to the 31 stock plugins and say which sound wrong (known weak spots: the pitch shifter warbles, the reverb is plain)
 - [ ] **Automation (owner asked 17 Nov 2026):** automation lanes in the Studio (a line per track that moves a
   setting over time: a synth knob, a track's level, an effect), then lessons on automation with many

@@ -1,6 +1,7 @@
 // A track's effects, in a row after its instrument, the way a DAW's device chain reads left to right.
 import { useEffect, useRef, useState } from "react";
 import { detectPitch, nearestNote } from "../../daw/dsp";
+import { NOTE_FX } from "../../daw/notefx";
 import { CURVES, noteName, DEVICES, MAX_DEVICES, addDevice, moveDevice, removeDevice, setDeviceParam, specOf, toggleDevice, type Device, type ParamSpec } from "../../daw/devices";
 
 const round = (v: number) => (Math.abs(v) >= 100 ? Math.round(v) : Number(v.toFixed(2)));
@@ -80,9 +81,10 @@ function TunerView({ read }: { read: () => AnalyserNode | undefined }) {
   );
 }
 
-export function DeviceChain({ devices, onChange, reduction, analyser }: { devices: Device[]; onChange: (next: Device[]) => void; reduction?: (deviceId: string) => number | undefined; analyser?: (deviceId: string) => AnalyserNode | undefined }) {
+export function DeviceChain({ devices, onChange, reduction, analyser, kind = "audio" }: { /** "note": the note effects in front of a synth; "audio": the effects after the instrument */ kind?: "audio" | "note"; devices: Device[]; onChange: (next: Device[]) => void; reduction?: (deviceId: string) => number | undefined; analyser?: (deviceId: string) => AnalyserNode | undefined }) {
   return (
-    <div className="chain" aria-label="Effects on this track">
+    <div className="chain" aria-label={kind === "note" ? "Note effects on this track" : "Effects on this track"}>
+      <h4 className="chain-title">{kind === "note" ? "Note effects · before the synth" : "Effects · after the instrument"}</h4>
       <div className="chain-row">
         {devices.map((d, i) => { const spec = specOf(d.kind); if (!spec) return null; return (
           <section key={d.id} className={`dev${d.on ? "" : " off"}${spec.wide ? " wide" : ""}`} aria-label={spec.name}>
@@ -101,9 +103,9 @@ export function DeviceChain({ devices, onChange, reduction, analyser }: { device
             {spec.note && <p className="dev-note">{spec.note}</p>}
           </section>
         ); })}
-        {devices.length < MAX_DEVICES && <label className="dev-add">Add an effect <select value="" aria-label="Add an effect" onChange={(e) => { if (e.target.value) onChange(addDevice(devices, e.target.value)); }}><option value="">Choose…</option>{DEVICES.map((s) => <option key={s.kind} value={s.kind}>{s.name}</option>)}</select></label>}
+        {devices.length < MAX_DEVICES && <label className="dev-add">{kind === "note" ? "Add a note effect" : "Add an effect"} <select value="" aria-label={kind === "note" ? "Add a note effect" : "Add an effect"} onChange={(e) => { if (e.target.value) onChange(addDevice(devices, e.target.value)); }}><option value="">Choose…</option>{(kind === "note" ? NOTE_FX : DEVICES).map((s) => <option key={s.kind} value={s.kind}>{s.name}</option>)}</select></label>}
       </div>
-      {devices.length === 0 && <p className="daw-hint">No effects on this track yet. They go after the instrument, left to right, and the sound passes through each in turn.</p>}
+      {devices.length === 0 && <p className="daw-hint">{kind === "note" ? "No note effects yet. They change the notes written in this track's clips before the synth plays them: an arpeggiator, chords, a scale. Keys played live are not changed." : "No effects on this track yet. They go after the instrument, left to right, and the sound passes through each in turn."}</p>}
     </div>
   );
 }

@@ -1293,6 +1293,13 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   when bar 1 began (`Dsp.clock`, `buildDevice(ctx, d, bpm, origin)`); `Dsp.run` takes an `Extra` (the block's
   first sample number and the side sound). **When checking the Studio page by script, loop bar 1: the
   example song is empty after its first bars, which reads as silence** (this cost an hour).
+  **Note effects (17 Nov 2026):** Arpeggiator, Chord, Note length, Pitch, Random, Scale, Velocity:
+  `src/daw/notefx.ts` (`NOTE_FX` specs with `midi: true`, `applyNoteFx`, `arpeggiate`, `toScale`, `dice`),
+  a second chain `noteFx` on every synth track, shown above the synth in the Device view
+  (`DeviceChain kind="note"`) and under the sound effects in the browser. `playedNotes` in `song.ts` is what
+  `songEvents` plays (cached per notes array and chain); a note may now start part-way through a step.
+  `tidyDevices(raw, "note")` keeps the two families apart. They change clip notes only: not live keys, not
+  MIDI export. Every numbered item in `docs/STOCK_PLUGINS.md` is built except Dynamic Tube.
   **Two to-do lists, and both must be updated with every push (owner asked 17 Nov 2026 why the widget was
   behind):** `docs/TODO.md` (what the `/todo` pane in Claude Code reads) and the owner's "Patchwalk To-Do"
   page (https://claude.ai/artifact/7sHF6r2vvBuxa8DSkcfcPz, rows in its `todos` collection, written with

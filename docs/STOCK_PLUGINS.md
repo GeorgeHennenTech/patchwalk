@@ -101,6 +101,14 @@ maths, and a measurement in a browser (`transport.levels()` reads the left and r
   tuner finds the note by autocorrelation (`detectPitch`, within 3 cents from 55 Hz to 1.76 kHz in tests);
   in the Studio page it read A2, 4 cents flat, on the example pad.
 
+- [x] 30. **Note effects** (Arpeggiator, Chord, Note Length, Pitch, Random, Scale, Velocity). A second
+  chain on every synth track, in front of the synth (`track.noteFx`; `src/daw/notefx.ts` is the rules,
+  `playedNotes` in `song.ts` applies them, worked out once per change). **They change the notes written in
+  the track's clips; keys played live are not changed, and a downloaded MIDI file holds the notes as
+  written.** Random's dice are the same every time. Checked in the Studio page by recording what the synth
+  was asked to play: a three-note chord became sixteen notes a bar, 0.121 s apart at 124 bpm (sixteenths),
+  and twelve at 0.161 s apart on "1/8 triplet".
+
 These five run in an AudioWorklet (`src/daw/dsp.ts` is the code, with no browser parts, so
 `tests/dsp.test.ts` runs exactly what the sound is made with; `dsp.worklet.ts` wraps it; `prepareDevices`
 loads it, and a chain passes such a device by until it has loaded). A new sample-by-sample device: a class
@@ -132,8 +140,6 @@ changes glide. Each was measured by building it on an `OfflineAudioContext` in a
 
 ## To build, in this order
 - [ ] 23. **Grain delay** (Grain Delay)
-- [ ] 30. **MIDI effects** (Arpeggiator, Chord, Note Length, Pitch, Random, Scale, Velocity): these change
-  notes before the instrument, so they need a second kind of slot in front of it
 
 ## Hard, or needs something the browser's ready-made parts cannot do (an AudioWorklet); last
 - [ ] Corpus (a modelled resonating body), Vocoder, Hybrid Reverb, Spectral Resonator, Spectral Time, Looper
@@ -145,8 +151,7 @@ changes glide. Each was measured by building it on an `OfflineAudioContext` in a
 Distortion, three-band EQ, compressor, chorus, flanger, phaser, delay, reverb (`src/synth/fx.ts`). The Studio's devices are separate from these.
 
 ## Next
-30 MIDI effects (Arpeggiator, Chord, Note Length, Pitch, Random, Scale, Velocity): they change notes before
-the instrument, so they need a second kind of slot in front of it. Then the hard ones at the bottom of this
-file. When checking anything in the Studio page by script, loop bar 1 first: the example song is empty
-after its first bars, which reads as silence. A level follower made from ready parts must smooth with `createIIRFilter`:
+All thirty numbered items are built except Dynamic Tube (part of item 26). What remains is the "hard" list
+below, note effects on keys played live, and whatever the owner's ear says is wrong. When checking anything
+in the Studio page by script, loop bar 1 first: the example song is empty after its first bars. A level follower made from ready parts must smooth with `createIIRFilter`:
 the ordinary low-pass set to a few Hz read a tenth short (`follower` in `fxnodes.ts`).

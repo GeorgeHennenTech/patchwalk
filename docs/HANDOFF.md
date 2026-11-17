@@ -464,9 +464,11 @@ flanger, Delay, Echo, Filter delay, Beat repeat, Reverb, Resonators, Shifter, Sp
 Two kinds of device: ones made from the browser's ready parts (`fxnodes.ts`) and ones worked out sample by
 sample in an AudioWorklet (`dsp.ts`, tested directly in `tests/dsp.test.ts`). Every device was measured by
 building it on an `OfflineAudioContext` in a headless browser; the numbers are in `docs/STOCK_PLUGINS.md`.
-**The owner has heard none of them: ask which sound wrong and fix those first.** Still to build: the MIDI
-effects (a slot in front of the instrument), Dynamic Tube, then the hard ones (vocoder, spectral effects,
-grain delay, looper). Known weak spots: the pitch shifter warbles and can sit a few Hz off the exact
+Synth tracks also have a second chain in front of the synth, the seven note effects (Arpeggiator, Chord,
+Note length, Pitch, Random, Scale, Velocity; `notefx.ts`), which change the notes written in clips but not
+keys played live. **The owner has heard none of them: ask which sound wrong and fix those first.** Every
+numbered item on the list is now built except Dynamic Tube. Still to build: the hard ones (vocoder,
+spectral effects, grain delay, looper), and note effects on live keys. Known weak spots: the pitch shifter warbles and can sit a few Hz off the exact
 interval; the reverb is plain; the phaser has no feedback; amp, cabinet, pedal, drum bus and vinyl are
 general shapes with our own numbers, so they most need the owner's ear.
 

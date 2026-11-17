@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Lets a browser install the site as an app in its own window. The link carries the password the
+         browser already holds (use-credentials), and the icons are inside the file, so nothing is fetched
+         without the password and the access check is unchanged. -->
+    <link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials" />
+    <meta name="theme-color" content="#17121c" />
     <title>Patchwalk</title>
   </head>
   <body>

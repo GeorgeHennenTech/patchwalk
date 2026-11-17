@@ -1508,6 +1508,14 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   OCT, SEM, FIN, CRS, WT POS, UNISON, DETUNE, BLEND, PHASE, RAND, PAN, LEVEL (`p049-1.webp`); the filter panel
   shows CUTOFF, RES, PAN, DRIVE, FAT, MIX, LEVEL (`p135-1.webp`).
 
+## Desktop app (17 Nov 2026, owner's request)
+The site can be installed as an app in its own window (a web app manifest, `public/manifest.webmanifest`,
+linked from `index.html` with `crossorigin="use-credentials"`; its two icons are inside the file as data, drawn
+from `favicon.svg`). **The password check was not changed and nothing is served without it.** It is still the
+website: it needs the internet, asks for the site password when the browser has forgotten it, and updates
+itself with every deploy. No offline copy is kept (no service worker), on purpose: the library must not be
+stored outside the server. Not checked on the live site: whether Chrome offers "Install" behind the password.
+
 ## Commands
 - `npm run dev` — app at http://localhost:5173; `/api/lesson` is served locally too. Put the key in `.env.local`.
 - `npm test` — Vitest. Tests that need the pack presets skip when `fixtures/local/` is absent.

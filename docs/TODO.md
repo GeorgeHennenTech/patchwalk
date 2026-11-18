@@ -160,7 +160,8 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [x] Studio: automation moves with its clip (with a Lock switch), lanes on return tracks and the master, automation recorded by moving a control (17 Nov 2026)
 - [x] Studio: clips of 1 to 16 bars (drums 1 to 4), and ready-made automation shapes on every lane
 - [x] Studio: clips on any beat, cut at a time marker, curved automation, automated controls marked with "Back to automation"
-- [ ] Studio quick wins still open: overdub against replace, jump between markers, sidechain on auto filter and multiband, Utility and Saturator extras, randomize velocity (see `docs/ABLETON_GAPS.md`)
+- [x] Studio quick wins, third batch (18 Nov 2026): jump between markers, Space plays from the time marker, Random loud, a choice of count-in and an Overdub switch (off: recording replaces), sidechain on the auto filter and multiband, Utility's bass mono / one side only / remove offset, the Saturator's colour and soft clip
+- [ ] Studio quick wins still open: hear a break or sound before loading it, the rest of the shortcuts (halve or double the loop, insert silence, A for automation); then the loop brace, cut / duplicate / delete time, a filter and saturator per pad (see `docs/ABLETON_GAPS.md`)
 - [ ] An extensive Ableton course: a lesson for every Studio feature, done in the Studio and ending with the same thing in Ableton Live (owner asked 17 Nov 2026; needs the lesson engine to know the Studio)
 - [ ] Studio, closer to Ableton, next (owner's standing instruction): a time marker and free-length clips; grid sizes; Session View; note effects on live keys; synth knobs that move on screen while automated; automation on return tracks
 - [ ] Owner to try: drop a sample in the Studio and check it shows in Library > Sounds on the live site

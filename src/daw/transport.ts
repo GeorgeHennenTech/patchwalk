@@ -23,7 +23,7 @@ export class Transport {
   /** Per track: where its instrument plays into, its effects, and its level. Instrument -> ins -> effects -> outs -> master. */
   private ins = new Map<string, GainNode>();
   private outs = new Map<string, GainNode>();
-  private chains = new Map<string, { shape: string; live: Map<string, LiveDevice>; /** what the track's input was plugged into */ first: AudioNode; /** sidechain wires: from another track's input to a device here */ sides: [AudioNode, AudioNode][] }>();
+  private chains = new Map<string, { shape: string; live: Map<string, LiveDevice>; /** what the track's input was plugged into */ first: AudioNode; /** sidechain wires: from another track's input to a device here */ sides: [AudioNode, AudioNode, number][] }>();
   private meterL?: AnalyserNode;
   private meterR?: AnalyserNode;
   private engines = new Map<string, { engine: Engine; patch: unknown }>();
@@ -80,12 +80,12 @@ export class Transport {
       const listens = (d: Device) => ((d.p.side ?? 0) > 0 ? song.tracks[d.p.side! - 1]?.id : undefined);
       const shape = chainShape(strip.devices) + (chainReady(ctx, strip.devices) ? "" : "~") + strip.devices.map((d) => `@${listens(d) ?? ""}`).join(""), have0 = this.chains.get(strip.id);
       if (!have0 || have0.shape !== shape) {
-        if (have0) { try { input.disconnect(have0.first); } catch { /* already apart */ } for (const [from, to] of have0.sides) { try { from.disconnect(to, 0, 1); } catch { /* already apart */ } } have0.live.forEach((l) => l.dispose()); }
-        const live = new Map<string, LiveDevice>(), sides: [AudioNode, AudioNode][] = [];
+        if (have0) { try { input.disconnect(have0.first); } catch { /* already apart */ } for (const [from, to, at] of have0.sides) { try { from.disconnect(to, 0, at); } catch { /* already apart */ } } have0.live.forEach((l) => l.dispose()); }
+        const live = new Map<string, LiveDevice>(), sides: [AudioNode, AudioNode, number][] = [];
         let from: AudioNode = input, first: AudioNode | undefined;
         for (const d of strip.devices) { const l = buildDevice(ctx, d, song.bpm, this.began); if (!l) continue; from.connect(l.input); first ??= l.input; from = l.output; live.set(d.id, l);
           const heard = listens(d), source = heard ? this.ins.get(heard) : undefined;       // a sidechain: the other track's sound before its effects and level
-          if (l.side && source) { source.connect(l.side, 0, 1); sides.push([source, l.side]); } }
+          if (l.side && source) { const at = l.sideIn ?? 1; source.connect(l.side, 0, at); sides.push([source, l.side, at]); } }
         from.connect(out);
         this.chains.set(strip.id, { shape, live, first: first ?? out, sides });
       } else for (const d of strip.devices) have0.live.get(d.id)?.update(d, song.bpm, this.began);

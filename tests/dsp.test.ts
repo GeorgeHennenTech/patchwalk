@@ -291,3 +291,18 @@ describe("gate listening to another track", () => {
     expect(run(quiet)).toBeLessThan(0.001);
   });
 });
+
+describe("multiband dynamics listening to another track", () => {
+  const settle = (side: Float32Array | undefined) => {
+    const d = new MultibandDsp(SR), pad = sine(6000, 0.3, 1), out = new Float32Array(pad.length);
+    d.set({ mratio: 1, labove: -30, lratio: 4, habove: -30, hratio: 4, side: 2, release: 100 });
+    for (let i = 0; i + 128 <= pad.length; i += 128) d.run(pad.subarray(i, i + 128), pad.subarray(i, i + 128), out.subarray(i, i + 128), new Float32Array(128), side ? { sideL: side.subarray(i, i + 128), sideR: side.subarray(i, i + 128) } : {});
+    return dB(part(out, 6000, 0.6, 0.95) / 0.3);
+  };
+  it("a band is turned down by the other sound's level in that band, not by its own", () => {
+    expect(settle(undefined)).toBeCloseTo(0, 0);                       // the other track is silent: a loud high tone is left alone
+    expect(settle(sine(50, 0.5, 1))).toBeCloseTo(0, 0);                // a loud kick lives in the lows: the highs are still left alone
+    const down = settle(sine(7000, 0.5, 1));                           // loud highs on the other track (-6 dB against -30, at 4 to 1: 18 dB by the rule, a little less through the split) turn these highs down
+    expect(down).toBeLessThan(-15); expect(down).toBeGreaterThan(-19);
+  });
+});

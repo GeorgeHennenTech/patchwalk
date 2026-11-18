@@ -381,3 +381,24 @@ describe("clips on beats", () => {
     const made = add2(s, t, 2)!; expect(made.song.tracks.find((x) => x.id === t)!.clips.find((x) => x.id === made.clip)).toMatchObject({ start: 2, bars: 0.5 });
   });
 });
+
+import { markerFrom, randomVelocity } from "../src/daw/song";
+describe("random loudness, and finding the next marker", () => {
+  const notes = [{ note: 60, start: 0, length: 4, velocity: 100 }, { note: 62, start: 4, length: 4, velocity: 100 }, { note: 64, start: 8, length: 4, velocity: 120 }];
+  it("moves each chosen note by up to the amount either way, as the dice fall, and stays between 1 and 127", () => {
+    expect(randomVelocity(notes, new Set(), 20, () => 1).notes.map((n) => n.velocity)).toEqual([120, 120, 127]);
+    expect(randomVelocity(notes, new Set(), 20, () => 0).notes.map((n) => n.velocity)).toEqual([80, 80, 100]);
+    expect(randomVelocity(notes, new Set(), 20, () => 0.5).notes).toEqual(notes);                // the middle of the dice leaves a note alone
+    expect(randomVelocity(notes, new Set(), 500, () => 0).notes.every((n) => n.velocity === 1)).toBe(true);
+  });
+  it("with notes selected, only they change, and they stay selected", () => {
+    const r = randomVelocity(notes, new Set([keyOf(notes[1]!)]), 20, () => 1);
+    expect(r.notes.map((n) => n.velocity)).toEqual([100, 120, 120]); expect(r.notes[0]).toBe(notes[0]); expect([...r.keys]).toEqual([keyOf(notes[1]!)]);
+  });
+  it("finds the marker after a place and the one before it, and nothing past the last or before the first", () => {
+    const s = setMarker(setMarker(setMarker(newSong(), 2, "verse"), 6, "drop"), 0, "intro");
+    expect(markerFrom(s, 0, 1)).toBe(2); expect(markerFrom(s, 2.5, 1)).toBe(6); expect(markerFrom(s, 6, 1)).toBeUndefined();
+    expect(markerFrom(s, 6, -1)).toBe(2); expect(markerFrom(s, 2.25, -1)).toBe(2); expect(markerFrom(s, 0, -1)).toBeUndefined();
+    expect(markerFrom(newSong(), 3, 1)).toBeUndefined();
+  });
+});

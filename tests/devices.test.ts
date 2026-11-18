@@ -185,3 +185,25 @@ describe("amp, pedal, cabinet", () => {
     expect(cabinetDb({ size: 3, mic: 1 }, 4000)).toBeLessThan(cabinetDb({ size: 3, mic: 0 }, 4000) - 3);
   });
 });
+
+import { softClip, softClipTable, SOFT_CLIP_REACH, utilityMatrix as um } from "../src/daw/devices";
+describe("Utility's choice of side, and the Saturator's soft clip", () => {
+  const out = (p: Record<string, number>, l: number, r: number) => { const m = um({ gain: 0, pan: 0, width: 100, ...p }); return [(l * m.ll + r * m.rl) * m.gain, (l * m.lr + r * m.rr) * m.gain]; };
+  it("left only and right only copy one side to both; swapped trades them", () => {
+    expect(out({ channel: 1 }, 0.3, -0.7)).toEqual([0.3, 0.3]);
+    expect(out({ channel: 2 }, 0.3, -0.7)).toEqual([-0.7, -0.7]);
+    expect(out({ channel: 3 }, 0.3, -0.7)).toEqual([-0.7, 0.3]);
+    expect(out({ channel: 0 }, 0.3, -0.7)).toEqual([0.3, -0.7]);
+  });
+  it("the choice of side comes first: pan and a flip still act on what was chosen", () => {
+    expect(out({ channel: 1, pan: 100 }, 0.4, 0.9)).toEqual([0, 0.4]);
+    expect(out({ channel: 3, flipL: 1 }, 0.4, 0.9)[0]).toBeCloseTo(-0.9, 10);
+  });
+  it("soft clip leaves quiet sound alone, never passes full level, and never turns a louder sound into a quieter one", () => {
+    expect(softClip(0.3)).toBe(0.3); expect(softClip(-0.5)).toBe(-0.5);
+    expect(softClip(1)).toBeCloseTo(0.5 + 0.5 * Math.tanh(1), 12); expect(softClip(-1)).toBe(-softClip(1));
+    expect(softClip(50)).toBeLessThanOrEqual(1);
+    for (let x = 0; x < 6; x += 0.01) expect(softClip(x + 0.01)).toBeGreaterThanOrEqual(softClip(x));
+    const t = softClipTable(); expect(t[(t.length - 1) / 2]).toBe(0); expect(t[t.length - 1]).toBeCloseTo(softClip(SOFT_CLIP_REACH), 6); expect(t[0]).toBeCloseTo(-softClip(SOFT_CLIP_REACH), 6);
+  });
+});

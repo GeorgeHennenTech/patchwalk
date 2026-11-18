@@ -223,6 +223,9 @@ export function multibandChangeDb(inDb: number, above: number, ratio: number, be
 /** Multiband dynamics: the sound split in three (the same split as the three-band EQ), each band with its own compressor. */
 export class MultibandDsp implements Dsp {
   private readonly f = Array.from({ length: 12 }, () => new Bq());
+  /** the same split again, for the other sound when the device listens to one (a sidechain) */
+  private readonly sf = Array.from({ length: 12 }, () => new Bq());
+  private side = false; private readonly heard = [0, 0, 0];
   private readonly env = [0, 0, 0]; private readonly y = [0, 0, 0]; private worst = 0;
   private p = { above: [-24, -24, -24], ratio: [1, 1, 1], below: [-50, -50, -50], lift: [1, 1, 1], gain: [1, 1, 1], amount: 1, out: 1, att: 1, relDecay: 1 };
   private readonly band = [[0, 0], [0, 0], [0, 0]];
@@ -232,13 +235,24 @@ export class MultibandDsp implements Dsp {
     f[0]!.set("lowpass", f1, BUTTER, sr); f[1]!.set("lowpass", f1, BUTTER, sr); f[2]!.set("highpass", f1, BUTTER, sr); f[3]!.set("highpass", f1, BUTTER, sr);
     for (const i of [4, 5, 8, 9]) f[i]!.set("lowpass", f2, BUTTER, sr);
     for (const i of [6, 7, 10, 11]) f[i]!.set("highpass", f2, BUTTER, sr);
+    this.side = (p.side ?? 0) > 0;
+    if (this.side) { const s = this.sf; for (const i of [0, 1]) s[i]!.set("lowpass", f1, BUTTER, sr); for (const i of [2, 3]) s[i]!.set("highpass", f1, BUTTER, sr); for (const i of [4, 5, 8, 9]) s[i]!.set("lowpass", f2, BUTTER, sr); for (const i of [6, 7, 10, 11]) s[i]!.set("highpass", f2, BUTTER, sr); }
     const each = (name: string, def: number) => BANDS.map((k) => p[`${k}${name}`] ?? def);
     this.p = { above: each("above", -24), ratio: each("ratio", 3), below: each("below", -50), lift: each("lift", 1), gain: each("gain", 0).map(dbToGain), amount: Math.min(1, Math.max(0, (p.amount ?? 100) / 100)), out: dbToGain(p.out ?? 0),
       att: stepFor(p.attack ?? 10, sr), relDecay: Math.exp(-1 / (((p.release ?? 150) / 1000) * sr)) };
   }
-  run(inL: Float32Array, inR: Float32Array, outL: Float32Array, outR: Float32Array): void {
-    const f = this.f, p = this.p, band = this.band; let worst = 0;
+  run(inL: Float32Array, inR: Float32Array, outL: Float32Array, outR: Float32Array, extra?: Extra): void {
+    const f = this.f, s = this.sf, p = this.p, band = this.band, side = this.side, heard = this.heard, sl = extra?.sideL, sr = extra?.sideR ?? sl; let worst = 0;
     for (let i = 0; i < inL.length; i++) {
+      if (side) {
+        // the other sound, split the same way: its lows, mids and highs are what each band's compressor reads (silence if it is not playing)
+        heard[0] = 0; heard[1] = 0; heard[2] = 0;
+        if (sl) for (let ch = 0; ch < 2; ch++) {
+          const x = ch ? sr![i]! : sl[i]!, low = s[1]!.tick(s[0]!.tick(x, ch), ch), rest = s[3]!.tick(s[2]!.tick(x, ch), ch);
+          heard[0] = Math.max(heard[0]!, Math.abs(s[5]!.tick(s[4]!.tick(low, ch), ch) + s[7]!.tick(s[6]!.tick(low, ch), ch)));
+          heard[1] = Math.max(heard[1]!, Math.abs(s[9]!.tick(s[8]!.tick(rest, ch), ch))); heard[2] = Math.max(heard[2]!, Math.abs(s[11]!.tick(s[10]!.tick(rest, ch), ch)));
+        }
+      }
       for (let ch = 0; ch < 2; ch++) {
         const x = ch ? inR[i]! : inL[i]!, low = f[1]!.tick(f[0]!.tick(x, ch), ch), rest = f[3]!.tick(f[2]!.tick(x, ch), ch);
         band[0]![ch] = f[5]!.tick(f[4]!.tick(low, ch), ch) + f[7]!.tick(f[6]!.tick(low, ch), ch);   // the lows, through both halves of the upper split, which only turns their phase
@@ -246,7 +260,7 @@ export class MultibandDsp implements Dsp {
       }
       let l = 0, r = 0;
       for (let b = 0; b < 3; b++) {
-        const bl = band[b]![0]!, br = band[b]![1]!, a = Math.max(Math.abs(bl), Math.abs(br));
+        const bl = band[b]![0]!, br = band[b]![1]!, a = side ? heard[b]! : Math.max(Math.abs(bl), Math.abs(br));
         this.env[b] = a > this.env[b]! ? a : this.env[b]! * p.relDecay;
         const want = multibandChangeDb(toDb(this.env[b]!), p.above[b]!, p.ratio[b]!, p.below[b]!, p.lift[b]!) * p.amount;
         this.y[b] = this.y[b]! + (want - this.y[b]!) * (want < this.y[b]! ? p.att : p.att * 0.25);

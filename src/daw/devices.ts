@@ -23,6 +23,9 @@ export const DELAY_DIVS = [{ name: "1/16", beats: 0.25 }, { name: "1/8 triplet",
 export const LFO_DIVS = [...DELAY_DIVS, { name: "2 bars", beats: 8 }, { name: "4 bars", beats: 16 }];
 export const EQ8_TYPES = ["Low cut", "Low shelf", "Bell", "Notch", "High shelf", "High cut"];
 const EQ8_START: [number, number][] = [[1, 80], [2, 200], [2, 500], [2, 1000], [2, 2000], [2, 4000], [2, 8000], [4, 12000]];
+export const UTILITY_CHANNELS = ["Both sides", "Left only", "Right only", "Swapped"];
+/** Under this, Utility's "Remove offset" lets nothing through: a steady push to one side cannot be heard and only eats headroom. */
+export const DC_CUT_HZ = 10;
 export const SAT_CURVES = ["Soft", "Hard", "Fold", "Uneven"];
 export const PAN_SHAPES = ["Sine", "Triangle", "Square"];
 export const AMP_TYPES = ["Clean", "Crunch", "Heavy"], PEDAL_TYPES = ["Overdrive", "Distortion", "Fuzz"];
@@ -36,11 +39,12 @@ const lfoParams = (extra: Partial<ParamSpec> = {}): ParamSpec[] => [menu("shape"
 const FD_LINES: [string, string, number, number, number][] = [["l", "Left", 2, 800, -100], ["m", "Both", 4, 2000, 0], ["r", "Right", 3, 5000, 100]];
 
 export const DEVICES: DeviceSpec[] = [
-  { kind: "utility", name: "Utility", like: "Utility", about: "Level, left and right, width, and flipping a side upside down. The plain tool for fixing a track.", params: [
+  { kind: "utility", name: "Utility", like: "Utility", note: "Bass mono splits the sound in two at its frequency, which turns the phase a little around the split. Remove offset is a high-pass at 10 Hz.", about: "Level, left and right, width, and flipping a side upside down. The plain tool for fixing a track.", params: [
     { id: "gain", label: "Gain", min: -36, max: 24, step: 0.5, def: 0, unit: "dB" },
     { id: "pan", label: "Pan", min: -100, max: 100, step: 1, def: 0 },
     { id: "width", label: "Width", min: 0, max: 200, step: 1, def: 100, unit: "%" },
     sw("mono", "Mono"), sw("flipL", "Flip left"), sw("flipR", "Flip right"), sw("mute", "Mute"),
+    menu("channel", "Takes", UTILITY_CHANNELS), sw("bassMono", "Bass mono"), hz("bassFreq", "Mono below", 50, 500, 120, { when: (p) => !!p.bassMono }), sw("dc", "Remove offset"),
   ] },
   { kind: "eq3", name: "Three-band EQ", like: "EQ Three", wide: true, about: "Splits the sound into lows, mids and highs at two frequencies you choose, with a level and a kill switch for each.", params: [
     db("low", "Low", -36, 12), db("mid", "Mid", -36, 12), db("high", "High", -36, 12),
@@ -75,8 +79,9 @@ export const DEVICES: DeviceSpec[] = [
   { kind: "crush", name: "Crusher", like: "Redux", note: "Plain rounding and holding, with none of the smoothing a converter has: it is meant to sound rough.", about: "Fewer levels and fewer samples a second: the grit of old samplers and games.", params: [
     { id: "bits", label: "Bits", min: 1, max: 16, step: 1, def: 8 }, { id: "hold", label: "Keep one sample in", min: 1, max: 64, step: 1, def: 4, log: true }, pct("mix", "Dry / wet", 100),
   ] },
-  { kind: "sat", name: "Saturator", like: "Saturator", note: "The four curves are our own. Not smoothed against the harsh edge very high notes can get when driven hard.", about: "Pushes the sound into a curve that rounds, clips or folds its peaks, adding harmonics.", params: [
+  { kind: "sat", name: "Saturator", like: "Saturator", note: "The four curves are our own. Colour lifts or lowers one band before the curve, so that band is driven harder or less hard; Soft clip rounds the output so it never passes full level. Not smoothed against the harsh edge very high notes can get when driven hard.", about: "Pushes the sound into a curve that rounds, clips or folds its peaks, adding harmonics.", params: [
     menu("curve", "Curve", SAT_CURVES), db("drive", "Drive", 0, 36, 12), db("out", "Output", -36, 6), pct("mix", "Dry / wet", 100),
+    sw("colour", "Colour"), hz("colourFreq", "Colour at", 60, 10000, 1000, { when: (p) => !!p.colour }), db("colourDb", "Colour by", -12, 12, 6, { when: (p) => !!p.colour }), sw("soft", "Soft clip"),
   ] },
   { kind: "overdrive", name: "Overdrive", like: "Overdrive", note: "A general overdrive, not a model of any pedal.", about: "Keeps one band of the sound, drives it hard, then takes some top off. The band you choose is what growls.", params: [
     hz("freq", "Band at", 100, 6000, 800), { id: "width", label: "Band width", min: 0.5, max: 6, step: 0.1, def: 3, unit: "oct" }, pct("drive", "Drive", 50), pct("tone", "Tone", 60), pct("mix", "Dry / wet", 60),
@@ -98,10 +103,10 @@ export const DEVICES: DeviceSpec[] = [
     sw("filter", "Filter the echoes", 1), hz("filterFreq", "Filter at", 50, 12000, 1000, { when: (p) => !!p.filter }), { id: "filterWidth", label: "Filter width", min: 0.5, max: 9, step: 0.1, def: 6, unit: "oct", when: (p) => !!p.filter },
     pct("mix", "Dry / wet", 30),
   ] },
-  { kind: "autofilter", name: "Auto filter", like: "Auto Filter", wide: true, note: "One slope only (12 dB an octave). The picture shows the filter at rest, not while it moves.", about: "A filter that moves by itself: an LFO sweeps it, and the sound's own loudness can open or close it.", params: [
+  { kind: "autofilter", name: "Auto filter", like: "Auto Filter", wide: true, note: "One slope only (12 dB an octave). The picture shows the filter at rest, not while it moves. Following another track's loudness (a sidechain) hears that track before its own effects and level.", about: "A filter that moves by itself: an LFO sweeps it, and the sound's own loudness, or another track's, can open or close it.", params: [
     menu("type", "Kind", AUTO_FILTER_TYPES), hz("freq", "Frequency", 30, 18000, 1200), { id: "res", label: "Resonance", min: 0.5, max: 20, step: 0.01, def: 1.5, log: true },
     { id: "lfo", label: "LFO moves it by", min: 0, max: 4, step: 0.05, def: 1, unit: "oct" }, ...lfoParams(),
-    { id: "env", label: "Loudness moves it by", min: -4, max: 4, step: 0.1, def: 0, unit: "oct" }, { id: "envSpeed", label: "Loudness follows in", min: 5, max: 500, step: 1, def: 40, unit: "ms", log: true },
+    { id: "env", label: "Loudness moves it by", min: -4, max: 4, step: 0.1, def: 0, unit: "oct" }, { id: "envSpeed", label: "Loudness follows in", min: 5, max: 500, step: 1, def: 40, unit: "ms", log: true }, menu("side", "Loudness of", ["Itself", ...Array.from({ length: 8 }, (_, i) => `Track ${i + 1}`)]),
   ] },
   { kind: "phaser", name: "Phaser and flanger", like: "Phaser-Flanger", note: "The phaser has no feedback (a browser loop needs a delay in it).", about: "Two sweeping effects in one: a phaser cuts moving notches with all-pass filters, a flanger with a very short delay.", params: [
     menu("mode", "Mode", ["Phaser", "Flanger"]), { id: "rate", label: "Speed", min: 0.02, max: 10, step: 0.01, def: 0.3, unit: "Hz", log: true }, pct("amount", "Amount", 60),
@@ -123,9 +128,9 @@ export const DEVICES: DeviceSpec[] = [
     { id: "note", label: "Note", min: 24, max: 84, step: 1, def: 48 }, { id: "decay", label: "Rings for", min: 0.05, max: 10, step: 0.05, def: 1.5, unit: "s", log: true }, pct("colour", "Brightness", 70), pct("mix", "Dry / wet", 50),
     ...RES_NAMES.flatMap((group, i): ParamSpec[] => { const n = i + 1; return [sw(`r${n}on`, "On", i < 3 ? 1 : 0, { group }), ...(i ? [{ id: `r${n}pitch`, label: "Semitones from I", min: -24, max: 24, step: 1, def: [0, 7, 12, 16, 19][i]!, group } as ParamSpec] : []), db(`r${n}gain`, "Level", -36, 6, 0, { group })]; }),
   ] },
-  { kind: "multiband", name: "Multiband dynamics", like: "Multiband Dynamics", meter: true, note: "The level in each band is read from peaks. The meter shows the most any band is being turned down.", about: "The sound split into lows, mids and highs, each with its own compressor that can turn loud parts down and lift quiet parts up.", params: [
+  { kind: "multiband", name: "Multiband dynamics", like: "Multiband Dynamics", meter: true, note: "The level in each band is read from peaks. The meter shows the most any band is being turned down. Listening to another track (a sidechain) reads each band's level from that track's lows, mids and highs, before its effects and level.", about: "The sound split into lows, mids and highs, each with its own compressor that can turn loud parts down and lift quiet parts up.", params: [
     hz("freqLow", "Low / mid at", 50, 500, 120), hz("freqHigh", "Mid / high at", 1000, 10000, 2500),
-    { id: "attack", label: "Attack", min: 0.1, max: 200, step: 0.1, def: 10, unit: "ms", log: true }, { id: "release", label: "Release", min: 10, max: 1000, step: 1, def: 150, unit: "ms", log: true }, pct("amount", "Amount", 100), db("out", "Output", -24, 12),
+    { id: "attack", label: "Attack", min: 0.1, max: 200, step: 0.1, def: 10, unit: "ms", log: true }, { id: "release", label: "Release", min: 10, max: 1000, step: 1, def: 150, unit: "ms", log: true }, pct("amount", "Amount", 100), db("out", "Output", -24, 12), menu("side", "Listens to", ["Itself", ...Array.from({ length: 8 }, (_, i) => `Track ${i + 1}`)]),
     ...([["l", "Low"], ["m", "Mid"], ["h", "High"]] as const).flatMap(([k, group]): ParamSpec[] => [db(`${k}above`, "Turn down above", -60, 0, -24, { group }), { id: `${k}ratio`, label: "by a ratio of", min: 1, max: 20, step: 0.1, def: 3, log: true, group },
       db(`${k}below`, "Lift up below", -70, -10, -50, { group }), { id: `${k}lift`, label: "by a ratio of", min: 1, max: 5, step: 0.1, def: 1, group }, db(`${k}gain`, "Band level", -12, 12, 0, { group })]),
   ] },
@@ -217,7 +222,13 @@ export function utilityMatrix(p: Record<string, number>): { ll: number; rl: numb
   const w = p.mono ? 0 : clamp((p.width ?? 100) / 100, 0, 2), sl = p.flipL ? -1 : 1, sr = p.flipR ? -1 : 1, pan = clamp((p.pan ?? 0) / 100, -1, 1);
   // Pan is a balance: it turns the other side down and never turns a side up.
   const left = pan > 0 ? 1 - pan : 1, right = pan < 0 ? 1 + pan : 1;
-  return { ll: (left * sl * (1 + w)) / 2, rl: (left * sr * (1 - w)) / 2, lr: (right * sl * (1 - w)) / 2, rr: (right * sr * (1 + w)) / 2, gain: p.mute ? 0 : dbToGain(p.gain ?? 0) };
+  const ll = (left * sl * (1 + w)) / 2, rl = (left * sr * (1 - w)) / 2, lr = (right * sl * (1 - w)) / 2, rr = (right * sr * (1 + w)) / 2, gain = p.mute ? 0 : dbToGain(p.gain ?? 0);
+  // "Takes" chooses what comes in before anything else: one side copied to both, or the two sides swapped.
+  const ch = Math.round(p.channel ?? 0);
+  if (ch === 1) return { ll: ll + rl, rl: 0, lr: lr + rr, rr: 0, gain };
+  if (ch === 2) return { ll: 0, rl: ll + rl, lr: 0, rr: lr + rr, gain };
+  if (ch === 3) return { ll: rl, rl: ll, lr: rr, rr: lr, gain };
+  return { ll, rl, lr, rr, gain };
 }
 
 // ---- shared pieces ----
@@ -309,6 +320,18 @@ export function saturate(curve: number, x: number): number {
 export function satTable(curve: number, driveDb: number, points = 4097): Float32Array<ArrayBuffer> {
   const out = new Float32Array(points), g = dbToGain(driveDb);
   for (let i = 0; i < points; i++) out[i] = saturate(curve, ((2 * i) / (points - 1) - 1) * g);
+  return out;
+}
+
+/** How wide the Saturator's Colour band is. */
+export const COLOUR_Q = 0.7;
+/** The Saturator's soft clip, on its output: untouched up to half of full level, then bent over so that nothing passes full level. */
+export function softClip(x: number): number { const a = Math.abs(x); return a <= 0.5 ? x : Math.sign(x) * (0.5 + 0.5 * Math.tanh((a - 0.5) / 0.5)); }
+/** How far over full level the soft clip's table reaches (the sound is turned down by this on the way in to fit the table). */
+export const SOFT_CLIP_REACH = 4;
+export function softClipTable(points = 4097): Float32Array<ArrayBuffer> {
+  const out = new Float32Array(points);
+  for (let i = 0; i < points; i++) out[i] = softClip(((2 * i) / (points - 1) - 1) * SOFT_CLIP_REACH);
   return out;
 }
 

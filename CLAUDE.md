@@ -1517,6 +1517,34 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   to 3 beats, was cut in two at the marker; a bent level line held the gain at 0.075 for five steps and
   then rose to 1.09 by step 16; moving the fader held the gain at 0.5 and the button gave it back to the
   line. Not built: cuts off the beat, the synth's and sampler's own knobs marked, play from the marker.
+  **Quick wins, third batch (18 Nov 2026, from the handoff's "next step").** (1) **Marker jumps**: |◀ and ▶|
+  either side of the position go to the marker before or after (`markerFrom` in `song.ts`): playing, the song
+  jumps there; stopped, the time marker is put there. (2) **Space plays from the time marker** when one is set
+  (`act.play`; Esc takes the marker away, Home always plays from the start, a loop still starts at its own
+  beginning). **A click on a clip sets the marker, so Space after selecting a clip plays from that click: when
+  checking by script, press Esc first if the song should start at bar 1.** (3) **Random loud** among the note
+  tools (`randomVelocity`: up to 20 of 127 either way a click, selected notes or all). (4) **Count-in** is a
+  menu (none, 1, 2, 4 bars; `patchwalk.countin.v1`) and there is an **Overdub** switch (`patchwalk.overdub.v1`,
+  on to start with): off, recording replaces, meaning the notes or hits the clip held are taken away as the
+  song passes over them (an effect on `local` in `DawView.tsx`; what the take itself wrote is kept in `taken`,
+  so a loop coming round does not wipe it). **With Overdub off, recording a fader move also wipes the open
+  clip as the song passes: that is how replace works, and why Overdub starts on.** (5) **Sidechain on the
+  auto filter** ("Loudness of": its follower listens to another track; a `Core` may now give `sideIn`, the
+  input of `side` to plug into, 0 for an ordinary node and 1 for a worklet) **and on Multiband dynamics**
+  (the other track is split into the same three bands and each band's compressor reads its own). (6)
+  **Utility**: "Takes" (both sides, left only, right only, swapped; in `utilityMatrix`), Bass mono below a
+  frequency (two Butterworth filters each way so the halves add back flat; the low half summed), Remove
+  offset (a 10 Hz high-pass). **Saturator**: Colour (a band lifted or lowered before the curve) and Soft clip
+  on the output (`softClip`: untouched to half level, never over full level). Measured in a browser: a
+  left-only 60 Hz tone came out equal on both sides with bass mono at 300 Hz while 2 kHz stayed on the left
+  (77 dB down on the right), and a sound the same on both sides was unchanged to 0.0 dB at 60, 300 and
+  2000 Hz; an offset of 0.5 fell to 0.0000; soft clip held a peak of 2.0 to 0.9975 and left a quiet tone
+  alone; colour of +6 dB gave +6.0 dB at its frequency and 0.1 at 100 Hz; an auto filter set to open by four
+  octaves let a 4 kHz tone through at -36.5 dB with the other track silent and -1.9 dB with it loud;
+  multiband left a 6 kHz tone alone with the other track silent or loud only in the lows, and took 16.5 dB
+  off with it loud in the highs. On the page: the jumps, Space from bar 3, a 2-bar count-in, and a half-bar
+  replace take that cleared the first eight steps of every row and came back with one undo.
+  "Hear a note as you click or move it" was already there and is ticked. **Nobody has heard any of it.**
   **Lessons on all of this (owner, 17 Nov 2026: "we are also going to have to make lessons on all of these
   new features. this ableton course will be extensive").** Nothing is written and the lesson engine does
   not know the Studio; the plan is at the top of `docs/ABLETON_GAPS.md`. Every Studio feature needs one.

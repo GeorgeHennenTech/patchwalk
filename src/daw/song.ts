@@ -274,6 +274,16 @@ export function doubleClip(s: Song, trackId: string, clipId: string): Song {
     ? { ...x, bars, hits: Object.fromEntries(Object.entries(x.hits).map(([id, row]) => { const one = row.slice(0, steps); while (one.length < steps) one.push(0); return [id, [...one, ...one]]; })) }
     : { ...x, bars, notes: [...x.notes, ...x.notes.map((n) => ({ ...n, start: n.start + steps }))] }));
 }
+/** Scatter loudness: each chosen note (every note when none is chosen) is played up to `amount` harder or softer, as the dice fall. */
+export function randomVelocity(notes: NoteEv[], keys: ReadonlySet<string>, amount: number, dice: () => number = Math.random): { notes: NoteEv[]; keys: Set<string> } {
+  const a = clamp(Math.round(amount), 0, 126), all = !keys.size;
+  return { notes: notes.map((n) => { if (!all && !keys.has(noteKey(n))) return n; const v = clamp(Math.round(n.velocity + (dice() * 2 - 1) * a), 1, 127); return v === n.velocity ? n : { ...n, velocity: v }; }), keys: new Set(keys) };
+}
+/** The bar of the first marker after a place in the song (`dir` 1) or of the last one before it (`dir` -1); nothing when there is none that way. */
+export function markerFrom(s: Song, bar: number, dir: 1 | -1): number | undefined {
+  const bars = (s.markers ?? []).map((m) => m.bar);
+  return dir > 0 ? bars.find((b) => b > bar + 1e-9) : bars.filter((b) => b < bar - 1e-9).at(-1);
+}
 /** Name the bar a marker sits on, rename it, or (with an empty name) take it away. */
 export function setMarker(s: Song, bar: number, name: string): Song {
   const rest = (s.markers ?? []).filter((m) => m.bar !== bar), n = name.trim().slice(0, 20);

@@ -19,7 +19,7 @@ maths, and a measurement in a browser (`transport.levels()` reads the left and r
 
 ## Done
 - [x] The chain itself: devices on every track, in order, switchable, saved with the song (17 Nov 2026)
-- [x] 1. **Utility** (like Utility): gain, pan as a balance, width, mono, flip left or right, mute.
+- [x] 1. **Utility** (like Utility): gain, pan as a balance, width, mono, flip left or right, mute; since 18 Nov also one side only or swapped, bass mono below a frequency, remove offset. The Saturator gained Colour and Soft clip, and the auto filter and multiband a sidechain, the same day (measurements in `CLAUDE.md`, "Quick wins, third batch").
   Measured: +6 and -12 dB gave 6.0 and -11.9 dB; hard left silenced the right; flip-left with mono
   cancelled a centred sound; switched off, a +12 dB setting changed nothing.
 

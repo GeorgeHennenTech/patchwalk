@@ -23,7 +23,7 @@ import { firstSong, useStudio } from "./studio/useStudio";
 import { libPut } from "../guide/library";
 import { newPad, SLICE_COUNTS, BPM_MAX, BPM_MIN, GENRE_STARTERS, STARTERS, STEPS_PER_BAR, SWING_MAX, VOICES, VOICE_NAMES, addPad, clearAll, setHit, setSample, tidySteps, type Pattern, type Voice } from "../daw/drums";
 import { PPQ, hitsToMidi, midiBars, midiToHits, midiToNotes, notesToMidi, readMidi, songToMidi, writeMidi } from "../daw/midi";
-import { CLIP_BARS, okBars, placeName, MAX_RETURNS, MAX_TRACKS, addReturn, setReturn, SONG_BARS, SOUNDS, addClip, addTrack, clipOf, clipPattern, duplicateClip, duplicateNotes, doubleClip, setMarker, setSampler, sliceToTrack, quantizeNotes, GRIDS, invertNotes, legatoNotes, reverseNotes, scaleTime, hasOtherMusic, moveClip, newSong, noteKey, pasteClip, removeClip, setClipBars, joinClips, placeClip, splitClip, setDevices, setNoteFx, setNotes, setPatch, setSongBars, setSongSwing, setSongTempo, setTrack, shiftNotes, soundPatch, stretchNotes, toggleClipOff, trackOf, withPads, withPattern, type Clip, type DrumClip, type DrumTrack, type NoteEv, type Song } from "../daw/song";
+import { CLIP_BARS, okBars, placeName, MAX_RETURNS, MAX_TRACKS, addReturn, setReturn, SONG_BARS, SOUNDS, addClip, addTrack, clipOf, clipPattern, duplicateClip, duplicateNotes, doubleClip, setMarker, markerFrom, randomVelocity, setSampler, sliceToTrack, quantizeNotes, GRIDS, invertNotes, legatoNotes, reverseNotes, scaleTime, hasOtherMusic, moveClip, newSong, noteKey, pasteClip, removeClip, setClipBars, joinClips, placeClip, splitClip, setDevices, setNoteFx, setNotes, setPatch, setSongBars, setSongSwing, setSongTempo, setTrack, shiftNotes, soundPatch, stretchNotes, toggleClipOff, trackOf, withPads, withPattern, type Clip, type DrumClip, type DrumTrack, type NoteEv, type Song } from "../daw/song";
 import { loadBreaks, loadRacks, loadSaved, loadSongs, rackOnto, saveSong, storeBreaks, storeRacks, storeSongs, withNamed, withSavedSong, withoutSavedSong, type Break, type Rack } from "../daw/store";
 import { loadPatches } from "../synth/patches";
 import type { SynthState } from "../synth/params";
@@ -38,7 +38,7 @@ const mac = typeof navigator !== "undefined" && /mac/i.test(navigator.platform);
 const MOD = mac ? "Cmd" : "Ctrl";
 /** The shortcuts, as shown in the list. Each is the one Ableton Live uses for the same thing. */
 const KEYS: [string, string][] = [
-  ["Space", "Play and stop"], [`${MOD}+U`, "Quantize the selected notes (or all of them) onto the grid"], ["Shift+Space", "Play on from the bar where the song was stopped"], ["F1 to F8", "Switch tracks 1 to 8 on and off"], ["Home", "Play again from the start"], ["F9", "Record on and off"],
+  ["Space", "Play and stop. It starts from the time marker (the dashed line a click on a track leaves); Esc takes the marker away"], [`${MOD}+U`, "Quantize the selected notes (or all of them) onto the grid"], ["Shift+Space", "Play on from the bar where the song was stopped"], ["F1 to F8", "Switch tracks 1 to 8 on and off"], ["Home", "Play again from the start"], ["|◀ ▶| beside the position", "Jump to the marker before or after (name a place by right-clicking a bar number)"], ["F9", "Record on and off"],
   [`${MOD}+Z`, "Undo"], [mac ? "Cmd+Shift+Z" : "Ctrl+Y", "Redo"],
   [`${MOD}+D`, "Duplicate the selected notes, or the selected clip"], [`${MOD}+C / X / V`, "Copy, cut and paste notes or a clip"], ["Delete", "Delete the selected notes, or the selected clip"],
   [`${MOD}+A`, "Select every note in the open clip"], [`${MOD}+L`, "Loop the selected clip, on and off"], [`${MOD}+Shift+M`, "Add an empty clip to the selected track"],
@@ -79,6 +79,12 @@ export default function DawView() {
   const [loopClip, setLoopClip] = useState(false);
   const [rec, setRec] = useState(false);
   recRef.current = rec;
+  // Recording: how many bars of clicks come first, and whether what is played is added to what the clip holds
+  // (overdub) or takes its place as the song passes over it (replace).
+  const [countIn, setCountInState] = useState(() => Number(remembered("patchwalk.countin.v1", ["0", "1", "2", "4"], "1")));
+  const [overdub, setOverdubState] = useState(() => remembered("patchwalk.overdub.v1", ["on", "off"], "on") === "on");
+  /** what this take has written, so that replacing does not wipe it when a loop comes round: note keys, and "pad:step" for hits */
+  const taken = useRef(new Set<string>()), wiped = useRef(-1);
   const [click, setClick] = useState(false);
   const [draw, setDraw] = useState(false);
   const [keysOn, setKeysOn] = useState(true);
@@ -170,9 +176,25 @@ export default function DawView() {
     if (!h) return;
     heldKeys.current.delete(key);
     const end = p.at < h.start - 0.5 ? p.steps : Math.max(h.start + grid, Math.min(p.steps, Math.round(p.at / grid) * grid));
+    taken.current.add(noteKey({ note: key, start: h.start }));
     change((s) => { const c = clipOf(trackOf(s, track.id), clip.id); return c && "notes" in c ? setNotes(s, track.id, clip.id, [...c.notes.filter((n) => !(n.note === key && n.start === h.start)), { note: key, start: h.start, length: end - h.start, velocity: h.velocity }]) : s; });
   };
-  const onStrike = (lane: number) => { const p = spot(); if (!p || !pattern || !clip || !("hits" in clip) || p.at <= -0.5) return; setPattern(setHit(pattern, lane, Math.round(p.at) % p.steps, 2)); };
+  const onStrike = (lane: number) => { const p = spot(); if (!p || !pattern || !clip || !("hits" in clip) || p.at <= -0.5) return; const col = Math.round(p.at) % p.steps; taken.current.add(`${lane}:${col}`); setPattern(setHit(pattern, lane, col, 2)); };
+  // Replace: while recording with Overdub off, what the clip already held is taken away as the song passes over it.
+  useEffect(() => { if (rec) { taken.current = new Set(); wiped.current = -1; } }, [rec]);
+  useEffect(() => {
+    if (!rec || overdub || !playing || !track || !clip || local < 0) { wiped.current = -1; return; }
+    const from = wiped.current >= 0 && wiped.current < local ? wiped.current + 1 : local, cols = new Set<number>(); for (let c = from; c <= local; c++) cols.add(c);
+    wiped.current = local;
+    const kept = taken.current, tid = track.id, cid = clip.id;
+    change((s) => { const t = trackOf(s, tid), c = clipOf(t, cid); if (!t || !c) return s;
+      if ("notes" in c) { const keep = c.notes.filter((n) => kept.has(noteKey(n)) || !cols.has(Math.floor(n.start + 1e-9))); return keep.length === c.notes.length ? s : setNotes(s, tid, cid, keep); }
+      if (t.kind !== "drums") return s;
+      let p = clipPattern(s, t, c as DrumClip), touched = false;
+      p.lanes.forEach((l, i) => { for (const col of cols) if (l.steps[col] && !kept.has(`${i}:${col}`)) { p = setHit(p, i, col, 0); touched = true; } });
+      return touched ? withPattern(s, tid, cid, p) : s; });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [local, rec, overdub, playing]);
 
   // MIDI files out and in
   const [exporting, setExporting] = useState(false);
@@ -246,8 +268,13 @@ export default function DawView() {
     rename: () => { if (track) setRenaming(track.id); },
     split: () => { if (!track || !clip) return; const here = mark !== undefined && mark > clip.start && mark < clip.start + clip.bars, made = splitClip(song, track.id, clip.id, here ? mark : undefined); if (!made) { setNote("Click inside the clip where you want the cut (a dashed line shows the place), then split. Cuts land on a beat."); return; } change(made.song); pick(track.id, made.clips[here ? 1 : 0]); setNote(here ? `Cut the clip in two at ${placeName(mark!)}.` : `Split into ${made.clips.length} clips at the bar lines. To cut somewhere else, click inside the clip first.`); },
     join: () => { if (!track || targets.length < 2) { setNote("Select two or more clips on one track first (Shift-click), then consolidate."); return; } const made = joinClips(song, track.id, targets); if (!made) { setNote(`To consolidate, the clips must sit next to each other and add up to no more than ${CLIP_BARS[track.kind].at(-1)} bars.`); return; } change(made.song); pick(track.id, made.clip); setNote("Joined into one clip."); },
-    record: () => { if (!rec && !playing) { playFrom(clip && !transport.loop ? clip.start * STEPS_PER_BAR : 0, 1); setNote("Recording after one bar of clicks."); } setRec(!rec); },
-    restart: () => { if (playing) toggle(); window.setTimeout(toggle, 30); },
+    record: () => { if (!rec && !playing) { playFrom(clip && !transport.loop ? clip.start * STEPS_PER_BAR : 0, countIn); setNote(`${countIn ? `Recording after ${countIn === 1 ? "one bar" : `${countIn} bars`} of clicks.` : "Recording."} ${overdub ? "What you play is added to the clip." : "What you play replaces what the clip held, as the song passes over it."}`); } setRec(!rec); },
+    restart: () => { playFrom(0); },
+    // Space: stop, or play from the time marker when one is set (from the start otherwise; a loop starts at its own beginning)
+    play: () => { if (playing) toggle(); else if (mark !== undefined && !transport.loop) playFrom(Math.round(mark * STEPS_PER_BAR)); else toggle(); },
+    resume: () => { playFrom(Math.floor(transport.stoppedAt / STEPS_PER_BAR) * STEPS_PER_BAR); },
+    // to the marker before or after where the song is (or, stopped, where the time marker is)
+    jump: (dir: 1 | -1) => { const here = playing && step >= 0 ? step / STEPS_PER_BAR : mark ?? 0, bar = markerFrom(song, here, dir); if (bar === undefined) { setNote(song.markers?.length ? `There is no marker ${dir > 0 ? "after" : "before"} this place.` : "The song has no markers yet. Right-click a bar number to name a place."); return; } setMark(bar); if (playing) playFrom(bar * STEPS_PER_BAR); setNote(`At “${song.markers!.find((m) => m.bar === bar)!.name}”, bar ${bar + 1}.${playing ? "" : " Space plays from here."}`); },
     browser: () => setBrowser((b) => { remember("patchwalk.studio.browser", b ? "shut" : "open"); return !b; }),
     keepSong,
   };
@@ -280,11 +307,11 @@ export default function DawView() {
         return;
       }
       if (e.altKey || menu) return;
-      if (e.code === "Space") { done(); if (e.shiftKey && !playing) playFrom(Math.floor(transport.stoppedAt / STEPS_PER_BAR) * STEPS_PER_BAR); else toggle(); return; }
+      if (e.code === "Space") { done(); if (e.shiftKey) a.resume(); else a.play(); return; }
       if (/^F[1-8]$/.test(e.key)) { const t = song.tracks[Number(e.key.slice(1)) - 1]; if (t) { done(); change((s) => setTrack(s, t.id, { mute: !t.mute })); } return; }
       if (e.key === "Tab" && e.shiftKey) { done(); setView((v) => (v === "clip" ? "device" : "clip")); return; }
       if (e.key === "F9") { done(); a.record(); return; }
-      if (e.key === "Escape") { setSel(new Set()); return; }
+      if (e.key === "Escape") { setSel(new Set()); setMark(undefined); return; }
       if (grid) return; // the step grid has its own keys for the box that has the keyboard
       if (e.key === "Delete" || e.key === "Backspace") { if (a.del()) done(); return; }
       if (k === "b") { setDraw((v) => !v); return; }
@@ -313,10 +340,14 @@ export default function DawView() {
           <button className={`tb-tog${click ? " on" : ""}`} aria-pressed={click} onClick={() => setClick(!click)} title="Metronome: a click on every beat while the song plays">Click</button>
         </div>
         <div className="tb-group tb-mid">
+          <button onClick={() => act.jump(-1)} disabled={!song.markers?.length} aria-label="To the marker before" title="Jump to the marker before this place">|◀</button>
           <output className="tb-pos" title="Where the song has got to: bar, beat, sixteenth" aria-label="Position">{where}</output>
-          <button className={`tb-play${playing ? " on" : ""}`} onClick={() => { if (!playing) toggle(); }} aria-label="▶ Play" title="Play (Space)">▶</button>
+          <button onClick={() => act.jump(1)} disabled={!song.markers?.length} aria-label="To the marker after" title="Jump to the marker after this place">▶|</button>
+          <button className={`tb-play${playing ? " on" : ""}`} onClick={() => { if (!playing) act.play(); }} aria-label="▶ Play" title="Play (Space): from the time marker when one is set, otherwise from the start">▶</button>
           <button className="tb-stop" onClick={() => { if (playing) toggle(); }} aria-label="■ Stop" title="Stop (Space)">■</button>
           <button className={`tb-rec${rec ? " on" : ""}`} aria-pressed={rec} onClick={act.record} aria-label={rec ? "Recording" : "Record"} title="Record what you play into the selected clip (F9)">●</button>
+          <label className="tb-num" title="Count-in: bars of clicks before the song starts when you press Record">Count-in <select value={countIn} aria-label="Count-in" onChange={(e) => { setCountInState(Number(e.target.value)); remember("patchwalk.countin.v1", e.target.value); }}><option value={0}>none</option><option value={1}>1 bar</option><option value={2}>2 bars</option><option value={4}>4 bars</option></select></label>
+          <button className={`tb-tog${overdub ? " on" : ""}`} aria-pressed={overdub} onClick={() => { setOverdubState(!overdub); remember("patchwalk.overdub.v1", overdub ? "off" : "on"); }} title="Overdub: when on, what you record is added to what the clip already holds. When off, recording replaces it: the old notes or hits are taken away as the song passes over them.">Overdub</button>
           <button className={`tb-tog${loopClip ? " on" : ""}`} aria-pressed={loopClip} onClick={() => setLoopClip(!loopClip)} title={`Loop the selected clip (${MOD}+L)`}>Loop</button>
         </div>
         <div className="tb-group">
@@ -388,6 +419,7 @@ export default function DawView() {
               <button onClick={() => tool(scaleTime(clip.notes, sel, 0.5, clip.bars * STEPS_PER_BAR))} title="Twice as fast">÷2</button>
               <button onClick={() => tool(scaleTime(clip.notes, sel, 2, clip.bars * STEPS_PER_BAR))} title="Half as fast">×2</button>
               <button onClick={() => tool(legatoNotes(clip.notes, sel, clip.bars * STEPS_PER_BAR))} title="Stretch each note until the next one starts">Legato</button>
+              <button onClick={() => tool(randomVelocity(clip.notes, sel, 20))} title="Scatter loudness: each note is played a little harder or softer, by up to 20 of 127 either way. Click again for more.">Random loud</button>
               <label title="The key of the song: the piano roll lights the rows that belong to it">Key <select value={song.scale ? song.scale.root : -1} aria-label="Key note" onChange={(e) => { const root = Number(e.target.value); change((s) => (root < 0 ? (({ scale: _none, ...rest }) => rest)(s) as Song : { ...s, scale: { root, name: s.scale?.name ?? "Minor" } })); }}><option value={-1}>none</option>{["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"].map((n, i) => <option key={n} value={i}>{n}</option>)}</select></label>
               {song.scale && <select value={song.scale.name} aria-label="Scale" onChange={(e) => change((s) => ({ ...s, scale: { root: s.scale!.root, name: e.target.value } }))}>{SCALES.map((x) => <option key={x.name}>{x.name}</option>)}</select>}
             </span>}
@@ -420,7 +452,7 @@ export default function DawView() {
           <div className="daw-keep"><input type="text" value={saveAs} maxLength={40} placeholder="Name to save under" aria-label="Name to save a break or rack under" onChange={(e) => setSaveAs(e.target.value)} /><button onClick={keepRack} title="Keep these pads and their settings to use on any drum track">Save this rack</button></div>
         </>}
       </div>}
-      <footer className="daw-status" role="status">{note || (rec ? "Recording: what you play is written into the selected clip." : "Double-click an empty bar to add a clip. Click a clip to select it. Open Shortcuts for the keys.")}
+      <footer className="daw-status" role="status">{note || (rec ? (overdub ? "Recording: what you play is added to the selected clip." : "Recording: what you play replaces what the selected clip held.") : "Double-click an empty bar to add a clip. Click a clip to select it. Open Shortcuts for the keys.")}
         <details className="daw-missing"><summary>What is missing here</summary>
           <p>The built-in drums are made by the browser from tones and noise as they play: our own recipes, not recordings and not a model of any drum machine, and nobody has tuned them by ear yet. The synth tracks are the practice synth from the lessons. The layout and the keys follow Ableton Live's Arrangement View. Clips start and end on a beat, not anywhere; there is no Session View, there are no audio tracks, and the synth's own knobs do not show a mark when they are automated. A MIDI file carries notes and tempo only. Saved songs, breaks and racks, and sound files of 2 MB or under, are kept in this browser and in the site's library.</p>
         </details>

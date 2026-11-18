@@ -581,3 +581,12 @@ tr.dim td { opacity: 0.6; }
 .daw2 .clip-bars { display: inline-flex; gap: 5px; align-items: center; font-size: 12px; color: var(--dim); }
 
 .daw2 .auto-shape { font-size: 11px; max-width: 78px; }
+
+.daw2 .arr .arr-slot.part { background: #37373b; }
+.daw2 .arr-cut { position: absolute; top: 0; bottom: 0; width: 0; border-left: 1px dashed #ffb347; pointer-events: none; z-index: 5; }
+.daw2 .arr-level.automated, .daw2 .arr-pan.automated { accent-color: #ff5a4d; } .daw2 .arr-level.automated.off, .daw2 .arr-pan.automated.off { accent-color: #8a8a90; }
+.daw2 .arr-auto.off .auto-area polyline { stroke: #77777d; stroke-dasharray: 4 3; } .daw2 .arr-auto.off .auto-pt { border-color: #77777d; }
+.chain .knob-auto { display: inline-block; width: 6px; height: 6px; margin-left: 3px; background: #ff5a4d; vertical-align: middle; } .chain .knob-auto.off { background: #8a8a90; }
+.daw2 .tb-back { background: #ff5a4d; color: #1a1a1c; font-weight: 700; }
+/* a short clip must not widen its columns: it takes no room of its own and fills the beats it is given */
+.daw2 .arr-clip, .daw2 .arr .arr-slot, .daw2 button.arr-bar-n { min-width: 0; contain: inline-size; overflow: hidden; }

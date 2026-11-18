@@ -60,10 +60,12 @@ export class Transport {
     void prepareDevices(this.ctx).then(() => this.sync(), () => undefined);
   }
   /** Bring the audio in line with the song: a gain per track, a synth per synth track, levels, mutes and sounds. */
+  /** Automation lanes switched off for now: a control was moved by hand, and it stays where it was put until the learner asks for the automation back. */
+  autoOff: ReadonlySet<string> = new Set();
   sync(): void {
     if (!this.ctx) return;
     // while the song plays, automated settings are where their lanes put them at this moment
-    const ctx = this.ctx, song = this.place >= 0 ? automate(this.read(), this.place) : this.read(), on = audibleOf(song.tracks), t = ctx.currentTime;
+    const ctx = this.ctx, song = this.place >= 0 ? automate(this.read(), this.place, this.autoOff) : this.read(), on = audibleOf(song.tracks), t = ctx.currentTime;
     this.master!.gain.setTargetAtTime(masterGain(song.volume), t, 0.015);
     // every track and every return track has the same strip: input -> effects -> level -> pan -> master
     const strips: { id: string; level: number; pan: number; devices: Device[]; heard: boolean }[] = [{ id: MASTER, level: 80, pan: 0, devices: song.masterFx ?? [], heard: true }, ...song.tracks.map((x, i) => ({ id: x.id, level: x.level, pan: x.pan, devices: x.devices, heard: on[i]! })), ...song.returns.map((x) => ({ id: x.id, level: x.level, pan: x.pan, devices: x.devices, heard: !x.mute }))];

@@ -140,3 +140,28 @@ describe("automation shapes", () => {
     expect(drawShape(lanes, 0, "Ramp up", 16, 16, 128)[0]!.points).toEqual([{ at: 2, v: 0.5 }, { at: 16, v: 0 }, { at: 31, v: 1 }, { at: 40, v: 0.9 }]);
   });
 });
+
+import { bent, bendPoint, lanePath, movedLanes, overKey, automate as automate2, valueAt as valueAt2 } from "../src/daw/automation";
+describe("bent lines and lanes switched off", () => {
+  it("a bend moves the middle of a line and leaves its ends", () => {
+    expect(bent(0, 0.5)).toBe(0); expect(bent(1, 0.5)).toBe(1); expect(bent(0.5, 0)).toBe(0.5);
+    expect(bent(0.5, 1)).toBeLessThan(0.1); expect(bent(0.5, -1)).toBeGreaterThan(0.9);
+    const lanes = bendPoint([{ target: "level", points: [{ at: 0, v: 0 }, { at: 16, v: 1 }] }], 0, 0, 1, 64);
+    expect(lanes[0]!.points[0]!.c).toBe(1);
+    expect(valueAt2(lanes[0]!.points, 8)!).toBeLessThan(0.1); expect(valueAt2(lanes[0]!.points, 16)).toBe(1);
+    expect(bendPoint(lanes, 0, 0, 0, 64)[0]!.points[0]!.c).toBeUndefined();     // straight again
+    expect(bendPoint(lanes, 0, 1, 0.5, 64)).toBe(lanes);                          // the last point has no line after it
+    expect(lanePath(lanes[0]!.points, 64).length).toBeGreaterThan(10);
+  });
+  it("a lane that is switched off leaves its setting alone; the others still move", () => {
+    const song = { tracks: [{ id: "t1", level: 80, pan: 0, devices: [], auto: [{ target: "level", points: [{ at: 0, v: 0 }] }, { target: "pan", points: [{ at: 0, v: 1 }] }] }] };
+    expect(automate2(song, 4).tracks[0]).toMatchObject({ level: 0, pan: 100 });
+    expect(automate2(song, 4, new Set([overKey("t1", "level")])).tracks[0]).toMatchObject({ level: 80, pan: 100 });
+  });
+  it("moving an automated control by hand names its lane, and only that one", () => {
+    const before = { tracks: [{ id: "t1", level: 80, pan: 0, devices: [], auto: [{ target: "level", points: [{ at: 0, v: 0 }] }, { target: "pan", points: [] }] }], volume: 85, masterAuto: [{ target: "level", points: [{ at: 0, v: 1 }] }] };
+    expect(movedLanes(before, { ...before, tracks: [{ ...before.tracks[0]!, level: 40, pan: 30 }] })).toEqual(["t1|level"]);
+    expect(movedLanes(before, { ...before, volume: 50 })).toEqual(["master|level"]);
+    expect(movedLanes(before, before)).toEqual([]);
+  });
+});

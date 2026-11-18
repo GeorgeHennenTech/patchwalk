@@ -6,7 +6,9 @@ import { specOf, type Device } from "./devices";
 import { MACRO_DESTS, PARAMS } from "../synth/params";
 
 /** `at`: sixteenth steps from the start of the song. `v`: 0 (the setting's lowest) to 1 (its highest). */
-export interface AutoPoint { at: number; v: number }
+export interface AutoPoint { at: number; v: number; /** how the line from this point to the next is bent: 0 straight, towards 1 it leaves late, towards -1 it leaves early */ c?: number }
+/** A bent line: where a share of the way along (0 to 1) has got to, for a bend of -1 to 1. */
+export const bent = (t: number, c = 0): number => (c === 0 ? t : c > 0 ? t ** (1 + 3 * c) : 1 - (1 - t) ** (1 - 3 * c));
 export interface AutoLane { target: string; points: AutoPoint[] }
 export interface AutoTarget { id: string; label: string; min: number; max: number; step: number; unit?: string; log?: boolean; /** the heading it is listed under */ group: string }
 export const MAX_LANES = 4, MAX_POINTS = 64;
@@ -35,7 +37,7 @@ export const toUnit = (t: Pick<AutoTarget, "min" | "max" | "log">, value: number
 export function valueAt(points: readonly AutoPoint[], step: number): number | undefined {
   if (!points.length) return undefined;
   if (step <= points[0]!.at) return points[0]!.v;
-  for (let i = 1; i < points.length; i++) { const a = points[i - 1]!, b = points[i]!; if (step <= b.at) return b.at === a.at ? b.v : a.v + ((b.v - a.v) * (step - a.at)) / (b.at - a.at); }
+  for (let i = 1; i < points.length; i++) { const a = points[i - 1]!, b = points[i]!; if (step <= b.at) return b.at === a.at ? b.v : a.v + (b.v - a.v) * bent((step - a.at) / (b.at - a.at), a.c); }
   return points[points.length - 1]!.v;
 }
 type Lanes = { auto?: AutoLane[] };
@@ -56,8 +58,8 @@ function withKnobs(patch: object, moves: [string, number][]): object {
   return out;
 }
 /** One track with its automation applied for a place in the song. The same object when nothing is automated. */
-export function automateTrack<T extends Auto>(t: T, step: number): T {
-  const lanes = (t.auto ?? []).filter((l) => l.points.length);
+export function automateTrack<T extends Auto>(t: T, step: number, /** targets whose lanes are switched off for now (the control was moved by hand) */ skip?: (target: string) => boolean): T {
+  const lanes = (t.auto ?? []).filter((l) => l.points.length && !skip?.(l.target));
   if (!lanes.length) return t;
   const targets = targetsOf(t), knobs: [string, number][] = []; let next: T = t;
   for (const lane of lanes) { const target = targets.find((x) => x.id === lane.target), v = valueAt(lane.points, step); if (!target || v === undefined) continue; const value = fromUnit(target, v);
@@ -69,12 +71,13 @@ export function automateTrack<T extends Auto>(t: T, step: number): T {
   return next;
 }
 /** The song as it stands at a place along it: every automated setting moved to where its lane says. */
-export function automate<S extends WholeSong>(song: S, step: number): S {
+export function automate<S extends WholeSong>(song: S, step: number, /** lanes switched off for now, as `overKey` names them */ off?: ReadonlySet<string>): S {
   if (!hasAutomation(song)) return song;
-  const tracks = song.tracks.map((t) => automateTrack(t, step)), returns = (song.returns ?? []).map((r) => automateTrack(r, step));
+  const skip = (id: string) => (off?.size ? (target: string) => off.has(overKey(id, target)) : undefined);
+  const tracks = song.tracks.map((t) => automateTrack(t, step, skip((t as { id?: string }).id ?? ""))), returns = (song.returns ?? []).map((r) => automateTrack(r, step, skip(r.id)));
   let next: S = tracks.every((t, i) => t === song.tracks[i]) ? song : { ...song, tracks };
   if (returns.some((r, i) => r !== song.returns![i])) next = { ...next, returns };
-  if (drawn({ auto: song.masterAuto })) { const m = masterStrip(song), moved = automateTrack(m, step); if (moved !== m) next = { ...next, volume: moved.level, masterFx: moved.devices }; }
+  if (drawn({ auto: song.masterAuto })) { const m = masterStrip(song), moved = automateTrack(m, step, skip("master")); if (moved !== m) next = { ...next, volume: moved.level, masterFx: moved.devices }; }
   return next;
 }
 /**
@@ -87,7 +90,7 @@ export function carryAuto(lanes: AutoLane[], from: number, to: number, length: n
   let changed = false;
   const out = lanes.map((l) => { const moved = l.points.filter((p) => p.at >= from && p.at < from + length); if (!moved.length) return l; changed = true;
     const keep = l.points.filter((p) => (copy || !moved.includes(p)) && !(p.at >= to && p.at < to + length));
-    return { ...l, points: sorted([...keep, ...moved.map((p) => ({ at: p.at + to - from, v: p.v }))]).slice(0, MAX_POINTS) }; });
+    return { ...l, points: sorted([...keep, ...moved.map((p) => ({ ...p, at: p.at + to - from }))]).slice(0, MAX_POINTS) }; });
   return changed ? out : lanes;
 }
 /**
@@ -111,6 +114,21 @@ export function recordMoves<S extends WholeSong>(before: S, after: S, step: numb
   const m = one(masterStrip(before), masterStrip(after)); if (m) next = { ...next, masterAuto: m };
   return next;
 }
+/** The name of one lane of one strip (a track's id, a return's id, or "master"), for the list of lanes switched off. */
+export const overKey = (strip: string, target: string) => `${strip}|${target}`;
+/**
+ * A control was moved by hand: the song was `before` and is now `after`. Gives the lanes (as `overKey` names
+ * them) that have points and whose setting was changed, so that they can be switched off until the learner
+ * asks for the automation back.
+ */
+export function movedLanes<S extends WholeSong>(before: S, after: S): string[] {
+  const out: string[] = [];
+  const one = (id: string, a: Auto | undefined, b: Auto) => { if (!a) return; for (const l of b.auto ?? []) if (l.points.length && read(a, l.target) !== read(b, l.target)) out.push(overKey(id, l.target)); };
+  after.tracks.forEach((b, i) => { const a = before.tracks[i], id = (b as { id?: string }).id ?? ""; if (a && (a as { id?: string }).id === id) one(id, a, b); });
+  (after.returns ?? []).forEach((b) => one(b.id, (before.returns ?? []).find((x) => x.id === b.id), b));
+  one("master", masterStrip(before), masterStrip(after));
+  return out;
+}
 /** A strip's present value for a target, by the target's id; nothing when it has no such setting. */
 function read(t: Auto, id: string): number | undefined {
   if (id === "level") return t.level; if (id === "pan") return t.pan;
@@ -121,7 +139,7 @@ function read(t: Auto, id: string): number | undefined {
 
 // ---- edits ----
 const sorted = (points: AutoPoint[]) => points.slice().sort((a, b) => a.at - b.at);
-export const tidyPoint = (p: AutoPoint, steps: number): AutoPoint => ({ at: clamp(Math.round(p.at), 0, steps), v: Number(clamp(p.v, 0, 1).toFixed(4)) });
+export const tidyPoint = (p: AutoPoint, steps: number): AutoPoint => ({ at: clamp(Math.round(p.at), 0, steps), v: Number(clamp(p.v, 0, 1).toFixed(4)), ...(Number.isFinite(p.c) && Math.abs(p.c!) >= 0.02 ? { c: Number(clamp(p.c!, -1, 1).toFixed(2)) } : {}) });
 /** Add a lane for the first setting of the track that has none yet. */
 export function addLane(lanes: AutoLane[], t: { devices: Device[]; patch?: object; sampler?: object; master?: boolean }, target?: string): AutoLane[] {
   if (lanes.length >= MAX_LANES) return lanes;
@@ -142,8 +160,22 @@ export function putPoint(lanes: AutoLane[], i: number, p: AutoPoint, steps: numb
 /** Move a point: up and down freely, sideways only as far as its neighbours. */
 export function movePoint(lanes: AutoLane[], i: number, index: number, p: AutoPoint, steps: number): AutoLane[] {
   const lane = lanes[i], old = lane?.points[index]; if (!lane || !old) return lanes;
-  const lo = index > 0 ? lane.points[index - 1]!.at + 1 : 0, hi = index < lane.points.length - 1 ? lane.points[index + 1]!.at - 1 : steps, next = tidyPoint({ at: clamp(Math.round(p.at), Math.min(lo, hi), Math.max(lo, hi)), v: p.v }, steps);
+  const lo = index > 0 ? lane.points[index - 1]!.at + 1 : 0, hi = index < lane.points.length - 1 ? lane.points[index + 1]!.at - 1 : steps, next = tidyPoint({ at: clamp(Math.round(p.at), Math.min(lo, hi), Math.max(lo, hi)), v: p.v, c: old.c }, steps);
   return next.at === old.at && next.v === old.v ? lanes : lanes.map((l, k) => (k === i ? { ...l, points: l.points.map((x, j) => (j === index ? next : x)) } : l));
+}
+/** Bend the line that leaves a point (-1 to 1; 0 is straight). */
+export function bendPoint(lanes: AutoLane[], i: number, index: number, c: number, steps: number): AutoLane[] {
+  const lane = lanes[i], old = lane?.points[index]; if (!lane || !old || index >= lane.points.length - 1) return lanes;
+  const next = tidyPoint({ ...old, c }, steps);
+  return (next.c ?? 0) === (old.c ?? 0) ? lanes : lanes.map((l, k) => (k === i ? { ...l, points: l.points.map((x, j) => (j === index ? next : x)) } : l));
+}
+/** The line of a lane as places to draw through, bends included: [step, value] pairs from the song's start to its end. */
+export function lanePath(points: readonly AutoPoint[], steps: number): [number, number][] {
+  if (!points.length) return [];
+  const out: [number, number][] = [[0, points[0]!.v]];
+  points.forEach((p, i) => { out.push([p.at, p.v]); const q = points[i + 1]; if (q && p.c) for (let k = 1; k < 12; k++) out.push([p.at + ((q.at - p.at) * k) / 12, p.v + (q.v - p.v) * bent(k / 12, p.c)]); });
+  out.push([steps, points[points.length - 1]!.v]);
+  return out;
 }
 export const dropPoint = (lanes: AutoLane[], i: number, index: number): AutoLane[] => lanes.map((l, k) => (k === i ? { ...l, points: l.points.filter((_, j) => j !== index) } : l));
 /** Ready-made shapes that can be dropped onto a stretch of a lane. */
@@ -174,7 +206,7 @@ export function tidyAuto(raw: unknown, steps: number): AutoLane[] {
   for (const g of Array.isArray(raw) ? raw : []) {
     if (!g || typeof g !== "object" || typeof g.target !== "string" || !/^[\w:.-]{1,60}$/.test(g.target) || out.length >= MAX_LANES || out.some((l) => l.target === g.target)) continue;
     const points: AutoPoint[] = [];
-    for (const p of Array.isArray(g.points) ? g.points.slice(0, MAX_POINTS * 2) : []) { const at = Number(p?.at), v = Number(p?.v); if (Number.isFinite(at) && Number.isFinite(v)) { const t = tidyPoint({ at, v }, steps); if (!points.some((x) => x.at === t.at)) points.push(t); } }
+    for (const p of Array.isArray(g.points) ? g.points.slice(0, MAX_POINTS * 2) : []) { const at = Number(p?.at), v = Number(p?.v); if (Number.isFinite(at) && Number.isFinite(v)) { const t = tidyPoint({ at, v, c: p?.c === undefined ? undefined : Number(p.c) }, steps); if (!points.some((x) => x.at === t.at)) points.push(t); } }
     out.push({ target: g.target, points: sorted(points).slice(0, MAX_POINTS) });
   }
   return out;

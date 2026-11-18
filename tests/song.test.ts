@@ -353,3 +353,31 @@ describe("slicing a sound onto pads", () => {
     expect(sliceToTrack(s, "habc", "x", 4)).toBeUndefined();
   });
 });
+
+import { splitClip as split2, placeClip as place2, setClipBars as bars2, addClip as add2, addTrack as addT2, newSong as new2, songEvents as events2, putNote as put2, okBars, placeName, tidySong as tidy2 } from "../src/daw/song";
+describe("clips on beats", () => {
+  const base = () => { let s = new2(); s = addT2(s, "synth"); const t = s.tracks.at(-1)!; const made = add2(s, t.id, 2)!; return { s: made.song, t: t.id, c: made.clip }; };
+  it("a clip can be a number of beats long and start on any beat", () => {
+    expect(okBars("synth", 1.5)).toBe(true); expect(okBars("synth", 0.1)).toBe(false); expect(okBars("drums", 4.25)).toBe(false);
+    expect(placeName(2)).toBe("bar 3"); expect(placeName(2.5)).toBe("bar 3, beat 3");
+    let { s, t, c } = base();
+    s = bars2(s, t, c, 1.5); const moved = place2(s, t, c, t, 2.75)!; s = moved.song;
+    const clip = s.tracks.find((x) => x.id === t)!.clips[0]!; expect([clip.start, clip.bars]).toEqual([2.75, 1.5]);
+    s = put2(s, t, c, { note: 60, start: 0, length: 2, velocity: 100 });
+    const at = events2(s, 0, 16 * 8).filter((e) => e.track === t).map((e) => e.step); expect(at).toEqual([44]);    // bar 3, beat 4
+    expect(tidy2(JSON.parse(JSON.stringify(s)))!.tracks.find((x) => x.id === t)!.clips[0]).toMatchObject({ start: 2.75, bars: 1.5 });
+  });
+  it("a clip is cut in two at a beat, and a note across the cut is cut off", () => {
+    let { s, t, c } = base();
+    s = bars2(s, t, c, 2); s = put2(s, t, c, { note: 60, start: 4, length: 8, velocity: 100 }); s = put2(s, t, c, { note: 64, start: 20, length: 2, velocity: 100 });
+    expect(split2(s, t, c, 2)).toBeUndefined(); expect(split2(s, t, c, 4)).toBeUndefined();          // not inside the clip
+    const made = split2(s, t, c, 2.5)!, clips = made.song.tracks.find((x) => x.id === t)!.clips.slice().sort((a, b) => a.start - b.start) as { start: number; bars: number; notes: { note: number; start: number; length: number }[] }[];
+    expect(clips.map((x) => [x.start, x.bars])).toEqual([[2, 0.5], [2.5, 1.5]]);
+    expect(clips[0]!.notes).toMatchObject([{ note: 60, start: 4, length: 4 }]); expect(clips[1]!.notes).toMatchObject([{ note: 64, start: 12, length: 2 }]);
+    expect(split2(s, t, c)!.clips.length).toBe(2);                                                    // with no place given: at the bar lines
+  });
+  it("a new clip in a gap shorter than a bar fills the gap", () => {
+    let { s, t, c } = base(); s = place2(s, t, c, t, 2.5)!.song;
+    const made = add2(s, t, 2)!; expect(made.song.tracks.find((x) => x.id === t)!.clips.find((x) => x.id === made.clip)).toMatchObject({ start: 2, bars: 0.5 });
+  });
+});

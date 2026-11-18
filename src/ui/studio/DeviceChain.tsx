@@ -21,7 +21,7 @@ const arc = (from: number, to: number, r = 15) => { const [a, b] = from <= to ? 
  * A round knob: name above, value below. Drag up and down to turn it (Shift for fine), use the mouse wheel or
  * the arrow keys, double-click to put it back. A knob that goes both ways from a middle fills from the top.
  */
-export function Knob({ s, v, name, set }: { s: ParamSpec; v: number; name: string; set: (v: number) => void }) {
+export function Knob({ s, v, name, set, auto }: { /** it has automation: "on" while the line moves it, "off" while the line is switched off because it was moved by hand */ auto?: "on" | "off"; s: ParamSpec; v: number; name: string; set: (v: number) => void }) {
   const t = travel(s, v), START = 135, SWEEP = 270, angle = START + t * SWEEP, both = !s.log && s.min < 0 && s.max > 0, zero = both ? START + travel(s, 0) * SWEEP : START;
   const held = useRef<{ y: number; t: number } | null>(null), [px, py] = polar(angle, 14.5), [qx, qy] = polar(angle, 5);
   const key = (e: React.KeyboardEvent) => { const by = (e.shiftKey ? 0.1 : 0.01) * (e.key === "ArrowUp" || e.key === "ArrowRight" ? 1 : e.key === "ArrowDown" || e.key === "ArrowLeft" ? -1 : 0);
@@ -29,7 +29,7 @@ export function Knob({ s, v, name, set }: { s: ParamSpec; v: number; name: strin
     else if (e.key === "Home") { e.preventDefault(); set(s.min); } else if (e.key === "End") { e.preventDefault(); set(s.max); } else if (e.key === "Delete" || e.key === "Backspace") { e.preventDefault(); e.stopPropagation(); set(s.def); } };
   return (
     <div className="dev-knob">
-      <span className="dev-label">{s.label}</span>
+      <span className="dev-label">{s.label}{auto && <i className={`knob-auto ${auto}`} title={auto === "on" ? "This knob has automation" : "Its automation is switched off because you moved it. “Back to automation” in the top bar switches it on again."} />}</span>
       <svg viewBox="0 0 36 36" className="knob" role="slider" tabIndex={0} aria-label={name} aria-valuemin={s.min} aria-valuemax={s.max} aria-valuenow={v} aria-valuetext={shown(s, v)}
         onPointerDown={(e) => { e.preventDefault(); e.currentTarget.setPointerCapture(e.pointerId); e.currentTarget.focus(); held.current = { y: e.clientY, t }; }}
         onPointerMove={(e) => { const h = held.current; if (h) set(fromTravel(s, h.t + (h.y - e.clientY) / (e.shiftKey ? 900 : 150))); }}
@@ -45,7 +45,7 @@ export function Knob({ s, v, name, set }: { s: ParamSpec; v: number; name: strin
   );
 }
 /** A device's settings as cells: knobs, menus, and switches (two switches share a cell, one above the other). */
-function Cells({ spec, d, set, list }: { spec: { name: string }; d: Device; set: (id: string, v: number) => void; list: ParamSpec[] }) {
+function Cells({ spec, d, set, list, marks }: { marks?: (param: string) => "on" | "off" | undefined; spec: { name: string }; d: Device; set: (id: string, v: number) => void; list: ParamSpec[] }) {
   const cells: ParamSpec[][] = [];
   for (const s of list) { const sw = s.choices?.length === 2, last = cells[cells.length - 1]; if (sw && last && last.length < 2 && last[0]!.choices?.length === 2) last.push(s); else cells.push([s]); }
   const nameOf = (s: ParamSpec) => `${spec.name} ${s.group ? `${s.group} ` : ""}${s.label}`;
@@ -54,7 +54,7 @@ function Cells({ spec, d, set, list }: { spec: { name: string }; d: Device; set:
       {cells.map((cell) => { const s = cell[0]!, v = d.p[s.id] ?? s.def;
         if (s.choices?.length === 2) return <div key={s.id} className="dev-switches">{cell.map((x) => { const on = !!(d.p[x.id] ?? x.def); return <button key={x.id} className={`dev-sw${on ? " on" : ""}`} aria-pressed={on} aria-label={nameOf(x)} onClick={() => set(x.id, on ? 0 : 1)}>{x.label}</button>; })}</div>;
         if (s.choices) return <label key={s.id} className="dev-menu"><span className="dev-label">{s.label}</span><select value={v} aria-label={nameOf(s)} onChange={(e) => set(s.id, Number(e.target.value))}>{s.choices.map((c, i) => <option key={c} value={i}>{c}</option>)}</select></label>;
-        return <Knob key={s.id} s={s} v={v} name={nameOf(s)} set={(x) => set(s.id, x)} />; })}
+        return <Knob key={s.id} s={s} v={v} name={nameOf(s)} auto={marks?.(s.id)} set={(x) => set(s.id, x)} />; })}
     </div>
   );
 }
@@ -114,13 +114,13 @@ function Curve({ spec, d, set, group, onGroup, analyser }: { /** the sound comin
  * A device's pictures and settings, laid out left to right at one height: the open band's knobs, then the
  * display with the band buttons under it, then the rest. The curve's dots and the band buttons share which band is open.
  */
-function Body({ spec, d, set, reduction, analyser }: { spec: DeviceSpec; d: Device; set: (changes: Record<string, number>) => void; reduction?: (deviceId: string) => number | undefined; analyser?: (deviceId: string) => AnalyserNode | undefined }) {
+function Body({ spec, d, set, reduction, analyser, marks }: { marks?: (param: string) => "on" | "off" | undefined; spec: DeviceSpec; d: Device; set: (changes: Record<string, number>) => void; reduction?: (deviceId: string) => number | undefined; analyser?: (deviceId: string) => AnalyserNode | undefined }) {
   const groups = groupsOf(spec), [group, setGroup] = useState(groups[0]);
   const visible = (s: ParamSpec) => !s.when || s.when(d.p), banded = spec.params.filter((s) => s.group && s.group === group && visible(s)), rest = spec.params.filter((s) => !s.group && visible(s));
   const one = (id: string, v: number) => set({ [id]: v }), display = !!CURVES[d.kind] || !!spec.view;
   return (
     <div className="dev-body">
-      {banded.length > 0 && <Cells spec={spec} d={d} set={one} list={banded} />}
+      {banded.length > 0 && <Cells marks={marks} spec={spec} d={d} set={one} list={banded} />}
       {(display || groups.length > 0) && <div className="dev-display">
         {CURVES[d.kind] && <Curve spec={spec} d={d} set={set} group={group} onGroup={setGroup} analyser={analyser ? () => (d.on ? analyser(d.id) : undefined) : undefined} />}
         {spec.view === "spectrum" && analyser && <SpectrumView read={() => analyser(d.id)} />}
@@ -128,7 +128,7 @@ function Body({ spec, d, set, reduction, analyser }: { spec: DeviceSpec; d: Devi
         {groups.length > 0 && <div className="dev-groups" role="tablist">{groups.map((g) => <button key={g} role="tab" aria-selected={g === group} className={g === group ? "on" : ""} onClick={() => setGroup(g)}>{g.replace(/^Band /, "")}</button>)}</div>}
       </div>}
       {spec.meter && reduction && <Meter read={() => (d.on ? reduction(d.id) : 0)} />}
-      {rest.length > 0 && <Cells spec={spec} d={d} set={one} list={rest} />}
+      {rest.length > 0 && <Cells marks={marks} spec={spec} d={d} set={one} list={rest} />}
     </div>
   );
 }
@@ -172,7 +172,7 @@ function TunerView({ read }: { read: () => AnalyserNode | undefined }) {
 
 /** What is carried while an effect is dragged: one already in a chain, or a kind from the browser's list. */
 export const DRAG_DEVICE = "application/x-patchwalk-device";
-export function DeviceChain({ devices, onChange, reduction, analyser, kind = "audio", lead }: { /** the track's instrument, drawn as the first device in the row */ lead?: React.ReactNode; /** "note": the note effects in front of a synth; "audio": the effects after the instrument */ kind?: "audio" | "note"; devices: Device[]; onChange: (next: Device[]) => void; reduction?: (deviceId: string) => number | undefined; analyser?: (deviceId: string) => AnalyserNode | undefined }) {
+export function DeviceChain({ devices, onChange, reduction, analyser, kind = "audio", lead, marks }: { /** which knobs have automation, and whether it is on */ marks?: (deviceId: string, param: string) => "on" | "off" | undefined; /** the track's instrument, drawn as the first device in the row */ lead?: React.ReactNode; /** "note": the note effects in front of a synth; "audio": the effects after the instrument */ kind?: "audio" | "note"; devices: Device[]; onChange: (next: Device[]) => void; reduction?: (deviceId: string) => number | undefined; analyser?: (deviceId: string) => AnalyserNode | undefined }) {
   const [picked, setPicked] = useState<string>(), [over, setOver] = useState<number>(), list = kind === "note" ? NOTE_FX : DEVICES;
   // Dropping: a device of this chain moves to the place it is dropped on; a kind from the browser is added there.
   const drop = (e: React.DragEvent, at: number) => { const raw = e.dataTransfer.getData(DRAG_DEVICE); setOver(undefined); if (!raw) return; e.preventDefault(); e.stopPropagation();
@@ -195,7 +195,7 @@ export function DeviceChain({ devices, onChange, reduction, analyser, kind = "au
               <button className="dev-round" aria-label={`Move ${spec.name} later`} title="Later in the chain" disabled={i === devices.length - 1} onClick={() => onChange(moveDevice(devices, d.id, 1))}>▶</button>
               <button className="dev-round" aria-label={`Remove ${spec.name}`} title="Remove" onClick={() => onChange(removeDevice(devices, d.id))}>×</button>
             </header>
-            <Body spec={spec} d={d} reduction={reduction} analyser={analyser} set={(changes) => onChange(Object.entries(changes).reduce((c, [id, v]) => setDeviceParam(c, d.id, id, v), devices))} />
+            <Body marks={marks && ((p) => marks(d.id, p))} spec={spec} d={d} reduction={reduction} analyser={analyser} set={(changes) => onChange(Object.entries(changes).reduce((c, [id, v]) => setDeviceParam(c, d.id, id, v), devices))} />
           </section>
         ); })}
         <div className={`dev-drop${over === devices.length ? " over" : ""}`} onDragOver={allow(devices.length)} onDrop={(e) => drop(e, devices.length)}>

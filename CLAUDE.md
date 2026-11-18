@@ -1494,6 +1494,29 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   took a note in bar 6; a drum clip set to 4 bars showed 64 steps; a triangle over that clip gave points at
   steps 0, 32 and 63. Not built: clips that start or end off a bar line, splitting at any place, curved
   segments, marking automated controls.
+  **Clips on beats, a time marker, curved automation, automated controls marked (18 Nov 2026, owner: "proceed
+  with all of it").** (1) **Clips start and end on a beat** (a quarter of a bar: `BEAT`, `snapBar`, `okBars`,
+  `placeName` in `song.ts`; `clip.start` and `clip.bars` are still in bars but may be 2.75 or 1.5). The
+  arrangement's grid has four columns a bar; dragging a clip or its right edge moves a beat at a time; a
+  double-click in a gap shorter than a bar makes a clip that fills it (`addClip`). `songEvents` finds the
+  clip by the step, not the bar. A drum clip of 3 beats has 12 steps. (2) **Time marker**: a click on a
+  track's lane or on a clip puts a dashed line on the nearest beat (`mark` in `DawView.tsx`, not saved);
+  **Ctrl/Cmd+E cuts the selected clip in two there** (`splitClip(s, track, clip, at)`), or at every bar line
+  when the marker is not inside it. Space does not play from the marker. (3) **Curved automation**: a point
+  can carry `c` (-1 to 1), the bend of the line that leaves it (`bent`, `bendPoint`, `lanePath`); hold Alt
+  and drag a line up or down to bend it, Alt and double-click for straight, or Alt+Up/Down on a point.
+  Playback and export follow the bend. (4) **Automated controls are marked and can be taken over**: a
+  fader or pan with automation is red, an effect knob with automation has a red square by its name
+  (`marks` on `DeviceChain`). Moving such a control by hand while not recording switches its lane off
+  (`movedLanes`, `overKey`; `over` in `DawView.tsx`, `transport.autoOff`, the third argument of `automate`):
+  the control stays where it was put, its lane and mark go grey, and a red **Back to automation** button
+  in the top bar switches every lane on again. Not saved with the song; an exported file always follows
+  the automation. **Layout trap found on the way: a grid item narrower than its own text widened every
+  column (the arrangement became 4,900 px wide); clips, slots and bar numbers now have
+  `contain: inline-size`.** Checked in a browser: a clip dragged two beats sat at bar 1 beat 3, shortened
+  to 3 beats, was cut in two at the marker; a bent level line held the gain at 0.075 for five steps and
+  then rose to 1.09 by step 16; moving the fader held the gain at 0.5 and the button gave it back to the
+  line. Not built: cuts off the beat, the synth's and sampler's own knobs marked, play from the marker.
   **Lessons on all of this (owner, 17 Nov 2026: "we are also going to have to make lessons on all of these
   new features. this ableton course will be extensive").** Nothing is written and the lesson engine does
   not know the Studio; the plan is at the top of `docs/ABLETON_GAPS.md`. Every Studio feature needs one.

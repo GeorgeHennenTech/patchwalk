@@ -59,6 +59,13 @@ const withClip = (s: Song, trackId: string, clipId: string, change: (c: Clip) =>
 export const trackOf = (s: Song, id: string | undefined): Track | undefined => s.tracks.find((t) => t.id === id);
 export const clipOf = (t: Track | undefined, id: string | undefined): Clip | undefined => t?.clips.find((c) => c.id === id);
 /** The clip of a track that covers a bar. */
+/** Clips start and end on a beat: a quarter of a bar. */
+export const BEAT = 0.25;
+export const snapBar = (x: number) => Math.round(x / BEAT) * BEAT;
+/** Whether a clip on this kind of track may be this long: a whole number of beats, up to the longest in `CLIP_BARS`. */
+export const okBars = (kind: Track["kind"], bars: number) => bars >= BEAT && bars <= CLIP_BARS[kind].at(-1)! && Number.isInteger(bars / BEAT);
+/** A place in the song in words: "bar 3", or "bar 3, beat 2" when it is not on a bar line. */
+export const placeName = (start: number) => { const bar = Math.floor(start + 1e-9), beat = Math.round((start - bar) / BEAT); return beat ? `bar ${bar + 1}, beat ${beat + 1}` : `bar ${bar + 1}`; };
 export const clipAt = (t: Track, bar: number): Clip | undefined => t.clips.find((c) => bar >= c.start && bar < c.start + c.bars);
 /** Whether `bars` bars starting at `bar` are inside the song and free on this track (not counting one clip). */
 export const isFree = (s: Song, t: Track, bar: number, bars: number, except?: string): boolean =>
@@ -96,9 +103,12 @@ export const setSongBars = (s: Song, bars: number): Song => ({ ...s, bars, track
 /** Put a new one-bar clip on a track at a bar. Gives back the song and the clip's id, or nothing when the bar is taken. */
 export function addClip(s: Song, trackId: string, bar: number): { song: Song; clip: string } | undefined {
   const t = trackOf(s, trackId);
-  if (!t || !isFree(s, t, bar, 1)) return undefined;
+  if (!t) return undefined;
+  // a bar long, or as long as the room before the next clip (or the song's end) when that is less
+  const next = Math.min(s.bars, ...t.clips.filter((c) => c.start >= bar).map((c) => c.start)), bars = Math.min(1, snapBar(next - bar));
+  if (bars < BEAT || !isFree(s, t, bar, bars)) return undefined;
   const id = freeId(t.clips.map((c) => c.id), "c");
-  const clip: Clip = t.kind === "drums" ? { id, start: bar, bars: 1, hits: {} } : { id, start: bar, bars: 1, notes: [] };
+  const clip: Clip = t.kind === "drums" ? { id, start: bar, bars, hits: {} } : { id, start: bar, bars, notes: [] };
   return { song: withTrack(s, trackId, (x) => ({ ...x, clips: [...x.clips, clip] } as Track)), clip: id };
 }
 export const removeClip = (s: Song, trackId: string, clipId: string): Song => withTrack(s, trackId, (t) => ({ ...t, clips: t.clips.filter((c) => c.id !== clipId) } as Track));
@@ -137,7 +147,7 @@ const carried = (s: Song, trackId: string, fromBar: number, toBar: number, bars:
 /** Change a clip's length, if the kind of track allows it and there is room. A drum clip made longer repeats itself. */
 export function setClipBars(s: Song, trackId: string, clipId: string, bars: number): Song {
   const t = trackOf(s, trackId), c = clipOf(t, clipId);
-  if (!t || !c || bars === c.bars || !CLIP_BARS[t.kind].includes(bars) || !isFree(s, t, c.start, bars, c.id)) return s;
+  if (!t || !c || bars === c.bars || !okBars(t.kind, bars) || !isFree(s, t, c.start, bars, c.id)) return s;
   const steps = bars * STEPS_PER_BAR;
   return withClip(s, trackId, clipId, (x) => ("hits" in x
     ? { ...x, bars, hits: Object.fromEntries(Object.entries(x.hits).map(([k, row]) => [k, Array.from({ length: steps }, (_, i) => row[i % (x.bars * STEPS_PER_BAR)] ?? 0)])) }
@@ -259,7 +269,7 @@ export const setChance = (notes: NoteEv[], keys: ReadonlySet<string>, chance: nu
 export function doubleClip(s: Song, trackId: string, clipId: string): Song {
   const t = trackOf(s, trackId), c = clipOf(t, clipId); if (!t || !c) return s;
   const bars = c.bars * 2, steps = c.bars * STEPS_PER_BAR;
-  if (!CLIP_BARS[t.kind].includes(bars) || !isFree(s, t, c.start, bars, c.id)) return s;
+  if (!okBars(t.kind, bars) || !isFree(s, t, c.start, bars, c.id)) return s;
   return withClip(s, trackId, clipId, (x) => ("hits" in x
     ? { ...x, bars, hits: Object.fromEntries(Object.entries(x.hits).map(([id, row]) => { const one = row.slice(0, steps); while (one.length < steps) one.push(0); return [id, [...one, ...one]]; })) }
     : { ...x, bars, notes: [...x.notes, ...x.notes.map((n) => ({ ...n, start: n.start + steps }))] }));
@@ -292,7 +302,7 @@ export const setNoteFx = (s: Song, trackId: string, noteFx: Device[]): Song => (
 export function songEvents(s: Song, from: number, until: number, loop?: { start: number; bars: number }, /** the dice for notes that have a chance */ rand: () => number = Math.random): SongEvent[] {
   const first = (loop?.start ?? 0) * STEPS_PER_BAR, span = Math.max(1, (loop?.bars ?? s.bars)) * STEPS_PER_BAR, on = audibleOf(s.tracks), out: SongEvent[] = [];
   for (let n = from; n < until; n++) {
-    const step = first + (((n % span) + span) % span), bar = Math.floor(step / STEPS_PER_BAR), at = stepTime(n, s.bpm, s.swing);
+    const step = first + (((n % span) + span) % span), bar = step / STEPS_PER_BAR, at = stepTime(n, s.bpm, s.swing);
     s.tracks.forEach((t, i) => {
       if (!on[i] || t.level <= 0) return;
       const c = clipAt(t, bar);
@@ -341,7 +351,7 @@ export function tidySong(raw: unknown): Song | undefined {
     const t: Track = g.kind === "drums" ? { ...base, kind: "drums", pads: tidyPads(g.pads).length ? tidyPads(g.pads) : defaultPads(), clips: [] } : { ...base, kind: "synth", noteFx: tidyDevices((g as { noteFx?: unknown }).noteFx, "note"), patch: { ...clean(g.patch), bpm: song.bpm }, clips: [], ...(tidySampler((g as { sampler?: unknown }).sampler) ? { sampler: tidySampler((g as { sampler?: unknown }).sampler)! } : {}) };
     for (const c of Array.isArray(g.clips) ? g.clips : []) {
       if (!c || typeof c !== "object") continue;
-      const cb = CLIP_BARS[t.kind].includes(c.bars) ? c.bars : 1, start = Math.round(Number(c.start));
+      const cb = okBars(t.kind, Number(c.bars)) ? Number(c.bars) : 1, start = snapBar(Number(c.start));
       if (!Number.isFinite(start) || !isFree(song, t, start, cb)) continue;
       const cid = typeof c.id === "string" && /^[\w-]{1,24}$/.test(c.id) && !t.clips.some((x) => x.id === c.id) ? c.id : freeId(t.clips.map((x) => x.id), "c"), steps = cb * STEPS_PER_BAR;
       const off = c.off === true ? { off: true } : {};
@@ -356,7 +366,7 @@ export function tidySong(raw: unknown): Song | undefined {
 // ---- moving, copying, splitting and joining clips, as a DAW's arrangement does ----
 /** A clip's contents fitted to another track: drum rows go to the pads in the same places; notes go as they are. */
 function fitted(c: Clip, from: Track, to: Track): Clip | undefined {
-  if (("hits" in c) !== (to.kind === "drums") || !CLIP_BARS[to.kind].includes(c.bars)) return undefined;
+  if (("hits" in c) !== (to.kind === "drums") || !okBars(to.kind, c.bars)) return undefined;
   if (!("hits" in c) || from.id === to.id || from.kind !== "drums" || to.kind !== "drums") return c;
   const steps = c.bars * STEPS_PER_BAR;
   return { ...c, hits: Object.fromEntries(to.pads.map((p, i) => [p.id, (c.hits[from.pads[i]?.id ?? ""] ?? Array.from({ length: steps }, () => 0 as Hit)).slice()])) };
@@ -376,14 +386,21 @@ export function placeClip(s: Song, fromTrack: string, clipId: string, toTrack: s
   if (same) song = carried(song, to.id, c.start, bar, c.bars, copy);          // on another track the settings are different ones, so the lines stay
   return { song, track: to.id, clip: id };
 }
-/** Cut a clip of several bars into one-bar clips. A note that crosses a bar line is cut off at it. */
-export function splitClip(s: Song, trackId: string, clipId: string): { song: Song; clips: string[] } | undefined {
+/**
+ * Cut a clip. With `at` (a place in the song, in bars, on a beat inside the clip) it is cut in two there;
+ * without it, a clip of several bars is cut at every bar line. A note that crosses a cut is cut off at it.
+ */
+export function splitClip(s: Song, trackId: string, clipId: string, at?: number): { song: Song; clips: string[] } | undefined {
   const t = trackOf(s, trackId), c = clipOf(t, clipId);
-  if (!t || !c || c.bars < 2) return undefined;
+  if (!t || !c) return undefined;
+  const end = c.start + c.bars, cuts: number[] = [c.start];
+  if (at !== undefined) { const a = snapBar(at); if (a <= c.start || a >= end) return undefined; cuts.push(a); }
+  else for (let b = Math.floor(c.start) + 1; b < end; b++) cuts.push(b);
+  if (cuts.length < 2) return undefined;
   const taken = t.clips.map((x) => x.id), ids: string[] = [], parts: Clip[] = [];
-  for (let b = 0; b < c.bars; b++) {
-    const id = b === 0 ? c.id : freeId([...taken, ...ids], "c"), lo = b * STEPS_PER_BAR, hi = lo + STEPS_PER_BAR; ids.push(id);
-    const base = { id, start: c.start + b, bars: 1, ...(c.off ? { off: true } : {}) };
+  for (let b = 0; b < cuts.length; b++) {
+    const id = b === 0 ? c.id : freeId([...taken, ...ids], "c"), lo = Math.round((cuts[b]! - c.start) * STEPS_PER_BAR), hi = Math.round(((cuts[b + 1] ?? end) - c.start) * STEPS_PER_BAR); ids.push(id);
+    const base = { id, start: cuts[b]!, bars: (hi - lo) / STEPS_PER_BAR, ...(c.off ? { off: true } : {}) };
     parts.push("hits" in c ? { ...base, hits: Object.fromEntries(Object.entries(c.hits).map(([k, row]) => [k, row.slice(lo, hi)])) }
       : { ...base, notes: c.notes.filter((n) => n.start >= lo && n.start < hi).map((n) => ({ ...n, start: n.start - lo, length: Math.min(n.length, hi - n.start) })) });
   }
@@ -394,7 +411,7 @@ export function joinClips(s: Song, trackId: string, clipIds: readonly string[]):
   const t = trackOf(s, trackId), cs = (t?.clips ?? []).filter((c) => clipIds.includes(c.id)).sort((a, b) => a.start - b.start);
   if (!t || cs.length < 2) return undefined;
   const bars = cs.reduce((n, c) => n + c.bars, 0), first = cs[0]!;
-  if (!CLIP_BARS[t.kind].includes(bars) || cs.some((c, i) => i > 0 && c.start !== cs[i - 1]!.start + cs[i - 1]!.bars)) return undefined;
+  if (!okBars(t.kind, bars) || cs.some((c, i) => i > 0 && c.start !== cs[i - 1]!.start + cs[i - 1]!.bars)) return undefined;
   let at = 0; const steps = bars * STEPS_PER_BAR;
   const joined: Clip = "hits" in first
     ? { id: first.id, start: first.start, bars, hits: Object.fromEntries((t as DrumTrack).pads.map((p) => [p.id, cs.flatMap((c) => { const row = (c as DrumClip).hits[p.id] ?? []; return Array.from({ length: c.bars * STEPS_PER_BAR }, (_, i) => (c.off ? 0 : row[i] ?? 0) as Hit); })])) }

@@ -5,7 +5,8 @@ has dropped this file into a new chat to save context and will often say nothing
 re-explain anything here. Read this file, do the "Start here" steps, then carry on with "What to do next".
 Write to the owner the way section 2 describes.
 
-Last updated: 13 November 2026, after commit "Add the filter chapter to the practice synth".
+Last updated: 18 November 2026, after commit "Studio: clips on beats, a time marker, curved automation, automated controls marked".
+**The newest state is the block "Latest (18 Nov 2026)" at the top of section 8 and the dated notes at the end of this file. Where an older paragraph disagrees with them or with `CLAUDE.md`, the newer one is right.**
 
 ---
 
@@ -21,7 +22,7 @@ Last updated: 13 November 2026, after commit "Add the filter chapter to the prac
    ```bash
    npm test
    ```
-   Expect 323 passing tests, none skipped.
+   Expect 756 passing tests in 37 files (18 Nov 2026).
 3. **Run it.** `npm run dev` serves the app at http://localhost:5173 including the two server functions.
    The Claude calls report "no API key" locally unless `.env.local` has `ANTHROPIC_API_KEY`; that is expected.
 4. **Then continue with section 8** without waiting for instructions, unless the owner's message says otherwise.
@@ -207,6 +208,24 @@ than one instrument instead of being rewritten.
 
 ## 8. What to do next
 
+**Latest (18 Nov 2026). The work in hand is the Studio tab (the DAW).** The owner's standing instruction
+(17 Nov): "continue to go through this daw and continue to get it functioning closer and closer to how
+ableton works", and "keep going, don't ask again". Nothing is half-done: the tree is clean, built and pushed.
+- **Next step: take the next unticked items in `docs/ABLETON_GAPS.md`**, starting with what is left of its
+  quick wins (jump between markers, overdub against replace when recording, sidechain on the auto filter and
+  multiband, Utility and Saturator extras, randomize velocity), then its "biggest limits" (a loop brace you
+  drag; cut, duplicate and delete time; per-pad filter and saturator). Small Studio loose ends from the last
+  batch: the red "automated" mark on the synth's and sampler's own knobs, and Space playing from the time marker.
+- **Then, or when the owner says: the Ableton course.** The owner (17 Nov) wants a lesson for every Studio
+  feature ("this ableton course will be extensive"). Nothing is written and the lesson engine does not know
+  the Studio; the plan is at the top of `docs/ABLETON_GAPS.md`. The owner chose "continue building features"
+  when offered the choice, so do not start the course unasked.
+- With every push: `CLAUDE.md` (a dated entry just before the paragraph "Lessons on all of this"), this
+  file, `docs/ABLETON_GAPS.md` (tick the item), `docs/TODO.md`, and the owner's to-do page (section 10).
+- How to check Studio work: tests, then a real browser by script (notes in `CLAUDE.md`: loop bar 1 when
+  measuring; scroll a lane into view before clicking it). **Everything in the Studio is measured, not heard.**
+- On hold, do not touch: the Physical models tab (until the owner uploads texts), more Higgsfield voice clips.
+
 **Later the same day:** five papers on classic synth wave shapes and nine on physical modelling went into the library; four wavetables were built from formulas, with a lesson (122 lessons now, plus six on the physical models); and the first physical-modelling instrument exists as the "String lab" tab (`src/strings/string.ts`, `src/ui/StringLab.tsx`; see CLAUDE.md). Next for it: make the lesson engine able to use it.
 
 **Latest (15 Nov 2026).** The owner asked for a long run of tasks that need no decision from them. Done and
@@ -319,6 +338,11 @@ only lived in that session's container.
 
 Ask about these only when relevant; do not block on them.
 
+0. **Studio (asked 17-18 Nov, no answers yet):** how the drums, devices, sampler and an exported .wav sound;
+   whether a .mid or .wav opens properly in Ableton; how dragging feels in the effect chain and arrangement
+   (only checked by script); whether a new track should start empty until an instrument is dragged on;
+   whether Cmd shortcuts work on a Mac. Sounds over 2 MB and the real database for the Library tab are untested.
+
 1. **Listening feedback** on the Lessons tab: are tones clean and at a sensible volume, does the step format
    feel right, are the match-by-ear rounds too easy or too hard?
 2. **Voice for the guide: answered, Higgsfield.** Not built yet. Test quality on one lesson before generating many.
@@ -370,6 +394,9 @@ they own. Not yet supplied.
 
 ## 10. Things outside the repo that a new session will not have
 
+- **The owner's to-do page** (a Claude artifact, "Patchwalk To-Do"; its link is in `CLAUDE.md` under "Two to-do lists"). Rows live in its `todos` collection and are written with the `ArtifactData` tool; the latest done row is `t110`. Read a row before changing it (a write needs its version).
+- Test scripts for the Studio were in the session's scratchpad and are gone; they are quick to rewrite from the notes in `CLAUDE.md`.
+
 - **Test presets are in the repo.** The four Serum 2 presets used as fixtures (bass rando, reese wailer, lead
   g funk, lead 70s hype) are committed in `fixtures/patches/`; the owner confirmed they made them. Only the
   Serum 1 `.fxp` files from the very first upload are left out, and nothing needs them.
@@ -394,6 +421,12 @@ they own. Not yet supplied.
 ---
 
 ## 11. Short history, for context
+
+(Newest first here; the numbered list below is the early history.)
+- 17-18 Nov 2026: the Studio grew from a drum grid into a small DAW laid out like Ableton's Arrangement View:
+  tracks and clips on beats, drum rack, sampler, thirty-one effects and eight note effects of our own, a
+  Live-style device chain, mixer, returns, master effects, automation (lanes, shapes, curves, recording,
+  take-over), MIDI and WAV export, a shared Library tab, and `docs/ABLETON_GAPS.md` from a full read of the manual.
 
 1. Decoded the preset format and built the eight original milestones (decode, active modules, display values,
    signal-flow steps, AI "why" with validator, difficulty levels, knowledge cards, compare attempt).

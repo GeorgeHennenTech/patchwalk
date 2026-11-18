@@ -399,7 +399,7 @@ they own. Not yet supplied.
 
 ## 10. Things outside the repo that a new session will not have
 
-- **The owner's to-do page** (a Claude artifact, "Patchwalk To-Do"; its link is in `CLAUDE.md` under "Two to-do lists"). Rows live in its `todos` collection and are written with the `ArtifactData` tool; the latest done row is `t110`. Read a row before changing it (a write needs its version).
+- **The owner's to-do page** (a Claude artifact, "Patchwalk To-Do"; its link is in `CLAUDE.md` under "Two to-do lists"). Rows live in its `todos` collection and are written with the `ArtifactData` tool; the latest done row is `t111`. Read a row before changing it (a write needs its version).
 - Test scripts for the Studio were in the session's scratchpad and are gone; they are quick to rewrite from the notes in `CLAUDE.md`.
 
 - **Test presets are in the repo.** The four Serum 2 presets used as fixtures (bass rando, reese wailer, lead

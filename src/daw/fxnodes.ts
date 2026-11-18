@@ -1,13 +1,13 @@
 // The audio of each device, built from the settings and maths in `devices.ts`. Every device is wrapped the
 // same way: the sound goes both through the effect and straight past it, and switching the device on or off
 // crossfades between the two, so nothing clicks and nothing restarts.
-import { CURVES, CAB_BUMP_Q, PRESENCE_HZ, TONE_HIGH_HZ, TONE_LOW_HZ, TONE_MID_HZ, ampDrive, cabinetOf, driveTable, pedalDrive, erosionSwing, ECHO_WOBBLE, FILTER_DELAY_LINES, autoFilterKind, echoDriveGain, echoSeconds, filterDelayLine, CHANNEL_CUT_HZ, CHANNEL_HIGH_HZ, CHANNEL_LOW_HZ, CHANNEL_MID_Q, DELAY_MAX_SECONDS, CHORUS_SWING, dbToGain, delayRouting, delayTimes, eq3Gains, eq8Band, lfoRateHz, mixGains, octavesToQ, overdriveGain, overdriveToneHz, panHarmonics, satTable, utilityMatrix, type Device } from "./devices";
+import { CURVES, CAB_BUMP_Q, PRESENCE_HZ, TONE_HIGH_HZ, TONE_LOW_HZ, TONE_MID_HZ, ampDrive, cabinetOf, driveTable, pedalDrive, erosionSwing, ECHO_WOBBLE, FILTER_DELAY_LINES, autoFilterKind, echoDriveGain, echoSeconds, filterDelayLine, CHANNEL_CUT_HZ, CHANNEL_HIGH_HZ, CHANNEL_LOW_HZ, CHANNEL_MID_Q, DELAY_MAX_SECONDS, CHORUS_SWING, dbToGain, delayRouting, delayTimes, eq3Gains, eq8Band, lfoRateHz, mixGains, octavesToQ, overdriveGain, overdriveToneHz, panHarmonics, satTable, utilityMatrix, softClipTable, SOFT_CLIP_REACH, COLOUR_Q, DC_CUT_HZ, type Device } from "./devices";
 import { FLANGER_BASE, FLANGER_SWING, PHASER_Q, PHASER_STAGES, PHASER_SWING_CENTS, reverbImpulse } from "../synth/fx";
 import { DSP_KINDS } from "./dsp";
 import workletUrl from "./dsp.worklet.ts?worker&url";
 
-export interface LiveDevice { input: AudioNode; output: AudioNode; update(d: Device, bpm?: number, origin?: number): void; dispose(): void; /** where a second sound can be plugged in for the device to listen to (its input 1) */ side?: AudioNode; /** the sound at this point, for a device that shows it */ analyser?: AnalyserNode; /** dB the device is turning the sound down by, for those that say */ reduction?(): number }
-interface Core { input: AudioNode; output: AudioNode; set(p: Record<string, number>, t: number, bpm: number, origin: number): void; nodes: AudioNode[]; reduction?(): number; side?: AudioNode; analyser?: AnalyserNode }
+export interface LiveDevice { input: AudioNode; output: AudioNode; update(d: Device, bpm?: number, origin?: number): void; dispose(): void; /** where a second sound can be plugged in for the device to listen to (its input 1) */ side?: AudioNode; /** which input of `side` takes it (1 when left out) */ sideIn?: number; /** the sound at this point, for a device that shows it */ analyser?: AnalyserNode; /** dB the device is turning the sound down by, for those that say */ reduction?(): number }
+interface Core { input: AudioNode; output: AudioNode; set(p: Record<string, number>, t: number, bpm: number, origin: number): void; nodes: AudioNode[]; reduction?(): number; side?: AudioNode; sideIn?: number; analyser?: AnalyserNode }
 type P = Record<string, number>;
 // The sample-by-sample effects run in an AudioWorklet, which the browser has to load before one can be made.
 const loaded = new WeakMap<BaseAudioContext, Promise<void>>(), ready = new WeakSet<BaseAudioContext>();
@@ -54,10 +54,20 @@ function utility(ctx: BaseAudioContext): Core {
   input.connect(split);
   split.connect(ll, 0); split.connect(lr, 0); split.connect(rl, 1); split.connect(rr, 1);
   ll.connect(merge, 0, 0); rl.connect(merge, 0, 0); lr.connect(merge, 0, 1); rr.connect(merge, 0, 1);
-  merge.connect(out);
-  return { input, output: out, nodes: [input, split, merge, out, ll, rl, lr, rr], set(p, t) {
+  // Bass mono: the sound is split in two at a frequency (two Butterworth filters each way, so the halves add
+  // back flat), and the low half is made the same on both sides. Switched off, the sound takes the plain path.
+  const plain = ctx.createGain(), split2 = ctx.createGain(), lows = [biquad(ctx, "lowpass", 120), biquad(ctx, "lowpass", 120)], highs = [biquad(ctx, "highpass", 120), biquad(ctx, "highpass", 120)], one = ctx.createGain(), sum = ctx.createGain();
+  one.channelCount = 1; one.channelCountMode = "explicit"; one.channelInterpretation = "speakers";      // both sides added and halved
+  merge.connect(plain).connect(sum); merge.connect(split2);
+  chain(split2, lows[0]!, lows[1]!, one, sum); chain(split2, highs[0]!, highs[1]!, sum);
+  // Remove offset: a high-pass far below hearing, or the plain path
+  const keep = ctx.createGain(), cut = ctx.createGain(), dc = biquad(ctx, "highpass", DC_CUT_HZ);
+  sum.connect(keep).connect(out); chain(sum, cut, dc, out);
+  return { input, output: out, nodes: [input, split, merge, out, ll, rl, lr, rr, plain, split2, ...lows, ...highs, one, sum, keep, cut, dc], set(p, t) {
     const m = utilityMatrix(p);
     to(ll.gain, m.ll, t); to(rl.gain, m.rl, t); to(lr.gain, m.lr, t); to(rr.gain, m.rr, t); to(out.gain, m.gain, t);
+    to(plain.gain, p.bassMono ? 0 : 1, t); to(split2.gain, p.bassMono ? 1 : 0, t); for (const f of [...lows, ...highs]) to(f.frequency, p.bassFreq ?? 120, t);
+    to(keep.gain, p.dc ? 0 : 1, t); to(cut.gain, p.dc ? 1 : 0, t);
   } };
 }
 
@@ -91,12 +101,19 @@ function channeleq(ctx: BaseAudioContext): Core {
   } };
 }
 function sat(ctx: BaseAudioContext): Core {
-  const m = mixer(ctx), shape = ctx.createWaveShaper(), still = biquad(ctx, "highpass", 5), out = ctx.createGain();
-  chain(m.input, shape, still, out, m.wet);       // the high-pass takes away the steady offset the uneven curve leaves
+  const m = mixer(ctx), colour = biquad(ctx, "peaking", 1000, COLOUR_Q), shape = ctx.createWaveShaper(), still = biquad(ctx, "highpass", 5), out = ctx.createGain();
+  // Soft clip, on the way out: turned down to fit the table, bent, turned back up; or the plain path
+  const plain = ctx.createGain(), down = ctx.createGain(), bend = ctx.createWaveShaper(), up = ctx.createGain();
+  bend.curve = softClipTable(); up.gain.value = 0;
+  chain(m.input, colour, shape, still, out);       // the high-pass takes away the steady offset the uneven curve leaves
+  out.connect(plain).connect(m.wet); chain(out, down, bend, up, m.wet);
+  down.gain.value = 1 / SOFT_CLIP_REACH;
   let made = "";
-  return { input: m.input, output: m.output, nodes: [...m.nodes, shape, still, out], set(p, t) {
+  return { input: m.input, output: m.output, nodes: [...m.nodes, colour, shape, still, out, plain, down, bend, up], set(p, t) {
     const key = `${p.curve ?? 0}:${p.drive ?? 12}`;
     if (key !== made) { shape.curve = satTable(p.curve ?? 0, p.drive ?? 12); made = key; }
+    to(colour.frequency, p.colourFreq ?? 1000, t); to(colour.gain, p.colour ? p.colourDb ?? 6 : 0, t);
+    to(plain.gain, p.soft ? 0 : 1, t); to(up.gain, p.soft ? 1 : 0, t);
     to(out.gain, dbToGain(p.out ?? 0), t); m.set(p.mix ?? 100, t);
   } };
 }
@@ -204,8 +221,10 @@ function follower(ctx: BaseAudioContext) {
 function autofilter(ctx: BaseAudioContext): Core {
   const f = biquad(ctx, "lowpass", 1200, 0), lfo = lfoOsc(ctx), depth = ctx.createGain(), fol = follower(ctx), env = ctx.createGain();
   lfo.osc.connect(depth).connect(f.detune);
-  const input = ctx.createGain(); input.connect(f); input.connect(fol.input); fol.output.connect(env).connect(f.detune);
-  return { input, output: f, nodes: [input, f, lfo.osc, depth, env, ...fol.nodes], set(p, t, bpm) {
+  // what the follower listens to: this sound, or another track's (a sidechain) plugged into `other`
+  const input = ctx.createGain(), own = ctx.createGain(), other = ctx.createGain(); input.connect(f); input.connect(own).connect(fol.input); other.connect(fol.input); fol.output.connect(env).connect(f.detune);
+  return { input, output: f, side: other, sideIn: 0, nodes: [input, own, other, f, lfo.osc, depth, env, ...fol.nodes], set(p, t, bpm) {
+    const side = (p.side ?? 0) > 0; to(own.gain, side ? 0 : 1, t); to(other.gain, side ? 1 : 0, t);
     const kind = autoFilterKind(p); if (f.type !== kind) f.type = kind;
     lfo.shape(p.shape ?? 0); to(lfo.osc.frequency, lfoRateHz(p, bpm), t); to(depth.gain, (p.lfo ?? 1) * 1200, t); to(env.gain, (p.env ?? 0) * 1200, t); fol.speed(p.envSpeed ?? 40, t);
     to(f.frequency, p.freq ?? 1200, t); to(f.Q, kind === "lowpass" || kind === "highpass" ? 20 * Math.log10(p.res ?? 1.5) : p.res ?? 1.5, t);
@@ -306,7 +325,7 @@ function cabinet(ctx: BaseAudioContext): Core {
 function viewer(size: number) {
   return (ctx: BaseAudioContext): Core => { const pass = ctx.createGain(), a = ctx.createAnalyser(); a.fftSize = size; a.smoothingTimeConstant = 0.7; pass.connect(a); return { input: pass, output: pass, nodes: [pass, a], analyser: a, set() { /* nothing to set */ } }; };
 }
-const CORES: Record<string, (ctx: BaseAudioContext, p: P) => Core> = { comp: worklet("comp", 2), beatrepeat: worklet("beatrepeat"), vinyl: worklet("vinyl"), amp, pedal, cabinet, spectrum: viewer(4096), tuner: viewer(4096), glue: worklet("glue", 2), limiter: worklet("limiter"), gate: worklet("gate", 2), crush: worklet("crush"), resonators: worklet("resonators"), multiband: worklet("multiband"), drumbus: worklet("drumbus"), shifter: worklet("shifter"), erosion, autofilter, phaser, echo, filterdelay, utility, eq3, eq8, channeleq, sat, overdrive, autopan, chorus, delay, reverb };
+const CORES: Record<string, (ctx: BaseAudioContext, p: P) => Core> = { comp: worklet("comp", 2), beatrepeat: worklet("beatrepeat"), vinyl: worklet("vinyl"), amp, pedal, cabinet, spectrum: viewer(4096), tuner: viewer(4096), glue: worklet("glue", 2), limiter: worklet("limiter"), gate: worklet("gate", 2), crush: worklet("crush"), resonators: worklet("resonators"), multiband: worklet("multiband", 2), drumbus: worklet("drumbus"), shifter: worklet("shifter"), erosion, autofilter, phaser, echo, filterdelay, utility, eq3, eq8, channeleq, sat, overdrive, autopan, chorus, delay, reverb };
 
 /** The audio for one device, or nothing when the kind is unknown. */
 export function buildDevice(ctx: BaseAudioContext, d: Device, bpm = 120, origin = 0): LiveDevice | undefined {
@@ -320,7 +339,7 @@ export function buildDevice(ctx: BaseAudioContext, d: Device, bpm = 120, origin 
   // a device that draws a curve also shows the sound coming out of it, faintly, behind the curve
   let tap: AnalyserNode | undefined;
   if (!core.analyser && CURVES[d.kind]) { tap = ctx.createAnalyser(); tap.fftSize = 4096; tap.smoothingTimeConstant = 0.8; output.connect(tap); }
-  return { input, output, reduction: core.reduction, side: core.side, analyser: core.analyser ?? tap,
+  return { input, output, reduction: core.reduction, side: core.side, sideIn: core.sideIn, analyser: core.analyser ?? tap,
     update(next, tempo = bpm, began = origin) { const t = ctx.currentTime; core.set(next.p, t, tempo, began); wet.gain.setTargetAtTime(next.on ? 1 : 0, t, SMOOTH); dry.gain.setTargetAtTime(next.on ? 0 : 1, t, SMOOTH); },
     dispose() { for (const n of [input, output, wet, dry, ...(tap ? [tap] : []), ...core.nodes]) { try { if (n instanceof OscillatorNode || n instanceof AudioBufferSourceNode) n.stop(); n.disconnect(); } catch { /* already apart */ } } },
   };

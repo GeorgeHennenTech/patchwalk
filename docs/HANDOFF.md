@@ -5,7 +5,7 @@ has dropped this file into a new chat to save context and will often say nothing
 re-explain anything here. Read this file, do the "Start here" steps, then carry on with "What to do next".
 Write to the owner the way section 2 describes.
 
-Last updated: 18 November 2026, after commit "Studio: clips on beats, a time marker, curved automation, automated controls marked".
+Last updated: 18 November 2026, after commit "Studio: marker jumps, Space from the time marker, replace-recording, more sidechains, Utility and Saturator extras".
 **The newest state is the block "Latest (18 Nov 2026)" at the top of section 8 and the dated notes at the end of this file. Where an older paragraph disagrees with them or with `CLAUDE.md`, the newer one is right.**
 
 ---
@@ -22,7 +22,7 @@ Last updated: 18 November 2026, after commit "Studio: clips on beats, a time mar
    ```bash
    npm test
    ```
-   Expect 756 passing tests in 37 files (18 Nov 2026).
+   Expect 763 passing tests in 37 files (18 Nov 2026).
 3. **Run it.** `npm run dev` serves the app at http://localhost:5173 including the two server functions.
    The Claude calls report "no API key" locally unless `.env.local` has `ANTHROPIC_API_KEY`; that is expected.
 4. **Then continue with section 8** without waiting for instructions, unless the owner's message says otherwise.
@@ -211,11 +211,16 @@ than one instrument instead of being rewritten.
 **Latest (18 Nov 2026). The work in hand is the Studio tab (the DAW).** The owner's standing instruction
 (17 Nov): "continue to go through this daw and continue to get it functioning closer and closer to how
 ableton works", and "keep going, don't ask again". Nothing is half-done: the tree is clean, built and pushed.
-- **Next step: take the next unticked items in `docs/ABLETON_GAPS.md`**, starting with what is left of its
-  quick wins (jump between markers, overdub against replace when recording, sidechain on the auto filter and
-  multiband, Utility and Saturator extras, randomize velocity), then its "biggest limits" (a loop brace you
-  drag; cut, duplicate and delete time; per-pad filter and saturator). Small Studio loose ends from the last
-  batch: the red "automated" mark on the synth's and sampler's own knobs, and Space playing from the time marker.
+- **Done later on 18 Nov (third batch of quick wins; `CLAUDE.md`, "Quick wins, third batch"):** jumps between
+  markers, Space playing from the time marker, Random loud, a choice of count-in, an Overdub switch (off:
+  recording replaces), sidechain on the auto filter and multiband, Utility's bass mono / one side / remove
+  offset, the Saturator's colour and soft clip. Measured and checked by script; not heard by anyone.
+- **Next step: take the next unticked items in `docs/ABLETON_GAPS.md`**: the two quick wins left (hear a
+  break or sound before loading it; the remaining shortcuts), then its "biggest limits" (a loop brace you
+  drag; cut, duplicate and delete time; click, drive, a filter and a saturator per pad), then "bigger
+  pieces". Small loose end: the red "automated" mark on the synth's and sampler's own knobs.
+- **Branches:** this session's cloud environment allowed pushes only to `claude/new-session-dfvcsr`, not
+  `main`. If that branch is ahead of `main`, the live site is behind until it is merged: tell the owner.
 - **Then, or when the owner says: the Ableton course.** The owner (17 Nov) wants a lesson for every Studio
   feature ("this ableton course will be extensive"). Nothing is written and the lesson engine does not know
   the Studio; the plan is at the top of `docs/ABLETON_GAPS.md`. The owner chose "continue building features"
@@ -394,7 +399,7 @@ they own. Not yet supplied.
 
 ## 10. Things outside the repo that a new session will not have
 
-- **The owner's to-do page** (a Claude artifact, "Patchwalk To-Do"; its link is in `CLAUDE.md` under "Two to-do lists"). Rows live in its `todos` collection and are written with the `ArtifactData` tool; the latest done row is `t110`. Read a row before changing it (a write needs its version).
+- **The owner's to-do page** (a Claude artifact, "Patchwalk To-Do"; its link is in `CLAUDE.md` under "Two to-do lists"). Rows live in its `todos` collection and are written with the `ArtifactData` tool; the latest done row is `t111`. Read a row before changing it (a write needs its version).
 - **The owner's two Claude Code widgets** (the to-do pane that shows `docs/TODO.md`, and a usage pane) live only in a session's own folder. Their source is saved in `tools/mods/`; when the owner asks for the to-do widget, follow `tools/mods/README.md` to put them back.
 - Test scripts for the Studio were in the session's scratchpad and are gone; they are quick to rewrite from the notes in `CLAUDE.md`.
 
@@ -551,3 +556,5 @@ Shape menu (ramps, triangle, sine, square, saw) drawn over the selected clip. Si
 cuts at the time marker set by a click), automation lines can be bent (Alt-drag), and an automated fader or
 effect knob is marked red; moving one by hand switches its line off until "Back to automation" is pressed.
 Still open: the next unticked items in `docs/ABLETON_GAPS.md`, and the Ableton course (no lessons yet).
+Later on 18 Nov: the quick wins are done except hearing a break or sound before loading and a few shortcuts
+(see the "Latest" block in section 8). Recording now has a count-in menu and an Overdub switch.

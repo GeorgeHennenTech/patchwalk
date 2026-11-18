@@ -1,0 +1,1 @@
+{ "name": "patchwalk-usage", "version": "0.1.0", "description": "A row above the prompt showing how full the context is, how much of each usage limit is spent, and the session's cost, in Patchwalk's neon colours.", "types": "./types/index.d.ts" }

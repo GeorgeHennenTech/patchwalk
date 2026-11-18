@@ -1,0 +1,1 @@
+{ "name": "patchwalk-todo", "version": "0.1.0", "description": "A pane beside the chat showing Patchwalk's to-do list from docs/TODO.md, with boxes you can tick.", "types": "./types/index.d.ts" }

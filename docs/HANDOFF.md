@@ -395,6 +395,7 @@ they own. Not yet supplied.
 ## 10. Things outside the repo that a new session will not have
 
 - **The owner's to-do page** (a Claude artifact, "Patchwalk To-Do"; its link is in `CLAUDE.md` under "Two to-do lists"). Rows live in its `todos` collection and are written with the `ArtifactData` tool; the latest done row is `t110`. Read a row before changing it (a write needs its version).
+- **The owner's two Claude Code widgets** (the to-do pane that shows `docs/TODO.md`, and a usage pane) live only in a session's own folder. Their source is saved in `tools/mods/`; when the owner asks for the to-do widget, follow `tools/mods/README.md` to put them back.
 - Test scripts for the Studio were in the session's scratchpad and are gone; they are quick to rewrite from the notes in `CLAUDE.md`.
 
 - **Test presets are in the repo.** The four Serum 2 presets used as fixtures (bass rando, reese wailer, lead

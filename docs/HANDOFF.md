@@ -512,5 +512,6 @@ A **sampler** is built: click a sound under Samples with a synth track selected 
 file across the keys (`src/daw/sampler.ts`, `SamplerPanel.tsx`).
 Also built: slicing a sound onto pads (✂ under Samples), Decay and Tone on the built-in drums, and
 automation of the sampler's knobs. Automation now moves with its clip (Lock auto stops that), works on
-return tracks and the master, and can be recorded by moving a control while Record is on. Still open:
-clips of any length, automation shapes and curves, marking automated controls.
+return tracks and the master, and can be recorded by moving a control while Record is on. Note clips can be 1 to 16 bars and drum clips 1 to 4, and every automation lane has a
+Shape menu (ramps, triangle, sine, square, saw) drawn over the selected clip. Still open: clips off the bar
+lines, automation curves, marking automated controls.

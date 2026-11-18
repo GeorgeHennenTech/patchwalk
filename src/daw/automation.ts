@@ -146,6 +146,28 @@ export function movePoint(lanes: AutoLane[], i: number, index: number, p: AutoPo
   return next.at === old.at && next.v === old.v ? lanes : lanes.map((l, k) => (k === i ? { ...l, points: l.points.map((x, j) => (j === index ? next : x)) } : l));
 }
 export const dropPoint = (lanes: AutoLane[], i: number, index: number): AutoLane[] => lanes.map((l, k) => (k === i ? { ...l, points: l.points.filter((_, j) => j !== index) } : l));
+/** Ready-made shapes that can be dropped onto a stretch of a lane. */
+export const SHAPES = ["Ramp up", "Ramp down", "Triangle", "Sine", "Square", "Saw"] as const;
+export type Shape = (typeof SHAPES)[number];
+/** The points of a shape over a stretch `length` steps long starting at `from`. A sine is drawn with short straight pieces. */
+export function shapePoints(shape: Shape, from: number, length: number): AutoPoint[] {
+  const end = from + Math.max(2, length) - 1, mid = Math.round((from + end) / 2), at = (f: number) => Math.round(from + f * (end - from));
+  switch (shape) {
+    case "Ramp up": return [{ at: from, v: 0 }, { at: end, v: 1 }];
+    case "Ramp down": return [{ at: from, v: 1 }, { at: end, v: 0 }];
+    case "Triangle": return [{ at: from, v: 0 }, { at: mid, v: 1 }, { at: end, v: 0 }];
+    case "Square": return [{ at: from, v: 1 }, { at: mid - 1, v: 1 }, { at: mid, v: 0 }, { at: end, v: 0 }];
+    case "Saw": return [{ at: from, v: 1 }, { at: mid - 1, v: 0 }, { at: mid, v: 1 }, { at: end, v: 0 }];
+    case "Sine": { const n = Math.min(16, Math.max(4, end - from)), out: AutoPoint[] = []; for (let k = 0; k <= n; k++) { const p = { at: at(k / n), v: Number((0.5 - 0.5 * Math.cos((2 * Math.PI * k) / n)).toFixed(4)) }; if (!out.some((x) => x.at === p.at)) out.push(p); } return out; }
+  }
+}
+/** Draw a shape on a lane over a stretch, replacing what was drawn there. */
+export function drawShape(lanes: AutoLane[], i: number, shape: Shape, from: number, length: number, steps: number): AutoLane[] {
+  const lane = lanes[i]; if (!lane) return lanes;
+  const a = clamp(Math.round(from), 0, steps - 2), len = clamp(Math.round(length), 2, steps - a + 1), made = shapePoints(shape, a, len).map((p) => tidyPoint(p, steps));
+  const points = sorted([...lane.points.filter((p) => p.at < a || p.at > a + len - 1), ...made]).slice(0, MAX_POINTS);
+  return lanes.map((l, k) => (k === i ? { ...l, points } : l));
+}
 /** Lanes read back from storage, made safe. */
 export function tidyAuto(raw: unknown, steps: number): AutoLane[] {
   const out: AutoLane[] = [];

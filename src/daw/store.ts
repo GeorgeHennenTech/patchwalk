@@ -37,12 +37,12 @@ export const storeSongs = (list: Song[]): void => write(SONGS, list);
 
 // Saved breaks (a drum clip's rows, with the pad names they were written for) and saved racks (the pads).
 import { tidyPads, tidySteps, type Hit, type Pad } from "./drums";
-export interface Break { name: string; bars: 1 | 2; bpm: number; swing: number; /** one row per pad, in pad order */ rows: Hit[][]; /** the pads' names when it was saved */ pads: string[] }
+export interface Break { name: string; /** 1 to 4 */ bars: number; bpm: number; swing: number; /** one row per pad, in pad order */ rows: Hit[][]; /** the pads' names when it was saved */ pads: string[] }
 export interface Rack { name: string; pads: Pad[] }
 const BREAKS = "patchwalk.breaks.v1", RACKS = "patchwalk.racks.v1", MOST_KEPT = 60;
 export function tidyBreak(raw: unknown): Break | undefined {
   if (!raw || typeof raw !== "object") return undefined;
-  const r = raw as Partial<Break>, bars = r.bars === 2 ? 2 : 1;
+  const r = raw as Partial<Break>, bars = Math.min(4, Math.max(1, Math.round(Number(r.bars) || 1)));
   if (!Array.isArray(r.rows) || !r.rows.length) return undefined;
   return { name: typeof r.name === "string" && r.name.trim() ? r.name.trim().slice(0, 40) : "Break", bars, bpm: Math.min(200, Math.max(60, Math.round(Number(r.bpm) || 120))), swing: Math.min(75, Math.max(0, Math.round(Number(r.swing) || 0))),
     rows: r.rows.slice(0, 16).map((row) => tidySteps(row, bars * 16)), pads: (Array.isArray(r.pads) ? r.pads : []).slice(0, 16).map((p) => String(p).slice(0, 24)) };

@@ -3,7 +3,7 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import { STEPS_PER_BAR } from "../../daw/drums";
 import { CLIP_BARS, MASTER_START, clipAt, placeClip, removeReturn, setAuto, setReturn, setSend, setTrack, removeTrack, type Clip, type Song, type Track } from "../../daw/song";
-import { MAX_LANES, addLane, dropPoint, fromUnit, movePoint, putPoint, removeLane, retargetLane, targetsOf, valueAt, type AutoLane, type AutoTarget } from "../../daw/automation";
+import { SHAPES, drawShape, type Shape, MAX_LANES, addLane, dropPoint, fromUnit, movePoint, putPoint, removeLane, retargetLane, targetsOf, valueAt, type AutoLane, type AutoTarget } from "../../daw/automation";
 
 /** A colour for each track, by its place in the list. */
 export const TRACK_COLORS = ["#ffb347", "#5fe0ff", "#b6f36a", "#ff8fc2", "#c9a2ff", "#ffe66b", "#7dffb0", "#ff9a7a"];
@@ -27,7 +27,7 @@ const ZOOMS = [0, 70, 120, 200, 320], ZOOM_KEY = "patchwalk.zoom.v1", SIDE = 330
  * (sideways only as far as its neighbours), double-click a point to remove it.
  */
 type Strip = { name: string; auto?: AutoLane[]; devices: Track["devices"]; patch?: object; sampler?: object; master?: boolean };
-function AutoLaneRow({ track, lane, index, steps, cols, onLanes, onMark }: { track: Strip; lane: AutoLane; index: number; steps: number; cols: React.CSSProperties; onLanes: (next: AutoLane[]) => void; onMark: () => void }) {
+function AutoLaneRow({ track, lane, index, steps, cols, onLanes, onMark, span }: { /** where a ready-made shape is drawn: the selected clip's bars, or the whole song */ span: { from: number; length: number; name: string }; track: Strip; lane: AutoLane; index: number; steps: number; cols: React.CSSProperties; onLanes: (next: AutoLane[]) => void; onMark: () => void }) {
   const area = useRef<HTMLDivElement>(null), held = useRef<number | null>(null), lanes = useRef(track.auto ?? []); lanes.current = track.auto ?? [];
   const [tip, setTip] = useState("");
   const targets = targetsOf(track), target = targets.find((t) => t.id === lane.target);
@@ -57,6 +57,7 @@ function AutoLaneRow({ track, lane, index, steps, cols, onLanes, onMark }: { tra
           {[...new Set(targets.map((t) => t.group))].map((g) => <optgroup key={g} label={g}>{targets.filter((t) => t.group === g).map((t) => <option key={t.id} value={t.id} disabled={t.id !== lane.target && (track.auto ?? []).some((l) => l.target === t.id)}>{t.label}</option>)}</optgroup>)}
         </select>
         <span className="auto-tip">{tip || (target && pts.length ? `${pts.length} point${pts.length === 1 ? "" : "s"}` : "")}</span>
+        <select className="auto-shape" value="" aria-label={`Draw a shape on this lane of ${track.name}`} title={`Draw a ready-made shape over ${span.name}, replacing what is drawn there`} onChange={(e) => { if (!e.target.value) return; onMark(); onLanes(drawShape(lanes.current, index, e.target.value as Shape, span.from, span.length, steps)); }}><option value="">Shape…</option>{SHAPES.map((x) => <option key={x}>{x}</option>)}</select>
         <button aria-label="Remove this lane" title="Remove this lane and its points" onClick={() => { onMark(); onLanes(removeLane(lanes.current, index)); }}>×</button>
       </div>
     </div>
@@ -104,10 +105,12 @@ export function Arrangement({ song, live, back, onBack, onSeek, onMarker, onChan
   // zoomed in, the window follows the play line
   const bar = step >= 0 ? Math.floor(step / STEPS_PER_BAR) : -1;
   useEffect(() => { const el = box.current; if (!el || !zoom || bar < 0) return; const x = bar * zoom, seen = el.clientWidth - SIDE - (song.returns.length ? 80 : 0); if (x < el.scrollLeft || x + zoom > el.scrollLeft + seen) el.scrollLeft = Math.max(0, x - zoom); }, [bar, zoom]);
+  const pickedClip = song.tracks.find((t) => t.id === picked.track)?.clips.find((c) => c.id === picked.clip);
+  const span = pickedClip ? { from: pickedClip.start * STEPS_PER_BAR, length: pickedClip.bars * STEPS_PER_BAR, name: `the selected clip (bar ${pickedClip.start + 1}${pickedClip.bars > 1 ? ` to ${pickedClip.start + pickedClip.bars}` : ""})` } : { from: 0, length: song.bars * STEPS_PER_BAR, name: "the whole song" };
   // automation for a return track or the master: the A button and the lanes under the row
   const autoButton = (id: string, strip: Strip, set: (next: AutoLane[]) => void) => <button className={`trk-auto${open.has(id) ? " on" : ""}`} aria-pressed={open.has(id)} aria-label={`Automation for ${strip.name}`} title="Show its automation: lines along the song that move its settings as it plays" onMouseDown={(e) => e.stopPropagation()} onClick={() => { setOpen((o) => { const n = new Set(o); if (n.has(id)) n.delete(id); else n.add(id); return n; }); if (!open.has(id) && !(strip.auto ?? []).length) set(addLane([], strip)); }}>A{(strip.auto ?? []).some((l) => l.points.length) ? "•" : ""}</button>;
   const lanesFor = (id: string, strip: Strip, set: (next: AutoLane[]) => void) => open.has(id) && <>
-    {(strip.auto ?? []).map((lane, li) => <AutoLaneRow key={lane.target} track={strip} lane={lane} index={li} steps={song.bars * STEPS_PER_BAR} cols={cols} onMark={onMark} onLanes={set} />)}
+    {(strip.auto ?? []).map((lane, li) => <AutoLaneRow span={span} key={lane.target} track={strip} lane={lane} index={li} steps={song.bars * STEPS_PER_BAR} cols={cols} onMark={onMark} onLanes={set} />)}
     {(strip.auto ?? []).length < MAX_LANES && <div className="arr-row arr-auto more"><div className="arr-bars" style={cols} /><div className="arr-side"><button onClick={() => set(addLane(strip.auto ?? [], strip))} title="Another line, for another setting">+ Automation lane</button></div></div>}
   </>;
   const master: Strip = { name: "Master", auto: song.masterAuto, devices: song.masterFx ?? [], master: true }, setMaster = (next: AutoLane[]) => onChange((s) => ({ ...s, masterAuto: next }));
@@ -153,7 +156,7 @@ export function Arrangement({ song, live, back, onBack, onSeek, onMarker, onChan
           </div>
         </div>
         {open.has(t.id) && <>
-          {t.auto.map((lane, li) => <AutoLaneRow key={lane.target} track={t} lane={lane} index={li} steps={song.bars * STEPS_PER_BAR} cols={cols} onMark={onMark} onLanes={(next) => onChange((s) => setAuto(s, t.id, next))} />)}
+          {t.auto.map((lane, li) => <AutoLaneRow span={span} key={lane.target} track={t} lane={lane} index={li} steps={song.bars * STEPS_PER_BAR} cols={cols} onMark={onMark} onLanes={(next) => onChange((s) => setAuto(s, t.id, next))} />)}
           {t.auto.length < MAX_LANES && <div className="arr-row arr-auto more"><div className="arr-bars" style={cols} /><div className="arr-side"><button onClick={() => onChange((s) => setAuto(s, t.id, addLane(t.auto, t)))} title="Another line, for another setting of this track">+ Automation lane</button></div></div>}
         </>}
         </Fragment>

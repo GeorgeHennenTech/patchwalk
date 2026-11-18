@@ -59,7 +59,8 @@ export interface Pattern {
   /** How late every second step is played, 0 to 75 (% of the way to the step after it). 0 is straight. */
   swing: number;
   /** Steps in the pattern: 16 is one bar of sixteenths, 32 is two. */
-  length: 16 | 32;
+  /** steps: 16 a bar. The old single-pattern page knew 16 and 32; a Studio clip can be up to four bars. */
+  length: number;
   lanes: Lane[];
 }
 export const STEPS_PER_BEAT = 4, STEPS_PER_BAR = 16, BPM_MIN = 60, BPM_MAX = 200, SWING_MAX = 75;

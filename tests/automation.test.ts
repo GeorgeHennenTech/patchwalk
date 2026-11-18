@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { carryAuto, recordMoves, masterStrip, MAX_LANES, SYNTH_TARGETS, addLane, automate, automateTrack, dropPoint, fromUnit, hasAutomation, movePoint, putPoint, removeLane, retargetLane, targetsOf, tidyAuto, toUnit, valueAt } from "../src/daw/automation";
+import { drawShape, shapePoints, SHAPES, carryAuto, recordMoves, masterStrip, MAX_LANES, SYNTH_TARGETS, addLane, automate, automateTrack, dropPoint, fromUnit, hasAutomation, movePoint, putPoint, removeLane, retargetLane, targetsOf, tidyAuto, toUnit, valueAt } from "../src/daw/automation";
 import { addDevice, setDeviceParam } from "../src/daw/devices";
 import { addClip, addReturn, moveClip, placeClip, newSong, setAuto, setDevices, tidySong } from "../src/daw/song";
 
@@ -126,5 +126,17 @@ describe("recording automation", () => {
     expect(recordMoves(a, a, 12, 128)).toBe(a);
     const later = recordMoves(r, { ...r, tracks: r.tracks.map((t, i) => (i === 0 ? { ...t, level: 60 } : t)) }, 20, 128);
     expect(later.tracks[0]!.auto[0]!.points).toEqual([{ at: 12, v: 0.2 }, { at: 20, v: 0.6 }]);
+  });
+});
+
+describe("automation shapes", () => {
+  it("every shape stays inside its stretch and between low and high", () => {
+    for (const s of SHAPES) { const pts = shapePoints(s, 16, 16); expect(pts.every((p) => p.at >= 16 && p.at <= 31 && p.v >= 0 && p.v <= 1)).toBe(true); expect(pts.length).toBeGreaterThan(1); }
+    expect(shapePoints("Triangle", 0, 17)).toEqual([{ at: 0, v: 0 }, { at: 8, v: 1 }, { at: 16, v: 0 }]);
+    expect(Math.max(...shapePoints("Sine", 0, 32).map((p) => p.v))).toBe(1);
+  });
+  it("replaces what was drawn in the stretch and leaves the rest", () => {
+    const lanes = [{ target: "level", points: [{ at: 2, v: 0.5 }, { at: 20, v: 0.3 }, { at: 40, v: 0.9 }] }];
+    expect(drawShape(lanes, 0, "Ramp up", 16, 16, 128)[0]!.points).toEqual([{ at: 2, v: 0.5 }, { at: 16, v: 0 }, { at: 31, v: 1 }, { at: 40, v: 0.9 }]);
   });
 });

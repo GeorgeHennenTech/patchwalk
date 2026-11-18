@@ -574,3 +574,10 @@ tr.dim td { opacity: 0.6; }
 .chain .sampler-display { width: 230px; } .chain .sampler-display .pad-wave { flex: 1; min-height: 0; width: 100%; background: var(--dv-dark); border-radius: 3px; }
 .chain .sampler-none { flex: 1; margin: 0; display: grid; place-items: center; background: var(--dv-dark); color: #aaa; border-radius: 3px; font-size: 11px; font-weight: 400; text-align: center; padding: 0 8px; }
 .chain .sampler-display select { max-width: none; width: 100%; }
+
+/* drum clips of three and four bars: the grid scrolls sideways and marks each bar */
+.drum-grid.long { overflow-x: auto; } .drum-grid.long .drum-cells > * { min-width: 20px; flex: 0 0 20px; }
+.drum-grid.long .drum-cells > :nth-child(33), .drum-grid.long .drum-cells > :nth-child(49) { margin-left: 12px; }
+.daw2 .clip-bars { display: inline-flex; gap: 5px; align-items: center; font-size: 12px; color: var(--dim); }
+
+.daw2 .auto-shape { font-size: 11px; max-width: 78px; }

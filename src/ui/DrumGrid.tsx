@@ -21,7 +21,7 @@ export function DrumGrid({ pattern, onChange, step, onAudition, lanes, onSound, 
     if (to) onAudition(lane);
   };
   return (
-    <div className={`drum-grid len${pattern.length}`} onContextMenu={(e) => e.preventDefault()}>
+    <div className={`drum-grid len${pattern.length}${pattern.length > 32 ? " len32 long" : ""}`} onContextMenu={(e) => e.preventDefault()}>
       {pattern.lanes.map((lane, li) => (lanes && !lanes.includes(lane.voice) ? null : (
         <div className={`drum-lane${lane.mute ? " muted" : ""}${over === li ? " over" : ""}${open === li ? " picked" : ""}`} key={lane.id}
           onDragOver={onFile ? (e) => { if (e.dataTransfer.types.includes("Files")) { e.preventDefault(); setOver(li); } } : undefined}

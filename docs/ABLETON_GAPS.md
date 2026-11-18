@@ -36,14 +36,14 @@ Live, cited from the manual. Every feature ticked below needs a lesson.
 ### 2. The biggest limits today (M to L each)
 - [x] Grid sizes with triplets, notes off the sixteenth grid, Quantize (built 17 Nov; not yet: snap off, a quantize amount in the page, Ctrl/Cmd+1 to 4)
       (p.128, 200-203)
-- [ ] Clips of any length placed anywhere, split anywhere (p.123, 128-130)
+- [ ] Clips of any length placed anywhere, split anywhere (built 18 Nov: note clips 1 to 16 bars, drum clips 1 to 4; not yet: starting or ending off a bar line, splitting anywhere) (p.123, 128-130)
 - [x] A sampler instrument: one sound played across the keys, held, looping and one-shot (built 17 Nov; not yet: a filter and LFO of its own, loop crossfade, warp, slicing) (Simpler, p.608-622)
 - [x] Slice a sound onto pads in 4, 8 or 16 equal slices, with a clip that replays them (built 17 Nov; not yet: slicing at the hits themselves, 32 slices) (p.229-232, 613-614, 621)
 - [ ] Knobs on the built-in drums: Decay and Tone as well as Tune (built 17 Nov); not yet: click and drive per drum, a filter and saturator per pad
       (p.558-560, 657-665)
 - [x] Automation that moves with its clip, with a lock switch (p.365)
-- [ ] Automation: record knob moves (DONE 17 Nov; also lanes on returns and the master); not yet: mark automated controls; "re-enable" after touching one; ready-made
-      shapes (sine, ramps, square); curved segments (p.353-365)
+- [ ] Automation: record knob moves (DONE 17 Nov; also lanes on returns and the master); not yet: mark automated controls; "re-enable" after touching one;
+      ready-made shapes (DONE 18 Nov: a Shape menu on every lane); curved segments (p.353-365)
 - [ ] Loop brace you drag, with numeric start and length; cut, duplicate and delete time (p.121-129)
 
 ### 3. Bigger pieces

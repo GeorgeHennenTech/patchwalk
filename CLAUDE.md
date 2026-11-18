@@ -1484,6 +1484,16 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   master lane took the master gain 0.89, 0.72, 0.55, 0.39, 0.24 through bar 1 and back to 0.9 on stop; the
   drum fader moved to 30 and then 70 while recording gave points at steps 5 and 10. **Not built: marking
   automated controls, a "back to automation" button after touching one, ready-made shapes, curves.**
+  **Longer clips and automation shapes (17 Nov 2026, owner: "proceed").** (1) A note clip can be any whole
+  number of bars from 1 to 16 and a drum clip 1 to 4 (`CLIP_BARS` in `song.ts`; `Pattern.length` is now any
+  number; a saved break keeps up to 4 bars). The clip's length is a menu ("Clip length in bars"); a drum grid
+  longer than 32 steps scrolls sideways (class `long`). Clips still start on a bar line. (2) Every automation
+  lane has a **Shape…** menu (`SHAPES`, `shapePoints`, `drawShape` in `automation.ts`: Ramp up, Ramp down,
+  Triangle, Sine, Square, Saw) that draws the shape over the selected clip's bars, or over the whole song
+  when no clip is selected, replacing what was drawn there. Checked in a browser: a note clip set to 7 bars
+  took a note in bar 6; a drum clip set to 4 bars showed 64 steps; a triangle over that clip gave points at
+  steps 0, 32 and 63. Not built: clips that start or end off a bar line, splitting at any place, curved
+  segments, marking automated controls.
   **Lessons on all of this (owner, 17 Nov 2026: "we are also going to have to make lessons on all of these
   new features. this ableton course will be extensive").** Nothing is written and the lesson engine does
   not know the Studio; the plan is at the top of `docs/ABLETON_GAPS.md`. Every Studio feature needs one.

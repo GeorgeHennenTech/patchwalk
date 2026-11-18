@@ -51,7 +51,10 @@ describe("a song", () => {
     const { song, drums, synth, beat, chord } = demo();
     const two = setClipBars(song, drums, beat, 2);
     expect((clipOf(trackOf(two, drums), beat) as DrumClip).hits.kick!.filter(Boolean)).toHaveLength(8);
-    expect(setClipBars(song, drums, beat, 4)).toBe(song); // drum clips are one or two bars
+    expect((clipOf(trackOf(setClipBars(song, drums, beat, 4), drums), beat) as DrumClip).hits.kick!.filter(Boolean)).toHaveLength(16);
+    expect(setClipBars(song, drums, beat, 5)).toBe(song); // a drum clip is one to four bars
+    expect(clipOf(trackOf(setClipBars(song, synth, chord, 7), synth), chord)!.bars).toBe(7); // a note clip can be any whole number of bars up to sixteen
+    expect(setClipBars(song, synth, chord, 17)).toBe(song);
     const late = putNote(song, synth, chord, { note: 72, start: 20, length: 4, velocity: 100 });
     const one = clipOf(trackOf(setClipBars(late, synth, chord, 1), synth), chord) as SynthClip;
     expect(one.notes.map((n) => n.note)).toEqual([57, 60, 64]);
@@ -286,7 +289,8 @@ describe("note tools, chance, doubling and key", () => {
     const blocked = addClip(s, "t2", 1)!.song; expect(doubleClip(blocked, "t2", id)).toBe(blocked);
     let dr = newSong(); dr = addClip(dr, "t1", 0)!.song; const did = dr.tracks[0]!.clips[0]!.id, dd = doubleClip(dr, "t1", did).tracks[0]!.clips[0] as DrumClip;
     expect(dd.bars).toBe(2); expect(Object.values(dd.hits).every((row) => row.length === 32)).toBe(true);
-    expect(doubleClip(doubleClip(dr, "t1", did), "t1", did).tracks[0]!.clips[0]!.bars).toBe(2);
+    expect(doubleClip(doubleClip(dr, "t1", did), "t1", did).tracks[0]!.clips[0]!.bars).toBe(4);
+    expect(doubleClip(doubleClip(doubleClip(dr, "t1", did), "t1", did), "t1", did).tracks[0]!.clips[0]!.bars).toBe(4);
   });
   it("knows which notes belong to a key, and keeps the song's key and master effects", () => {
     expect([60, 62, 63, 65].map((x) => inKey(x, 0, [0, 2, 4, 5, 7, 9, 11]))).toEqual([true, true, false, true]);

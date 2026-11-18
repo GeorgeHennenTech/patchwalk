@@ -35,7 +35,8 @@ export const masterGain = (volume: number) => 0.9 * (clamp(volume, 0, 100) / MAS
 
 export const SONG_BARS = [4, 8, 16, 32] as const, MAX_TRACKS = 8, NOTE_LOW = 24, NOTE_HIGH = 96;
 /** Clip lengths each kind of track allows, in bars. */
-export const CLIP_BARS: Record<Track["kind"], readonly number[]> = { drums: [1, 2], synth: [1, 2, 4] };
+/** A drum clip can be 1 to 4 bars; a note clip any whole number of bars up to 16. */
+export const CLIP_BARS: Record<Track["kind"], readonly number[]> = { drums: [1, 2, 3, 4], synth: Array.from({ length: 16 }, (_, i) => i + 1) };
 
 /** Sounds a new synth track can start from: the practice synth's own settings, chosen by us. */
 export const SOUNDS: { name: string; patch: Partial<SynthState> }[] = [
@@ -146,7 +147,7 @@ export function setClipBars(s: Song, trackId: string, clipId: string, bars: numb
 /** A drum clip seen as a pattern (the pads with this clip's rows), so the step grid can edit it. */
 export function clipPattern(s: Song, t: DrumTrack, c: DrumClip): Pattern {
   const length = c.bars * STEPS_PER_BAR;
-  return { name: t.name, bpm: s.bpm, swing: s.swing, length: (length === 32 ? 32 : 16), lanes: t.pads.map((pad) => ({ ...pad, steps: tidySteps(c.hits[pad.id], length) })) };
+  return { name: t.name, bpm: s.bpm, swing: s.swing, length, lanes: t.pads.map((pad) => ({ ...pad, steps: tidySteps(c.hits[pad.id], length) })) };
 }
 /** Put an edited pattern back: the pads go to the track (all its clips share them), the rows to the clip. */
 export function withPattern(s: Song, trackId: string, clipId: string, p: Pattern): Song {

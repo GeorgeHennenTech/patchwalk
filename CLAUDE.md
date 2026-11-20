@@ -1786,6 +1786,19 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
     the spectrum), analyser skirts and the long look (need our own FFT with window controls), the click
     test, a checkpoint. **Next chapters in order: "When digital sound goes wrong", "Expression", "One delay,
     many effects" (`docs/CURRICULUM.md`). Nobody has taken these lessons or heard them.**
+- **Genre histories begin in the course map (20 Nov 2026, owner: "research and put a bunch of lessons on the
+  history of each genre im into. lets start with nu-skool breakbeats").** `docs/CURRICULUM.md` ends with
+  "Track G-H: the history of each genre": rules for history lessons and 28 nu-skool breaks lessons in four
+  parts (where a break comes from; Britain before nu-skool; the nu-skool years; after the peak), each with
+  its source and the playable lesson it hands over to. **Researched on the web, not from the library:
+  fifteen Wikipedia pages were read; the primary pieces (Resident Advisor 2002, a founder's own page,
+  MusicRadar, two retrospectives, the awards' winners list) could not be opened because the session's
+  network does not allow those sites.** The section lists what is thin (who coined the name, the 1996 or
+  1998 start, the decline, which no read source describes). **Open with the owner: history lessons must
+  name people, clubs, labels and records for what they did and when, which the "never name artists in the
+  app" rule forbids; the section proposes that exception and still forbids saying how anyone made a sound.
+  Do not build a history lesson until the owner has said yes.** Nothing is built. Next genres when the
+  owner names them, in the same shape.
 - **Long pages are searched in parts (16 Nov 2026).** `splitText` in `src/library/search.ts` cuts a page over
   2,400 characters into overlapping parts of about 1,500 (ids `book#page~1`, `~2`, with `of` naming the
   page); `pageOf` and `cite` count parts of one page as one source, and `search` takes at most two parts of

@@ -597,3 +597,11 @@ browser before a remark quotes it, add quiz questions to `quiz-g.json`, a why-li
 in `WALKS`. All of today's work (literature, Sources shelf, ideas, course map, these lessons) is on branch
 `claude/new-session-dfvcsr` and **not on the live site: the owner has not yet said "yes" to copying it to
 main.**
+
+## 20 Nov 2026, after that: genre histories in the course map
+The owner asked for researched lessons on the history of each genre they like, nu-skool breaks first. The
+course map now ends with "Track G-H: the history of each genre": 28 nu-skool breaks lessons with sources
+(`CLAUDE.md`, "Genre histories begin"). It rests on Wikipedia because the better sources could not be
+opened from the session. **Waiting on the owner for: (1) yes or no to history lessons naming people, clubs,
+labels and records; (2) the next genre; (3) the unread pieces, pasted in or the sites allowed.** Lesson
+writing ("When digital sound goes wrong" next) continues whenever the owner says.

@@ -733,3 +733,102 @@ ideas of `docs/LESSON_IDEAS.md` put in a teaching order. Ideas from that file no
 already belong: the FM, ring, distortion, sync and formant sets extend the existing chapters "Reshaping the
 wave" and "Effects"; the string, piano and blown-instrument sets belong to track Q; the driver set to the
 sound-systems track.
+
+## Track G-H: the history of each genre (owner asked 20 Nov 2026; planned, nothing built)
+
+The owner wants lessons on the history of each genre they are into, one genre at a time. Nu-skool breaks is
+first. Glitch-hop, psydub and the others follow in the same shape when the owner names the next one.
+
+**Rules for every history lesson** (they keep the standing rules, with one change the owner should confirm):
+1. **History needs names.** The standing rule says the app never names artists. A history lesson cannot obey
+   that, so here people, clubs, labels and records are named for what they **did and when** (founded a label,
+   ran a night, released a record, charted). Still never: how anyone made a sound, what anyone intended, or
+   that a technique "is" someone's. **Awaiting the owner's yes to this exception.**
+2. Every fact carries its source and its weakness. `S1` to `S9` below are the pages read; "tagged" means the
+   page itself flags the claim as unsourced. Where two sources disagree the lesson shows both and does not
+   pick one.
+3. A history lesson ends in sound: each one hands over to a playable lesson (a drum pattern in the Studio, a
+   patch on the synth) that lets the learner hear the thing the history is about. The playable part teaches
+   the common shape of the style, written for this app; it is never a copy of a record.
+4. No record audio is played or stored. A lesson may name a record and its year so the learner can find it.
+5. Nothing about what the music does to a listener.
+
+### Nu-skool breaks: what was read (20 Nov 2026)
+- `S1` Wikipedia, "Nu skool breaks" (read in full; tagged as needing more citations since 2012).
+- `S2` Wikipedia, "Breakbeat" (history and subgenres read).
+- `S3` Wikipedia, "Big beat" (style, history and decline read; several maintenance tags).
+- `S4` Wikipedia, "Florida breaks" (body read; its main source is the Orlando Sentinel, 1997).
+- `S5` Wikipedia, "Amen break" (read in full; rated a Good Article).
+- `S6` Wikipedia, "Breakbeat hardcore"; `S7` "Electro (music)"; `S8` "UK garage" and "Dubstep" (origins only).
+- `S9` Wikipedia pages on people and labels: Rennie Pilgrem (a stub), Adam Freeland, Plump DJs, Stanton
+  Warriors, Hybrid, Freestylers, Finger Lickin' Records, Marine Parade Records. Most carry "needs more
+  citations" tags.
+- **Could not be opened from the build session** (its network does not allow these sites; search results
+  showed they exist): Resident Advisor's 2002 feature "Breaks Pilgrem-age" (the source S1 leans on for who
+  coined the name), Rennie Pilgrem's own biography page, MusicRadar's "The history of breaks in music
+  production" (2022), the Flame Tree "Breakbeat" entry, two retrospectives ("These Are The Breaks", 2019;
+  "Whatever Happened To Nu Skool Breaks", 2019), and the Breakspoll awards' list of past winners. There is
+  no Wikipedia page for Botchit & Scarper or for Breakspoll. **So this first list rests almost wholly on
+  Wikipedia. Before a lesson is written, read the primary pieces (the owner can paste them, or allow the
+  sites) and Simon Reynolds's "Energy Flash", which is on the buy-or-borrow list.**
+
+### Nu-skool breaks: the lessons (28)
+
+**Part 1. Where a "break" comes from**
+
+| # | Lesson | What it says | Source | Hands over to |
+|---|---|---|---|---|
+| 1 | What a break is | A drum break is the stretch of a funk, soul or jazz record where the band stops and the drummer plays alone. Breakbeat music is built on those stretches | S2 | Studio: hear a one-bar drum pattern alone, then looped |
+| 2 | Two copies of one record | From 1973 a DJ in New York played the breaks of funk records one after another; another marked the record with a crayon to find the break again. (S2 itself tags one claim in this story as dubious: say so) | S2 | Studio: loop one bar, then two bars end to end |
+| 3 | Seven seconds from 1969 | "Amen, Brother" by the Winstons, a B-side recorded in Atlanta in early 1969; a four-bar break of about seven seconds played by Gregory Coleman | S5 | Studio: the common shape of that kind of break as a pattern written for this app |
+| 4 | How one break travelled | 1986: the record appears on a compilation made for DJs, and is sampled the same year. 1988: three well-known records use it. Early 1990s: British dance music takes it up | S5 | Timeline the learner puts in order |
+| 5 | Who got paid | The band received no royalties for the sampling; the bandleader learned of it in 1996; in 2015 two British DJs raised over £18,000 for him; in 2026 the record entered the US National Recording Registry | S5 | Reading and a quiz; links to the sampling-law lesson when one exists |
+| 6 | Machines that copy a drummer | Early-1980s electro: drum-machine patterns that S7 calls "electronic emulations of breakbeats", stiffer than a played break. "Planet Rock", 1982 | S7 | Studio: the same pattern played tight on the grid, then with a looser feel |
+
+**Part 2. Britain before nu-skool**
+
+| # | Lesson | What it says | Source | Hands over to |
+|---|---|---|---|---|
+| 7 | Hardcore: breaks meet the rave | Early 1990s Britain: four-on-the-floor kicks combined with sped-up breaks sampled from hip-hop, "hoover" sounds, house pianos. Home production on an Atari ST with Cubase | S6 | Studio: a break over a four-on-the-floor kick |
+| 8 | The split of 1992 to 1994 | By late 1992 hardcore divides into darker, jungle and happy strands; jungle and drum and bass take the break faster. One writer of the time called breakbeat "the death-knell of rave" | S6, S2 | Studio: one break at three tempos |
+| 9 | Meanwhile in Florida | A separate breaks scene in Orlando from the late 1980s or early 1990s (the sources disagree on the date), mixing breaks with electro and Miami bass; statewide by 1993; waning from 2000; reunion nights in the 2020s | S4, S2 | Listening list by year; no playable part yet |
+| 10 | Big beat: breaks get loud | Mid-1990s Britain. Heavy, distorted breaks at 100 to 140 bpm, acid lines, loops from 1960s and 1970s records. A Brighton club night ran from 1995 to 2001. Peak 1995 to 1999, fading from 2001 | S3 | Synth and Studio: a distorted break with an acid line |
+| 11 | Where a name comes from | Three accounts of "big beat": a musician's coinage reported in a London magazine in 1989; a club night's name; the music press from the mid-1990s. A lesson in how genre names are disputed | S3, S2 | Quiz: match each account to its source |
+| 12 | The label that linked them | A west London label of the late 1990s where members of two later breaks acts met and released early records (1996 to 1998) | S9 | Timeline |
+
+**Part 3. The nu-skool years**
+
+| # | Lesson | What it says | Source | Hands over to |
+|---|---|---|---|---|
+| 13 | A Thursday night in London | The club night Friction at Bar Rumba, with a promoter and resident DJs. S1 dates its launch to 1996; another account found in search says 1998; accounts also differ on which of three DJs coined "nu skool breaks". Show all of them | S1 (and unread pieces) | Quiz on what is agreed and what is not |
+| 14 | The name on a sleeve | 1998: two mix compilations titled "Nu Skool Breakz", the first recorded live at the club. S1's text names a UK label; the sleeve it cites names a US one | S1 | Reading |
+| 15 | What made it "new" | As S1 describes it: 125 to 140 bpm, a dominant bass line, "more abstract, more technical sounds" borrowed from UK garage, electro and drum and bass; fewer hip-hop samples and acid lines than big beat; sounds made with synthesizers, effects and computers | S1 | Studio and synth: the same break dressed two ways, sample-led and synth-led |
+| 16 | The tempo map | Where it sat: big beat 100 to 140, nu-skool 125 to 140, UK garage about 130, breaks as a whole 110 to 175 (drum and bass at the top) | S1, S2, S3, S8 | Studio: one pattern at each tempo |
+| 17 | The labels of 1993 to 1998 | Thursday Club Recordings (1993), Marine Parade (1998, named after a street in Brighton), Finger Lickin' (1998), and four more S1 lists without dates | S1, S9 | Timeline; find one record from each |
+| 18 | Breaks on the radio and in the shops | 1999 to 2001: a Friday night show on a London station; 2001: a breaks mix on a magazine's cover; breaks volumes in the big club mix series in 2003 and 2004 | S9 | Timeline |
+| 19 | Breaks and garage trade drums | UK garage's 2-step pattern (kicks removed and shifted, from the mid-1990s), and "breakstep" in 2002. One act's page files it under both breakbeat and UK garage | S8, S9 | Studio: a 2-step pattern beside a breaks pattern, then a blend |
+| 20 | The cinematic strand | Progressive breaks: breaks with trance and orchestral writing; a 1999 album S9 describes as "a combination of progressive house and nu skool breaks"; film-score work from 2004 | S2, S9 | Synth: a pad and strings over a break |
+| 21 | Breaks in the charts | What actually charted in Britain, 2000 to 2004: mostly positions between 60 and 130, with a few in the top 40. A scene can fill clubs without filling the charts | S9 | Reading the numbers: a small chart the learner sorts |
+| 22 | The awards | An international breakbeat awards ran from 2001 (first held 2002) to at least 2015, at London clubs; one label won best label four years running, 2002 to 2005 | S9, S1, search results (unread) | Timeline |
+| 23 | Breaks around the world | Australia (album chart entries, a signed band), Spain's Andalusian scene with its own radio show and festivals from the mid-1990s, and the US South's Asian-American breaks scene | S2, S9 | Map the learner fills in |
+
+**Part 4. After the peak**
+
+| # | Lesson | What it says | Source | Hands over to |
+|---|---|---|---|---|
+| 24 | What the sources say about the decline, and what they do not | S1 says nothing. One act's contract with its label ended in 2009 and its next compilation was sold as "post-breaks". Retrospectives found in search blame drum and bass or later bass styles, but they are opinion and were not read. **Teach it as an open question** | S9; unread pieces | Discussion card: what evidence would settle it |
+| 25 | Dubstep arrives next door | South London, early 2000s, grown from UK garage's 2-step; a night founded in 2001; the name in print by 2002. S8 lists breakbeat only among its roots | S8 | Studio: a half-time pattern beside a breaks pattern |
+| 26 | Where the people went | Named moves after 2008: new labels, house and electro-leaning records, film and game music, one founder leaving music for painting in 2010 | S9 | Timeline |
+| 27 | The break does not go away | Hardcore breaks in the 2000s at 145 to 180 bpm; breakbeats as "a common signature" of a 2020s pop artist; Florida reunion nights in 2023 to 2025 | S6, S2, S4 | Studio: write an eight-bar break at a tempo of the learner's choice |
+| 28 | Checkpoint: put it in order | Twelve events from 1969 to 2015 to place on a line, and for each, which source says so and how sure it is | all | The line itself |
+
+### Nu-skool breaks: what is thin, and what would fix it
+- **Who coined the name, and when the night began**: Wikipedia against search summaries. The Resident Advisor
+  feature and the founder's own page would settle what each party claims.
+- **The decline**: no read source says anything. Needs the two retrospectives, magazine pieces of 2007 to
+  2010, or Reynolds.
+- **The sound itself**: one paragraph in S1. Hockman's thesis (in the library) covers how breaks are cut and
+  re-ordered, and belongs with lessons 3, 7 and 15 for the "how", kept apart from the "who".
+- **Record labels with no page** (Botchit & Scarper, the awards): need the labels' own or archived pages.
+- **Dates that contradict within one page** (an album dated 2000 and 2003; a single dated 2000 and 2004):
+  check against a discography before either is taught.

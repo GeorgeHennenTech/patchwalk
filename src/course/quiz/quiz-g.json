@@ -1,0 +1,510 @@
+{
+ "CV.1": [
+  {
+   "q": "What does the peak reading on the meter measure?",
+   "options": [
+    "How long the note has lasted",
+    "The tallest point the wave reaches",
+    "How bright the sound is",
+    "The pitch of the note"
+   ],
+   "answer": 1,
+   "why": "Peak is the tallest point of the wave in the stretch the meter looks at.",
+   "point": 0
+  },
+  {
+   "q": "What is the average reading closest to?",
+   "options": [
+    "How much sound there is over a short stretch",
+    "The single tallest point",
+    "The number of harmonics",
+    "How fast the wave repeats"
+   ],
+   "answer": 0,
+   "why": "The average is worked out from every point of the wave, so it follows how much sound there is.",
+   "point": 0
+  },
+  {
+   "q": "For a pure tone, where does the average sit compared with the peak?",
+   "options": [
+    "6 dB above it",
+    "Exactly on it",
+    "3 dB below it",
+    "20 dB below it"
+   ],
+   "answer": 2,
+   "why": "A pure tone always reads 3 dB between peak and average, on any note.",
+   "point": 1
+  },
+  {
+   "q": "Can the average ever read above the peak?",
+   "options": [
+    "Yes, on bright sounds",
+    "Yes, on low notes",
+    "Only at full volume",
+    "No, never"
+   ],
+   "answer": 3,
+   "why": "The average is made from points that are all at or under the peak, so it cannot pass it.",
+   "point": 1
+  },
+  {
+   "q": "You turn Volume down 6 dB. What happens to the gap between peak and average?",
+   "options": [
+    "It stays the same",
+    "It doubles",
+    "It halves",
+    "It disappears"
+   ],
+   "answer": 0,
+   "why": "Volume changes the size of the wave and not its shape, so both readings move together.",
+   "point": 2
+  },
+  {
+   "q": "What does change the gap between the two readings?",
+   "options": [
+    "Playing a different key on a pure tone",
+    "Turning the volume",
+    "Changing the shape of the wave",
+    "Holding the note longer"
+   ],
+   "answer": 2,
+   "why": "A wave with brief tall points has a high peak with little sound under it, so the gap depends on shape.",
+   "point": 2
+  }
+ ],
+ "CV.2": [
+  {
+   "q": "You take 6 dB away. What happens to the height of the wave?",
+   "options": [
+    "It drops to a tenth",
+    "It halves",
+    "It drops by six units",
+    "Nothing"
+   ],
+   "answer": 1,
+   "why": "Every 6 dB halves or doubles the height.",
+   "point": 0
+  },
+  {
+   "q": "After turning down 6 dB twice, how tall is the wave compared with the start?",
+   "options": [
+    "A quarter",
+    "A half",
+    "A sixth",
+    "A twelfth"
+   ],
+   "answer": 0,
+   "why": "Two halvings make a quarter, while the decibels add up to 12.",
+   "point": 0
+  },
+  {
+   "q": "How many times shorter is a wave after a 20 dB drop?",
+   "options": [
+    "Twice",
+    "Four times",
+    "Twenty times",
+    "Ten times"
+   ],
+   "answer": 3,
+   "why": "A change of 20 dB is ten times the height.",
+   "point": 1
+  },
+  {
+   "q": "What does a decibel figure always do?",
+   "options": [
+    "Name a pitch",
+    "Count harmonics",
+    "Compare two levels",
+    "Measure time"
+   ],
+   "answer": 2,
+   "why": "Decibels say how many times bigger one level is than another.",
+   "point": 2
+  },
+  {
+   "q": "Why does silence have no decibel number?",
+   "options": [
+    "Meters cannot read that low",
+    "Nothing is not any number of times smaller than something",
+    "Silence is 0 dB",
+    "Decibels only work above 20 Hz"
+   ],
+   "answer": 1,
+   "why": "Decibels count times, and no number of halvings ever reaches nothing.",
+   "point": 2
+  }
+ ],
+ "CV.3": [
+  {
+   "q": "What does a level meter measure?",
+   "options": [
+    "What you hear",
+    "The size of the wave",
+    "How pleasant the sound is",
+    "The pitch"
+   ],
+   "answer": 1,
+   "why": "A meter measures the wave. Loudness is what you hear.",
+   "point": 0
+  },
+  {
+   "q": "Two different sounds read the same on the meter. What can you say?",
+   "options": [
+    "They will sound equally loud",
+    "The lower one is always louder",
+    "The meter is broken",
+    "They will not necessarily sound equally loud"
+   ],
+   "answer": 3,
+   "why": "The same reading does not guarantee the same loudness.",
+   "point": 1
+  },
+  {
+   "q": "In the lesson, how did the meter read for the very low note and the very high note?",
+   "options": [
+    "The same for both",
+    "Higher for the low note",
+    "Higher for the high note",
+    "Silent for the low note"
+   ],
+   "answer": 0,
+   "why": "A pure tone on this synth has the same level on every key, whatever it sounds like to you.",
+   "point": 1
+  },
+  {
+   "q": "You turn one sound up by about 3 dB. What is fairly reliable?",
+   "options": [
+    "It sounds twice as loud",
+    "It sounds no different",
+    "It sounds about one step louder",
+    "It sounds brighter"
+   ],
+   "answer": 2,
+   "why": "A change of about 3 dB to one sound is about one step in loudness.",
+   "point": 2
+  },
+  {
+   "q": "What is the meter best used for?",
+   "options": [
+    "Ranking two different sounds by loudness",
+    "Comparing a sound with itself as you change it",
+    "Choosing a wave shape",
+    "Tuning"
+   ],
+   "answer": 1,
+   "why": "Use the meter for changes to one sound and your ears to compare different sounds.",
+   "point": 2
+  }
+ ],
+ "CV.4": [
+  {
+   "q": "Two identical waves play exactly in step. How much does the level rise over one alone?",
+   "options": [
+    "3 dB",
+    "6 dB",
+    "10 dB",
+    "Not at all"
+   ],
+   "answer": 1,
+   "why": "In step they make one wave twice as tall, and twice as tall is 6 dB.",
+   "point": 0
+  },
+  {
+   "q": "The same two waves are set half a cycle apart. What does the meter read?",
+   "options": [
+    "Silent",
+    "3 dB up",
+    "6 dB up",
+    "The same as one alone"
+   ],
+   "answer": 0,
+   "why": "Every rise in one meets an equal fall in the other, so they cancel.",
+   "point": 1
+  },
+  {
+   "q": "Two oscillators play different notes at the same level. How much does the average rise over one alone?",
+   "options": [
+    "6 dB",
+    "Nothing",
+    "12 dB",
+    "About 3 dB"
+   ],
+   "answer": 3,
+   "why": "Unrelated sounds line up only some of the time, so on average they add 3 dB.",
+   "point": 2
+  },
+  {
+   "q": "With two different notes, why can the peak still reach 6 dB up?",
+   "options": [
+    "The filter adds it",
+    "The notes get louder over time",
+    "At some instants the two waves line up",
+    "The meter is slow"
+   ],
+   "answer": 2,
+   "why": "The peak catches the instants when both waves are high together.",
+   "point": 2
+  },
+  {
+   "q": "Two oscillators a few cents apart make the meter swing. Why?",
+   "options": [
+    "They drift in and out of step",
+    "The volume knob is moving",
+    "One keeps switching off",
+    "The note is changing"
+   ],
+   "answer": 0,
+   "why": "They pass through in step, then opposite, over and over: 6 dB up, then nearly nothing.",
+   "point": 1
+  }
+ ],
+ "CV.5": [
+  {
+   "q": "What does the scope draw?",
+   "options": [
+    "Which tones a sound is made of",
+    "The shape of the wave",
+    "How loud each harmonic is",
+    "The notes you played"
+   ],
+   "answer": 1,
+   "why": "The scope shows the shape of the wave over time.",
+   "point": 0
+  },
+  {
+   "q": "What does the spectrum show?",
+   "options": [
+    "The shape of the wave",
+    "How long the note lasts",
+    "Which tones the wave is made of and how strong each is",
+    "Where the wave starts"
+   ],
+   "answer": 2,
+   "why": "The spectrum is a list of ingredients: the tones and their strengths.",
+   "point": 0
+  },
+  {
+   "q": "You slide one of two tones in time. What happens?",
+   "options": [
+    "The scope's shape changes and the spectrum stays put",
+    "Both pictures change",
+    "Neither picture changes",
+    "The spectrum changes and the scope stays put"
+   ],
+   "answer": 0,
+   "why": "The same tones can add up to many shapes, depending on how they line up.",
+   "point": 1
+  },
+  {
+   "q": "When the shape changed but the ingredients did not, what did the meter do?",
+   "options": [
+    "Both readings jumped",
+    "The average moved and the peak did not",
+    "Both fell to silence",
+    "The peak moved a little and the average did not"
+   ],
+   "answer": 3,
+   "why": "The peak follows the shape. The average follows the ingredients.",
+   "point": 2
+  }
+ ],
+ "CV.6": [
+  {
+   "q": "On the spectrogram, which way does time run?",
+   "options": [
+    "Top to bottom",
+    "Left to right, newest on the right",
+    "Right to left, newest on the left",
+    "Bottom to top"
+   ],
+   "answer": 1,
+   "why": "Time runs left to right, with the newest sound on the right.",
+   "point": 0
+  },
+  {
+   "q": "What does a stronger colour mean?",
+   "options": [
+    "Higher pitch",
+    "Later in time",
+    "Louder",
+    "More noise"
+   ],
+   "answer": 2,
+   "why": "Pitch runs bottom to top, and stronger colour means louder.",
+   "point": 0
+  },
+  {
+   "q": "What does a steady held note look like?",
+   "options": [
+    "A stack of level stripes",
+    "A slope",
+    "An even fog",
+    "A single dot"
+   ],
+   "answer": 0,
+   "why": "Each harmonic draws its own level stripe for as long as the note lasts.",
+   "point": 1
+  },
+  {
+   "q": "What does noise look like?",
+   "options": [
+    "Evenly spaced stripes",
+    "One thick stripe",
+    "A slope from left to right",
+    "A fog with no stripes"
+   ],
+   "answer": 3,
+   "why": "Stripes mean harmonics. Noise has none, so it fills the whole height.",
+   "point": 1
+  },
+  {
+   "q": "Why do the stripes crowd together toward the top?",
+   "options": [
+    "High harmonics are quieter",
+    "Each octave gets equal height on this picture",
+    "The filter squeezes them",
+    "The screen is too small"
+   ],
+   "answer": 1,
+   "why": "Harmonics are evenly spaced in frequency, and here each octave takes the same height.",
+   "point": 2
+  }
+ ],
+ "CV.7": [
+  {
+   "q": "What is a jump in a wave?",
+   "options": [
+    "A sudden change in direction",
+    "A slow rise",
+    "A sudden change in height",
+    "A repeat of the cycle"
+   ],
+   "answer": 2,
+   "why": "A jump is a sudden change in height. A corner is a sudden change in direction.",
+   "point": 0
+  },
+  {
+   "q": "Which shape has corners but no jumps?",
+   "options": [
+    "Triangle",
+    "Saw",
+    "Square",
+    "None of these three"
+   ],
+   "answer": 0,
+   "why": "A triangle changes direction twice per cycle and never jumps.",
+   "point": 0
+  },
+  {
+   "q": "Why are a saw and a square both bright?",
+   "options": [
+    "They are louder",
+    "They have more corners",
+    "They are lower in pitch",
+    "They have jumps"
+   ],
+   "answer": 3,
+   "why": "Jumps make strong high harmonics.",
+   "point": 1
+  },
+  {
+   "q": "A saw's tenth harmonic is how strong compared with its first?",
+   "options": [
+    "A hundredth",
+    "A tenth",
+    "The same",
+    "A half"
+   ],
+   "answer": 1,
+   "why": "With a jump, harmonics weaken only in proportion to their number.",
+   "point": 1
+  },
+  {
+   "q": "Why is a triangle soft?",
+   "options": [
+    "It has only corners, which make weak high harmonics",
+    "It has no first harmonic",
+    "It is quieter",
+    "It has too many jumps"
+   ],
+   "answer": 0,
+   "why": "Corners make harmonics that fall away with the square of their number.",
+   "point": 2
+  },
+  {
+   "q": "What does a sine have above its first harmonic?",
+   "options": [
+    "Only odd harmonics",
+    "Only even harmonics",
+    "Nothing",
+    "Noise"
+   ],
+   "answer": 2,
+   "why": "A sine has no jump and no corner, so it has no harmonics above the first.",
+   "point": 2
+  }
+ ],
+ "CV.8": [
+  {
+   "q": "What does a band-pass filter with high resonance let through?",
+   "options": [
+    "Everything below the cutoff",
+    "A narrow band and very little else",
+    "Everything above the cutoff",
+    "Only noise"
+   ],
+   "answer": 1,
+   "why": "That narrow band is what lets you listen to one place in the sound at a time.",
+   "point": 0
+  },
+  {
+   "q": "You sweep the narrow band slowly up a steady saw. What do you hear?",
+   "options": [
+    "A smooth slide",
+    "Silence",
+    "A steady hiss",
+    "The tone climbing in steps"
+   ],
+   "answer": 3,
+   "why": "Each step is one harmonic passing under the band.",
+   "point": 0
+  },
+  {
+   "q": "When does the meter jump during the sweep?",
+   "options": [
+    "When the band sits on a harmonic",
+    "When the band is between harmonics",
+    "At random",
+    "Only at the very top"
+   ],
+   "answer": 0,
+   "why": "The level jumps on a harmonic and sinks between them.",
+   "point": 1
+  },
+  {
+   "q": "Where do a note's harmonics sit?",
+   "options": [
+    "At random frequencies",
+    "One octave apart each",
+    "At whole-number multiples of the note",
+    "Always at 1 kHz steps"
+   ],
+   "answer": 2,
+   "why": "Harmonics are at two, three, four times the note's frequency, and so on.",
+   "point": 1
+  },
+  {
+   "q": "Why switch the slope to Steep for this?",
+   "options": [
+    "It makes the note louder",
+    "Two filter stages separate neighbouring harmonics better",
+    "It lowers the pitch",
+    "It removes the first harmonic"
+   ],
+   "answer": 1,
+   "why": "Two stages in a row let less of the neighbours leak through.",
+   "point": 2
+  }
+ ]
+}

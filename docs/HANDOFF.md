@@ -583,3 +583,17 @@ owner's app the side pane is not drawn, so `/todo` prints the list and the To-Do
   map: ten new chapters at the end of `docs/CURRICULUM.md` (162 rows, 52 of them new lessons). **When the
   owner says go, write lessons chapter by chapter from there; "Reading your tools" is first in teaching
   order.** Codes in square brackets there point into `docs/LESSON_IDEAS.md`.
+
+## 20 Nov 2026, last: lesson writing has begun
+The owner said "begin writing lessons". The first chapter from the new course map is built: **"Reading your
+tools"**, eight playable lessons after Filters (`src/course/lessons/tools.ts`, ids CV.1 to CV.8; details and
+measurements in `CLAUDE.md`, "Lessons from the literature begin"). With it: the level meter now shows peak
+and average, and an engine fix (all of a note's oscillators start at one instant). 130 playable lessons,
+620 quiz questions, **789 passing tests in 38 files**.
+**Next step: keep writing, chapter by chapter, in the order at the end of `docs/CURRICULUM.md`: "When
+digital sound goes wrong" next, then "Expression", then "One delay, many effects".** For each lesson: read
+the pages in `library/` first (not the one-line idea), measure every number through the real engine in a
+browser before a remark quotes it, add quiz questions to `quiz-g.json`, a why-line to `why-g.json` and a walk
+in `WALKS`. All of today's work (literature, Sources shelf, ideas, course map, these lessons) is on branch
+`claude/new-session-dfvcsr` and **not on the live site: the owner has not yet said "yes" to copying it to
+main.**

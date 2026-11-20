@@ -9,6 +9,8 @@ import { dbToGain, isDrawn, fmIndex, FM_MAX_INDEX, harmonic, spectrumA, HARMONIC
 
 const RAMP = 0.012; // seconds; short ramps avoid clicks when a value jumps
 const OSC_GAIN = 0.4;
+/** How far ahead of "now" a note's oscillators are started, in seconds, so that they all begin together. */
+const START_LEAD = 0.004;
 
 interface Voice {
   note: number;
@@ -353,6 +355,8 @@ export class Engine {
 
   private build(note: number, phaseA: number, t = this.ctx.currentTime, velocity = 100, slideFrom?: number): Voice {
     const s = this.state;
+    // Every oscillator of the note is started in one go at the end (see below), so they begin on the same sample.
+    const together: OscillatorNode[] = [];
     const glide = this.ctx.createConstantSource();
     glide.offset.value = 0;
     if (slideFrom !== undefined && slideFrom !== note && s.glide > 0) { glide.offset.setValueAtTime((slideFrom - note) * 100, t); glide.offset.linearRampToValueAtTime(0, t + s.glide / 1000); }
@@ -391,7 +395,7 @@ export class Engine {
     modB.wet.gain.value = s.ringAmount / 100;
     times.connect(modB.wet).connect(into);
     modB.dry.connect(into);
-    modOsc.start(t);
+    together.push(modOsc);
     const a = offsets.map((cents, i) => {
       const osc = this.ctx.createOscillator();
       // The centre voice keeps the set phase; the others start elsewhere so a stack does not begin as one spike.
@@ -406,7 +410,7 @@ export class Engine {
       osc.connect(gain).connect(pan);
       pan.connect(modB.dry);
       pan.connect(times);
-      osc.start(t);
+      together.push(osc);
       return { osc, gain, pan };
     });
 
@@ -424,7 +428,7 @@ export class Engine {
         pan.pan.value = panOf(bPans[i]!, s.bPan);
         osc.connect(gain).connect(pan).connect(into);
         glide.connect(osc.detune); this.bendSource().connect(osc.detune);
-        osc.start(t);
+        together.push(osc);
         return { osc, gain, pan };
       });
     }
@@ -436,7 +440,7 @@ export class Engine {
       gain.gain.value = OSC_GAIN * dbToGain(s.subLevelDb);
       osc.connect(gain).connect(into);
       glide.connect(osc.detune); this.bendSource().connect(osc.detune);
-      osc.start(t);
+      together.push(osc);
       voice.sub = { osc, gain };
     }
     if (s.noiseOn) {
@@ -450,6 +454,11 @@ export class Engine {
       voice.noise = { src, gain };
     }
     this.buildMods(voice, s, t);
+    // Start them all at one instant a few milliseconds ahead. A start time that is still to come is exact to the
+    // sample; one already past is not: each oscillator would begin whenever its own message reached the audio
+    // thread, and a slow moment between two of them (the browser building a new wave) left A and B out of step.
+    const at = Math.max(t, this.ctx.currentTime + START_LEAD);
+    for (const osc of together) osc.start(at);
     return voice;
   }
 
@@ -764,4 +773,20 @@ export class Engine {
     for (let i = 0; i < buffer.length; i++) peak = Math.max(peak, Math.abs(buffer[i]!));
     return peak > 0 ? 20 * Math.log10(peak) : -Infinity;
   }
+  /**
+   * Two measures of the level playing now, over the same short window: the peak (the tallest sample) and the
+   * average (root mean square: the square root of the mean of the squared samples). In dB relative to full
+   * scale; -Infinity when silent. The average never exceeds the peak.
+   */
+  levelsDb(buffer: Float32Array<ArrayBuffer>): { peak: number; rms: number } {
+    this.analyser.getFloatTimeDomainData(buffer);
+    return levelsOf(buffer);
+  }
+}
+/** Peak and average (RMS) of a run of samples, in dB relative to full scale. */
+export function levelsOf(samples: ArrayLike<number>): { peak: number; rms: number } {
+  let peak = 0, sum = 0;
+  for (let i = 0; i < samples.length; i++) { const v = samples[i]!; peak = Math.max(peak, Math.abs(v)); sum += v * v; }
+  const rms = samples.length ? Math.sqrt(sum / samples.length) : 0;
+  return { peak: peak > 0 ? 20 * Math.log10(peak) : -Infinity, rms: rms > 0 ? 20 * Math.log10(rms) : -Infinity };
 }

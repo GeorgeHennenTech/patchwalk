@@ -6,4 +6,5 @@ import c from "./why-c.json";
 import d from "./why-d.json";
 import e from "./why-e.json";
 import f from "./why-f.json";
-export const WHY: Record<string, string> = { ...a, ...b, ...c, ...d, ...e, ...f };
+import g from "./why-g.json";
+export const WHY: Record<string, string> = { ...a, ...b, ...c, ...d, ...e, ...f, ...g };

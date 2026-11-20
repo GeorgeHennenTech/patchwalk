@@ -477,6 +477,8 @@ be measured in the app (marked "tool"), or it needs a text before its explanatio
 "needs a source"): the standing rule that explanations come from the library still holds. Nothing here is built.
 
 ### 1. Reading your tools (sits in track C, straight after "Sound itself")
+**Built on 20 Nov 2026: eight playable lessons** (`src/course/lessons/tools.ts`): peak and average [A1], decibels as times [A2], same reading not same loudness [A3], adding two sounds [A7], same ingredients different picture, reading a spectrogram, jumps and corners [B27], hunting harmonics [B16]. In the app the chapter sits after Filters, because two of its lessons use the filter. The rows below that are not in that list are still to do.
+
 The scope, spectrum, spectrogram and meter are used in nearly every lesson and were never taught.
 
 | # | Lesson | From |

@@ -188,6 +188,9 @@ button.primary:not(:disabled):hover { transform: translate(-1px, -1px); }
 .ctl.toggle { flex: 0 0 auto; cursor: pointer; }
 .meter-bar { flex: 1; height: 12px; border-radius: 6px; background: var(--line); overflow: hidden; }
 .meter-bar div { height: 100%; background: var(--accent); transition: width 0.1s; }
+.meter-bar { position: relative; }
+.meter-avg { position: absolute; left: 0; top: 0; height: 100%; border-right: 2px solid #fff; background: rgba(255, 255, 255, 0.28); transition: width 0.1s; }
+.meter output small { opacity: 0.8; font-size: 0.85em; white-space: nowrap; }
 button.big { font-size: 18px; padding: 12px 22px; align-self: flex-start; }
 button.choice { cursor: pointer; padding: 7px 14px; border-radius: 12px; border: 2px solid var(--thread); background: var(--panel); color: var(--text); font: inherit; text-transform: capitalize; }
 button.choice:hover { background: var(--accent-soft); }

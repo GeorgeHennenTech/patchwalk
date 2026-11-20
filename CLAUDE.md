@@ -174,7 +174,7 @@ Added after the first eight milestones (owner asked for all four in one go):
     "Effects" and "Impacts".
     C5.9 ("One source scaling another") was added to chapter 5 with the matrix's Scaled by column.
     C1.9 ("Left and right, and a second wavetable") was added to chapter 1 with pan and Osc B's wavetable.
-    **122 playable lessons** (15 Nov 2026: see "Batch of 15 Nov 2026" below for the ten added that day).
+    **130 playable lessons** (122 on 15 Nov 2026; eight more, the chapter "Reading your tools", on 20 Nov 2026: see "Lessons from the literature begin").
   - `src/ui/PlayView.tsx` ("Lessons" tab) and `src/ui/synth/` — spotlighted controls per step, live targets,
     scope, spectrum, meter, on-screen keyboard, Hold, blind ear checks, recap, guide remarks and suggestion.
   - "Hear it first" demos (`demo` on a lesson), match-by-ear rounds (`rounds`, compared by `src/course/match.ts`:
@@ -647,7 +647,7 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   (2) A quiz on that lesson, options in a mixed order, checked only when all are
   answered: each then shows the right answer, the learner's own, and one line of why. (3) The recap,
   with each point the quiz asked about tagged "you had this" or "read this one again". A quiet "Skip to
-  the recap" link stays, so nobody is trapped. **579 questions over the 122 lessons (the ten lessons added on 15 Nov 2026 have questions the assistant wrote itself), from 3 to 8 a lesson, in
+  the recap" link stays, so nobody is trapped. **620 questions over the 130 lessons (579 over the first 122) (the ten lessons added on 15 Nov 2026 have questions the assistant wrote itself), from 3 to 8 a lesson, in
   `src/course/quiz/quiz-a.json` to `quiz-f.json`: the owner asked that the number per lesson come from what
   that lesson teaches, not from a formula, so each lesson was audited (list every distinct thing worth
   remembering, one question per thing, duplicates dropped) and most have 4 to 6** (`{ q, options[4], answer, why, point }`, `point`
@@ -1754,6 +1754,38 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   tools, 4 need a small build, 7 need a source. **Hearing lessons with no text behind them are "observe
   first": the learner does the test and the page explains nothing yet and says so.** Still with no source:
   most of hearing (Moore first) and all of mixing and mastering. Nothing in the section is built.
+- **Lessons from the literature begin: "Reading your tools" (20 Nov 2026, owner: "begin writing lessons").**
+  `src/course/lessons/tools.ts` (`TOOLS_CHAPTER`, chapter key `"V"`, listed after Filters; ids CV.1 to CV.8):
+  CV.1 Peak and average; CV.2 Decibels count how many times; CV.3 The same reading is not the same loudness;
+  CV.4 Adding two sounds: six, three or nothing; CV.5 Same ingredients, different picture; CV.6 Reading a
+  spectrogram; CV.7 Brightness lives in jumps and corners; CV.8 Hunting harmonics with a narrow band. The
+  facts are Puckette's (library id `puckette-electronic-music`: peak and RMS pp. 3-4, decibels pp. 5-6,
+  adding signals pp. 10-11, the swept band-pass p. 258, jumps and corners pp. 295-307; the file's header
+  lists them); CV.5 and CV.6 are facts about our own views. **Where the ear is the judge (CV.3, CV.5) the
+  step asks the learner to listen and claims nothing more than the book does.** Quizzes are in
+  `quiz/quiz-g.json` and why-lines in `why/why-g.json` (new files for lessons from the literature); each
+  lesson has a walk-through test (`from(...)` in `WALKS` gives where a step began, for steps that check a
+  change). No demos, ear checks or "in Serum" lines yet.
+  - **The level meter shows two readings**: peak and average (RMS), "-22.8 dB peak · -25.8 average", with a
+    white line on the bar for the average (`levelsDb` on the engine, `levelsOf`, `Meter` in `Views.tsx`).
+  - **Engine fix found on the way: every oscillator of a note now starts at one instant** (`together`,
+    `START_LEAD` of 4 ms in `build`). Before, each was started "now", which the browser does not line up:
+    when it was busy building a new wave, Osc B began one or two audio blocks after Osc A, so switching B on
+    during a held note gave anything from +6 dB to a partial cancel. Notes sound 4 ms later than before.
+  - Measured on the engine (20 Nov): a sine reads 3.0 dB between peak and average on every key; volume down
+    6 and 20 dB moved both readings by exactly that; two identical sines read +6.0 dB, half a cycle apart
+    silent, a fifth or an octave apart +3.0 dB average with the peak still at +6; a narrow band-pass on a
+    harmonic of a saw read about 19 dB above the gap between harmonics (37 dB with the steep slope), and a
+    square's second harmonic was 20 dB under where the saw's was. CV.4 was clicked through in the real page
+    with the real knobs: every step passed and the meter read the predicted numbers.
+  - **Known oddity the lessons work around:** the scope and meter read the sound after the whole chain, which
+    bends the flat parts of a saw or square (their peak-to-average gaps are 11 and 6 dB here, not the
+    textbook figures), so no lesson quotes a gap for any shape but the sine, and CV.7 says the scope bends
+    flat parts. The cause was not tracked down.
+  - Not buildable yet from that chapter of the map: the two frequency rulers (needs a linear/log switch on
+    the spectrum), analyser skirts and the long look (need our own FFT with window controls), the click
+    test, a checkpoint. **Next chapters in order: "When digital sound goes wrong", "Expression", "One delay,
+    many effects" (`docs/CURRICULUM.md`). Nobody has taken these lessons or heard them.**
 - **Long pages are searched in parts (16 Nov 2026).** `splitText` in `src/library/search.ts` cuts a page over
   2,400 characters into overlapping parts of about 1,500 (ids `book#page~1`, `~2`, with `of` naming the
   page); `pageOf` and `cite` count parts of one page as one source, and `search` takes at most two parts of
@@ -1883,7 +1915,7 @@ use explicit `.js` import suffixes so they load as plain Node ESM.
 - New knowledge cards: copy `knowledge-cards/_template.md`. Avoid numbers in cards. Only add reading links
   that have been opened and checked.
 - **Lesson labels.** Codes such as `C2.5` are for code, scripts and plans only. The learner sees lessons grouped
-  under chapter names ("Sound itself", "Oscillators", "Filters", "Envelopes", "LFOs", "Mixed practice", "Modulation", "Macros", "Reshaping the wave", "Effects", "Playing a line", "Notes and chords", "Impacts"; `CHAPTERS` in `src/course/lessons/index.ts`),
+  under chapter names ("Sound itself", "Oscillators", "Filters", "Reading your tools", "Envelopes", "LFOs", "Mixed practice", "Modulation", "Macros", "Reshaping the wave", "Effects", "Playing a line", "Notes and chords", "Impacts"; `CHAPTERS` in `src/course/lessons/index.ts`),
   numbered within the chapter, with "Filters · lesson 5 of 8" above the title. A test stops lesson text from
   citing another lesson by code. Add the chapter's name to `CHAPTERS` when starting a new chapter.
 - **"Builds on" patch (owner's request, 14 Nov 2026).** The lessons a lesson builds on are shown in their own

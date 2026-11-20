@@ -123,18 +123,19 @@ export function Spectrum({ synth }: { synth: Synth }) {
 }
 
 export function Meter({ synth }: { synth: Synth }) {
-  const [db, setDb] = useState(-Infinity);
+  // Two readings of the same moment: the peak (the tallest point of the wave) and the average (RMS).
+  const [lv, setLv] = useState({ peak: -Infinity, rms: -Infinity });
   const buf = useRef(new Float32Array(2048));
   useEffect(() => {
-    const id = setInterval(() => setDb(synth.engine.current ? synth.engine.current.peakDb(buf.current) : -Infinity), 120);
+    const id = setInterval(() => setLv(synth.engine.current ? synth.engine.current.levelsDb(buf.current) : { peak: -Infinity, rms: -Infinity }), 120);
     return () => clearInterval(id);
   }, [synth.engine]);
-  const pct = Number.isFinite(db) ? Math.max(0, Math.min(100, ((db + 60) / 60) * 100)) : 0;
+  const db = lv.peak, pct = (v: number) => (Number.isFinite(v) ? Math.max(0, Math.min(100, ((v + 60) / 60) * 100)) : 0);
   return (
     <div className="ctl meter">
       <span className="ctl-name">Level</span>
-      <div className="meter-bar" role="meter" aria-valuemin={-60} aria-valuemax={0} aria-valuenow={Number.isFinite(db) ? Math.round(db) : -60}><div style={{ width: `${pct}%` }} /></div>
-      <output>{Number.isFinite(db) ? `${db.toFixed(1)} dB` : "silent"}</output>
+      <div className="meter-bar" role="meter" aria-label="Peak level" aria-valuemin={-60} aria-valuemax={0} aria-valuenow={Number.isFinite(db) ? Math.round(db) : -60}><div style={{ width: `${pct(db)}%` }} /><i className="meter-avg" style={{ width: `${pct(lv.rms)}%` }} title="Average level" /></div>
+      <output title="Peak: the tallest point of the wave. Average: the root mean square, closer to how much sound there is.">{Number.isFinite(db) ? <>{db.toFixed(1)} dB peak<small> · {lv.rms.toFixed(1)} average</small></> : "silent"}</output>
     </div>
   );
 }

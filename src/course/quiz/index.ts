@@ -6,9 +6,10 @@ import c from "./quiz-c.json";
 import d from "./quiz-d.json";
 import e from "./quiz-e.json";
 import f from "./quiz-f.json";
+import g from "./quiz-g.json";
 
 export interface QuizItem { q: string; options: string[]; /** index of the right option */ answer: number; /** one line stating the right idea */ why: string; /** which recap point this tests */ point: number }
-export const QUIZ: Record<string, QuizItem[]> = { ...a, ...b, ...c, ...d, ...e, ...f };
+export const QUIZ: Record<string, QuizItem[]> = { ...a, ...b, ...c, ...d, ...e, ...f, ...g };
 
 /** The options in a mixed order that stays the same for one go: `order[k]` is the original index shown in place k. */
 export function shuffled(n: number, seed: number): number[] {

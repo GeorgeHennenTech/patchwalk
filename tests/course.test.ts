@@ -553,7 +553,7 @@ describe("chapter 3 lessons", () => {
   const st = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
   const hit = { played: { mouse: 2, keys: 0, midi: 0 } };
   it("the envelope chapter follows the filters and starts from real settings", () => {
-    expect(LESSONS.map((l) => l.id).slice(28, 35)).toEqual(["C3.1", "C3.2", "C3.3", "C3.4", "C3.5", "C3.6", "C3.C"]);
+    expect(LESSONS.map((l) => l.id).slice(36, 43)).toEqual(["C3.1", "C3.2", "C3.3", "C3.4", "C3.5", "C3.6", "C3.C"]);
     for (const l of CHAPTER_3) for (const k of Object.keys(l.initial ?? {})) expect(k in INITIAL, `${l.id}: ${k}`).toBe(true);
     expect(placeOf(LESSONS.find((l) => l.id === "C3.4")!)).toEqual({ chapter: "Envelopes", number: 4, of: 7 });
   });
@@ -599,7 +599,7 @@ import { CHAPTER_4 } from "../src/course/lessons/chapter4";
 describe("chapter 4 lessons", () => {
   const st = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
   it("the LFO chapter follows the envelopes and starts from real settings", () => {
-    expect(LESSONS.map((l) => l.id).slice(35, 42)).toEqual(["C4.1", "C4.2", "C4.3", "C4.4", "C4.5", "C4.6", "C4.C"]);
+    expect(LESSONS.map((l) => l.id).slice(43, 50)).toEqual(["C4.1", "C4.2", "C4.3", "C4.4", "C4.5", "C4.6", "C4.C"]);
     for (const l of CHAPTER_4) for (const k of Object.keys(l.initial ?? {})) expect(k in INITIAL, `${l.id}: ${k}`).toBe(true);
     expect(placeOf(LESSONS.find((l) => l.id === "C4.2")!).chapter).toBe("LFOs");
   });
@@ -626,7 +626,7 @@ import { CHAPTER_5 } from "../src/course/lessons/chapter5";
 describe("chapter 5: routes, direction, and modulating a modulator", () => {
   const st = (id: string, n: number) => LESSONS.find((l) => l.id === id)!.steps[n]!;
   it("the modulation chapter follows the LFOs and starts from real settings", () => {
-    expect(LESSONS.map((l) => l.id).slice(43, 53)).toEqual(["C5.1", "C5.2", "C5.3", "C5.4", "C5.5", "C5.6", "C5.7", "C5.8", "C5.9", "C5.C"]);
+    expect(LESSONS.map((l) => l.id).slice(51, 61)).toEqual(["C5.1", "C5.2", "C5.3", "C5.4", "C5.5", "C5.6", "C5.7", "C5.8", "C5.9", "C5.C"]);
     for (const l of CHAPTER_5) for (const k of Object.keys(l.initial ?? {})) expect(k in INITIAL, `${l.id}: ${k}`).toBe(true);
   });
   it("an LFO set to one way pushes one side only, like an envelope; both ways is the default", () => {
@@ -682,7 +682,7 @@ describe("macros", () => {
     expect(MACRO_DESTS[0]).toBe("none");
   });
   it("the macro chapter is listed after Modulation, and every recipe wires what it teaches", () => {
-    expect(CHAPTER_ORDER.map((c) => CHAPTERS[c])).toEqual(["Sound itself", "Oscillators", "Filters", "Envelopes", "LFOs", "Mixed practice", "Modulation", "Macros", "Reshaping the wave", "Effects", "Playing a line", "Notes and chords", "Impacts"]);
+    expect(CHAPTER_ORDER.map((c) => CHAPTERS[c])).toEqual(["Sound itself", "Oscillators", "Filters", "Reading your tools", "Envelopes", "LFOs", "Mixed practice", "Modulation", "Macros", "Reshaping the wave", "Effects", "Playing a line", "Notes and chords", "Impacts"]);
     expect(new Set(LESSONS.map((l) => chapterOf(l))).size).toBe(CHAPTER_ORDER.length);
     expect(MACRO_CHAPTER.map((l) => l.id)).toEqual(["C5M.1", "C5M.2", "C5M.3", "C5M.4", "C5M.5", "C5M.6", "C5M.7", "C5M.8", "C5M.9", "C5M.10", "C5M.11", "C5M.12", "C5M.13", "C5M.14", "C5M.15", "C5M.16", "C5M.17", "C5M.18", "C5M.19", "C5M.20", "C5M.21", "C5M.22", "C5M.23", "C5M.24", "C5M.C"]);
     for (const l of MACRO_CHAPTER.slice(0, 7)) {
@@ -1790,6 +1790,7 @@ describe("the lessons added on 15 Nov can each be walked through", () => {
   // for every step: the settings a learner following the instruction would end up with, and what they did
   const played = { played: { mouse: 3, keys: 0, midi: 0 }, distinctNotes: 3, lastNote: 45 } as Partial<Snapshot>;
   const range = (id: string, min: number, max: number) => ({ range: { [id]: { min, max } } }) as Partial<Snapshot>;
+  const from = (start: Partial<SynthState>) => ({ start: { ...INITIAL, ...start } }) as Partial<Snapshot>; // where the step began
   const WALKS: Record<string, [Partial<SynthState>, Partial<Snapshot>?][]> = {
     "CT.7": [[{}, played], [{ noiseOn: true, noiseLevelDb: -6 }, played], [{ env2Dest: "aPitchWide", env2Amount: 15 }, played], [{ envD: 100 }, played], [{ envD: 400 }, played]],
     "CT.8": [[{}, played], [{ envD: 3000, envR: 1200 }, played], [{ distOn: true, distDrive: 40 }, played], [{ env2Dest: "aPitchWide", env2Amount: 12 }, played], [{ reverbOn: true, reverbMix: 30, reverbSize: 3 }, played]],
@@ -1816,6 +1817,14 @@ describe("the lessons added on 15 Nov can each be walked through", () => {
     "C2.8": [[{}, { held: [45] }], [{ resonance: 70 }], [{ cutoff: 3500 }, range("cutoff", 300, 3500)], [{ filterType: "shelf", cutoff: 800, resonance: 100 }], [{}, { changes: { filterType: 2 } }]],
     "C2.9": [[{ filter2On: true }, { held: [45] }], [{ cutoff2: 600 }], [{ cutoff: 1200 }], [{ filterRoute: "parallel" }], [{ cutoff: 200, cutoff2: 4000 }], [{ filterRoute: "series" }]],
     "C7.7": [[{}, played], [{ fxOrder: ["comp", "chorus", "delay", "eq", "reverb", "dist"] }], [{}, played], [{ fxOrder: ["comp", "chorus", "delay", "eq", "dist", "reverb"], eqOn: true, eqHigh: -12 }, played], [{ fxOrder: ["comp", "chorus", "delay", "dist", "eq", "reverb"] }, played]],
+    "CV.1": [[{}, { heldSeconds: 3, held: [57] }], [{ shape: "square" }, { held: [57] }], [{ shape: "saw" }, { held: [57] }], [{ volumeDb: -18 }, from({ volumeDb: -12 })]],
+    "CV.2": [[{}, { held: [57] }], [{ volumeDb: -6 }, from({ volumeDb: 0 })], [{ volumeDb: -12 }, from({ volumeDb: -6 })], [{ volumeDb: -20 }], [{ volumeDb: -48 }]],
+    "CV.3": [[{ octave: -2 }, played], [{ octave: 2 }, played], [{ octave: 0, volumeDb: -9 }, { ...played, ...from({ volumeDb: -12 }) }], [{ volumeDb: -15 }, { ...played, ...from({ volumeDb: -9 }) }]],
+    "CV.4": [[{}, { heldSeconds: 3, held: [57] }], [{ bOn: true }, { held: [57] }], [{ bPhase: 180 }], [{ bPhase: 0, bSemitone: 7 }], [{ bSemitone: 0, bFine: 7 }, { lastNote: 57 }]],
+    "CV.5": [[{}, { heldSeconds: 3, held: [57] }], [{ bPhase: 90 }, { held: [57] }], [{ bPhase: 180 }, { held: [57] }], [{ bPhase: 350 }, range("bPhase", 5, 350)]],
+    "CV.6": [[{}, { heldSeconds: 4, held: [45] }], [{}, played], [{ cutoff: 5000 }, range("cutoff", 200, 5000)], [{ noiseOn: true, aOn: false }]],
+    "CV.7": [[{}, { heldSeconds: 3, held: [57] }], [{ shape: "triangle" }, { held: [57] }], [{ shape: "square" }, { held: [57] }], [{ shape: "sine" }, { held: [57] }]],
+    "CV.8": [[{}, { heldSeconds: 3, held: [45] }], [{ cutoff: 1600 }, range("cutoff", 100, 1600)], [{ cutoff: 165 }, { lastNote: 45 }], [{ slope: "24" }], [{ shape: "square", cutoff: 1600 }, range("cutoff", 100, 1600)]],
     "C1.10": [[{ aOn: false }, { held: [45] }], [{ bVoices: 3, bDetune: 25 }], [{ bDetune: 0 }], [{ bDetune: 20, bWarp: "sync", bWarpAmount: 60 }], [{ aOn: true }]],
   };
   it("each step passes with the settings its instruction asks for", () => {
@@ -1893,5 +1902,21 @@ describe("sheet music that follows along", () => {
     expect(follow(chords, [60, 64, 62, 67])).toMatchObject({ at: 0, part: [7] });
     expect(scorePlayed(chords, [60, 64, 67, 72, 65, 69])).toBe(true);
     expect(timing(chords)).toEqual({ starts: [0, 2], total: 4 });
+  });
+});
+
+import { levelsOf } from "../src/synth/engine";
+describe("the level meter's two readings", () => {
+  const wave = (f: (phase: number) => number, n = 4800) => Array.from({ length: n }, (_, i) => f((i * 10) / n % 1));
+  it("a sine reads 3 dB between peak and average; a square reads none; the average never passes the peak", () => {
+    const sine = levelsOf(wave((p) => 0.5 * Math.sin(2 * Math.PI * p)));
+    expect(sine.peak).toBeCloseTo(-6.02, 1); expect(sine.peak - sine.rms).toBeCloseTo(3.01, 1);
+    const square = levelsOf(wave((p) => (p < 0.5 ? 0.5 : -0.5))); expect(square.peak - square.rms).toBeCloseTo(0, 5);
+    const spike = levelsOf(wave((p) => (p < 0.02 ? 1 : 0))); expect(spike.peak - spike.rms).toBeGreaterThan(15);
+    expect(levelsOf(new Float32Array(64))).toEqual({ peak: -Infinity, rms: -Infinity });
+  });
+  it("the chapter on reading the tools sits after the filters and has its eight lessons", () => {
+    expect(LESSONS.filter((l) => chapterOf(l) === "V").map((l) => l.id)).toEqual(["CV.1", "CV.2", "CV.3", "CV.4", "CV.5", "CV.6", "CV.7", "CV.8"]);
+    expect(LESSONS[LESSONS.findIndex((l) => l.id === "CV.1") - 1]!.id).toBe("C2.C");
   });
 });

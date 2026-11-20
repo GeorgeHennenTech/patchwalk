@@ -832,3 +832,28 @@ first. Glitch-hop, psydub and the others follow in the same shape when the owner
 - **Record labels with no page** (Botchit & Scarper, the awards): need the labels' own or archived pages.
 - **Dates that contradict within one page** (an album dated 2000 and 2003; a single dated 2000 and 2004):
   check against a discography before either is taught.
+
+## Paths: which lessons make which kind of producer (owner asked 20 Nov 2026; planned, nothing built)
+
+The owner's idea: once the course is large (it may reach thousands of lessons), mark which lessons you must
+finish and master to be a given level of producer, in the owner's words "this is what the average house
+artist pulling 1m listeners a month knows and nothing more".
+
+**What can be built honestly, proposed to the owner and awaiting a reply:**
+- A **path** is a named subset of lessons with an order: every lesson carries tags, and a path is a list of
+  lesson ids. The learner picks a path and sees only its lessons, how many are done, and how many are
+  mastered (passed, then recalled correctly when they come back weeks later: the spaced return that exists).
+- **A path is defined by what a finished piece of work needs, not by what a real person knows.** For example
+  "Finish a house track": every skill a complete, released-sounding house track demonstrably uses (a
+  four-on-the-floor pattern, a bass patch, sidechain, an arrangement, a balanced mix). That can be checked
+  against the track itself. What a particular artist knows cannot be known, and the standing rules forbid
+  claiming it.
+- **Listener numbers are not used as a level.** No source ties a skill list to an audience size, and
+  audience depends on much besides production skill. If a study or survey of working producers' skills is
+  found it can go in the library and inform the paths; none is in yet.
+- Levels inside a path, by what the learner can do: "make it" (a working version), "finish it" (arranged and
+  mixed), "make it your own" (sound design from scratch, variation). Each level ends in a project the
+  learner makes in the Studio, which is the real test.
+- Paths by genre (house, breaks, glitch-hop, psydub...) and by role (sound designer, beat maker, mixer).
+- Needs first: a `tags` field on lessons, far more of the course built (mixing, arrangement and the genre
+  tracks do not exist yet), and "mastered" stored with the account.

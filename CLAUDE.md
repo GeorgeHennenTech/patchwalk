@@ -1799,6 +1799,12 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   app" rule forbids; the section proposes that exception and still forbids saying how anyone made a sound.
   Do not build a history lesson until the owner has said yes.** Nothing is built. Next genres when the
   owner names them, in the same shape.
+- **Paths (owner's idea, 20 Nov 2026; planned, not built).** The owner wants the finished course to show
+  which lessons must be completed and mastered to be a given level of producer ("what the average house
+  artist pulling 1m listeners a month knows and nothing more"). Written up at the end of
+  `docs/CURRICULUM.md` ("Paths"): a path is a named, ordered subset of lessons, **defined by what a finished
+  piece of work needs, never by what a real person knows or by listener numbers** (no source ties skills to
+  audience size, and the rules forbid claims about artists). Awaiting the owner's reply to that framing.
 - **Long pages are searched in parts (16 Nov 2026).** `splitText` in `src/library/search.ts` cuts a page over
   2,400 characters into overlapping parts of about 1,500 (ids `book#page~1`, `~2`, with `of` naming the
   page); `pageOf` and `cite` count parts of one page as one source, and `search` takes at most two parts of

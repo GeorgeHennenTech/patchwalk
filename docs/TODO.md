@@ -184,6 +184,8 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [ ] Still to arrive from the owner's list of six papers: Frühauf, Kopiez and Platz, "Music on the timing grid"
 - [x] Library tab: a Sources shelf listing every text like a database, with a search inside them (20 Nov 2026)
 - [x] Read every text uploaded on 20 Nov in full and write out lesson ideas: 305 in `docs/LESSON_IDEAS.md`, with what each needs and a suggested order
+- [x] Course map: ten new chapters for the holes the reading exposed, with the 305 ideas slotted in and 52 new lessons written for what was still open (`docs/CURRICULUM.md`, last section) (20 Nov 2026)
+- [ ] Write the new chapters' lessons, in this order unless the owner says otherwise: Reading your tools; When digital sound goes wrong; Expression; One delay, many effects; Rhythm rebuilt on evidence; Bells, metal and stretched tones; Fixing a broken sound; Tuning; Voices; Sampler basics
 - [ ] Write the 85 or so lessons from `docs/LESSON_IDEAS.md` that need nothing built (FM, ring and distortion, sync and formants, drum layers and breaks, expressive playing)
 - [ ] Small builds that each open several lessons (click source, peak and RMS meter, Q readout, invert on Osc B, flanger time knob, distortion bias, sample-and-hold LFO, per-note random, response curves, reverb freeze, sampler reverse, ghost strength, slice names): list in `docs/LESSON_IDEAS.md`
 - [ ] Build from the new texts (owner to choose the order): a supersaw from Szabo; FM lessons from Chowning; a better reverb from Dattorro; a Buchla-style fold; groove and microtiming lessons with the Groove MIDI data; breakbeat lessons; physical-modelling lessons (still waiting on Fletcher and Rossing)

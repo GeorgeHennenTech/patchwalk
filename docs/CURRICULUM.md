@@ -465,3 +465,269 @@ Every lesson's script and card is a draft until the owner has reviewed it.
   what a lane is, drawing and recording one, and many combinations (filter opening over a build, level
   and reverb swapping places, pitch and delay throws, two lanes working against each other), written
   as short recipes like the macro chapter's. Needs the lanes first.
+
+## Added on 20 Nov 2026: ten chapters that fill holes found while reading the new literature
+
+Reading the seventeen texts taken in on 20 Nov 2026 showed topics this map either lacked or named in one line
+without the part that matters. Each chapter below lists its lessons in a teaching order. **A code in square
+brackets, such as [A1] or [H30], is an entry in `docs/LESSON_IDEAS.md` (its section letter and number), where
+the source and pages are given; it is not a lesson of this map.** A lesson marked **new** is not among those
+305: it was written to close what was still open. A new lesson is either a fact about our own tools that can
+be measured in the app (marked "tool"), or it needs a text before its explanation can be written (marked
+"needs a source"): the standing rule that explanations come from the library still holds. Nothing here is built.
+
+### 1. Reading your tools (sits in track C, straight after "Sound itself")
+The scope, spectrum, spectrogram and meter are used in nearly every lesson and were never taught.
+
+| # | Lesson | From |
+|---|---|---|
+| 1 | Peak and average level are different things | [A1] |
+| 2 | Decibels count ratios, not amounts | [A2] |
+| 3 | Same meter reading, not the same loudness | [A3] |
+| 4 | Adding two sounds: +6, +3, or nothing | [A7] |
+| 5 | Same harmonics, different picture: move the phase of a wave's harmonics and watch the scope change while the spectrum stays | **new** (tool) |
+| 6 | Two rulers for one spectrum: harmonics are evenly spaced in Hz and bunch together on a ruler of notes | **new** (tool) |
+| 7 | Why a pure tone has skirts on the analyser | [B19] |
+| 8 | Seeing bass needs a long look | [B20] |
+| 9 | Reading a spectrogram: time across, pitch up; find an envelope, a vibrato and a filter sweep in three pictures | **new** (tool) |
+| 10 | Brightness lives in jumps and corners | [B27], [L2] |
+| 11 | Hunting partials with a narrow band | [B16] |
+| 12 | The meter needs time: a short click reads lower than it peaks | **new** (tool; measure our meter first) |
+| 13 | The click test: what one click through an effect tells you | [H32] |
+| 14 | Checkpoint: name the sound from its pictures (scope and spectrum shown, four sounds to choose from) | **new** (tool) |
+
+### 2. When digital sound goes wrong (track C, after the envelope chapter)
+Clicks, steps, false tones and offsets: the explanation for most "why is this harsh or clicky" moments.
+
+| # | Lesson | From |
+|---|---|---|
+| 1 | Why an instant level change clicks, and how long a ramp it needs | [A4] |
+| 2 | What may jump, and what must slide | [A37] |
+| 3 | Zipper noise: a knob moved in steps | [A28] |
+| 4 | Smoothing is low-pass filtering | [B4], [I13] |
+| 5 | Clipping: what happens at the ceiling (flat tops on the scope, new harmonics on the spectrum, and how our guard differs from a hard clip) | **new** (tool) |
+| 6 | The invisible offset that steals loudness | [B5] |
+| 7 | Foldover: a note too high comes back down | [A26] |
+| 8 | What fold-back sounds like on a saw | [L1], [A27], [B31] |
+| 9 | How many harmonics fit under the ceiling | [L5] |
+| 10 | Three ways synths avoid it | [B32], [M7] |
+| 11 | A table too small: where the grit comes from | [A25] |
+| 12 | Cutting one sound off for the next, cleanly | [A38] |
+| 13 | Resonance is gain: turn the input down | [C25] |
+| 14 | A late copy makes a comb: mix a sound with a copy that passed through a device that delays it (our limiter is 1.5 ms late) | **new** (tool) |
+| 15 | Checkpoint: diagnose the fault (five sounds, one fault each: click, zipper, fold-back, offset, clipping) | **new** (tool) |
+
+### 3. Expression: making a sound feel played (track C, after "Playing a line")
+The map taught how to connect a source to a knob and never why a sound feels played. Mostly from the Yamaha
+VL1 manuals, which are a maker's account: say "the maker's approach" in the lessons.
+
+| # | Lesson | From |
+|---|---|---|
+| 1 | Pressure is not volume | [I2] |
+| 2 | One gesture, several changes | [I10] |
+| 3 | Louder and brighter together | [B14], [J12] |
+| 4 | Play harder, get a different wave | [A14] |
+| 5 | Hit harder, speak sooner | [I27] |
+| 6 | A scoop at the start that depends on how you play | [I28] |
+| 7 | A vibrato that sounds played | [I25] |
+| 8 | Growl: breath that shakes fast | [I5] |
+| 9 | Breath noise belongs to the note | [I8] |
+| 10 | A resonance that stays put, or follows the note | [I24] |
+| 11 | Never twice the same | [I26] |
+| 12 | The response curve | [I12] |
+| 13 | How fast you move, as a source | [I11] |
+| 14 | A bend that changes tone as well as pitch | [I3] |
+| 15 | Let go early, press again: what the envelope really does | [A34] |
+| 16 | Wide range or easy to play | [I21] |
+| 17 | Record a performance, then look at it: play a held line in the Studio with Record on, moving the wheel, and read the gestures back as automation | **new** (tool) |
+| 18 | Edit a performance: redraw one gesture in the lane and hear the difference | **new** (tool) |
+| 19 | Checkpoint: one line three ways (flat; velocity to tone; with wheel gestures), compared blind | **new** (tool) |
+
+### 4. Rhythm, rebuilt on evidence (replaces the order of track H)
+Track H had sixteen titles and nothing behind them. The groove papers, the breakbeat paper and the Groove MIDI
+recordings give it a spine. What the studies found must stay in view: small or no effects for microtiming,
+swing and syncopation, a large effect of the listener's own taste. No lesson may say a pattern "makes" groove.
+
+| # | Lesson | From |
+|---|---|---|
+| 1 | Count the grid: bars, beats and sixteenths in the Studio (was H1, H2) | **new** (tool) |
+| 2 | Three layers of a drum beat (H3) | [N1] |
+| 3 | Four kick patterns (H4) | [N2] |
+| 4 | Hats: quarters, eighths, sixteenths | [N4] |
+| 5 | Half-time at 140 (H5) | [S9] |
+| 6 | Open and closed: one hat cuts the other (choke groups) | **new** (tool) |
+| 7 | Four loudness levels: loud, medium, soft, ghost (H8, H9) | [N7], [S4] |
+| 8 | Hi-hat accents: the loudness pattern inside a bar | [S5] |
+| 9 | What syncopation is, and what it costs (H6) | [N5] |
+| 10 | A busy snare: the sixteenth-note backbeat | [N3] |
+| 11 | More hits per beat | [N6] |
+| 12 | Swing ratio: long-short pairs (H7) | [N8], [S6] |
+| 13 | What microtiming is: milliseconds off the grid (H10) | [O1], [S2] |
+| 14 | Quantized against as played: can you tell? | [O2], [S3] |
+| 15 | The looseness dial | [O3], [O6] |
+| 16 | One beat, four drummers | [S1] |
+| 17 | Borrow a feel | [S7] |
+| 18 | Which early note do you catch? Low or high | [P1], [P3] |
+| 19 | Fills: what changes in the last bar (H11) | [S8] |
+| 20 | The same pattern at four tempos (85, 110, 140, 170): what changes and what does not. One study found no best tempo [N11] | **new** (tool) |
+| 21 | Two kicks on one step: what layering does to the level and the low end (H12) | **new** (tool; builds on [A7]) |
+| 22 | Tune a drum to the song's key with the Tuner (H12) | **new** (tool) |
+| 23 | What a breakbeat is; slice it; resequence it (H13) | [Q1], [Q2], [Q3] |
+| 24 | Short slice, long gap; two breaks in one beat | [Q4], [Q7] |
+| 25 | Pitch a break up; where kick and snare live; the transformation chain | [Q5], [Q6], [Q8] |
+| 26 | Three against four: a triplet row over a straight row (H15) | **new** (tool; needs triplet steps in a drum clip) |
+| 27 | Stutters and cuts from the beat itself, with Beat repeat and slices (H16) | **new** (tool) |
+| 28 | Does your taste decide the groove? A self-test | [N9], [N10] |
+| 29 | Checkpoint: rebuild a played bar by ear (a real take is heard; place and weight the hits to match) | **new** (needs the drum import) |
+
+H14 (percussion and tops) keeps its place. The owner's wish for South Asian and Middle Eastern drums still
+waits for its texts.
+
+### 5. One delay, many effects (opens track F)
+The map listed each effect separately. The texts show most of them are one thing at different lengths.
+
+| # | Lesson | From |
+|---|---|---|
+| 1 | One copy, four results | [H29] |
+| 2 | The comb: evenly spaced holes in the spectrum | [H30] |
+| 3 | A flanger is a comb that moves; one knob from flanger to chorus | [H42], [I33] |
+| 4 | Vibrato from a wobbling delay: what a chorus is | [H41] |
+| 5 | Changing a delay's length bends the pitch | [H40] |
+| 6 | Feedback: each echo is a fixed fraction of the last; why it stops at 100% | [H33], [H35] |
+| 7 | Echoes so close they become a note | [H34] |
+| 8 | An octave up by cancelling the odd harmonics | [H31] |
+| 9 | Same spectrum, different sound: the all-pass | [C13] |
+| 10 | Notch and peak from one trick; a filter that changes nothing you can see | [C16], [B12] |
+| 11 | How a reverb is built from delays | [H37] |
+| 12 | The reverb, part by part (eleven lessons) | [C1] to [C11], [C15] |
+| 13 | Reverb time from two numbers; highs die first; freezing a sound | [H36], [H38], [H39] |
+| 14 | A body from a tape measure; smearing a sharp start | [I37], [I20] |
+| 15 | Echoes into the room, or beside it | [I32] |
+| 16 | How a pitch shifter works, and why it warbles | [H43] |
+| 17 | Effects that add nothing new, and effects that do | [H44] |
+| 18 | One side late: delay the left by 10 ms, then fold to mono and watch the comb appear | **new** (tool; what the ear makes of the delay itself needs a source) |
+| 19 | Something in the loop: a filter, then a pitch shifter, inside the feedback path | **new** (tool; needs a return track that can send to itself) |
+| 20 | Checkpoint: which delay is it? (one click through an echo, a comb, a flanger, a chorus and a reverb, blind) | **new** (tool) |
+
+### 6. Bells, metal and stretched tones (track D)
+Inharmonic sound barely appeared in the map. Three texts cover it with numbers.
+
+| # | Lesson | From |
+|---|---|---|
+| 1 | Three kinds of spectrum: harmonic, inharmonic, noisy | [H1] |
+| 2 | Several sines fuse into one note, until one is moved | [A9] |
+| 3 | A carrier between the harmonics clangs | [H7], [H5] |
+| 4 | Ratios that are not whole numbers | [J8] |
+| 5 | A bell from eleven sines | [A41] |
+| 6 | An FM bell, a drum and a wood drum | [J16], [J17], [J18] |
+| 7 | Stiff strings stretch their harmonics; where it is heard | [E5], [E6] |
+| 8 | The drum that plays a note; which shape makes which harmonic | [F1], [F2] |
+| 9 | Shifting frequency is not shifting pitch | [B17] |
+| 10 | Metal from squares: how the Studio's own hats and rides are made (six square waves at ratios that do not line up, through a high-pass) | **new** (tool) |
+| 11 | A clang on top of a clean sub: an inharmonic layer high-passed over a sine, for a bass that cuts through | **new** (tool) |
+| 12 | From note to clang with one knob | **new** (tool; needs the FM ratio control) |
+| 13 | What pitch is a bell? Listen, then compare with the tuner | **new** (needs a source: the book in the library says the rules are "complex and incompletely understood") |
+| 14 | Checkpoint: harmonic or not? (blind, then checked on the spectrum) | **new** (tool) |
+
+### 7. Fixing a broken sound (track C, late)
+Nothing in the map taught how to find what is wrong.
+
+| # | Lesson | From |
+|---|---|---|
+| 1 | Find the silent patch | [I39] |
+| 2 | Follow the signal: switch stages off in order until the fault moves | **new** (tool) |
+| 3 | Too quiet or too loud: where the level is lost or gained | **new** (tool; builds on [I23], [C25]) |
+| 4 | It sounds thin: two sources cancelling, a filter shut too far, a stereo sound folded to mono | **new** (tool) |
+| 5 | It is out of tune: octave, semitone and fine; an FM ratio; bend range; glide left on | **new** (tool) |
+| 6 | Nothing moves: an amount at zero, the wrong destination, an LFO synced too slow, an envelope with full sustain | **new** (tool) |
+| 7 | It clicks or crackles (points back to chapter 2) | **new** (tool) |
+| 8 | Change one thing at a time: reset, compare, undo | **new** (tool) |
+| 9 | Checkpoint: five broken sounds, one cause each | **new** (tool) |
+
+### 8. Tuning (track I)
+
+| # | Lesson | From |
+|---|---|---|
+| 1 | Semitones are equal multiplications | [A5] |
+| 2 | Cents, and the smallest pitch change you notice | [A6] |
+| 3 | The harmonics of a note are nearly notes of the scale | [A8] |
+| 4 | A pure major chord: 4 to 5 to 6 | [A10] |
+| 5 | Equal temperament and beat-free chords | [I31] |
+| 6 | A chord where every note beats at its own speed | [A11] |
+| 7 | Tune a sampled sound to the song: root key, the Tuner, and fine tune | **new** (tool) |
+
+### 9. Voices (track C)
+
+| # | Lesson | From |
+|---|---|---|
+| 1 | Voices: how many notes at once, and who gets cut | [A40] |
+| 2 | Should the envelope start again or carry on? | [A39] |
+| 3 | Between the notes | [I29] |
+| 4 | Two instruments in one voice | [I30] |
+| 5 | Long tails pile up: hold a chord with long releases and watch the level climb as notes overlap | **new** (tool; builds on [A7]) |
+| 6 | Unison voices are not notes: seven voices on four keys is twenty-eight oscillators | **new** (tool) |
+
+### 10. Sampler basics, then grains (opens track J)
+
+| # | Lesson | From |
+|---|---|---|
+| 1 | A wavetable is a stored list read by a moving pointer | [A12], [L6] |
+| 2 | Speed and pitch go together | [A16] |
+| 3 | The chipmunk effect | [A17] |
+| 4 | A sampler and an oscillator are the same machine; where counting ends | [A15], [A18] |
+| 5 | Root key: telling the sampler which note the file is | **new** (tool) |
+| 6 | Start, length and fades: trimming a sound | **new** (tool) |
+| 7 | One-shot or held: which suits a drum and which a pad | **new** (tool) |
+| 8 | Finding a loop that does not bump | **new** (tool; builds on [A20]) |
+| 9 | From sample to model: what you can still change | [D11] |
+| 10 | Grains: loop a tiny piece, window it, overlap it, slow it down | [A19] to [A22] |
+| 11 | Scratching | [A23] |
+| 12 | Stretch time without changing pitch | [B24], [B25] |
+| 13 | Turn a recording into a wavetable | [B26] |
+
+### Two holes the new texts did not fill
+
+**Hearing (track B).** Two narrow studies are in. What they support: [R1] to [R6] (thresholds and loudness in
+the bass), [P1] to [P3] (timing in a low and a high part), [E6] and [E10] (tolerances for stretched partials
+and decay time), [A3], [A6], [A18] (rules of thumb, stated as such). Still with no source at all: masking,
+pitch from harmonics, hearing direction, how loudness builds over time, protecting your hearing, and every
+illusion in `docs/BIOACOUSTICS.md`. Until a hearing text arrives (Moore first), these can exist only as
+**observe-first lessons: the learner does the test and records what they hear, and the page explains
+nothing yet and says so.**
+
+| # | Lesson | Status |
+|---|---|---|
+| 1 | A note with its bottom removed: play harmonics 2 to 6 with no fundamental; what note do you hear? | **new**; explanation needs a source |
+| 2 | A tone under noise: lower a tone in steps under steady noise until it is gone, at three pitches | **new**; explanation needs a source |
+| 3 | Left or right: move a sound sideways by level alone, then by a tiny delay alone | **new**; explanation needs a source |
+| 4 | From beats to roughness to two notes: slide two sines apart from 1 Hz to a fifth | **new**; explanation needs a source |
+| 5 | Short and long: is a 20 ms tone as loud as a 500 ms one at the same level? | **new**; explanation needs a source |
+| 6 | Your own quietest tone at six pitches, on your own headphones (relative steps only) | [R5] |
+
+**Mixing and mastering (tracks M and N).** No text is in the library, so the twenty-eight planned lessons have
+nothing to stand on. What can be taught now is what the Studio itself measures:
+
+| # | Lesson | From |
+|---|---|---|
+| 1 | Where you turn it down matters | [I23] |
+| 2 | Headroom: watch the master meter as tracks are added | **new** (tool; builds on [A7]) |
+| 3 | Bass is touchy: small fader moves, big loudness changes | [R2] |
+| 4 | Where kick and snare live | [Q6] |
+| 5 | Wet and dry: reverb on a return track | [C9], [I32] |
+| 6 | The mono check: fold the song to mono and note what goes | **new** (tool) |
+| 7 | Bass in mono: what the Utility's bass-mono switch changes below its frequency | **new** (tool) |
+| 8 | A limiter's ceiling: what it does to peaks and what it does not do to the average | **new** (tool) |
+| 9 | Export, read the loudest moment, fix it, export again | **new** (tool) |
+| 10 | Your bass is not everyone's bass | [R5] |
+
+Why a mix translates, what "glue" and "punch" are, and every question of taste wait for the mixing books on
+the buy-or-borrow list.
+
+### Counts for this section
+Ten chapters and two partial tracks: 162 lesson rows (some rows hold several ideas), of which **52 are new**:
+41 are facts about our own tools and can be written now, 4 need a small build first, and 7 need a source
+before they can explain anything. The rest are the
+ideas of `docs/LESSON_IDEAS.md` put in a teaching order. Ideas from that file not placed here stay where they
+already belong: the FM, ring, distortion, sync and formant sets extend the existing chapters "Reshaping the
+wave" and "Effects"; the string, piano and blown-instrument sets belong to track Q; the driver set to the
+sound-systems track.

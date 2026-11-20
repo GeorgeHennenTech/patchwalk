@@ -428,6 +428,12 @@ drum and bass. The MIDI itself has not been opened: measure before any lesson st
 
 ---
 
+## Where these sit in the course
+
+`docs/CURRICULUM.md` ("Added on 20 Nov 2026: ten chapters...") puts these ideas into a teaching order under
+ten new chapters, using the codes of this file (section letter and number, such as A1 or H30), and adds 52
+new lessons for what these texts did not cover.
+
 ## Counts
 
 | Source | Ideas |

@@ -1743,6 +1743,17 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   enough numbers for a sourced guitar or piano (values come from calibration against recordings); the VL1
   manuals give no numbers for the model itself; the groove studies found small or no effects for microtiming,
   swing and syncopation and a large effect of the listener's own taste.
+- **Ten new chapters in the course map (20 Nov 2026, owner: "are there any new holes in our lesson plan",
+  then "yes, and write new lesson ideas for the gaps that aren't covered").** `docs/CURRICULUM.md` ends with
+  "Added on 20 Nov 2026: ten chapters that fill holes found while reading the new literature": Reading your
+  tools; When digital sound goes wrong; Expression; Rhythm rebuilt on evidence (replaces track H's order);
+  One delay, many effects; Bells, metal and stretched tones; Fixing a broken sound; Tuning; Voices; Sampler
+  basics then grains; plus what can be taught now in Hearing and in Mixing. 162 lesson rows. **A code in
+  square brackets there (such as [A1]) is an entry in `docs/LESSON_IDEAS.md`, not a lesson id of the map.**
+  52 rows are new lessons written for what the texts did not cover: 41 are measurable facts about our own
+  tools, 4 need a small build, 7 need a source. **Hearing lessons with no text behind them are "observe
+  first": the learner does the test and the page explains nothing yet and says so.** Still with no source:
+  most of hearing (Moore first) and all of mixing and mastering. Nothing in the section is built.
 - **Long pages are searched in parts (16 Nov 2026).** `splitText` in `src/library/search.ts` cuts a page over
   2,400 characters into overlapping parts of about 1,500 (ids `book#page~1`, `~2`, with `of` naming the
   page); `pageOf` and `cite` count parts of one page as one source, and `search` takes at most two parts of

@@ -578,3 +578,8 @@ owner's app the side pane is not drawn, so `/todo` prints the list and the To-Do
   and a suggested order. **Next: the owner chooses where to start; the default is the 85 lessons that need
   nothing built, FM first.** Write lessons from the library text itself, not from that file's one-liners.
 - Expect 787 passing tests in 38 files.
+
+- Later still on 20 Nov: the owner asked what holes the reading exposed and had them written into the course
+  map: ten new chapters at the end of `docs/CURRICULUM.md` (162 rows, 52 of them new lessons). **When the
+  owner says go, write lessons chapter by chapter from there; "Reading your tools" is first in teaching
+  order.** Codes in square brackets there point into `docs/LESSON_IDEAS.md`.

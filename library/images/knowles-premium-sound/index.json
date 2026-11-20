@@ -1,0 +1,70 @@
+{
+"source": "The Science of Premium Sound Using Miniature Transducers (Knowles white paper WP03)",
+"note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text.",
+"images": [
+{
+"file": "p001-1.webp",
+"page": 1,
+"chapter": "Premium sound with miniature transducers",
+"width": 873,
+"height": 651,
+"captions_on_page": []
+},
+{
+"file": "p001-2.webp",
+"page": 1,
+"chapter": "Premium sound with miniature transducers",
+"width": 877,
+"height": 661,
+"captions_on_page": []
+},
+{
+"file": "p001-3.webp",
+"page": 1,
+"chapter": "Premium sound with miniature transducers",
+"width": 1043,
+"height": 558,
+"captions_on_page": []
+},
+{
+"file": "p002-1.webp",
+"page": 2,
+"chapter": "Premium sound with miniature transducers",
+"width": 290,
+"height": 193,
+"captions_on_page": []
+},
+{
+"file": "p002-2.webp",
+"page": 2,
+"chapter": "Premium sound with miniature transducers",
+"width": 254,
+"height": 212,
+"captions_on_page": []
+},
+{
+"file": "p002-3.webp",
+"page": 2,
+"chapter": "Premium sound with miniature transducers",
+"width": 278,
+"height": 197,
+"captions_on_page": []
+},
+{
+"file": "p002-4.webp",
+"page": 2,
+"chapter": "Premium sound with miniature transducers",
+"width": 251,
+"height": 202,
+"captions_on_page": []
+},
+{
+"file": "p002-5.webp",
+"page": 2,
+"chapter": "Premium sound with miniature transducers",
+"width": 1291,
+"height": 1125,
+"captions_on_page": []
+}
+]
+}

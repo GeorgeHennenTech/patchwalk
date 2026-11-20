@@ -1,0 +1,114 @@
+{
+"source": "Plucked-String Models: From the Karplus-Strong Algorithm to Digital Waveguides and Beyond (Karjalainen, Välimäki, Tolonen, Computer Music Journal 1998)",
+"note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text. Entries marked whole_page are the whole page rendered as a picture, because its figures are drawn as lines and are not embedded pictures.",
+"images": [
+{
+"file": "p002-1.webp",
+"page": 2,
+"chapter": "Plucked-string models",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p003-1.webp",
+"page": 3,
+"chapter": "Plucked-string models",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p004-1.webp",
+"page": 4,
+"chapter": "Plucked-string models",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p005-1.webp",
+"page": 5,
+"chapter": "Plucked-string models",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p006-1.webp",
+"page": 6,
+"chapter": "Plucked-string models",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p007-1.webp",
+"page": 7,
+"chapter": "Plucked-string models",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p008-1.webp",
+"page": 8,
+"chapter": "Plucked-string models",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p009-1.webp",
+"page": 9,
+"chapter": "Plucked-string models",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p010-1.webp",
+"page": 10,
+"chapter": "Plucked-string models",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p011-1.webp",
+"page": 11,
+"chapter": "Plucked-string models",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p012-1.webp",
+"page": 12,
+"chapter": "Plucked-string models",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p013-1.webp",
+"page": 13,
+"chapter": "Plucked-string models",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+}
+]
+}

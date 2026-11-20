@@ -2,7 +2,7 @@
 """Take a book supplied as one or more PDF parts into the private library: text and pictures together.
 
     python3 scripts/ingest_pdf.py <book-id> "<Title>" part1.pdf part2.pdf ... [--skip-pages 3-22]
-        [--running "RIFT MANUAL" --headings "Welcome to Rift|Play View|Distortion|..."]
+        [--running "RIFT MANUAL" --headings "Welcome to Rift|Play View|Distortion|..."] [--png]
 
 Writes library/<book-id>.json            { id, title, pages: [{ page, chapter, text }] }
        library/images/<book-id>/*.webp   pictures embedded in the PDF, named p<page>-<n>.webp
@@ -98,7 +98,9 @@ def main():
         listing = run("pdfimages", "-list", pdf).decode().split("\n")[2:]
         kinds = [l.split()[2] for l in listing if l.strip()]
         with tempfile.TemporaryDirectory() as tmp:
-            run("pdfimages", "-all", "-p", pdf, f"{tmp}/im")
+            # --png: have poppler decode every picture itself (needed for fax-coded one-bit pictures, which
+            # "-all" writes in a form Pillow cannot open; old scanned manuals are full of them)
+            run("pdfimages", "-png" if "--png" in sys.argv else "-all", "-p", pdf, f"{tmp}/im")
             files = sorted(os.listdir(tmp))
             # A few PDFs list a picture that cannot be written out (or the reverse). The list then cannot say which
             # files are masks, so every file is tried as a picture; blank and tiny ones are still dropped below.

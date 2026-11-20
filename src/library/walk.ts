@@ -120,7 +120,7 @@ export function cleanPlan(question: string, raw: PlanModel): Plan {
 
 /** The search for one step: its own words, and for a recipe only the tool's own manual. */
 /** Books about loudspeakers and sound systems. A walkthrough that ends in a synth or a DAW is not about those, so they are kept out of its search. */
-export const SYSTEM_BOOKS = ["funktion-one", "kolbrek"];
+export const SYSTEM_BOOKS = ["funktion-one", "kolbrek", "knowles"];
 export function stepSearch(question: string, plan: { tool: Tool; steps: PlanStep[] }, index: number): { query: string; only?: (p: Passage) => boolean } {
   const step = plan.steps[index]!;
   if (plan.tool === "none") return { query: `${step.find} ${step.title}` };

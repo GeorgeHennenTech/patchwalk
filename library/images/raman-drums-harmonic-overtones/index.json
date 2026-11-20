@@ -1,0 +1,16 @@
+{
+"source": "Musical Drums with Harmonic Overtones (C. V. Raman and Sivakali Kumar, Nature 1920)",
+"note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text.",
+"images": [
+{
+"file": "p500-1.webp",
+"page": 500,
+"chapter": "Drums with harmonic overtones",
+"width": 556,
+"height": 563,
+"captions_on_page": [
+"Fig. 1. Drumhead giving harmonic overtones."
+]
+}
+]
+}

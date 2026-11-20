@@ -1,0 +1,112 @@
+{
+"source": "Physically Informed Signal Processing Methods for Piano Sound Synthesis: A Research Overview (Bank, Avanzini, Borin, De Poli, Fontana, Rocchesso, EURASIP J. Applied Signal Processing 2003)",
+"note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text. Entries marked whole_page are the whole page rendered as a picture, because its figures are drawn as lines and are not embedded pictures.",
+"images": [
+{
+"file": "p002-1.webp",
+"page": 2,
+"chapter": "Piano sound synthesis",
+"width": 917,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p003-1.webp",
+"page": 3,
+"chapter": "Piano sound synthesis",
+"width": 917,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p004-1.webp",
+"page": 4,
+"chapter": "Piano sound synthesis",
+"width": 917,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p005-1.webp",
+"page": 5,
+"chapter": "Piano sound synthesis",
+"width": 917,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p007-1.webp",
+"page": 7,
+"chapter": "Piano sound synthesis",
+"width": 917,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p009-1.webp",
+"page": 9,
+"chapter": "Piano sound synthesis",
+"width": 917,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p011-1.webp",
+"page": 11,
+"chapter": "Piano sound synthesis",
+"width": 300,
+"height": 380,
+"captions_on_page": [
+"Italy, September 2000.",
+"Committee of ACROE (Institut National Politechnique Grenoble)."
+]
+},
+{
+"file": "p011-2.webp",
+"page": 11,
+"chapter": "Piano sound synthesis",
+"width": 300,
+"height": 379,
+"captions_on_page": [
+"Italy, September 2000.",
+"Committee of ACROE (Institut National Politechnique Grenoble)."
+]
+},
+{
+"file": "p011-3.webp",
+"page": 11,
+"chapter": "Piano sound synthesis",
+"width": 300,
+"height": 379,
+"captions_on_page": [
+"Italy, September 2000.",
+"Committee of ACROE (Institut National Politechnique Grenoble)."
+]
+},
+{
+"file": "p011-4.webp",
+"page": 11,
+"chapter": "Piano sound synthesis",
+"width": 300,
+"height": 380,
+"captions_on_page": [
+"Italy, September 2000.",
+"Committee of ACROE (Institut National Politechnique Grenoble)."
+]
+},
+{
+"file": "p012-1.webp",
+"page": 12,
+"chapter": "Piano sound synthesis",
+"width": 300,
+"height": 380,
+"captions_on_page": []
+}
+]
+}

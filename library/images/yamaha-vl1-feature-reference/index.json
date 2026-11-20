@@ -1,0 +1,622 @@
+{
+"source": "Yamaha VL1 Virtual Acoustic Synthesizer Owner's Manual 2: Feature Reference",
+"note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text. Entries marked whole_page are the whole page rendered as a picture, because its figures are drawn as lines and are not embedded pictures.",
+"images": [
+{
+"file": "p008-1.webp",
+"page": 8,
+"chapter": "General Operation",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p009-1.webp",
+"page": 9,
+"chapter": "General Operation",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p011-1.webp",
+"page": 11,
+"chapter": "General Operation",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p012-1.webp",
+"page": 12,
+"chapter": "General Operation",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p014-1.webp",
+"page": 14,
+"chapter": "Play Mode",
+"width": 284,
+"height": 76,
+"captions_on_page": [
+"Voice number.",
+"Reverb on or off.",
+"Stereo output mode.",
+"Element E1 and E2 names.",
+"Effects in use."
+]
+},
+{
+"file": "p015-1.webp",
+"page": 15,
+"chapter": "Play Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p017-1.webp",
+"page": 17,
+"chapter": "Play Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p019-1.webp",
+"page": 19,
+"chapter": "Play Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p022-1.webp",
+"page": 22,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p024-1.webp",
+"page": 24,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p025-1.webp",
+"page": 25,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p028-1.webp",
+"page": 28,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p035-1.webp",
+"page": 35,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p036-1.webp",
+"page": 36,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p037-1.webp",
+"page": 37,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p038-1.webp",
+"page": 38,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p040-1.webp",
+"page": 40,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p042-1.webp",
+"page": 42,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p043-1.webp",
+"page": 43,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p045-1.webp",
+"page": 45,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p046-1.webp",
+"page": 46,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p053-1.webp",
+"page": 53,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p060-1.webp",
+"page": 60,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p065-1.webp",
+"page": 65,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p066-1.webp",
+"page": 66,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p067-1.webp",
+"page": 67,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p069-1.webp",
+"page": 69,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p070-1.webp",
+"page": 70,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p071-1.webp",
+"page": 71,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p072-1.webp",
+"page": 72,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p073-1.webp",
+"page": 73,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p074-1.webp",
+"page": 74,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p075-1.webp",
+"page": 75,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p077-1.webp",
+"page": 77,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p078-1.webp",
+"page": 78,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p080-1.webp",
+"page": 80,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p081-1.webp",
+"page": 81,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p082-1.webp",
+"page": 82,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p085-1.webp",
+"page": 85,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p086-1.webp",
+"page": 86,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p091-1.webp",
+"page": 91,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p098-1.webp",
+"page": 98,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p104-1.webp",
+"page": 104,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p107-1.webp",
+"page": 107,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p115-1.webp",
+"page": 115,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p119-1.webp",
+"page": 119,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p122-1.webp",
+"page": 122,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p123-1.webp",
+"page": 123,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p125-1.webp",
+"page": 125,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p126-1.webp",
+"page": 126,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p129-1.webp",
+"page": 129,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p130-1.webp",
+"page": 130,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p135-1.webp",
+"page": 135,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p141-1.webp",
+"page": 141,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p143-1.webp",
+"page": 143,
+"chapter": "Edit Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p153-1.webp",
+"page": 153,
+"chapter": "Utility Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p154-1.webp",
+"page": 154,
+"chapter": "Utility Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p155-1.webp",
+"page": 155,
+"chapter": "Utility Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p156-1.webp",
+"page": 156,
+"chapter": "Utility Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p157-1.webp",
+"page": 157,
+"chapter": "Utility Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p158-1.webp",
+"page": 158,
+"chapter": "Utility Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p163-1.webp",
+"page": 163,
+"chapter": "Utility Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p164-1.webp",
+"page": 164,
+"chapter": "Utility Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p166-1.webp",
+"page": 166,
+"chapter": "Utility Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p168-1.webp",
+"page": 168,
+"chapter": "Utility Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p170-1.webp",
+"page": 170,
+"chapter": "Utility Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p171-1.webp",
+"page": 171,
+"chapter": "Utility Mode",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p191-1.webp",
+"page": 191,
+"chapter": "",
+"width": 747,
+"height": 983,
+"captions_on_page": []
+}
+]
+}

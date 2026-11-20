@@ -1,0 +1,96 @@
+{
+"source": "Alias-Free Digital Synthesis of Classic Analog Waveforms (Stilson and Smith, ICMC 1996)",
+"note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text. Entries marked whole_page are the whole page rendered as a picture, because its figures are drawn as lines and are not embedded pictures.",
+"images": [
+{
+"file": "p001-1.webp",
+"page": 1,
+"chapter": "Alias-free classic waveforms",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p002-1.webp",
+"page": 2,
+"chapter": "Alias-free classic waveforms",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p003-1.webp",
+"page": 3,
+"chapter": "Alias-free classic waveforms",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p005-1.webp",
+"page": 5,
+"chapter": "Alias-free classic waveforms",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p006-1.webp",
+"page": 6,
+"chapter": "Alias-free classic waveforms",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p007-1.webp",
+"page": 7,
+"chapter": "Alias-free classic waveforms",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p008-1.webp",
+"page": 8,
+"chapter": "Alias-free classic waveforms",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p009-1.webp",
+"page": 9,
+"chapter": "Alias-free classic waveforms",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p011-1.webp",
+"page": 11,
+"chapter": "Alias-free classic waveforms",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p012-1.webp",
+"page": 12,
+"chapter": "Alias-free classic waveforms",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+}
+]
+}

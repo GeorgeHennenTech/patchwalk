@@ -5,7 +5,7 @@ has dropped this file into a new chat to save context and will often say nothing
 re-explain anything here. Read this file, do the "Start here" steps, then carry on with "What to do next".
 Write to the owner the way section 2 describes.
 
-Last updated: 18 November 2026, after commit "Studio: marker jumps, Space from the time marker, replace-recording, more sidechains, Utility and Saturator extras".
+Last updated: 20 November 2026, after commit "Library: seventeen documents and the Groove MIDI Dataset taken in".
 **The newest state is the block "Latest (18 Nov 2026)" at the top of section 8 and the dated notes at the end of this file. Where an older paragraph disagrees with them or with `CLAUDE.md`, the newer one is right.**
 
 ---
@@ -22,7 +22,7 @@ Last updated: 18 November 2026, after commit "Studio: marker jumps, Space from t
    ```bash
    npm test
    ```
-   Expect 763 passing tests in 37 files (18 Nov 2026).
+   Expect 780 passing tests in 37 files (20 Nov 2026).
 3. **Run it.** `npm run dev` serves the app at http://localhost:5173 including the two server functions.
    The Claude calls report "no API key" locally unless `.env.local` has `ANTHROPIC_API_KEY`; that is expected.
 4. **Then continue with section 8** without waiting for instructions, unless the owner's message says otherwise.
@@ -375,12 +375,8 @@ Ask about these only when relevant; do not block on them.
 
 **Later the same day the owner asked for three more things.**
 - Lessons on the distortion plugin **Rift (Minimal Audio)**, now that its manual is in the library (`library/rift-manual.json`, 64 pages, 137 pictures; taken in 13 Nov 2026). Lessons not written yet; Rift itself cannot run in the browser, so they will be read-and-do lessons or use a built-in distortion that follows the same ideas.
-- **Six research papers** for the library: Chowning 1973 on FM synthesis (JAES); Rajala et al. 2022 on
-  infrasound, loudness and annoyance (Applied Acoustics); Senn et al. on groove in drum patterns (PLOS ONE);
-  Hove et al. 2014 on timing perception for low pitch (PNAS); Frühauf, Kopiez and Platz on microtiming and
-  groove ("Music on the timing grid"); and a study of expert microtiming and groove in swing and funk. **They
-  were listed but not attached**; ask for the files. They feed the FM chapter, the hearing lessons in
-  `docs/BIOACOUSTICS.md`, and a set of rhythm and groove lessons (track H).
+- **Six research papers**: five arrived and were taken in on 20 Nov 2026 with twelve other documents (see
+  the note at the end of this file). Still missing: Frühauf, Kopiez and Platz, "Music on the timing grid".
 - **Master Handbook of Acoustics, 7th ed., pages 1-500.** The uploaded files were named for a well-known
   piracy site, so the assistant did not take them in and told the owner why. Take the book in when the owner
   supplies a copy they have bought or borrowed (publisher ebook, library loan). Do not ingest the pirated
@@ -399,7 +395,7 @@ they own. Not yet supplied.
 
 ## 10. Things outside the repo that a new session will not have
 
-- **The owner's to-do page** (a Claude artifact, "Patchwalk To-Do"; its link is in `CLAUDE.md` under "Two to-do lists"). Rows live in its `todos` collection and are written with the `ArtifactData` tool; the latest done row is `t111`. Read a row before changing it (a write needs its version).
+- **The owner's to-do page** (a Claude artifact, "Patchwalk To-Do"; its link is in `CLAUDE.md` under "Two to-do lists"). Rows live in its `todos` collection and are written with the `ArtifactData` tool; the latest done rows are `t111` (Studio) and `L37` (literature). Read a row before changing it (a write needs its version).
 - **The owner's two Claude Code widgets** (the to-do pane that shows `docs/TODO.md`, and a usage pane) live only in a session's own folder. Their source is saved in `tools/mods/`; when the owner asks for the to-do widget, follow `tools/mods/README.md` to put them back.
 - Test scripts for the Studio were in the session's scratchpad and are gone; they are quick to rewrite from the notes in `CLAUDE.md`.
 
@@ -558,3 +554,17 @@ effect knob is marked red; moving one by hand switches its line off until "Back 
 Still open: the next unticked items in `docs/ABLETON_GAPS.md`, and the Ableton course (no lessons yet).
 Later on 18 Nov: the quick wins are done except hearing a break or sound before loading and a few shortcuts
 (see the "Latest" block in section 8). Recording now has a count-in menu and an Overdub switch.
+
+## 20 Nov 2026: a large batch of literature taken in
+The owner uploaded seventeen documents and the Groove MIDI Dataset; all are in the library (38 texts now)
+and pushed. The list, with library ids, is in `docs/LITERATURE.md` ("Taken in on 20 Nov 2026"); how it was
+done and the new script `scripts/library_post.py` are in `CLAUDE.md` ("Literature taken in on 20 Nov 2026").
+The owner's question was "what should we plan to do first?": they were told the texts go in first, then
+lessons, and were offered an order (a supersaw from Szabo, FM lessons from Chowning, a better reverb from
+Dattorro, groove and microtiming lessons using the Groove MIDI data, breakbeat lessons). **Wait for the
+owner's choice of what to build first from the new texts; the Studio's standing instruction still holds
+otherwise.** Still missing: Frühauf, Kopiez and Platz (the sixth paper); Fletcher and Rossing (the owner's
+condition for un-pausing the Physical models tab); every book on the "to buy or borrow" lists; any text on
+hearing or bioacoustics. Nobody has asked the live guide a question from the new texts yet.
+The to-do and usage widgets' source is in `tools/mods/` (its README says how to put them back); in the
+owner's app the side pane is not drawn, so `/todo` prints the list and the To-Do page is the real view.

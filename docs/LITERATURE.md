@@ -17,15 +17,34 @@ maker or author gives away; copies from piracy sites are not taken in.
 | Funktion-One Vero: user guide, brochure, spec sheets, F124 and F221 drawings | 185 pages of text, 235 pictures, from the maker's site. The system used at Tipper's shows. For the sound-systems track |
 | This app's 36 knowledge cards | Drafts written for the app |
 
+## Taken in on 20 Nov 2026 (the owner uploaded the files)
+Text and pictures, in `library/`. Each paper is one chapter. Pages whose figures are drawn as lines were
+rendered whole as pictures (`scripts/library_post.py figures`), so the guide can show a figure with its page.
+
+| Text | Library id | Notes |
+|---|---|---|
+| Chowning, "The Synthesis of Complex Audio Spectra by Means of Frequency Modulation" (JAES, 1973) | `chowning-fm-synthesis` | 9 pages. FM lessons |
+| Rajala, Hakala, Alakoivu, Koskela, Hongisto, "Hearing threshold, loudness, and annoyance of infrasonic versus non-infrasonic frequencies" (Applied Acoustics, 2022) | `rajala-infrasound-loudness` | 14 pages; the authors' reprint from their university's archive, so its page numbers are the reprint's. Hearing lessons |
+| Senn, Kilchenmann, Bechtold, Hoesl, "Groove in drum patterns as a function of both rhythmic properties and listeners' attitudes" (PLOS ONE, 2018) | `senn-groove-drum-patterns` | 33 pages. Rhythm and groove lessons |
+| Senn, Kilchenmann, von Georgi, Bullerjahn, "The Effect of Expert Performance Microtiming on Listeners' Experience of Groove in Swing or Funk Music" (Frontiers in Psychology, 2016) | `senn-microtiming-groove` | 16 pages. Microtiming lessons |
+| Hove, Marie, Bruce, Trainor, "Superior time perception for lower musical pitch explains why bass-ranged instruments lay down musical rhythms" (PNAS, 2014) | `hove-low-pitch-timing` | 6 pages. Bass and rhythm; impacts. About timing perception only: never stretch it into a claim about what sound does to the brain |
+| Hockman and Davies, "Computational Strategies for Breakbeat Classification and Resequencing in Hardcore, Jungle and Drum & Bass" (DAFx-15) | `hockman-breakbeat-resequencing` | 6 pages. Breakbeat lessons |
+| Puckette, *The Theory and Technique of Electronic Music* (draft of 30 December 2006) | `puckette-electronic-music` | All ten chapters, the book's own page numbers 1 to 318, and the bibliography (323 to 325); title pages, contents, foreword and the index left out. 219 pages with figures rendered whole. Synthesis methods; its examples are Pure Data patches |
+| Yamaha VL1 owner's manuals: 1, Getting Started; 2, Feature Reference | `yamaha-vl1-getting-started`, `yamaha-vl1-feature-reference` | 57 and 170 pages of text with the manuals' own page numbers; contents and index left out; 102 pages with diagrams rendered whole (the diagrams are one-bit pictures the usual extraction cannot keep). The first physical-modelling synth as its maker explains it |
+| Karjalainen, Välimäki, Tolonen, "Plucked-String Models: From the Karplus-Strong Algorithm to Digital Waveguides and Beyond" (Computer Music Journal, 1998) | `karjalainen-plucked-string-models` | 15 pages. The title and authors' line came out as shifted letters and were typed in by hand; the body was clean |
+| Bank, Avanzini, Borin, De Poli, Fontana, Rocchesso, "Physically Informed Signal Processing Methods for Piano Sound Synthesis: A Research Overview" (EURASIP, 2003) | `bank-piano-synthesis` | 12 pages. Piano: hammer, string, soundboard |
+| Dattorro, "Effect Design, Part 1: Reverberator and Other Filters" (JAES, 1997) | `dattorro-effect-design-1` | 25 pages. The plate reverb many reverbs follow; for a better reverb in the synth and the Studio. Part 2 (delay-line modulation and chorus) not supplied |
+| Stilson and Smith, "Alias-Free Digital Synthesis of Classic Analog Waveforms" (ICMC, 1996) | `stilson-alias-free-waveforms` | 12 pages |
+| Szabo, "How to Emulate the Super Saw" (BSc thesis, KTH, 2010) | `szabo-super-saw` | 34 pages. The JP-8000 supersaw: seven saws, measured detune and mix curves. The supersaw preset can now be built from it |
+| Esqueda, Pöntynen, Välimäki, Parker, "Virtual Analog Buchla 259 Wavefolder" (DAFx-17) | `esqueda-buchla-wavefolder` | 8 pages. A west-coast fold |
+| Raman and Kumar, "Musical Drums with Harmonic Overtones" (Nature 104, page 500, 15 January 1920) | `raman-drums-harmonic-overtones` | One letter, typed out from the scan and checked against it (the scan's own text ran its two columns together and carried two unrelated letters, which are left out), with its photograph. Why a tabla has a clear pitch |
+| Knowles white paper WP03, "The Science of Premium Sound Using Miniature Transducers" | `knowles-premium-sound` | 5 pages. A maker's paper: it argues for its own products, so quote it as the maker's view. In-ear drivers; kept out of synth and DAW walkthroughs with the other loudspeaker texts |
+| Groove MIDI Dataset, MIDI only, v1.0.0 (Gillick and others, Google Magenta; CC BY 4.0) | `library/data/groove-midi/` | Data, not a text: 1,150 real drum performances as MIDI. The guide does not search it. Anything made from it must credit it. Nothing built yet |
+
 ## Listed by the owner; files not received yet
 | Text | For |
 |---|---|
-| Chowning, "The Synthesis of Complex Audio Spectra by Means of Frequency Modulation" (JAES, 1973) | FM lessons |
-| Rajala et al., "Hearing threshold, loudness, and annoyance of infrasonic versus non-infrasonic frequencies" (Applied Acoustics, 2022) | Hearing lessons; very low frequencies |
-| Senn et al., "Groove in Drum Patterns as a Function of Both Rhythmic Properties and Listeners' Attitudes" (PLOS ONE) | Rhythm and groove lessons |
-| Hove et al., "Superior time perception for lower musical pitch explains why bass-ranged instruments lay down musical rhythms" (PNAS, 2014) | Bass and rhythm; impact track |
-| Frühauf, Kopiez and Platz, "Music on the timing grid: the influence of microtiming on the perceived groove quality of a simple drum pattern performance" | Microtiming lessons |
-| "The Effect of Expert Performance Microtiming on Listeners' Experience of Groove in Swing or Funk Music" | Microtiming lessons |
+| Frühauf, Kopiez and Platz, "Music on the timing grid: the influence of microtiming on the perceived groove quality of a simple drum pattern performance" | Microtiming lessons. The only one of the six papers listed on 13 Nov 2026 that has not arrived |
 
 ## Wanted; needs a bought or borrowed copy
 | Text | For |
@@ -36,7 +55,6 @@ maker or author gives away; copies from piracy sites are not taken in.
 | Text | For |
 |---|---|
 | Sound On Sound, "Synth Secrets" series (free on their site) | Synthesis foundations |
-| Puckette, *The Theory and Technique of Electronic Music* (author's free draft) | Synthesis methods |
 | Julius O. Smith, *Physical Audio Signal Processing* (free online) | Physical modelling |
 | DeSantis, *Making Music* (Ableton) | Writing and finishing tracks |
 | Welsh, *Synthesizer Cookbook* | Synthesis recipes |

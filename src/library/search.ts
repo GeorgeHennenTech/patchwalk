@@ -101,7 +101,7 @@ const K1 = 1.4, B = 0.75;
  * "membrane" and "modal frequencies", without pushing aside a page that uses the asker's own words.
  */
 const RELATED: Record<string, string[]> = {
-  drum: ["membrane", "percussion", "mode"], skin: ["membrane"], pitch: ["frequency", "tuning"], note: ["pitch"],
+  drum: ["membrane", "percussion", "mode"], tabla: ["drum", "drumhead", "harmonic", "overtones", "india"], aliasing: ["alias", "bandlimited"], supersaw: ["super", "saw"], skin: ["membrane"], pitch: ["frequency", "tuning"], note: ["pitch"],
   speaker: ["loudspeaker", "driver", "cabinet"], louder: ["level", "efficiency", "sensitivity"], loud: ["level"],
   wobble: ["lfo"], echo: ["delay"], room: ["reverb"], bright: ["harmonic", "cutoff"], dull: ["cutoff", "lowpass"],
   metal: ["inharmonic", "modal"], bell: ["inharmonic", "modal"], guitar: ["string", "plucked"], pluck: ["plucked", "string"],

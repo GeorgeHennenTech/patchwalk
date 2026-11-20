@@ -1,0 +1,1977 @@
+{
+"source": "The Theory and Technique of Electronic Music (Miller Puckette, draft of 30 December 2006)",
+"note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text. Entries marked whole_page are the whole page rendered as a picture, because its figures are drawn as lines and are not embedded pictures.",
+"images": [
+{
+"file": "p001-1.webp",
+"page": 1,
+"chapter": "1. Sinusoids, Amplitude and Frequency",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p002-1.webp",
+"page": 2,
+"chapter": "1. Sinusoids, Amplitude and Frequency",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p004-1.webp",
+"page": 4,
+"chapter": "1. Sinusoids, Amplitude and Frequency",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p005-1.webp",
+"page": 5,
+"chapter": "1. Sinusoids, Amplitude and Frequency",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p006-1.webp",
+"page": 6,
+"chapter": "1. Sinusoids, Amplitude and Frequency",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p008-1.webp",
+"page": 8,
+"chapter": "1. Sinusoids, Amplitude and Frequency",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p009-1.webp",
+"page": 9,
+"chapter": "1. Sinusoids, Amplitude and Frequency",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p011-1.webp",
+"page": 11,
+"chapter": "1. Sinusoids, Amplitude and Frequency",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p013-1.webp",
+"page": 13,
+"chapter": "1. Sinusoids, Amplitude and Frequency",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p014-1.webp",
+"page": 14,
+"chapter": "1. Sinusoids, Amplitude and Frequency",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p016-1.webp",
+"page": 16,
+"chapter": "1. Sinusoids, Amplitude and Frequency",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p019-1.webp",
+"page": 19,
+"chapter": "1. Sinusoids, Amplitude and Frequency",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p020-1.webp",
+"page": 20,
+"chapter": "1. Sinusoids, Amplitude and Frequency",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p023-1.webp",
+"page": 23,
+"chapter": "1. Sinusoids, Amplitude and Frequency",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p024-1.webp",
+"page": 24,
+"chapter": "1. Sinusoids, Amplitude and Frequency",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p025-1.webp",
+"page": 25,
+"chapter": "1. Sinusoids, Amplitude and Frequency",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p028-1.webp",
+"page": 28,
+"chapter": "2. Wavetables and Samplers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p029-1.webp",
+"page": 29,
+"chapter": "2. Wavetables and Samplers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p030-1.webp",
+"page": 30,
+"chapter": "2. Wavetables and Samplers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p031-1.webp",
+"page": 31,
+"chapter": "2. Wavetables and Samplers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p032-1.webp",
+"page": 32,
+"chapter": "2. Wavetables and Samplers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p034-1.webp",
+"page": 34,
+"chapter": "2. Wavetables and Samplers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p035-1.webp",
+"page": 35,
+"chapter": "2. Wavetables and Samplers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p037-1.webp",
+"page": 37,
+"chapter": "2. Wavetables and Samplers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p038-1.webp",
+"page": 38,
+"chapter": "2. Wavetables and Samplers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p039-1.webp",
+"page": 39,
+"chapter": "2. Wavetables and Samplers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p040-1.webp",
+"page": 40,
+"chapter": "2. Wavetables and Samplers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p042-1.webp",
+"page": 42,
+"chapter": "2. Wavetables and Samplers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p044-1.webp",
+"page": 44,
+"chapter": "2. Wavetables and Samplers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p045-1.webp",
+"page": 45,
+"chapter": "2. Wavetables and Samplers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p047-1.webp",
+"page": 47,
+"chapter": "2. Wavetables and Samplers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p049-1.webp",
+"page": 49,
+"chapter": "2. Wavetables and Samplers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p051-1.webp",
+"page": 51,
+"chapter": "2. Wavetables and Samplers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p052-1.webp",
+"page": 52,
+"chapter": "2. Wavetables and Samplers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p053-1.webp",
+"page": 53,
+"chapter": "2. Wavetables and Samplers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p055-1.webp",
+"page": 55,
+"chapter": "2. Wavetables and Samplers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p060-1.webp",
+"page": 60,
+"chapter": "3. Audio and Control Computations",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p062-1.webp",
+"page": 62,
+"chapter": "3. Audio and Control Computations",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p063-1.webp",
+"page": 63,
+"chapter": "3. Audio and Control Computations",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p065-1.webp",
+"page": 65,
+"chapter": "3. Audio and Control Computations",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p067-1.webp",
+"page": 67,
+"chapter": "3. Audio and Control Computations",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p068-1.webp",
+"page": 68,
+"chapter": "3. Audio and Control Computations",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p069-1.webp",
+"page": 69,
+"chapter": "3. Audio and Control Computations",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p070-1.webp",
+"page": 70,
+"chapter": "3. Audio and Control Computations",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p072-1.webp",
+"page": 72,
+"chapter": "3. Audio and Control Computations",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p073-1.webp",
+"page": 73,
+"chapter": "3. Audio and Control Computations",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p075-1.webp",
+"page": 75,
+"chapter": "3. Audio and Control Computations",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p076-1.webp",
+"page": 76,
+"chapter": "3. Audio and Control Computations",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p077-1.webp",
+"page": 77,
+"chapter": "3. Audio and Control Computations",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p079-1.webp",
+"page": 79,
+"chapter": "3. Audio and Control Computations",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p081-1.webp",
+"page": 81,
+"chapter": "3. Audio and Control Computations",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p084-1.webp",
+"page": 84,
+"chapter": "3. Audio and Control Computations",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p085-1.webp",
+"page": 85,
+"chapter": "3. Audio and Control Computations",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p090-1.webp",
+"page": 90,
+"chapter": "4. Automation and Voice Management",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p091-1.webp",
+"page": 91,
+"chapter": "4. Automation and Voice Management",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p092-1.webp",
+"page": 92,
+"chapter": "4. Automation and Voice Management",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p093-1.webp",
+"page": 93,
+"chapter": "4. Automation and Voice Management",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p094-1.webp",
+"page": 94,
+"chapter": "4. Automation and Voice Management",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p095-1.webp",
+"page": 95,
+"chapter": "4. Automation and Voice Management",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p096-1.webp",
+"page": 96,
+"chapter": "4. Automation and Voice Management",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p097-1.webp",
+"page": 97,
+"chapter": "4. Automation and Voice Management",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p099-1.webp",
+"page": 99,
+"chapter": "4. Automation and Voice Management",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p100-1.webp",
+"page": 100,
+"chapter": "4. Automation and Voice Management",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p103-1.webp",
+"page": 103,
+"chapter": "4. Automation and Voice Management",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p104-1.webp",
+"page": 104,
+"chapter": "4. Automation and Voice Management",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p105-1.webp",
+"page": 105,
+"chapter": "4. Automation and Voice Management",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p106-1.webp",
+"page": 106,
+"chapter": "4. Automation and Voice Management",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p108-1.webp",
+"page": 108,
+"chapter": "4. Automation and Voice Management",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p109-1.webp",
+"page": 109,
+"chapter": "4. Automation and Voice Management",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p111-1.webp",
+"page": 111,
+"chapter": "4. Automation and Voice Management",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p112-1.webp",
+"page": 112,
+"chapter": "4. Automation and Voice Management",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p114-1.webp",
+"page": 114,
+"chapter": "4. Automation and Voice Management",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p115-1.webp",
+"page": 115,
+"chapter": "4. Automation and Voice Management",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p119-1.webp",
+"page": 119,
+"chapter": "5. Modulation",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p120-1.webp",
+"page": 120,
+"chapter": "5. Modulation",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p122-1.webp",
+"page": 122,
+"chapter": "5. Modulation",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p123-1.webp",
+"page": 123,
+"chapter": "5. Modulation",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p124-1.webp",
+"page": 124,
+"chapter": "5. Modulation",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p125-1.webp",
+"page": 125,
+"chapter": "5. Modulation",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p126-1.webp",
+"page": 126,
+"chapter": "5. Modulation",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p127-1.webp",
+"page": 127,
+"chapter": "5. Modulation",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p128-1.webp",
+"page": 128,
+"chapter": "5. Modulation",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p129-1.webp",
+"page": 129,
+"chapter": "5. Modulation",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p133-1.webp",
+"page": 133,
+"chapter": "5. Modulation",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p136-1.webp",
+"page": 136,
+"chapter": "5. Modulation",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p137-1.webp",
+"page": 137,
+"chapter": "5. Modulation",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p138-1.webp",
+"page": 138,
+"chapter": "5. Modulation",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p139-1.webp",
+"page": 139,
+"chapter": "5. Modulation",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p142-1.webp",
+"page": 142,
+"chapter": "5. Modulation",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p143-1.webp",
+"page": 143,
+"chapter": "5. Modulation",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p144-1.webp",
+"page": 144,
+"chapter": "5. Modulation",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p145-1.webp",
+"page": 145,
+"chapter": "5. Modulation",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p148-1.webp",
+"page": 148,
+"chapter": "6. Designer Spectra",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p149-1.webp",
+"page": 149,
+"chapter": "6. Designer Spectra",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p150-1.webp",
+"page": 150,
+"chapter": "6. Designer Spectra",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p153-1.webp",
+"page": 153,
+"chapter": "6. Designer Spectra",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p154-1.webp",
+"page": 154,
+"chapter": "6. Designer Spectra",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p155-1.webp",
+"page": 155,
+"chapter": "6. Designer Spectra",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p156-1.webp",
+"page": 156,
+"chapter": "6. Designer Spectra",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p157-1.webp",
+"page": 157,
+"chapter": "6. Designer Spectra",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p158-1.webp",
+"page": 158,
+"chapter": "6. Designer Spectra",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p159-1.webp",
+"page": 159,
+"chapter": "6. Designer Spectra",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p161-1.webp",
+"page": 161,
+"chapter": "6. Designer Spectra",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p162-1.webp",
+"page": 162,
+"chapter": "6. Designer Spectra",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p163-1.webp",
+"page": 163,
+"chapter": "6. Designer Spectra",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p164-1.webp",
+"page": 164,
+"chapter": "6. Designer Spectra",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p165-1.webp",
+"page": 165,
+"chapter": "6. Designer Spectra",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p166-1.webp",
+"page": 166,
+"chapter": "6. Designer Spectra",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p167-1.webp",
+"page": 167,
+"chapter": "6. Designer Spectra",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p168-1.webp",
+"page": 168,
+"chapter": "6. Designer Spectra",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p169-1.webp",
+"page": 169,
+"chapter": "6. Designer Spectra",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p170-1.webp",
+"page": 170,
+"chapter": "6. Designer Spectra",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p171-1.webp",
+"page": 171,
+"chapter": "6. Designer Spectra",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p172-1.webp",
+"page": 172,
+"chapter": "6. Designer Spectra",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p176-1.webp",
+"page": 176,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p178-1.webp",
+"page": 178,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p179-1.webp",
+"page": 179,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p181-1.webp",
+"page": 181,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p182-1.webp",
+"page": 182,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p183-1.webp",
+"page": 183,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p184-1.webp",
+"page": 184,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p185-1.webp",
+"page": 185,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p186-1.webp",
+"page": 186,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p187-1.webp",
+"page": 187,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p188-1.webp",
+"page": 188,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p190-1.webp",
+"page": 190,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p191-1.webp",
+"page": 191,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p192-1.webp",
+"page": 192,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p193-1.webp",
+"page": 193,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p194-1.webp",
+"page": 194,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p195-1.webp",
+"page": 195,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p196-1.webp",
+"page": 196,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p197-1.webp",
+"page": 197,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p199-1.webp",
+"page": 199,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p200-1.webp",
+"page": 200,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p202-1.webp",
+"page": 202,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p203-1.webp",
+"page": 203,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p204-1.webp",
+"page": 204,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p205-1.webp",
+"page": 205,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p207-1.webp",
+"page": 207,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p208-1.webp",
+"page": 208,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p210-1.webp",
+"page": 210,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p211-1.webp",
+"page": 211,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p212-1.webp",
+"page": 212,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p213-1.webp",
+"page": 213,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p214-1.webp",
+"page": 214,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p215-1.webp",
+"page": 215,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p217-1.webp",
+"page": 217,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p218-1.webp",
+"page": 218,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p219-1.webp",
+"page": 219,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p220-1.webp",
+"page": 220,
+"chapter": "7. Time Shifts and Delays",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p224-1.webp",
+"page": 224,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p225-1.webp",
+"page": 225,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p226-1.webp",
+"page": 226,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p227-1.webp",
+"page": 227,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p228-1.webp",
+"page": 228,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p229-1.webp",
+"page": 229,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p230-1.webp",
+"page": 230,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p231-1.webp",
+"page": 231,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p232-1.webp",
+"page": 232,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p233-1.webp",
+"page": 233,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p236-1.webp",
+"page": 236,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p237-1.webp",
+"page": 237,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p238-1.webp",
+"page": 238,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p239-1.webp",
+"page": 239,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p240-1.webp",
+"page": 240,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p241-1.webp",
+"page": 241,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p242-1.webp",
+"page": 242,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p244-1.webp",
+"page": 244,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p246-1.webp",
+"page": 246,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p247-1.webp",
+"page": 247,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p248-1.webp",
+"page": 248,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p250-1.webp",
+"page": 250,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p251-1.webp",
+"page": 251,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p252-1.webp",
+"page": 252,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p253-1.webp",
+"page": 253,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p254-1.webp",
+"page": 254,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p256-1.webp",
+"page": 256,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p257-1.webp",
+"page": 257,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p258-1.webp",
+"page": 258,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p259-1.webp",
+"page": 259,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p260-1.webp",
+"page": 260,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p261-1.webp",
+"page": 261,
+"chapter": "8. Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p266-1.webp",
+"page": 266,
+"chapter": "9. Fourier Analysis and Resynthesis",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p267-1.webp",
+"page": 267,
+"chapter": "9. Fourier Analysis and Resynthesis",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p268-1.webp",
+"page": 268,
+"chapter": "9. Fourier Analysis and Resynthesis",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p270-1.webp",
+"page": 270,
+"chapter": "9. Fourier Analysis and Resynthesis",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p272-1.webp",
+"page": 272,
+"chapter": "9. Fourier Analysis and Resynthesis",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p273-1.webp",
+"page": 273,
+"chapter": "9. Fourier Analysis and Resynthesis",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p274-1.webp",
+"page": 274,
+"chapter": "9. Fourier Analysis and Resynthesis",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p275-1.webp",
+"page": 275,
+"chapter": "9. Fourier Analysis and Resynthesis",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p277-1.webp",
+"page": 277,
+"chapter": "9. Fourier Analysis and Resynthesis",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p278-1.webp",
+"page": 278,
+"chapter": "9. Fourier Analysis and Resynthesis",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p279-1.webp",
+"page": 279,
+"chapter": "9. Fourier Analysis and Resynthesis",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p280-1.webp",
+"page": 280,
+"chapter": "9. Fourier Analysis and Resynthesis",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p281-1.webp",
+"page": 281,
+"chapter": "9. Fourier Analysis and Resynthesis",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p282-1.webp",
+"page": 282,
+"chapter": "9. Fourier Analysis and Resynthesis",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p283-1.webp",
+"page": 283,
+"chapter": "9. Fourier Analysis and Resynthesis",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p285-1.webp",
+"page": 285,
+"chapter": "9. Fourier Analysis and Resynthesis",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p286-1.webp",
+"page": 286,
+"chapter": "9. Fourier Analysis and Resynthesis",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p288-1.webp",
+"page": 288,
+"chapter": "9. Fourier Analysis and Resynthesis",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p289-1.webp",
+"page": 289,
+"chapter": "9. Fourier Analysis and Resynthesis",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p291-1.webp",
+"page": 291,
+"chapter": "9. Fourier Analysis and Resynthesis",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p293-1.webp",
+"page": 293,
+"chapter": "9. Fourier Analysis and Resynthesis",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p296-1.webp",
+"page": 296,
+"chapter": "10. Classical Waveforms",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p299-1.webp",
+"page": 299,
+"chapter": "10. Classical Waveforms",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p300-1.webp",
+"page": 300,
+"chapter": "10. Classical Waveforms",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p301-1.webp",
+"page": 301,
+"chapter": "10. Classical Waveforms",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p302-1.webp",
+"page": 302,
+"chapter": "10. Classical Waveforms",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p304-1.webp",
+"page": 304,
+"chapter": "10. Classical Waveforms",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p305-1.webp",
+"page": 305,
+"chapter": "10. Classical Waveforms",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p306-1.webp",
+"page": 306,
+"chapter": "10. Classical Waveforms",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p308-1.webp",
+"page": 308,
+"chapter": "10. Classical Waveforms",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p310-1.webp",
+"page": 310,
+"chapter": "10. Classical Waveforms",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p311-1.webp",
+"page": 311,
+"chapter": "10. Classical Waveforms",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p312-1.webp",
+"page": 312,
+"chapter": "10. Classical Waveforms",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p313-1.webp",
+"page": 313,
+"chapter": "10. Classical Waveforms",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p314-1.webp",
+"page": 314,
+"chapter": "10. Classical Waveforms",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p315-1.webp",
+"page": 315,
+"chapter": "10. Classical Waveforms",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+}
+]
+}

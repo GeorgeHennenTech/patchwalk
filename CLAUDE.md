@@ -1693,6 +1693,28 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   shared library**, and kept by `joinShared` only while the steps are the same. Checked in a browser with
   stand-in replies. Not built: threads stored with the account, sharing a thread, asking about the whole
   walkthrough without highlighting, highlighting on touch screens.
+- **Literature taken in on 20 Nov 2026 (the owner uploaded seventeen documents and a dataset; list with ids in
+  `docs/LITERATURE.md`, "Taken in on 20 Nov 2026").** The library now holds 38 texts (4,069 passages).
+  New tools: `scripts/ingest_pdf.py --png` (lets poppler decode every picture; for old manuals) and
+  **`scripts/library_post.py`** with three finishing steps: `renumber <book> <offset>` (the book's own page
+  numbers, front matter dropped, picture files renamed), `chapter <book> "<name>"` (one chapter for a
+  paper), and `figures <book> <offset> <pdfs...> [--graphics]`, which **renders a whole page as a picture
+  when it has a figure caption but no embedded picture** (most papers and Puckette's book draw figures as
+  lines; the VL1 manuals' diagrams are one-bit "stencils"). Such entries carry `whole_page: true` in the
+  picture index. Done by hand, not by script: Puckette's chapters (read from its running headers, which
+  were then removed from the text; index pages dropped), the VL1 manuals' chapters (from "Getting Started ●
+  Voice Selection" lines; contents and index pages dropped: a test forbids a section called "Index"),
+  the 1920 Nature letter (typed from the scan, page 500), and the first two lines of Karjalainen's paper.
+  `RELATED` in `search.ts` gained tabla, aliasing and supersaw; `SYSTEM_BOOKS` gained "knowles". Checked on
+  the real library: questions on FM sidebands, the supersaw, microtiming, bass and rhythm, plate reverb,
+  aliasing, the tabla, breath pressure on the VL1, wavetables and the piano hammer each reached the right
+  new text, and Ableton and Serum questions still land in their manuals. **Not yet asked on the live site.**
+  The Groove MIDI Dataset is kept as the publisher's zip in `library/data/groove-midi/` (CC BY 4.0: credit
+  it in anything made from it); it is not bundled with any server function and nothing reads it yet.
+  **Uploaded PDFs are not in the repo; only the extracted text and pictures are.** Still missing from the
+  owner's list of six papers: Frühauf, Kopiez and Platz. The Physical models tab stays on hold: the owner's
+  condition was Fletcher and Rossing, which has not arrived, though Karjalainen, Bank and the VL1 manuals
+  now give sourced material for strings, piano and wind models.
 - **Long pages are searched in parts (16 Nov 2026).** `splitText` in `src/library/search.ts` cuts a page over
   2,400 characters into overlapping parts of about 1,500 (ids `book#page~1`, `~2`, with `of` naming the
   page); `pageOf` and `cite` count parts of one page as one source, and `search` takes at most two parts of

@@ -1,0 +1,77 @@
+{
+"source": "Hearing threshold, loudness, and annoyance of infrasonic versus non-infrasonic frequencies (Rajala, Hakala, Alakoivu, Koskela, Hongisto, Applied Acoustics 2022; authors' reprint)",
+"note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text. Entries marked whole_page are the whole page rendered as a picture, because its figures are drawn as lines and are not embedded pictures.",
+"images": [
+{
+"file": "p001-1.webp",
+"page": 1,
+"chapter": "Infrasound: threshold, loudness, annoyance",
+"width": 1181,
+"height": 554,
+"captions_on_page": [
+"This is an electronic reprint of the original article.",
+"This reprint may differ from the original in pagination and typographic detail."
+]
+},
+{
+"file": "p002-1.webp",
+"page": 2,
+"chapter": "Infrasound: threshold, loudness, annoyance",
+"width": 249,
+"height": 273,
+"captions_on_page": []
+},
+{
+"file": "p002-2.webp",
+"page": 2,
+"chapter": "Infrasound: threshold, loudness, annoyance",
+"width": 237,
+"height": 298,
+"captions_on_page": []
+},
+{
+"file": "p005-1.webp",
+"page": 5,
+"chapter": "Infrasound: threshold, loudness, annoyance",
+"width": 975,
+"height": 1400,
+"captions_on_page": []
+},
+{
+"file": "p008-1.webp",
+"page": 8,
+"chapter": "Infrasound: threshold, loudness, annoyance",
+"width": 910,
+"height": 1213,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p009-1.webp",
+"page": 9,
+"chapter": "Infrasound: threshold, loudness, annoyance",
+"width": 910,
+"height": 1213,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p010-1.webp",
+"page": 10,
+"chapter": "Infrasound: threshold, loudness, annoyance",
+"width": 910,
+"height": 1213,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p012-1.webp",
+"page": 12,
+"chapter": "Infrasound: threshold, loudness, annoyance",
+"width": 910,
+"height": 1213,
+"captions_on_page": [],
+"whole_page": true
+}
+]
+}

@@ -1,0 +1,72 @@
+{
+"source": "The Synthesis of Complex Audio Spectra by Means of Frequency Modulation (John M. Chowning, J. Audio Eng. Soc. 1973)",
+"note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text. Entries marked whole_page are the whole page rendered as a picture, because its figures are drawn as lines and are not embedded pictures.",
+"images": [
+{
+"file": "p002-1.webp",
+"page": 2,
+"chapter": "FM synthesis",
+"width": 943,
+"height": 1319,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p003-1.webp",
+"page": 3,
+"chapter": "FM synthesis",
+"width": 932,
+"height": 1313,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p004-1.webp",
+"page": 4,
+"chapter": "FM synthesis",
+"width": 937,
+"height": 1317,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p005-1.webp",
+"page": 5,
+"chapter": "FM synthesis",
+"width": 929,
+"height": 1313,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p007-1.webp",
+"page": 7,
+"chapter": "FM synthesis",
+"width": 937,
+"height": 1313,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p008-1.webp",
+"page": 8,
+"chapter": "FM synthesis",
+"width": 946,
+"height": 1320,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p009-1.webp",
+"page": 9,
+"chapter": "FM synthesis",
+"width": 277,
+"height": 307,
+"captions_on_page": [
+"Andy Moorer for their help in this research.",
+"Music (The MIT Press, Boston, 1969).",
+"Department of Music."
+]
+}
+]
+}

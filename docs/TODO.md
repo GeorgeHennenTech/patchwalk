@@ -180,7 +180,9 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [ ] The ear and illusions: a listening-lab page for the hearing and illusion lessons
 - [ ] Source texts for bioacoustics and hearing (none in the library yet; the explanations wait for them)
 - [ ] Lessons on the distortion plugin Rift (Minimal Audio); its manual is in the library
-- [ ] Take in six research papers the owner listed (FM synthesis, infrasound and loudness, groove and microtiming, bass and timing); the files have not arrived yet
+- [x] Take in the literature the owner uploaded on 20 Nov 2026: seventeen documents (Chowning on FM; Rajala on infrasound; Senn 2016 and 2018 and Hove 2014 on groove, microtiming and bass timing; Hockman and Davies on breakbeats; Puckette's book; both Yamaha VL1 manuals; Karjalainen on plucked strings; Bank on piano; Dattorro on reverb; Stilson and Smith on alias-free waveforms; Szabo on the supersaw; the Buchla wavefolder paper; Raman 1920 on Indian drums; a Knowles white paper) and the Groove MIDI Dataset
+- [ ] Still to arrive from the owner's list of six papers: Frühauf, Kopiez and Platz, "Music on the timing grid"
+- [ ] Build from the new texts (owner to choose the order): a supersaw from Szabo; FM lessons from Chowning; a better reverb from Dattorro; a Buchla-style fold; groove and microtiming lessons with the Groove MIDI data; breakbeat lessons; physical-modelling lessons (still waiting on Fletcher and Rossing)
 - [ ] Rhythm lessons drawing on the groove and microtiming papers
 - [ ] Master Handbook of Acoustics: waiting for a copy the owner has bought or borrowed (the uploaded copy came from a piracy site and was not taken in)
 - [ ] Impacts, hits and striking bass: about 50 lessons planned (docs/IMPACTS.md); the kick, sub-drop and bass-note lessons can be built on the synth as it is

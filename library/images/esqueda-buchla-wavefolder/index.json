@@ -1,0 +1,59 @@
+{
+"source": "Virtual Analog Buchla 259 Wavefolder (Esqueda, Pöntynen, Välimäki, Parker, DAFx-17, 2017)",
+"note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text. Entries marked whole_page are the whole page rendered as a picture, because its figures are drawn as lines and are not embedded pictures.",
+"images": [
+{
+"file": "p002-1.webp",
+"page": 2,
+"chapter": "Buchla 259 wavefolder",
+"width": 910,
+"height": 1287,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p003-1.webp",
+"page": 3,
+"chapter": "Buchla 259 wavefolder",
+"width": 910,
+"height": 1287,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p004-1.webp",
+"page": 4,
+"chapter": "Buchla 259 wavefolder",
+"width": 910,
+"height": 1287,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p005-1.webp",
+"page": 5,
+"chapter": "Buchla 259 wavefolder",
+"width": 910,
+"height": 1287,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p006-1.webp",
+"page": 6,
+"chapter": "Buchla 259 wavefolder",
+"width": 214,
+"height": 1364,
+"captions_on_page": []
+},
+{
+"file": "p007-1.webp",
+"page": 7,
+"chapter": "Buchla 259 wavefolder",
+"width": 910,
+"height": 1287,
+"captions_on_page": [],
+"whole_page": true
+}
+]
+}

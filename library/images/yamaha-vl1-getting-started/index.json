@@ -1,0 +1,315 @@
+{
+"source": "Yamaha VL1 Virtual Acoustic Synthesizer Owner's Manual 1: Getting Started",
+"note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text. Entries marked whole_page are the whole page rendered as a picture, because its figures are drawn as lines and are not embedded pictures.",
+"images": [
+{
+"file": "p008-1.webp",
+"page": 8,
+"chapter": "Front matter",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p011-1.webp",
+"page": 11,
+"chapter": "Front matter",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p012-1.webp",
+"page": 12,
+"chapter": "Front matter",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p014-1.webp",
+"page": 14,
+"chapter": "Front matter",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p016-1.webp",
+"page": 16,
+"chapter": "The Controls & Connectors",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p017-1.webp",
+"page": 17,
+"chapter": "The Controls & Connectors",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p020-1.webp",
+"page": 20,
+"chapter": "The Controls & Connectors",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p021-1.webp",
+"page": 21,
+"chapter": "The Controls & Connectors",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p022-1.webp",
+"page": 22,
+"chapter": "Setting Up",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p023-1.webp",
+"page": 23,
+"chapter": "Setting Up",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p024-1.webp",
+"page": 24,
+"chapter": "Setting Up",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p025-1.webp",
+"page": 25,
+"chapter": "Setting Up",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p026-1.webp",
+"page": 26,
+"chapter": "Setting Up",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p029-1.webp",
+"page": 29,
+"chapter": "Setting Up",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p031-1.webp",
+"page": 31,
+"chapter": "Setting Up",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p034-1.webp",
+"page": 34,
+"chapter": "Voice Selection",
+"width": 284,
+"height": 76,
+"captions_on_page": [
+"Reverb is ON.",
+"Stereo output mode.",
+"Studio type reverb."
+]
+},
+{
+"file": "p036-1.webp",
+"page": 36,
+"chapter": "Voice Selection",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p037-1.webp",
+"page": 37,
+"chapter": "Voice Selection",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p039-1.webp",
+"page": 39,
+"chapter": "The Controllers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p040-1.webp",
+"page": 40,
+"chapter": "The Controllers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p041-1.webp",
+"page": 41,
+"chapter": "The Controllers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p042-1.webp",
+"page": 42,
+"chapter": "The Controllers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p046-1.webp",
+"page": 46,
+"chapter": "The Controllers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p047-1.webp",
+"page": 47,
+"chapter": "The Controllers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p048-1.webp",
+"page": 48,
+"chapter": "Mixing & The Modifiers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p049-1.webp",
+"page": 49,
+"chapter": "Mixing & The Modifiers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p050-1.webp",
+"page": 50,
+"chapter": "Mixing & The Modifiers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p051-1.webp",
+"page": 51,
+"chapter": "Mixing & The Modifiers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p054-1.webp",
+"page": 54,
+"chapter": "Mixing & The Modifiers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p055-1.webp",
+"page": 55,
+"chapter": "Mixing & The Modifiers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p056-1.webp",
+"page": 56,
+"chapter": "Mixing & The Modifiers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p057-1.webp",
+"page": 57,
+"chapter": "Mixing & The Modifiers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p059-1.webp",
+"page": 59,
+"chapter": "Effects",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p060-1.webp",
+"page": 60,
+"chapter": "Effects",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+}
+]
+}

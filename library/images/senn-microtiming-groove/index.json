@@ -1,0 +1,57 @@
+{
+"source": "The Effect of Expert Performance Microtiming on Listeners' Experience of Groove in Swing or Funk Music (Senn, Kilchenmann, von Georgi, Bullerjahn, Frontiers in Psychology 2016)",
+"note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text. Entries marked whole_page are the whole page rendered as a picture, because its figures are drawn as lines and are not embedded pictures.",
+"images": [
+{
+"file": "p004-1.webp",
+"page": 4,
+"chapter": "Expert microtiming and groove",
+"width": 1400,
+"height": 804,
+"captions_on_page": [
+"Section of this article.",
+"Gomez and Danuser, 2007)."
+]
+},
+{
+"file": "p005-1.webp",
+"page": 5,
+"chapter": "Expert microtiming and groove",
+"width": 1400,
+"height": 770,
+"captions_on_page": [
+"Deviations from the grid are given in milliseconds.",
+"German speakers.",
+"The experiment was carried out in a quiet university office.",
+"Participants took the listening test one person at a time."
+]
+},
+{
+"file": "p007-1.webp",
+"page": 7,
+"chapter": "Expert microtiming and groove",
+"width": 910,
+"height": 1191,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p008-1.webp",
+"page": 8,
+"chapter": "Expert microtiming and groove",
+"width": 1400,
+"height": 1320,
+"captions_on_page": [
+"Signed-1-Magnitude."
+]
+},
+{
+"file": "p011-1.webp",
+"page": 11,
+"chapter": "Expert microtiming and groove",
+"width": 1400,
+"height": 637,
+"captions_on_page": []
+}
+]
+}

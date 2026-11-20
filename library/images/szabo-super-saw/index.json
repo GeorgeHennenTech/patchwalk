@@ -1,0 +1,237 @@
+{
+"source": "How to Emulate the Super Saw (Adam Szabo, BSc thesis, KTH Stockholm 2010)",
+"note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text. Entries marked whole_page are the whole page rendered as a picture, because its figures are drawn as lines and are not embedded pictures.",
+"images": [
+{
+"file": "p001-1.webp",
+"page": 1,
+"chapter": "The Super Saw",
+"width": 709,
+"height": 756,
+"captions_on_page": []
+},
+{
+"file": "p014-1.webp",
+"page": 14,
+"chapter": "The Super Saw",
+"width": 514,
+"height": 196,
+"captions_on_page": []
+},
+{
+"file": "p015-1.webp",
+"page": 15,
+"chapter": "The Super Saw",
+"width": 514,
+"height": 196,
+"captions_on_page": [
+"Oscillator nr.",
+"Division by center osc."
+]
+},
+{
+"file": "p016-1.webp",
+"page": 16,
+"chapter": "The Super Saw",
+"width": 514,
+"height": 218,
+"captions_on_page": [
+"Figure 3: Proportional detune of the oscillators.",
+"Figure 4: Detune from the results compared to the Super Saw when detune is at half."
+]
+},
+{
+"file": "p016-2.webp",
+"page": 16,
+"chapter": "The Super Saw",
+"width": 514,
+"height": 196,
+"captions_on_page": [
+"Figure 3: Proportional detune of the oscillators.",
+"Figure 4: Detune from the results compared to the Super Saw when detune is at half."
+]
+},
+{
+"file": "p016-3.webp",
+"page": 16,
+"chapter": "The Super Saw",
+"width": 514,
+"height": 218,
+"captions_on_page": [
+"Figure 3: Proportional detune of the oscillators.",
+"Figure 4: Detune from the results compared to the Super Saw when detune is at half."
+]
+},
+{
+"file": "p017-1.webp",
+"page": 17,
+"chapter": "The Super Saw",
+"width": 260,
+"height": 229,
+"captions_on_page": [
+"Figure 6: Real detune values at every 8th interval."
+]
+},
+{
+"file": "p018-1.webp",
+"page": 18,
+"chapter": "The Super Saw",
+"width": 514,
+"height": 218,
+"captions_on_page": [
+"Figure 8: Comparisons of the linear detune and the actual detune."
+]
+},
+{
+"file": "p018-2.webp",
+"page": 18,
+"chapter": "The Super Saw",
+"width": 254,
+"height": 230,
+"captions_on_page": [
+"Figure 8: Comparisons of the linear detune and the actual detune."
+]
+},
+{
+"file": "p019-1.webp",
+"page": 19,
+"chapter": "The Super Saw",
+"width": 452,
+"height": 261,
+"captions_on_page": [
+"Figure 9: Comparisons of mix at 0, and mix at 127."
+]
+},
+{
+"file": "p020-1.webp",
+"page": 20,
+"chapter": "The Super Saw",
+"width": 452,
+"height": 261,
+"captions_on_page": [
+"Table 3: MIDI values of different mix settings and center and side oscillator settings."
+]
+},
+{
+"file": "p021-1.webp",
+"page": 21,
+"chapter": "The Super Saw",
+"width": 514,
+"height": 208,
+"captions_on_page": [
+"Figure 11: Plot of data and approximated functions."
+]
+},
+{
+"file": "p022-1.webp",
+"page": 22,
+"chapter": "The Super Saw",
+"width": 350,
+"height": 178,
+"captions_on_page": []
+},
+{
+"file": "p023-1.webp",
+"page": 23,
+"chapter": "The Super Saw",
+"width": 444,
+"height": 135,
+"captions_on_page": [
+"Figure 14: A high pass filter is used to cut the noise below the fundamental harmonic."
+]
+},
+{
+"file": "p023-2.webp",
+"page": 23,
+"chapter": "The Super Saw",
+"width": 514,
+"height": 194,
+"captions_on_page": [
+"Figure 14: A high pass filter is used to cut the noise below the fundamental harmonic."
+]
+},
+{
+"file": "p024-1.webp",
+"page": 24,
+"chapter": "The Super Saw",
+"width": 514,
+"height": 196,
+"captions_on_page": [
+"Figure 15: Noise is cut using a high pass filter.",
+"Figure 16: Gradual increase in amplitude of the first harmonic."
+]
+},
+{
+"file": "p024-2.webp",
+"page": 24,
+"chapter": "The Super Saw",
+"width": 514,
+"height": 196,
+"captions_on_page": [
+"Figure 15: Noise is cut using a high pass filter.",
+"Figure 16: Gradual increase in amplitude of the first harmonic."
+]
+},
+{
+"file": "p025-1.webp",
+"page": 25,
+"chapter": "The Super Saw",
+"width": 514,
+"height": 178,
+"captions_on_page": []
+},
+{
+"file": "p026-1.webp",
+"page": 26,
+"chapter": "The Super Saw",
+"width": 514,
+"height": 116,
+"captions_on_page": []
+},
+{
+"file": "p027-1.webp",
+"page": 27,
+"chapter": "The Super Saw",
+"width": 514,
+"height": 116,
+"captions_on_page": [
+"Figure 19: The oscillators are reset, causing a flanging effect.",
+"Figure 20: The phase for each oscillator has an offset, but they still reset.",
+"Figure 20: Random values are assigned to the phase at each note trigger."
+]
+},
+{
+"file": "p027-2.webp",
+"page": 27,
+"chapter": "The Super Saw",
+"width": 514,
+"height": 116,
+"captions_on_page": [
+"Figure 19: The oscillators are reset, causing a flanging effect.",
+"Figure 20: The phase for each oscillator has an offset, but they still reset.",
+"Figure 20: Random values are assigned to the phase at each note trigger."
+]
+},
+{
+"file": "p027-3.webp",
+"page": 27,
+"chapter": "The Super Saw",
+"width": 514,
+"height": 116,
+"captions_on_page": [
+"Figure 19: The oscillators are reset, causing a flanging effect.",
+"Figure 20: The phase for each oscillator has an offset, but they still reset.",
+"Figure 20: Random values are assigned to the phase at each note trigger."
+]
+},
+{
+"file": "p030-1.webp",
+"page": 30,
+"chapter": "The Super Saw",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+}
+]
+}

@@ -1,0 +1,65 @@
+{
+"source": "Groove in drum patterns as a function of both rhythmic properties and listeners' attitudes (Senn, Kilchenmann, Bechtold, Hoesl, PLOS ONE 2018)",
+"note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text. Entries marked whole_page are the whole page rendered as a picture, because its figures are drawn as lines and are not embedded pictures.",
+"images": [
+{
+"file": "p001-1.webp",
+"page": 1,
+"chapter": "Groove in drum patterns",
+"width": 894,
+"height": 198,
+"captions_on_page": []
+},
+{
+"file": "p009-1.webp",
+"page": 9,
+"chapter": "Groove in drum patterns",
+"width": 957,
+"height": 1400,
+"captions_on_page": []
+},
+{
+"file": "p010-1.webp",
+"page": 10,
+"chapter": "Groove in drum patterns",
+"width": 1400,
+"height": 611,
+"captions_on_page": []
+},
+{
+"file": "p015-1.webp",
+"page": 15,
+"chapter": "Groove in drum patterns",
+"width": 1091,
+"height": 1400,
+"captions_on_page": []
+},
+{
+"file": "p018-1.webp",
+"page": 18,
+"chapter": "Groove in drum patterns",
+"width": 1400,
+"height": 933,
+"captions_on_page": []
+},
+{
+"file": "p021-1.webp",
+"page": 21,
+"chapter": "Groove in drum patterns",
+"width": 1400,
+"height": 1046,
+"captions_on_page": []
+},
+{
+"file": "p023-1.webp",
+"page": 23,
+"chapter": "Groove in drum patterns",
+"width": 1400,
+"height": 749,
+"captions_on_page": [
+"Groove ratings from the professionals.",
+"P4 (large blue squares)."
+]
+}
+]
+}

@@ -1,0 +1,31 @@
+{
+"source": "Superior time perception for lower musical pitch explains why bass-ranged instruments lay down musical rhythms (Hove, Marie, Bruce, Trainor, PNAS 2014)",
+"note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text. Entries marked whole_page are the whole page rendered as a picture, because its figures are drawn as lines and are not embedded pictures.",
+"images": [
+{
+"file": "p002-1.webp",
+"page": 2,
+"chapter": "Timing perception for low pitch",
+"width": 894,
+"height": 1197,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p003-1.webp",
+"page": 3,
+"chapter": "Timing perception for low pitch",
+"width": 679,
+"height": 335,
+"captions_on_page": []
+},
+{
+"file": "p004-1.webp",
+"page": 4,
+"chapter": "Timing perception for low pitch",
+"width": 582,
+"height": 465,
+"captions_on_page": []
+}
+]
+}

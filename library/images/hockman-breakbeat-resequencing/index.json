@@ -1,0 +1,24 @@
+{
+"source": "Computational Strategies for Breakbeat Classification and Resequencing in Hardcore, Jungle and Drum & Bass (Hockman and Davies, DAFx-15, 2015)",
+"note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text. Entries marked whole_page are the whole page rendered as a picture, because its figures are drawn as lines and are not embedded pictures.",
+"images": [
+{
+"file": "p002-1.webp",
+"page": 2,
+"chapter": "Breakbeat classification and resequencing",
+"width": 910,
+"height": 1287,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p005-1.webp",
+"page": 5,
+"chapter": "Breakbeat classification and resequencing",
+"width": 910,
+"height": 1287,
+"captions_on_page": [],
+"whole_page": true
+}
+]
+}

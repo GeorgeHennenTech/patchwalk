@@ -4,6 +4,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fingerprint } from "../src/store/shared.js";
 import { buildIndex, splitText, type Index, type Passage, type PassageImage } from "../src/library/search.js";
+import { summarise, type SourceCard, type SourceDoc } from "../src/library/catalog.js";
 
 let cached: Index | undefined;
 /** Changes whenever the library's contents do, so answers remembered from an older library are not reused. */
@@ -41,4 +42,19 @@ export function loadLibrary(root = process.cwd()): Index {
   libraryVersion = fingerprint(passages.map((p) => `${p.id}:${p.text.length}:${(p.images ?? []).map((i) => i.file).join(",")}`));
   cached = buildIndex(passages);
   return cached;
+}
+
+let cards: SourceCard[] | undefined;
+/** Every book as a card for the Library tab's Sources shelf: its length and chapters, none of its words. */
+export function loadCatalog(root = process.cwd()): SourceCard[] {
+  if (cards) return cards;
+  const dir = join(root, "library"), out: SourceCard[] = [];
+  for (const file of readdirSync(dir).filter((f) => f.endsWith(".json"))) {
+    const doc = JSON.parse(readFileSync(join(dir, file), "utf8")) as SourceDoc;
+    const imageIndex = join(dir, "images", doc.id, "index.json");
+    const pictures = existsSync(imageIndex) ? (JSON.parse(readFileSync(imageIndex, "utf8")) as { images: unknown[] }).images.length : 0;
+    out.push(summarise(doc, pictures));
+  }
+  cards = out.sort((a, b) => a.title.localeCompare(b.title));
+  return cards;
 }

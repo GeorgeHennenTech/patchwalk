@@ -5,7 +5,7 @@ has dropped this file into a new chat to save context and will often say nothing
 re-explain anything here. Read this file, do the "Start here" steps, then carry on with "What to do next".
 Write to the owner the way section 2 describes.
 
-Last updated: 20 November 2026, after commit "Library: seventeen documents and the Groove MIDI Dataset taken in".
+Last updated: 20 November 2026, after commit "Library: a Sources shelf, and lesson ideas from the new literature".
 **The newest state is the block "Latest (18 Nov 2026)" at the top of section 8 and the dated notes at the end of this file. Where an older paragraph disagrees with them or with `CLAUDE.md`, the newer one is right.**
 
 ---
@@ -22,7 +22,7 @@ Last updated: 20 November 2026, after commit "Library: seventeen documents and t
    ```bash
    npm test
    ```
-   Expect 780 passing tests in 37 files (20 Nov 2026).
+   Expect 787 passing tests in 38 files (20 Nov 2026).
 3. **Run it.** `npm run dev` serves the app at http://localhost:5173 including the two server functions.
    The Claude calls report "no API key" locally unless `.env.local` has `ANTHROPIC_API_KEY`; that is expected.
 4. **Then continue with section 8** without waiting for instructions, unless the owner's message says otherwise.
@@ -568,3 +568,13 @@ condition for un-pausing the Physical models tab); every book on the "to buy or 
 hearing or bioacoustics. Nobody has asked the live guide a question from the new texts yet.
 The to-do and usage widgets' source is in `tools/mods/` (its README says how to put them back); in the
 owner's app the side pane is not drawn, so `/todo` prints the list and the To-Do page is the real view.
+
+## 20 Nov 2026, later: a Sources shelf, and 305 lesson ideas
+- The Library tab opens on a new **Sources** shelf: every text as a sortable table with a search inside them
+  (`CLAUDE.md`, "Sources shelf in the Library tab"). Texts are deliberately not shown whole; the owner may ask
+  for a page reader. A new book needs a card in `SOURCES` (`src/library/catalog.ts`) or a test fails.
+- **`docs/LESSON_IDEAS.md`** is the answer to the owner's request for a lesson from every useful concept in
+  the new texts: 305 ideas with pages, what each needs, the builds they depend on (with the papers' numbers)
+  and a suggested order. **Next: the owner chooses where to start; the default is the 85 lessons that need
+  nothing built, FM first.** Write lessons from the library text itself, not from that file's one-liners.
+- Expect 787 passing tests in 38 files.

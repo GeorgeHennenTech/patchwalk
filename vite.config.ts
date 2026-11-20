@@ -10,7 +10,7 @@ function devApi(): Plugin {
     configureServer(server) {
       const env = loadEnv("development", process.cwd(), "");
       for (const k of ["ANTHROPIC_API_KEY", "APP_PASSWORD", "KV_REST_API_URL", "KV_REST_API_TOKEN", "UPSTASH_REDIS_REST_URL", "UPSTASH_REDIS_REST_TOKEN", "OWNER_EMAIL", "MAIL_FROM", "RESEND_API_KEY", "BREVO_API_KEY"]) if (env[k] && !process.env[k]) process.env[k] = env[k];
-      for (const route of ["lesson", "ask", "walk", "serum", "library", "image", "point", "store", "account"]) server.middlewares.use(`/api/${route}`, async (req: IncomingMessage, res) => {
+      for (const route of ["lesson", "ask", "walk", "serum", "library", "sources", "image", "point", "store", "account"]) server.middlewares.use(`/api/${route}`, async (req: IncomingMessage, res) => {
         try {
           const chunks: Buffer[] = [];
           for await (const c of req) chunks.push(c as Buffer);

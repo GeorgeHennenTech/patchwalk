@@ -1715,6 +1715,34 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   owner's list of six papers: Frühauf, Kopiez and Platz. The Physical models tab stays on hold: the owner's
   condition was Fletcher and Rossing, which has not arrived, though Karjalainen, Bank and the VL1 manuals
   now give sourced material for strings, piano and wind models.
+- **Sources shelf in the Library tab (20 Nov 2026, owner: "we need a tab in patchwalk where you can view all of
+  these sources like a database").** The Library tab's first shelf is now **Sources**: a table of every text
+  (title, by, year, kind, subject, pages, pictures) that sorts and filters, opens to show what a source covers,
+  a "keep in mind" note, its chapters with page ranges, and a search inside it; and a search inside all of
+  them. `src/library/catalog.ts` (shared by page and server; `.js`-free, no imports): `SOURCES` (the card for
+  each text: by, year, kind, topic, about, added, note; **a test fails if a text in `library/` has no card or
+  a card has no text, so add a card with every new book**), `summarise` (a book as counts and chapters, none
+  of its words), `snippet`. `api/sources.ts` (`list`, `search`; password and a signed-in account, no key, no
+  call to Claude; refused on the deployed site with no database), `loadCatalog` in `api/_library.ts`,
+  `src/guide/sources.ts`, `src/ui/Sources.tsx`. **The texts are not shown whole, by design: a search returns
+  at most twelve excerpts of about 320 characters, one per page, with book, page and chapter, and there is no
+  request that returns a page.** This keeps the rule that library text is never shown in full; the owner was
+  told and can ask for a page reader. Pictures are not shown on this shelf either (many are whole pages).
+  Checked in a browser: 38 rows, a search for "supersaw detune" led with the thesis's page 8, a hit opened
+  its source, the subject filter and the sort worked, and a search inside one book stayed inside it.
+- **Lesson ideas from the new literature (20 Nov 2026, owner: "go through each individual one and pull/create
+  a lesson for each one of these concepts that you deem useful and not repetitive").** Eight helpers each read
+  a group of the texts taken in that day in full, against the list of existing lessons, under strict rules
+  (only what the text says, with pages; nothing about what sound does to a listener beyond what was measured;
+  no artist's technique). **`docs/LESSON_IDEAS.md` holds the result: 305 ideas (about 280 distinct), each with
+  pages, where it is done, what must be built first and its value; then what is worth building with the exact
+  numbers the papers give (Dattorro's reverb, the seven-saw stack, the FM recipes, the five-cell fold), a
+  suggested order, and cautions.** Nothing in it is built. The numbers were copied from helpers' reports of
+  extracted text: check each against the PDF's page picture before coding. Found on the way: the Raman letter
+  never says "tabla"; Dattorro has no shelving filter, DC blocker or size control; neither string paper gives
+  enough numbers for a sourced guitar or piano (values come from calibration against recordings); the VL1
+  manuals give no numbers for the model itself; the groove studies found small or no effects for microtiming,
+  swing and syncopation and a large effect of the listener's own taste.
 - **Long pages are searched in parts (16 Nov 2026).** `splitText` in `src/library/search.ts` cuts a page over
   2,400 characters into overlapping parts of about 1,500 (ids `book#page~1`, `~2`, with `of` naming the
   page); `pageOf` and `cite` count parts of one page as one source, and `search` takes at most two parts of

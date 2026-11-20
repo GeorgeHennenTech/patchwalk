@@ -28,6 +28,10 @@
     },
     "api/library.ts": {
       "maxDuration": 30
+    },
+    "api/sources.ts": {
+      "maxDuration": 30,
+      "includeFiles": "{library/*.json,library/images/*/index.json,knowledge-cards/*.md}"
     }
   },
   "headers": [

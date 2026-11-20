@@ -1,14 +1,17 @@
-// The Library tab: everything people on this site have kept for each other. Walkthroughs the guide has
+// The Library tab: the texts the guide answers from (Sources), and everything people on this site have kept
+// for each other. Walkthroughs the guide has
 // written, and what has been made in the Studio: sound files, breaks, drum racks and songs.
 import { useCallback, useEffect, useRef, useState } from "react";
 import { WalkLibrary } from "./Walkthrough";
+import { SourcesShelf } from "./Sources";
 import { fromBase64, libGet, libList, libRemove, type LibEntry, type LibKind, type LibList } from "../guide/library";
 import { loadBreaks, loadRacks, loadSongs, storeBreaks, storeRacks, storeSongs, tidyBreak, tidyRack, withNamed, withSavedSong } from "../daw/store";
 import { tidySong } from "../daw/song";
 import { listSamples, putSample } from "../daw/samples";
 
-type Page = "walks" | LibKind;
+type Page = "sources" | "walks" | LibKind;
 const PAGES: { id: Page; name: string; blurb: string }[] = [
+  { id: "sources", name: "Sources", blurb: "" },
   { id: "walks", name: "Walkthroughs", blurb: "" },
   { id: "sound", name: "Sounds", blurb: "Sound files people have dropped onto drum pads in the Studio. Add one to your sounds and it appears in every drum rack's list." },
   { id: "break", name: "Breaks", blurb: "Drum patterns saved from the Studio. Add one to your breaks, then click it in a drum clip to use it." },
@@ -78,9 +81,10 @@ export default function LibraryView() {
     <>
       <section className="panel lib-top">
         <h2>Library</h2>
-        <p className="daw-lede">Everything people on this site have kept for each other. Looking and adding cost nothing.</p>
+        <p className="daw-lede">The texts the guide answers from, and everything people on this site have kept for each other. Looking and adding cost nothing.</p>
         <div className="seg lib-pages" role="tablist" aria-label="Shelves of the library">{PAGES.map((p) => <button key={p.id} role="tab" aria-selected={page === p.id} className={page === p.id ? "on" : ""} onClick={() => go(p.id)}>{p.name}</button>)}</div>
-        {page !== "walks" && <Shelf key={page} kind={page} blurb={now.blurb} />}
+        {page === "sources" && <SourcesShelf />}
+        {page !== "walks" && page !== "sources" && <Shelf key={page} kind={page} blurb={now.blurb} />}
       </section>
       {page === "walks" && <WalkLibrary />}
     </>

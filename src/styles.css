@@ -590,3 +590,35 @@ tr.dim td { opacity: 0.6; }
 .daw2 .tb-back { background: #ff5a4d; color: #1a1a1c; font-weight: 700; }
 /* a short clip must not widen its columns: it takes no room of its own and fills the beats it is given */
 .daw2 .arr-clip, .daw2 .arr .arr-slot, .daw2 button.arr-bar-n { min-width: 0; contain: inline-size; overflow: hidden; }
+
+/* ---- Library tab: the Sources shelf (a table of every text, and a search inside them) ---- */
+.src-in { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 12px; }
+.src-in input[type="search"] { flex: 1; min-width: 220px; max-width: 560px; padding: 7px 10px; }
+.src-all input[type="search"] { max-width: 720px; }
+.src-filters { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; margin: 16px 0 10px; }
+.src-filters .seg { flex-wrap: wrap; margin: 0; }
+.src-filters .seg small { opacity: 0.65; font-weight: 400; }
+.src-filters .lib-find { margin: 0; }
+.src-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+.src-table th { text-align: left; font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; opacity: 0.7; padding: 6px 10px; border-bottom: 2px solid var(--line, #d9c9b0); white-space: nowrap; }
+.src-table td { padding: 7px 10px; border-bottom: 1px solid var(--line, #d9c9b0); vertical-align: top; }
+.src-table .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.src-table tr.open > td { border-bottom-color: transparent; }
+.src-title { background: none; border: 0; box-shadow: none; padding: 0; text-align: left; font: inherit; font-weight: 600; color: inherit; cursor: pointer; }
+.src-title:hover { color: var(--accent); }
+.src-open > td { padding: 0 10px 14px 28px; }
+.src-detail { max-width: 86ch; }
+.src-detail > p { margin: 4px 0 8px; }
+.src-note { padding: 6px 10px; border-left: 3px solid var(--accent); }
+.src-facts { font-size: 0.84rem; opacity: 0.8; }
+.src-chapters { margin: 6px 0 12px; }
+.src-chapters summary { cursor: pointer; font-weight: 600; }
+.src-chapters ol { margin: 6px 0 0; padding-left: 22px; columns: 2 300px; column-gap: 28px; }
+.src-chapters li { break-inside: avoid; display: flex; justify-content: space-between; gap: 12px; padding: 1px 0; }
+.src-chapters li .muted { white-space: nowrap; font-size: 0.82rem; }
+.src-hits { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 8px; }
+.src-hits li { padding: 8px 12px; border: 1px solid var(--line, #d9c9b0); border-radius: 10px; }
+.src-hit-where span { font-size: 0.84rem; opacity: 0.75; }
+.src-hit-where .linkish, .src-in .linkish { background: none; border: 0; color: var(--accent); text-decoration: underline; cursor: pointer; box-shadow: none; padding: 0; font-weight: 600; }
+.src-excerpt { margin: 4px 0 0; font-size: 0.92rem; }
+@media (max-width: 760px) { .src-table th:nth-child(4), .src-table td:nth-child(4), .src-table th:nth-child(7), .src-table td:nth-child(7), .src-table th:nth-child(2), .src-table td:nth-child(2) { display: none; } }

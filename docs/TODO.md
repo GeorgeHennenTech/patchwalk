@@ -182,6 +182,10 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [ ] Lessons on the distortion plugin Rift (Minimal Audio); its manual is in the library
 - [x] Take in the literature the owner uploaded on 20 Nov 2026: seventeen documents (Chowning on FM; Rajala on infrasound; Senn 2016 and 2018 and Hove 2014 on groove, microtiming and bass timing; Hockman and Davies on breakbeats; Puckette's book; both Yamaha VL1 manuals; Karjalainen on plucked strings; Bank on piano; Dattorro on reverb; Stilson and Smith on alias-free waveforms; Szabo on the supersaw; the Buchla wavefolder paper; Raman 1920 on Indian drums; a Knowles white paper) and the Groove MIDI Dataset
 - [ ] Still to arrive from the owner's list of six papers: Frühauf, Kopiez and Platz, "Music on the timing grid"
+- [x] Library tab: a Sources shelf listing every text like a database, with a search inside them (20 Nov 2026)
+- [x] Read every text uploaded on 20 Nov in full and write out lesson ideas: 305 in `docs/LESSON_IDEAS.md`, with what each needs and a suggested order
+- [ ] Write the 85 or so lessons from `docs/LESSON_IDEAS.md` that need nothing built (FM, ring and distortion, sync and formants, drum layers and breaks, expressive playing)
+- [ ] Small builds that each open several lessons (click source, peak and RMS meter, Q readout, invert on Osc B, flanger time knob, distortion bias, sample-and-hold LFO, per-note random, response curves, reverb freeze, sampler reverse, ghost strength, slice names): list in `docs/LESSON_IDEAS.md`
 - [ ] Build from the new texts (owner to choose the order): a supersaw from Szabo; FM lessons from Chowning; a better reverb from Dattorro; a Buchla-style fold; groove and microtiming lessons with the Groove MIDI data; breakbeat lessons; physical-modelling lessons (still waiting on Fletcher and Rossing)
 - [ ] Rhythm lessons drawing on the groove and microtiming papers
 - [ ] Master Handbook of Acoustics: waiting for a copy the owner has bought or borrowed (the uploaded copy came from a piracy site and was not taken in)

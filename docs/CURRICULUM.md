@@ -857,3 +857,130 @@ artist pulling 1m listeners a month knows and nothing more".
 - Paths by genre (house, breaks, glitch-hop, psydub...) and by role (sound designer, beat maker, mixer).
 - Needs first: a `tags` field on lessons, far more of the course built (mixing, arrangement and the genre
   tracks do not exist yet), and "mastered" stored with the account.
+
+## Added on 21 Nov 2026: the owner's decisions on what the plan was missing (planned, nothing built)
+
+The owner asked how much the plan lacks "in terms of literally all things music", was given a list of
+fourteen gaps, and answered each. Books for these are in `docs/LITERATURE.md` ("Books for the thin tracks").
+
+| Gap | Owner's answer |
+|---|---|
+| Finishing tracks | **Yes, as "put it together" walkthroughs at set points in the lessons, and maybe a section of its own** |
+| Taking apart reference tracks | Later: "once we're basically done writing the course", not a worry now |
+| Recording, microphones, field recording | **No** |
+| Room and monitoring; vocals; melodies, hooks and bass lines; groove across a track; sample choice; resampling; collaboration and feedback; the business side; other tools | **Yes to all** |
+| Playing live and DJing | **No** |
+| Looking after your ears | Not answered. A short version is kept inside "Room and monitoring" below, since it is about safe levels |
+
+### W. Put it together (the owner's idea)
+Two parts. **(1) Milestones inside the course:** after each group of chapters, one walkthrough in which the
+learner makes something whole using only what they have learned so far, with nothing new taught. A milestone
+is a lesson like any other (steps, checks, a quiz), longer, and it ends with a sound or a clip the learner
+saves. **(2) A section of its own, "Finishing":** the habits of getting from a loop to a finished track.
+
+Milestones (each sits straight after the chapters named):
+| # | Milestone | After | What the learner makes |
+|---|---|---|---|
+| W1 | Your first complete sound | Sound itself, Oscillators, Filters | A bass, a lead and a pad from a blank synth, each saved |
+| W2 | A sound that moves | Envelopes, LFOs, Modulation | A pluck, a wobble bass and a slow-evolving pad, each with one macro |
+| W3 | A playable instrument | Macros, Reshaping the wave | One patch with four macros that covers soft to aggressive |
+| W4 | A sound with space | Effects, Playing a line | A lead with glide, delay and reverb, played as a short line |
+| W5 | A drum kit from nothing | Impacts | Kick, snare, hat and a hit, all synthesized, loaded onto pads |
+| W6 | An eight-bar loop | Notes and chords, the rhythm chapter, the Studio lessons | Drums, bass and chords in the Studio, in key and in time |
+| W7 | A loop that breathes | Automation and effect-device lessons | The same loop with a filter sweep, a send and a sidechain |
+| W8 | Sixteen bars into a minute | Arrangement lessons | Intro, build, drop and break from the one loop |
+| W9 | A finished track | Mixing lessons | A full arrangement, balanced, exported |
+| W10 | A released-ready file | Mastering lessons | The track at a sensible loudness with nothing clipping |
+W1 to W4 can be written now (the synth has everything). W5 and W6 need the lesson engine to know the Studio.
+The old Projects track (P1 to P8) folds into these: P1 is W1, P3 is W5, P4 is W6, P5 is W8, P6 is W9, P7 is W10.
+
+Finishing (needs a source for the "why"; DeSantis, *Making Music*, is the first to get; the "what to do" can
+be taught as a method without one):
+| # | Lesson |
+|---|---|
+| F1 | Loop sickness: why eight bars feel finished and are not, and the copy-then-subtract way out |
+| F2 | Decide the length and the sections before the details |
+| F3 | Work in passes: sketch everything rough, then improve the worst part |
+| F4 | Limits on purpose: three sounds, one hour, one idea |
+| F5 | Commit: bounce it and stop tweaking |
+| F6 | Separate making from judging: two sittings, two hats |
+| F7 | What "done" means: a checklist the learner writes for themselves |
+| F8 | Getting unstuck: change one constraint (tempo, key, sound, order) |
+| F9 | Templates and starting points that save the first twenty minutes |
+| F10 | A finished bad track teaches more than an unfinished good one: finish five short ones |
+Nothing here may claim what works for a named producer; where a study exists it goes in the library first.
+
+### Later, when the course is nearly written: studying a reference track
+Structure, layers and where the energy moves in a record the learner loves. Moylan's *Recording Analysis* is
+the text. Not scheduled; the owner is "not too worried about it".
+
+### New tracks the owner said yes to
+Each is an outline. "Now" means it can be taught as a measurable fact about our own tools; "source" means it
+waits for a book in the library before it explains anything.
+
+**X1. Room and monitoring (about 10)**
+Headphones against speakers, and what each hides (source) · where bass goes wrong in a small room (source:
+Everest, Toole) · listening level and why judgements change with it (source: Moore or Plack) · safe levels
+and rests for your ears (source) · checking a mix in mono (now: the Utility device) · checking on small
+speakers (now: a band-limit) · reference tracks at matched level (now: the meter lessons) · the car test and
+what it tells you (source) · a spectrum analyser as a second opinion (now) · calibration: one fixed monitor
+level (source: Katz).
+
+**X2. Vocals (about 12)**
+A vocal as a sample: start, length, fades (now: the sampler) · chopping a phrase onto pads (now: slicing) ·
+pitching a chop up and down, and what it does to its length and character (now) · formants: why a pitched
+voice sounds small or large (source: Puckette's formant pages are in) · gating and tidying (now) ·
+compression for a level voice (now) · de-essing as a compressor that listens to one band (needs a small
+build) · EQ for a voice (source) · delays and reverbs on sends (now) · doubling and widening (now: chorus,
+short delays) · vocoder and talking synths (needs a build) · tuning (needs a build; out of reach for now).
+Recording a voice is out, by the owner's "no" to recording.
+
+**X3. Melodies, hooks and bass lines (about 14)**
+Steps and leaps (source: Open Music Theory, free) · contour: shapes a melody can take (source) · rhythm of a
+melody against the beat (now, as a pattern) · repetition and one change (source: Perricone) · call and
+answer (source) · a hook in five notes (source) · chord notes and passing notes (source) · a bass line
+from roots (now: checked from what is played) · roots and fifths, then octaves (now) · bass against kick:
+taking turns (now, in the Studio) · syncopated bass (now) · a riff that survives a filter sweep (now) ·
+melody over a chord change (source) · writing to a scale with the piano roll's fold (now).
+
+**X4. Groove across a whole track (about 10)**
+Fills at the ends of phrases (now) · variation every four and eight bars (now) · taking a drum out and
+bringing it back (now) · ghost notes and accents (now; the groove papers in the library give the evidence
+and its limits) · tension: risers, rolls and filter moves (now) · release: what the drop changes (now) ·
+energy as a line you draw before you write (source) · density: how many things play at once (now, counted) ·
+half-time and double-time feel (now) · swing changed between sections (now).
+
+**X5. Choosing and keeping sounds (about 8)**
+What to listen for in a kick: start, body, tail (now: the impact lessons give the words) · choosing a
+snare for a kick (now) · tuning drums to the key (now: the Tuner device) · layering two samples without
+cancelling (now: the adding-sounds lesson) · trimming and fading (now) · naming and tagging so a sound can
+be found again (now: the Library tab) · a small kit you know beats a huge folder (source or the owner's own
+experience) · licences: what a sample pack lets you do (source).
+
+**X6. Resampling (about 10)**
+Bounce a sound to a file and play it back (needs a build: record a track's output into a sound file) ·
+pitch it down an octave and hear the time stretch (now, once bounced) · reverse (needs a small build) ·
+chop the bounce onto pads (now) · process, bounce, process again: why the order is frozen in (now: the
+order-of-effects lesson) · a growl from one note, bounced and re-pitched (now, once bounced) · resampling
+through distortion twice (now) · turning a bounce into a wavetable (needs a build) · freezing a reverb tail
+into a pad (needs a build) · committing as a way to finish (links to F5).
+
+**X7. Working with other people (about 6; all need a source or the owner's own notes)**
+Asking for feedback on one thing · hearing notes without defending · giving notes that can be acted on ·
+sending stems and a reference · working with a singer: key, range and a guide track · splitting the work
+and the credit. Nothing here is checkable by the app; these are reading lessons with a checklist.
+
+**X8. The business side (about 8; all need a source, and the law differs by country)**
+What a master and a composition are · what clearing a sample means · what a sample-pack licence covers ·
+loudness targets on streaming services and why louder is not better there (measurable part now; the
+targets need each service's own page) · file formats for release · metadata and credits · a distributor's
+job · registering a work. **Not legal advice; every lesson says so and names its source.**
+
+**X9. Other tools (about 8)**
+The same idea on three synths: what carries over (now, as a comparison of controls; each synth's manual
+must be in the library first) · reading an unfamiliar synth's panel · subtractive, wavetable, FM, granular
+hardware and software in one map · other DAWs: what Ableton calls it against what others call it (needs
+their manuals) · Rift (its manual is in) · stock devices against third-party ones.
+
+**Counts:** ten milestones, ten finishing lessons and about 86 lesson outlines across nine new tracks. About
+half are marked "now".

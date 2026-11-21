@@ -1805,6 +1805,16 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   `docs/CURRICULUM.md` ("Paths"): a path is a named, ordered subset of lessons, **defined by what a finished
   piece of work needs, never by what a real person knows or by listener numbers** (no source ties skills to
   audience size, and the rules forbid claims about artists). Awaiting the owner's reply to that framing.
+- **What the plan was missing, and the owner's answers (21 Nov 2026).** Asked how much of "all things music"
+  the plan lacks, the owner was given fourteen gaps and decided each: **yes** to "put it together"
+  walkthroughs at set points in the lessons plus a section on finishing tracks (their own idea); **later**
+  for studying reference tracks; **no** to recording and microphones, and **no** to playing live and DJing
+  (do not plan either); **yes** to room and monitoring, vocals (not recording them), melodies and bass lines,
+  groove across a track, choosing sounds, resampling, working with others, the business side, and other
+  tools. `docs/CURRICULUM.md` ends with the result: milestones W1 to W10 (W1 to W4 can be written now),
+  ten finishing lessons, and nine outlined tracks, each line marked "now" or "source". Books for the thin
+  tracks were researched the same day (`docs/LITERATURE.md`, last section: about 30, three of them free;
+  six listed from memory and marked unconfirmed; none read). Nothing is built.
 - **Long pages are searched in parts (16 Nov 2026).** `splitText` in `src/library/search.ts` cuts a page over
   2,400 characters into overlapping parts of about 1,500 (ids `book#page~1`, `~2`, with `of` naming the
   page); `pageOf` and `cite` count parts of one page as one source, and `search` takes at most two parts of

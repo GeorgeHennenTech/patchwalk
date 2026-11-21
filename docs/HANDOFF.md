@@ -605,3 +605,11 @@ course map now ends with "Track G-H: the history of each genre": 28 nu-skool bre
 opened from the session. **Waiting on the owner for: (1) yes or no to history lessons naming people, clubs,
 labels and records; (2) the next genre; (3) the unread pieces, pasted in or the sites allowed.** Lesson
 writing ("When digital sound goes wrong" next) continues whenever the owner says.
+
+## 21 Nov 2026: what the plan lacks, and the owner's decisions
+The course map now ends with the owner's answers on fourteen gaps (`CLAUDE.md`, "What the plan was
+missing"): "put it together" milestones W1 to W10 and a Finishing section (yes), nine new tracks (yes),
+recording and DJing (no), reference tracks (later). A researched book list for the thin tracks is at the end
+of `docs/LITERATURE.md`. **Two things can be done without the owner: write milestones W1 to W4, and take in
+the three free texts (Open Music Theory, Shelvock's thesis, Dancecult) after checking each licence.** The
+owner closed the usage widget for this session (its source stays in `tools/mods/`).

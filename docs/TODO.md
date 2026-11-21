@@ -192,6 +192,8 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [ ] Paths (owner's idea, 20 Nov): mark which lessons make which kind of producer, by what a finished track needs; needs tags on lessons and much more of the course first (`docs/CURRICULUM.md`, "Paths")
 - [x] Researched books for the thin tracks: mixing, mastering, hearing, arrangement, ear training, theory, genre history (`docs/LITERATURE.md`, last section) (21 Nov 2026)
 - [ ] Take in the three free texts found: Open Music Theory, Shelvock's mastering thesis, Dancecult articles (after checking each licence)
+- [x] Course map: the owner's answers on what was missing, with "Put it together" milestones, a Finishing section and nine new tracks outlined (`docs/CURRICULUM.md`, last section) (21 Nov 2026)
+- [ ] Write milestones W1 to W4 ("Your first complete sound" to "A sound with space"): they need nothing built
 - [ ] Lessons, next chapters in order: "When digital sound goes wrong", "Expression", "One delay, many effects", then the rest of the ten (`docs/CURRICULUM.md`, last section)
 - [ ] Write the 85 or so lessons from `docs/LESSON_IDEAS.md` that need nothing built (FM, ring and distortion, sync and formants, drum layers and breaks, expressive playing)
 - [ ] Small builds that each open several lessons (click source, peak and RMS meter, Q readout, invert on Osc B, flanger time knob, distortion bias, sample-and-hold LFO, per-note random, response curves, reverb freeze, sampler reverse, ghost strength, slice names): list in `docs/LESSON_IDEAS.md`

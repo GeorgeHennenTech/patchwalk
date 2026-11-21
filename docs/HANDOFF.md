@@ -613,3 +613,9 @@ recording and DJing (no), reference tracks (later). A researched book list for t
 of `docs/LITERATURE.md`. **Two things can be done without the owner: write milestones W1 to W4, and take in
 the three free texts (Open Music Theory, Shelvock's thesis, Dancecult) after checking each licence.** The
 owner closed the usage widget for this session (its source stays in `tools/mods/`).
+
+## 21 Nov 2026, later: more wavetables
+The synth has 33 wavetables (23 new), chosen from a grouped drop-down (`CLAUDE.md`, "Twenty-three more
+wavetables"). 797 passing tests in 38 files. Next for wavetables, if the owner asks: lessons that use
+them, then an editor so tables can be drawn in the app. The owner was also given the full list of
+literature still wanted; it lives in `docs/LITERATURE.md`.

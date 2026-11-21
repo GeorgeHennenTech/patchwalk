@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { BOX_IDS, DEST_NAMES, FAST_DESTS, fromTravel, INITIAL, MOD_DESTS, PARAMS, SLOW_DESTS, toTravel, type ParamSpec, type SynthState } from "../../synth/params";
+import { BOX_IDS, DEST_NAMES, FAST_DESTS, fromTravel, INITIAL, MOD_DESTS, PARAMS, SLOW_DESTS, TABLE_GROUPS, TABLES, tableName, toTravel, type ParamSpec, type SynthState } from "../../synth/params";
 import { slotPush, slotsTo } from "../../synth/macros";
 import { connect, currentDrag, dragName, endDrag } from "../../synth/connect";
 import { routes, routesTo, SOURCES, withRouteAmount, type Route } from "../../synth/mod";
@@ -51,6 +51,15 @@ const arc = (from: number, to: number, r: number) => {
  * The destination menu, grouped: first the ones moved inside the sound itself, then every other knob by the
  * panel it lives on. Used by each source's "sends to" menu and by the matrix.
  */
+/** The wavetable menu, in groups. */
+export function TableOptions() {
+  return (
+    <>
+      <option value="none">{tableName("none")}</option>
+      {TABLE_GROUPS.map(([group, ids]) => <optgroup key={group} label={group}>{ids.map((t) => <option key={t} value={t}>{tableName(t)}</option>)}</optgroup>)}
+    </>
+  );
+}
 export function DestOptions() {
   const groups: Record<string, string[]> = {};
   for (const id of SLOW_DESTS) (groups[PARAMS[id]!.group] ??= []).push(id);
@@ -223,7 +232,7 @@ export function Control({ id, synth, spot, only }: { id: keyof SynthState; synth
         <span className="knob-name">{shortLabel(spec.label)}</span>
         {/* blur after choosing so the letter keys go back to playing notes */}
         <select value={String(synth.state[id])} aria-label={spec.label} onChange={(e) => { synth.setState({ [id]: e.target.value } as Partial<SynthState>); e.target.blur(); }}>
-          {spec.choices === MOD_DESTS ? <DestOptions /> : spec.choices!.map((c) => <option key={c} value={c}>{spec.names?.[c] ?? c}</option>)}
+          {spec.choices === MOD_DESTS ? <DestOptions /> : spec.choices === TABLES ? <TableOptions /> : spec.choices!.map((c) => <option key={c} value={c}>{spec.names?.[c] ?? c}</option>)}
         </select>
       </label>
     );

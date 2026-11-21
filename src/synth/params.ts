@@ -4,8 +4,22 @@
 
 export const SHAPES = ["sine", "triangle", "square", "saw"] as const;
 export type Shape = (typeof SHAPES)[number];
-export const TABLES = ["none", "basic", "bright", "vowel", "pdsaw", "moogsaw", "pdpulse", "formant", "pdsquare", "tanhsquare", "tanhsaw"] as const;
-const TABLE_NAMES = { none: "Off", basic: "Basic morph", bright: "Bright sweep", vowel: "Vowel", pdsaw: "Phase saw", moogsaw: "Analogue saw", pdpulse: "Phase pulse", formant: "Formant", pdsquare: "Phase square", tanhsquare: "Driven square", tanhsaw: "Driven saw" };
+export const TABLES = ["none", "basic", "bright", "vowel", "pdsaw", "moogsaw", "pdpulse", "formant", "pdsquare", "tanhsquare", "tanhsaw",
+  "tilt", "oddeven", "ladder", "scatter", "pwm", "tricorner", "syncsaw", "bits", "rect", "power", "blit", "fm1", "fm2", "fm3", "sinefold", "vowels", "band", "gap", "stack", "organ", "comb", "glass", "grain"] as const;
+const TABLE_NAMES = { none: "Off", basic: "Basic morph", bright: "Bright sweep", vowel: "Vowel", pdsaw: "Phase saw", moogsaw: "Analogue saw", pdpulse: "Phase pulse", formant: "Formant", pdsquare: "Phase square", tanhsquare: "Driven square", tanhsaw: "Driven saw",
+  tilt: "Dark to bright", oddeven: "Hollow to full", ladder: "One harmonic at a time", scatter: "Same sound, new shape", pwm: "Pulse width", tricorner: "Triangle to saw", syncsaw: "Sync sweep", bits: "Staircase",
+  rect: "Sine, half sine, humps", power: "Spike to block", blit: "Impulse train", fm1: "FM 1 to 1", fm2: "FM 1 to 2", fm3: "FM 1 to 3", sinefold: "Folded sine", vowels: "Vowels A E I O U", band: "Moving band",
+  gap: "Moving gap", stack: "Octave and fifth stack", organ: "Organ stops", comb: "Every nth harmonic", glass: "Glass", grain: "Shifting grain" };
+/** The wavetable menu in groups, in the order shown. Every table is in exactly one group (a test checks). */
+export const TABLE_GROUPS: [string, readonly (typeof TABLES)[number][]][] = [
+  ["Basics", ["basic", "bright", "tilt", "oddeven", "ladder", "scatter"]],
+  ["Classic shapes", ["pwm", "tricorner", "syncsaw", "bits", "rect", "power", "blit"]],
+  ["From research papers", ["pdsaw", "moogsaw", "pdpulse", "pdsquare", "tanhsquare", "tanhsaw", "formant"]],
+  ["FM and folding", ["fm1", "fm2", "fm3", "sinefold"]],
+  ["Voices and bands", ["vowel", "vowels", "band", "gap"]],
+  ["Stacks and textures", ["stack", "organ", "comb", "glass", "grain"]],
+];
+export const tableName = (t: (typeof TABLES)[number]) => TABLE_NAMES[t];
 /** Where a table's shapes come from, for the tables built from a published formula. Shown under the wave picture. */
 export const TABLE_NOTES: Partial<Record<(typeof TABLES)[number], string>> = {
   pdsaw: "A sine bent toward a saw by phase distortion, the method of the Casio CZ synths. Formula from Lazzarini and others, 2009.",
@@ -15,6 +29,29 @@ export const TABLE_NOTES: Partial<Record<(typeof TABLES)[number], string>> = {
   tanhsquare: "A sine pushed harder and harder through a soft limit until it is nearly a square. Formula from Lazzarini and Timoney, 2010.",
   tanhsaw: "That driven square multiplied by a raised cosine, which puts the even harmonics back and gives a saw-like wave. Formula from Lazzarini and Timoney, 2010.",
   formant: "A sine run several times per cycle to make one strong band that climbs with the position. Formula from Kleimola and others, 2011.",
+  tilt: "A saw whose harmonics fall away steeply at first and then less and less: dull to bright without a filter.",
+  oddeven: "Odd harmonics only at the start, which sounds hollow. The even ones fade in until it is a full saw.",
+  ladder: "Sixteen frames, each a single harmonic. Sweep the position and you climb the harmonic series one step at a time.",
+  scatter: "Every frame has a saw's harmonics at a saw's strengths. Only their timing differs, so the picture changes far more than the sound.",
+  pwm: "A square whose high part gets narrower, from half the cycle down to a sliver. Even harmonics appear as soon as it leaves the middle.",
+  tricorner: "A triangle whose corner slides from the middle to the edge until it is a saw. The spectrum of this shape is worked out in Puckette's book, pages 305 to 307.",
+  syncsaw: "A saw restarted before it finishes, run through the cycle from once to eight times. The sound of hard sync, stored as a table.",
+  bits: "A saw cut into flat steps, from two levels up to thirty-two. Few steps are harsh; many are nearly smooth.",
+  rect: "A sine, then a sine with its lower half removed, then with its lower half flipped up, which sounds an octave higher.",
+  power: "A sine sharpened into thin spikes at one end and flattened toward a block at the other.",
+  blit: "Harmonics of equal strength, starting with one and adding more: a click repeated at the pitch of the note. The band-limited impulse train of Stilson and Smith, 1996.",
+  fm1: "A sine whose pitch is shaken by another sine at the same pitch, harder and harder. All harmonics appear. Frequency modulation as in Chowning, 1973.",
+  fm2: "The same with the shaking sine an octave above: only odd harmonics appear, as Chowning's paper says for this ratio.",
+  fm3: "The same with the shaking sine three times the pitch: every third harmonic is missing.",
+  sinefold: "A sine turned up until it folds back on itself, again and again. Each fold adds higher harmonics.",
+  vowels: "A saw with three lifted bands placed for five vowels. The band places are approximate figures for a low voice, chosen by us with no source in the library, and they are right only near a low A: higher notes shift the vowel.",
+  band: "A narrow group of harmonics that climbs from the bottom to the top, with everything else turned down.",
+  gap: "A saw with a hole in it. The hole climbs through the harmonics as the position rises.",
+  stack: "A saw, then the same saw with copies added an octave up, an octave and a fifth up, and two octaves up.",
+  organ: "Pure tones added one at a time at the harmonics an organ's stops use: the first, second, third, fourth, sixth and eighth.",
+  comb: "The first frame keeps every harmonic, the next every second one, then every third, up to every eighth.",
+  glass: "A few widely spaced harmonics, with more joining as the position rises. Not a real bell: a bell's tones are not harmonics.",
+  grain: "Eight frames of harmonics at strengths picked by a fixed random list. Moving the position gives a slowly changing, unsettled tone.",
 };
 export type Table = (typeof TABLES)[number];
 export const NOISES = ["white", "pink"] as const;
@@ -278,7 +315,7 @@ const BASE_PARAMS: Record<string, ParamSpec> = {
   clickOn: { id: "clickOn", label: "Click", group: "Master", kind: "toggle" },
   aOn: { id: "aOn", label: "Osc A", group: "Oscillator A", kind: "toggle" },
   shape: { id: "shape", label: "Wave shape", group: "Oscillator A", kind: "choice", choices: SHAPES, names: SHAPE_NAMES },
-  table: { id: "table", label: "Wavetable", group: "Oscillator A", kind: "choice", choices: TABLES, names: TABLE_NAMES },
+  table: { id: "table", label: "Wavetable", group: "Oscillator A", kind: "menu", choices: TABLES, names: TABLE_NAMES },
   aPan: { id: "aPan", label: "A pan", group: "Oscillator A", kind: "range", min: -100, max: 100, step: 1, unit: "" },
   position: { id: "position", label: "Position", group: "Oscillator A", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
   octave: { id: "octave", label: "Octave", group: "Oscillator A", kind: "range", min: -3, max: 3, step: 1, unit: "oct" },
@@ -299,7 +336,7 @@ const BASE_PARAMS: Record<string, ParamSpec> = {
   bShape: { id: "bShape", label: "B shape", group: "Oscillator B", kind: "choice", choices: SHAPES, names: SHAPE_NAMES },
   bOctave: { id: "bOctave", label: "B octave", group: "Oscillator B", kind: "range", min: -3, max: 3, step: 1, unit: "oct" },
   bSemitone: { id: "bSemitone", label: "B semitone", group: "Oscillator B", kind: "range", min: -12, max: 12, step: 1, unit: "st" },
-  bTable: { id: "bTable", label: "B wavetable", group: "Oscillator B", kind: "choice", choices: TABLES, names: TABLE_NAMES },
+  bTable: { id: "bTable", label: "B wavetable", group: "Oscillator B", kind: "menu", choices: TABLES, names: TABLE_NAMES },
   bPosition: { id: "bPosition", label: "B position", group: "Oscillator B", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
   bWarp: { id: "bWarp", label: "B warp", group: "Oscillator B", kind: "menu", choices: WARPS, names: WARP_NAMES },
   bWarpAmount: { id: "bWarpAmount", label: "B warp amount", group: "Oscillator B", kind: "range", min: 0, max: 100, step: 1, unit: "%" },
@@ -557,6 +594,31 @@ export const pdSquareWave = (x: number, d: number) => { const t = (2 * x) % 1; r
  */
 export const tanhSquare = (x: number, k: number) => Math.tanh(k * (Math.PI / 2) * Math.sin(2 * Math.PI * x)) / Math.tanh(k * (Math.PI / 2));
 export const tanhSaw = (x: number, k: number) => 0.5 * tanhSquare(x, k) * (Math.cos(2 * Math.PI * x) + 1);
+/** Scale a harmonic recipe so its total energy matches a saw's, so tables sit at about the same loudness. */
+function level(recipe: (n: number) => number): Frame {
+  let saw = 0, own = 0;
+  for (let n = 1; n <= HARMONICS; n++) { saw += 1 / (n * n); own += recipe(n) ** 2; }
+  const k = own > 0 ? Math.sqrt(saw / own) : 0;
+  return plain((n) => recipe(n) * k);
+}
+/** A repeatable list of numbers from 0 to 1 (a fixed "random" list, the same on every computer). */
+export function fixedRandom(count: number, seed: number): number[] {
+  let s = seed >>> 0;
+  return Array.from({ length: count }, () => { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; });
+}
+/** A saw with lifted bands centred on the harmonic numbers given. */
+const bands = (peaks: number[], lift = 5) => (n: number) => (1 / n) * (1 + peaks.reduce((sum, p) => sum + lift * Math.exp(-((n - p) ** 2) / (2 * (0.8 + p / 10) ** 2)), 0));
+/** Vowel band places as harmonic numbers of a 110 Hz note (approximate figures for a low voice; our choice, unsourced). */
+export const VOWEL_BANDS: Record<string, number[]> = { A: [6.6, 9.9, 22], E: [4.8, 16.7, 22.5], I: [2.5, 20.8, 27.4], O: [5.2, 7.6, 21.9], U: [2.7, 7.9, 20.4] };
+/** Frequency modulation of a sine by a sine `ratio` times its pitch, with index `index` (Chowning 1973). */
+export const fmWave = (x: number, ratio: number, index: number) => Math.sin(2 * Math.PI * x + index * Math.sin(2 * Math.PI * ratio * x));
+/** A triangle whose upper corner sits `c` of the way through the cycle (0.5 is the even triangle; near 0 it is a falling saw). */
+export const cornerWave = (x: number, c: number) => (x < c ? -1 + (2 * x) / c : 1 - (2 * (x - c)) / (1 - c));
+/** The harmonics an organ's stops add, in the order the "Organ stops" table brings them in. */
+export const ORGAN_STOPS = [1, 2, 3, 4, 6, 8];
+/** The widely spaced harmonics of the "Glass" table, in the order they join. */
+export const GLASS_HARMONICS = [1, 4, 7, 11, 16, 22, 29, 37, 46];
+const GRAIN = Array.from({ length: 8 }, (_, f) => fixedRandom(HARMONICS + 1, 7919 * (f + 1)));
 const spread = (count: number, from: number, to: number, geometric = false) => Array.from({ length: count }, (_, i) => (geometric ? from * (to / from) ** (i / (count - 1)) : from + ((to - from) * i) / (count - 1)));
 
 /** Wavetables generated by maths for this app (no third-party tables). Each frame is a harmonic recipe. */
@@ -581,6 +643,44 @@ const FRAMES: Record<Exclude<Table, "none">, Frame[]> = {
   tanhsaw: spread(13, 0.25, 24, true).map((k) => fromWave((x) => tanhSaw(x, k))),
   // one strong band, climbing from the 2nd harmonic to the 12th
   formant: spread(21, 1.5, 6.5).map((v) => fromWave((x) => formantWave(x, v))),
+  // harmonics falling as 1/n^p: p from 3 (dull) to 0.3 (very bright)
+  tilt: spread(9, 3, 0.3).map((p) => level((n) => 1 / n ** p)),
+  // odd harmonics, with the even ones faded in
+  oddeven: spread(6, 0, 1).map((even) => level((n) => (n % 2 === 1 ? 1 : even) / n)),
+  // one harmonic per frame
+  ladder: Array.from({ length: 16 }, (_, k) => level((n) => (n === k + 1 ? 1 : 0))),
+  // a saw's harmonics, each turned through an angle that grows with the frame and with the square of its number
+  scatter: spread(33, 0, 1).map((t) => ({ sin: (n: number) => Math.cos(0.5 * t * n * n) / n, cos: (n: number) => Math.sin(0.5 * t * n * n) / n })),
+  // a rectangle: high for `duty` of the cycle
+  pwm: spread(13, 0.5, 0.03, true).map((duty) => fromWave((x) => (x < duty ? 1 : -1))),
+  // the corner of a triangle sliding to the edge
+  tricorner: spread(11, 0.5, 0.01, true).map((c) => fromWave((x) => cornerWave(x, c))),
+  // a saw run k times through the cycle and cut off at its end
+  syncsaw: spread(15, 1, 8).map((k) => fromWave((x) => 2 * ((x * k) % 1) - 1)),
+  // a saw held on flat steps
+  bits: [2, 3, 4, 6, 8, 12, 16, 32].map((steps) => fromWave((x) => (2 * Math.floor(x * steps)) / (steps - 1) - 1)),
+  // sine, half-wave rectified sine, full-wave rectified sine (each with its average taken away by the measuring)
+  rect: [(v: number) => v, (v: number) => Math.max(0, v) * 2 - 0.64, (v: number) => Math.abs(v) * 2 - 1.27].map((f) => fromWave((x) => f(Math.sin(2 * Math.PI * x)))),
+  // sign(sin) * |sin|^p: spikes for a large p, a block for a small one
+  power: spread(11, 6, 0.15, true).map((p) => fromWave((x) => { const v = Math.sin(2 * Math.PI * x); return Math.sign(v) * Math.abs(v) ** p; })),
+  // the first K harmonics at equal strength, all in step (cosines): a band-limited impulse train
+  blit: [1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64].map((top) => { const k = Math.sqrt(1.6 / top); return { sin: () => 0, cos: (n: number) => (n <= top ? k : 0) }; }),
+  fm1: spread(13, 0, 8).map((i) => fromWave((x) => fmWave(x, 1, i))),
+  fm2: spread(13, 0, 6).map((i) => fromWave((x) => fmWave(x, 2, i))),
+  fm3: spread(13, 0, 6).map((i) => fromWave((x) => fmWave(x, 3, i))),
+  // sin(g * pi/2 * sin): one fold for every step of g past 1
+  sinefold: spread(15, 1, 8).map((g) => fromWave((x) => Math.sin(g * (Math.PI / 2) * Math.sin(2 * Math.PI * x)))),
+  vowels: ["A", "E", "I", "O", "U"].map((v) => level(bands(VOWEL_BANDS[v]!))),
+  // a group of harmonics about three wide, climbing
+  band: spread(13, 1, 40, true).map((c) => level((n) => Math.exp(-((n - c) ** 2) / (2 * (1 + c / 8) ** 2)))),
+  // a saw with a hole about a third of an octave wide either side of harmonic c
+  gap: spread(13, 2, 40, true).map((c) => level((n) => (1 / n) * (1 - Math.exp(-((Math.log2(n / c)) ** 2) / (2 * 0.3 ** 2))))),
+  // a saw, plus saws at 2, 3 and 4 times its pitch
+  stack: [[1], [1, 2], [1, 2, 3], [1, 2, 3, 4]].map((at) => level((n) => at.reduce((sum, m) => sum + (n % m === 0 ? m / n / m : 0), 0))),
+  organ: ORGAN_STOPS.map((_, i) => level((n) => (ORGAN_STOPS.slice(0, i + 1).includes(n) ? 1 : 0))),
+  comb: [1, 2, 3, 4, 5, 6, 7, 8].map((k) => level((n) => ((n - 1) % k === 0 ? 1 / n : 0))),
+  glass: GLASS_HARMONICS.slice(2).map((_, i) => level((n) => { const at = GLASS_HARMONICS.slice(0, i + 3).indexOf(n); return at < 0 ? 0 : 1 / (1 + at * 0.5); })),
+  grain: GRAIN.map((list) => level((n) => (list[n]! ** 2) / Math.sqrt(n))),
 };
 
 export const frameCount = (table: Table) => (table === "none" ? 0 : FRAMES[table].length);

@@ -1815,6 +1815,23 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   ten finishing lessons, and nine outlined tracks, each line marked "now" or "source". Books for the thin
   tracks were researched the same day (`docs/LITERATURE.md`, last section: about 30, three of them free;
   six listed from memory and marked unconfirmed; none read). Nothing is built.
+- **Twenty-three more wavetables (21 Nov 2026, owner: "we have nothing compared to serum").** `TABLES` in
+  `params.ts` now has 33 tables plus Off, all built by code (still never a maker's table data):
+  `tilt`, `oddeven`, `ladder` (one harmonic per frame), `scatter` (a saw's harmonics with their timing
+  turned: the picture changes, the strengths do not), `pwm`, `tricorner` (Puckette pp. 305-307), `syncsaw`,
+  `bits`, `rect`, `power`, `blit` (Stilson and Smith 1996), `fm1`/`fm2`/`fm3` (Chowning 1973: ratio 1:2
+  gives odd harmonics only, 1:3 drops every third), `sinefold`, `vowels` (**band places are approximate
+  figures from the assistant's memory with no source in the library; the note under the table says so and
+  that they only hold near a low A**), `band`, `gap`, `stack`, `organ`, `comb`, `glass`, `grain` (a fixed
+  random list, `fixedRandom`). `level()` gives recipe frames a saw's energy; `TABLE_NOTES` has a line for
+  every new table, shown under the menu; `TABLE_GROUPS` orders the menu in six groups and **the wavetable
+  chooser is now a drop-down (`kind: "menu"`, `TableOptions` in `Controls.tsx`), not a row of buttons.**
+  Measured through the engine at both ends of every new table: each harmonic within 1.0 dB of its design.
+  The browser scales every wave to the same peak, so spiky tables (Impulse train, the bright end of Dark to
+  bright) read 10 to 18 dB lower on the average meter than a saw; that was already so for the older
+  tables. **Nobody has heard them.** No lesson uses them yet. Still far short of Serum: no editor, no
+  import, no tables made from recorded sound. **No book on designing wavetables exists** (searched twice);
+  the papers and chapters that do are at the end of `docs/LITERATURE.md`.
 - **Long pages are searched in parts (16 Nov 2026).** `splitText` in `src/library/search.ts` cuts a page over
   2,400 characters into overlapping parts of about 1,500 (ids `book#page~1`, `~2`, with `of` naming the
   page); `pageOf` and `cite` count parts of one page as one source, and `search` takes at most two parts of

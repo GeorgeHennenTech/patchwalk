@@ -309,3 +309,16 @@ Butler, Everest and Pohlmann. "First" marks the one to get first in each group.
 
 **Found nothing reliable for:** glitch-hop, psydub and nu-skool breaks as subjects of their own. No book on
 any of the three turned up; their histories will have to come from magazine pieces, interviews and Dancecult.
+
+## Designing wavetables (owner asked 21 Nov 2026; searched, nothing taken in)
+**No book is devoted to designing wavetables.** Two searches found none. What exists:
+| Text | What it gives | Get |
+|---|---|---|
+| Bristow-Johnson, "Wavetable Synthesis 101, A Fundamental Perspective", AES 101st Convention, 1996 (paper 4400) | The standard introduction: how tables are stored, read and crossfaded | AES E-Library (paid); the author has circulated copies, so look for one on his own or a university page |
+| Horner, Beauchamp and Haken, "Methods for Multiple Wavetable Synthesis of Musical Instrument Tones", JAES 41(5), 1993 | How to choose a small set of tables that rebuild a real instrument's tone | AES E-Library (paid) |
+| Puckette, *The Theory and Technique of Electronic Music*, chapter 2 | Wavetables and samplers. **Already in the library** | In |
+| Serum 2 User Guide, the wavetable editor chapter | Serum's own tools for drawing, importing and morphing tables. **Already in the library** | In |
+| Russ, *Sound Synthesis and Sampling*, chapter 3 (already on the wanted list) | Wavetable and sample-based methods in plain language | Buy |
+| Pejrolo and Metcalfe, *Creating Sounds from Scratch* (Oxford, 2017) | Every main synthesis method, wavetable among them, with exercises | Buy |
+| Sean Luke, *Computational Music Synthesis* (free online book, George Mason University) | Additive and wavetable methods from the ground up; licence not yet read | Download after reading its licence |
+| Farnell, *Designing Sound* (already on the wanted list) | Building sounds from first principles | Buy |

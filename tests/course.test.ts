@@ -1920,3 +1920,68 @@ describe("the level meter's two readings", () => {
     expect(LESSONS[LESSONS.findIndex((l) => l.id === "CV.1") - 1]!.id).toBe("C2.C");
   });
 });
+
+import { cornerWave, fixedRandom, fmWave, GLASS_HARMONICS, ORGAN_STOPS, TABLE_GROUPS, tableName, VOWEL_BANDS } from "../src/synth/params";
+describe("the wavetables added on 21 Nov 2026", () => {
+  const mags = (table: (typeof TABLES)[number], position: number) => magnitudesA({ shape: "sine", table, position });
+  const energy = (m: Float32Array) => m.reduce((a, v) => a + v * v, 0);
+  it("the menu's groups hold every table exactly once, and every table has a name and sounds at every position", () => {
+    const grouped = TABLE_GROUPS.flatMap(([, ids]) => ids);
+    expect([...grouped].sort()).toEqual(TABLES.filter((t) => t !== "none").sort());
+    expect(new Set(grouped).size).toBe(grouped.length); expect(TABLES.length).toBe(34);
+    for (const t of TABLES) {
+      expect(tableName(t).length).toBeGreaterThan(1);
+      if (t === "none") continue;
+      for (const p of [0, 17, 50, 83, 100]) { const m = mags(t, p); expect(m.every((v) => Number.isFinite(v)), `${t} ${p}`).toBe(true); expect(energy(m), `${t} ${p}`).toBeGreaterThan(0.05); expect(energy(m), `${t} ${p}`).toBeLessThan(20); }
+    }
+    for (const t of ["tilt", "oddeven", "ladder", "scatter", "pwm", "tricorner", "syncsaw", "bits", "rect", "power", "blit", "fm1", "fm2", "fm3", "sinefold", "vowels", "band", "gap", "stack", "organ", "comb", "glass", "grain"] as const) expect(TABLE_NOTES[t]!.length, t).toBeGreaterThan(40);
+  });
+  it("Hollow to full has no even harmonics at the start and a saw's at the end; Dark to bright brightens all the way", () => {
+    const a = mags("oddeven", 0), b = mags("oddeven", 100);
+    expect(a[2]!).toBe(0); expect(a[4]!).toBe(0); expect(a[3]! / a[1]!).toBeCloseTo(1 / 3, 6); expect(b[2]! / b[1]!).toBeCloseTo(0.5, 6);
+    let last = -1; for (let p = 0; p <= 100; p += 10) { const br = brightness(mags("tilt", p)); expect(br).toBeGreaterThan(last); last = br; }
+  });
+  it("One harmonic at a time is exactly that, and Same sound, new shape keeps a saw's strengths while its picture changes", () => {
+    for (const k of [1, 6, 16]) { const m = mags("ladder", ((k - 1) / 15) * 100); for (let n = 1; n <= 20; n++) expect(m[n]! > 0.01, `${k} ${n}`).toBe(n === k); }
+    for (const frame of [0, 8, 32]) { const m = mags("scatter", (frame / 32) * 100); for (let n = 1; n <= 12; n++) expect(m[n]! * n).toBeCloseTo(1, 4); }
+    const first = cosinesA({ shape: "sine", table: "scatter", position: 0 }), later = cosinesA({ shape: "sine", table: "scatter", position: 50 });
+    expect(first.every((v) => Math.abs(v) < 1e-9)).toBe(true); expect(later.some((v) => Math.abs(v) > 0.1)).toBe(true);
+  });
+  it("Pulse width starts as a square; Triangle to saw goes from a triangle's harmonics to a saw's", () => {
+    const sq = mags("pwm", 0); expect(sq[2]! / sq[1]!).toBeLessThan(0.01); expect(sq[3]! / sq[1]!).toBeCloseTo(1 / 3, 2);
+    expect(mags("pwm", 60)[2]! / mags("pwm", 60)[1]!).toBeGreaterThan(0.3);
+    const tri = mags("tricorner", 0), saw = mags("tricorner", 100);
+    expect(tri[2]! / tri[1]!).toBeLessThan(0.001); expect(tri[3]! / tri[1]!).toBeCloseTo(1 / 9, 2);
+    expect(saw[2]! / saw[1]!).toBeCloseTo(0.5, 1); expect(saw[5]! / saw[1]!).toBeCloseTo(0.2, 1);
+    expect(cornerWave(0, 0.3)).toBe(-1); expect(cornerWave(0.3, 0.3)).toBeCloseTo(1, 9); expect(cornerWave(0.65, 0.3)).toBeCloseTo(0, 9);
+  });
+  it("the FM tables follow Chowning's rule for which harmonics a ratio gives", () => {
+    expect(mags("fm1", 0)[2]!).toBeLessThan(1e-4);                                           // no shaking: a sine
+    const one = mags("fm1", 60); expect(one[2]!).toBeGreaterThan(0.05); expect(one[3]!).toBeGreaterThan(0.05);
+    const two = mags("fm2", 70); for (const n of [2, 4, 6, 8]) expect(two[n]!).toBeLessThan(1e-3); expect(two[3]!).toBeGreaterThan(0.05); expect(two[5]!).toBeGreaterThan(0.05);
+    const three = mags("fm3", 70); for (const n of [3, 6, 9]) expect(three[n]!).toBeLessThan(1e-3); expect(three[2]!).toBeGreaterThan(0.05); expect(three[4]!).toBeGreaterThan(0.05);
+    expect(fmWave(0.25, 1, 0)).toBeCloseTo(1, 12);
+  });
+  it("Impulse train has equal harmonics; Organ stops, Every nth harmonic and Glass hold the harmonics they name", () => {
+    const b = mags("blit", 100); for (let n = 2; n <= 64; n++) expect(b[n]!).toBeCloseTo(b[1]!, 6);
+    const b1 = mags("blit", 0); expect(b1[2]!).toBe(0);
+    const o = mags("organ", 100); for (let n = 1; n <= 10; n++) expect(o[n]! > 0.01, `organ ${n}`).toBe(ORGAN_STOPS.includes(n));
+    const c = mags("comb", (2 / 7) * 100); for (let n = 1; n <= 13; n++) expect(c[n]! > 1e-6, `comb ${n}`).toBe((n - 1) % 3 === 0);
+    const g = mags("glass", 100); for (let n = 1; n <= 50; n++) expect(g[n]! > 1e-6, `glass ${n}`).toBe(GLASS_HARMONICS.includes(n));
+  });
+  it("Vowels lifts a band at each vowel's places, the stack adds the copies it names, and the random list never changes", () => {
+    const a = mags("vowels", 0); expect(a[7]! * 7).toBeGreaterThan(a[3]! * 3 * 2);       // near harmonic 6.6, well above a plain saw's share
+    expect(Object.keys(VOWEL_BANDS)).toEqual(["A", "E", "I", "O", "U"]);
+    const s0 = mags("stack", 0), s1 = mags("stack", 100 / 3);
+    expect(s0[2]! / s0[1]!).toBeCloseTo(0.5, 6); expect(s1[2]! / s1[1]!).toBeCloseTo(1, 6); // the octave copy doubles the second harmonic
+    expect(fixedRandom(3, 42)).toEqual(fixedRandom(3, 42)); expect(fixedRandom(3, 42)).not.toEqual(fixedRandom(3, 43));
+    expect(mags("grain", 0)).not.toEqual(mags("grain", 100));
+  });
+  it("Sync sweep and Folded sine start plain and gain harmonics; Staircase smooths as its steps grow", () => {
+    expect(mags("syncsaw", 0)[2]! / mags("syncsaw", 0)[1]!).toBeCloseTo(0.5, 1);
+    expect(brightness(mags("syncsaw", 100))).toBeGreaterThan(brightness(mags("syncsaw", 0)));
+    expect(mags("sinefold", 0)[3]! / mags("sinefold", 0)[1]!).toBeLessThan(0.2); expect(brightness(mags("sinefold", 100))).toBeGreaterThan(0.5);
+    expect(mags("bits", 0)[2]!).toBeLessThan(0.01);                                          // two levels: a square
+    expect(mags("rect", 100)[1]!).toBeLessThan(0.01);                                        // both halves up: the first harmonic is gone
+  });
+});

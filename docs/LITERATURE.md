@@ -232,3 +232,80 @@ Turkey (usul):
 
 Already on the wanted list and relevant: Fletcher and Rossing, *The Physics of Musical Instruments* (the
 owner is to supply it), for how these drums make their sound.
+
+## Books for the thin tracks (researched 21 Nov 2026; none supplied, none opened)
+
+The owner asked for the best books, not already listed here, for mixing and mastering, hearing, arrangement
+and composition, ear training, music theory and genre studies. Each was checked to exist by a web search on
+21 Nov 2026 unless marked **(not confirmed today)**, which means it is listed from the assistant's memory and
+its details must be checked before buying. None has been read, so no lesson may cite one until it is in the
+library. Already listed above and so left out: Senior, Izhaki, Katz, Moore, Bregman, Deutsch, DeSantis,
+Butler, Everest and Pohlmann. "First" marks the one to get first in each group.
+
+**Mixing**
+| Book | Why | Get |
+|---|---|---|
+| **First:** Senior, *Mixing Secrets for the Small Studio* (already listed) | Written for a home set-up; step by step | Buy |
+| Owsinski, *The Mixing Engineer's Handbook*, 5th ed. | The most widely recommended reference; a method in steps | Buy |
+| Case, *Mix Smart* (Focal) | Every mixing tool explained in detail | Buy |
+| Stavrou, *Mixing with Your Mind* | The thinking side of a mix; sold only from the author's site | Buy |
+| Moylan, *Recording Analysis: How the Record Shapes the Song* (Routledge, 2020) | How to take a finished record apart: the missing "study a reference track" skill | Buy |
+| Toole, *Sound Reproduction*, 3rd ed. **(not confirmed today)** | Rooms, speakers and what listeners prefer, from measurements | Buy |
+
+**Mastering**
+| Book | Why | Get |
+|---|---|---|
+| **First:** Katz, *Mastering Audio* (already listed) | The standard text | Buy |
+| Cousins and Hepworth-Sawyer, *Practical Mastering* (Focal, 2013) | Mastering in a modern home studio | Buy |
+| Shelvock, "Audio Mastering as a Musical Competency", PhD thesis, Western University, 2017 | **Free** in the university's repository (ir.lib.uwo.ca/etd/4703); check its licence | Download |
+| Braddock and others (eds.), *Mastering in Music* (Routledge, 2020) | Essays by working mastering engineers and researchers | Buy |
+| Owsinski, *The Mastering Engineer's Handbook*, 5th ed. | Practical companion | Buy |
+
+**Hearing**
+| Book | Why | Get |
+|---|---|---|
+| **First:** Plack, *The Sense of Hearing*, 4th ed. (Routledge, 2023) | The most readable modern textbook; easier than Moore | Buy |
+| Howard and Angus, *Acoustics and Psychoacoustics*, 5th ed. | Written for music-technology students: pitch, loudness, timbre | Buy |
+| Zwicker and Fastl, *Psychoacoustics: Facts and Models*, 3rd ed. (Springer, 2007) | The reference for loudness, masking, roughness; dense | Borrow |
+| Heller, *Why You Hear What You Hear* **(not confirmed today)** | Experiments you can do yourself | Buy |
+
+**Arrangement and composition**
+| Book | Why | Get |
+|---|---|---|
+| **First:** Felton (ed.), *The Secrets of Dance Music Production* (Attack Magazine) | The one book written for dance music, with a section on arrangement | Buy |
+| Snoman, *Dance Music Manual* (Routledge; several editions) | Broad: genres, structure, sound design, mixing | Buy |
+| Brett, *The Creative Electronic Music Producer* (Routledge, 2021) | How producers find and develop ideas | Buy |
+| Hewitt, *Composition for Computer Musicians* | Turning theory into drums, bass lines, melodies and a finished track | Buy |
+| DeSantis, *Making Music* (already listed) | Starting, continuing and finishing; Ableton may give it free on makingmusic.ableton.com (not confirmed) | Check the site |
+
+**Ear training**
+| Book | Why | Get |
+|---|---|---|
+| **First:** Corey, *Audio Production and Critical Listening: Technical Ear Training*, 2nd ed. (Routledge) | The standard text; our drills could follow its order | Buy |
+| Everest, *Critical Listening Skills for Audio Professionals* | A course of listening sessions | Buy |
+| Moulton, *Golden Ears* (an audio course, not a book) **(not confirmed today)** | Long-used drill set | Buy |
+
+**Music theory**
+| Book | Why | Get |
+|---|---|---|
+| **First:** *Open Music Theory*, version 2 (Hughes, Moseley, Shaffer and others, 2023) | **Free** online textbook, licence CC BY-SA: can be taken in now | Download |
+| Allen, *Music Theory for Electronic Music Producers* | Harmony and song structure on the piano-roll grid | Buy |
+| Hewitt, *Music Theory for Computer Musicians* and *Harmony for Computer Musicians* | Theory taught from a DAW | Buy |
+| Perricone, *Melody in Songwriting* | The craft of writing a melody | Buy |
+| Hooktheory I and II | Chords and melody by function, with examples | Buy |
+| Huron, *Sweet Anticipation* and *Voice Leading* (MIT Press) | Why melodies and harmonies satisfy, from experiments | Buy |
+| *Understanding Basic Music Theory* (public domain, CC0) | Free starter text | Download |
+
+**Genre studies and history**
+| Book | Why | Get |
+|---|---|---|
+| **First:** Reynolds, *Energy Flash* (Faber; updated editions) | Rave, hardcore, jungle, garage, dubstep. Lively and opinionated: a reviewer faulted its fact-checking, so pair it with another source | Buy |
+| Brewster and Broughton, *Last Night a DJ Saved My Life* | The history of the DJ from disco to house and breaks | Buy |
+| Belle-Fortune, *All Crews* (2004) | Jungle and drum and bass from inside the scene | Buy |
+| *Dancecult: Journal of Electronic Dance Music Culture* | **Free**, peer-reviewed, open access since 2008 | Download articles |
+| Veal, *Dub: Soundscapes and Shattered Songs in Jamaican Reggae* **(not confirmed today)** | Dub's studio methods; the root of psydub and bass music | Buy |
+| St John, *Global Tribe: Technology, Spirituality and Psytrance* **(not confirmed today)** | Psytrance and its offshoots | Buy |
+| Muggs and Stevens, *Bass, Mids, Tops* **(not confirmed today)** | UK sound-system music told by the people in it | Buy |
+
+**Found nothing reliable for:** glitch-hop, psydub and nu-skool breaks as subjects of their own. No book on
+any of the three turned up; their histories will have to come from magazine pieces, interviews and Dancecult.

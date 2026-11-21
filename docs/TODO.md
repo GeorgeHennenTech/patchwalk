@@ -190,6 +190,8 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [x] Course map: history of nu-skool breaks, 28 lessons in four parts with sources and what is thin (`docs/CURRICULUM.md`, "Track G-H: the history of each genre") (20 Nov 2026)
 - [ ] Genre histories: owner to confirm that history lessons may name people, clubs, labels and records; read the primary pieces that could not be opened; then the next genre the owner names
 - [ ] Paths (owner's idea, 20 Nov): mark which lessons make which kind of producer, by what a finished track needs; needs tags on lessons and much more of the course first (`docs/CURRICULUM.md`, "Paths")
+- [x] Researched books for the thin tracks: mixing, mastering, hearing, arrangement, ear training, theory, genre history (`docs/LITERATURE.md`, last section) (21 Nov 2026)
+- [ ] Take in the three free texts found: Open Music Theory, Shelvock's mastering thesis, Dancecult articles (after checking each licence)
 - [ ] Lessons, next chapters in order: "When digital sound goes wrong", "Expression", "One delay, many effects", then the rest of the ten (`docs/CURRICULUM.md`, last section)
 - [ ] Write the 85 or so lessons from `docs/LESSON_IDEAS.md` that need nothing built (FM, ring and distortion, sync and formants, drum layers and breaks, expressive playing)
 - [ ] Small builds that each open several lessons (click source, peak and RMS meter, Q readout, invert on Osc B, flanger time knob, distortion bias, sample-and-hold LFO, per-note random, response curves, reverb freeze, sampler reverse, ghost strength, slice names): list in `docs/LESSON_IDEAS.md`

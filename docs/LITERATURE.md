@@ -322,3 +322,33 @@ any of the three turned up; their histories will have to come from magazine piec
 | Pejrolo and Metcalfe, *Creating Sounds from Scratch* (Oxford, 2017) | Every main synthesis method, wavetable among them, with exercises | Buy |
 | Sean Luke, *Computational Music Synthesis* (free online book, George Mason University) | Additive and wavetable methods from the ground up; licence not yet read | Download after reading its licence |
 | Farnell, *Designing Sound* (already on the wanted list) | Building sounds from first principles | Buy |
+
+## Taken in on 21 Nov 2026 (free texts)
+Downloaded from the publisher's or author's own site and taken in with `scripts/ingest_pdf.py`. Each paper is
+one chapter, numbered from 1 (not the journal's page numbers).
+
+| Text | Library id | Source | Licence |
+|---|---|---|---|
+| Sean Luke, *Computational Music Synthesis*, first edition, online version 1.6 (March 2023) | `luke-computational-music-synthesis` | https://people.cs.gmu.edu/~sean/book/synthesis/Synthesis.pdf | CC BY-ND 3.0 US (stated on the author's page and in the book): may be copied, not changed. The book's own page numbers 5 to 179; title, licence page, contents, figure credits and index left out; 55 pages with drawn figures rendered whole. The author asks downloaders to fill in a form with a name and email for his statistics, and also gives the direct link; the form was not filled in. Some pictures in it are other people's under their own licences (listed in the book's "Figure Copyright Acknowledgments", which is not taken in) |
+| Witek, Clarke, Wallentin, Kringelbach, Vuust, "Syncopation, Body-Movement and Pleasure in Groove Music" (PLoS ONE 9(4), 2014) | `witek-syncopation-groove` | https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0094446&type=printable | CC BY (stated on page 1) |
+| Butler, "Turning the Beat Around: Reinterpretation, Metrical Dissonance, and Asymmetry in Electronic Dance Music" (Music Theory Online 7.6, 2001) | `butler-turning-the-beat-around` | https://www.mtosmt.org/issues/mto.01.7.6/mto.01.7.6.butler.pdf and `butler_examples.pdf` beside it | Not an open licence. The journal's statement: copyright is the author's; items "may be saved and stored in electronic or paper form, and may be shared among individuals for purposes of scholarly research or discussion, but may not be republished". Kept private like the other library texts. Pages 16 to 22 are the music examples |
+| Christodoulou, "Bring the Break-Beat Back! Authenticity and the Politics of Rhythm in Drum 'n' Bass" (Dancecult 12(1), 2020) | `dancecult-christodoulou-break-beat` | https://dj.dancecult.net/index.php/dancecult/article/view/1153 | CC BY-NC-SA 3.0 (the journal's licence, linked on each article page) |
+| Christodoulou, "Rumble in the Jungle: City, Place and Uncanny Bass" (Dancecult 3(1), 2011) | `dancecult-christodoulou-rumble-jungle` | https://dj.dancecult.net/index.php/dancecult/article/view/316 | CC BY-NC-SA 3.0 |
+| Gilbert, "The Hardcore Continuum?" (Dancecult 1(1), 2009) | `dancecult-gilbert-hardcore-continuum` | https://dj.dancecult.net/index.php/dancecult/article/view/274 | CC BY-NC-SA 3.0. A five-page report on a symposium |
+| Alwakeel, "IDM as a 'Minor' Literature" (Dancecult 1(1), 2009) | `dancecult-alwakeel-idm` | https://dj.dancecult.net/index.php/dancecult/article/view/268 | CC BY-NC-SA 3.0 |
+| Solberg, "'Waiting for the Bass to Drop'" (Dancecult 6(1), 2014) | `dancecult-solberg-bass-drop` | https://dj.dancecult.net/index.php/dancecult/article/view/451 | CC BY-NC-SA 3.0. It reads two tracks through theories of emotion; it measured no listeners, so never use it to say a technique causes a feeling |
+| Ratcliffe, "A Proposed Typology of Sampled Material Within Electronic Dance Music" (Dancecult 6(1), 2014) | `dancecult-ratcliffe-sample-typology` | https://dj.dancecult.net/index.php/dancecult/article/view/369 | CC BY-NC-SA 3.0 |
+| Mouraviev, "London Dubstep Culture in an Online Discord Community" (Dancecult 16(1), 2024) | `dancecult-mouraviev-london-dubstep` | https://dj.dancecult.net/index.php/dancecult/article/view/1273 | CC BY-NC-SA 3.0 |
+| Charles, "Genre in Practice: Categories, Metadata and Music-Making in Psytrance Culture" (Dancecult 12(1), 2020) | `dancecult-charles-psytrance-genre` | https://dj.dancecult.net/index.php/dancecult/article/view/1167 | CC BY-NC-SA 3.0 |
+
+The Dancecult articles and Butler's are cultural and music-theory scholarship that name artists and tracks: use
+them for history and analysis, never as an account of how anyone made a sound.
+
+Looked for the same day and not taken in: Open Music Theory (the site refused the request), Shelvock's and
+Hockman's theses (their repositories redirect to hosts the session cannot reach), Understanding Basic Music
+Theory (the catalogue page refused), DeSantis's *Making Music* (Ableton's site offers 24 of its 74 chapters,
+not the whole book), Välimäki and others 2006 (the university's repository asks a browser check), Cook's PhISM
+(not linked from the author's page), Fontana and Rocchesso 1998 (the repository's record has no file), Raman
+1934 (the repository was down for maintenance), Holzapfel and others 2014 (the archive refused the request),
+Sound On Sound's "Synth Secrets" (the site forbids reproduction), Smith's online book (no licence stated),
+Scavone's and Cook's Stanford theses (scanned, no text), Knowles and Sonion notes (hosts not reachable).

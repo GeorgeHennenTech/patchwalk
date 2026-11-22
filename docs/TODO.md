@@ -195,7 +195,9 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [x] Course map: the owner's answers on what was missing, with "Put it together" milestones, a Finishing section and nine new tracks outlined (`docs/CURRICULUM.md`, last section) (21 Nov 2026)
 - [ ] Write milestones W1 to W4 ("Your first complete sound" to "A sound with space"): they need nothing built
 - [x] Twenty-three more wavetables on the synth (34 choices now), in a grouped drop-down with a note under each; every harmonic measured within 1 dB (21 Nov 2026)
-- [ ] Lessons that use the new wavetables; a wavetable editor (draw a frame, add harmonics by hand) so tables can be designed in the app
+- [x] Wavetable editor on Osc A and B: drawing tools, harmonic editing, frame/sort/single/all/morph menus, formulas, audio and picture import, export (22 Nov 2026)
+- [x] Eleven free texts taken into the library after the owner allowed more hosts: Luke's Computational Music Synthesis, Witek 2014, Butler 2001, eight Dancecult articles (22 Nov 2026)
+- [ ] Wavetables next: raise the synth's 64-harmonic limit; store tables with the account; a 3D view; lessons on the editor and the new tables
 - [ ] Lessons, next chapters in order: "When digital sound goes wrong", "Expression", "One delay, many effects", then the rest of the ten (`docs/CURRICULUM.md`, last section)
 - [ ] Write the 85 or so lessons from `docs/LESSON_IDEAS.md` that need nothing built (FM, ring and distortion, sync and formants, drum layers and breaks, expressive playing)
 - [ ] Small builds that each open several lessons (click source, peak and RMS meter, Q readout, invert on Osc B, flanger time knob, distortion bias, sample-and-hold LFO, per-note random, response curves, reverb freeze, sampler reverse, ghost strength, slice names): list in `docs/LESSON_IDEAS.md`

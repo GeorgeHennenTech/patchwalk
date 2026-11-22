@@ -1,0 +1,30 @@
+{
+"source": "Bring the Break-Beat Back! Authenticity and the Politics of Rhythm in Drum 'n' Bass (Chris Christodoulou, Dancecult 12(1), 2020)",
+"note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text. Entries marked whole_page are the whole page rendered as a picture, because its figures are drawn as lines and are not embedded pictures.",
+"images": [
+{
+"file": "p009-1.webp",
+"page": 9,
+"chapter": "Bring the break-beat back",
+"width": 947,
+"height": 1340,
+"captions_on_page": []
+},
+{
+"file": "p010-1.webp",
+"page": 10,
+"chapter": "Bring the break-beat back",
+"width": 1000,
+"height": 666,
+"captions_on_page": []
+},
+{
+"file": "p012-1.webp",
+"page": 12,
+"chapter": "Bring the break-beat back",
+"width": 700,
+"height": 467,
+"captions_on_page": []
+}
+]
+}

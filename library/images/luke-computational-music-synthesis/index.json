@@ -1,0 +1,1384 @@
+{
+"source": "Computational Music Synthesis (Sean Luke, first edition, online version 1.6, 2023)",
+"note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text. Entries marked whole_page are the whole page rendered as a picture, because its figures are drawn as lines and are not embedded pictures.",
+"images": [
+{
+"file": "p007-1.webp",
+"page": 7,
+"chapter": "1 Introduction",
+"width": 800,
+"height": 563,
+"captions_on_page": [
+"Korg Wavestation, a popular commercial synthesizer from the late 90s."
+]
+},
+{
+"file": "p008-1.webp",
+"page": 8,
+"chapter": "1 Introduction",
+"width": 800,
+"height": 532,
+"captions_on_page": []
+},
+{
+"file": "p008-2.webp",
+"page": 8,
+"chapter": "1 Introduction",
+"width": 344,
+"height": 221,
+"captions_on_page": []
+},
+{
+"file": "p008-3.webp",
+"page": 8,
+"chapter": "1 Introduction",
+"width": 800,
+"height": 617,
+"captions_on_page": []
+},
+{
+"file": "p009-1.webp",
+"page": 9,
+"chapter": "1 Introduction",
+"width": 1024,
+"height": 615,
+"captions_on_page": []
+},
+{
+"file": "p010-1.webp",
+"page": 10,
+"chapter": "1 Introduction",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p011-1.webp",
+"page": 11,
+"chapter": "1 Introduction",
+"width": 1024,
+"height": 683,
+"captions_on_page": [
+"Figure 7 shows the Prophet ’08’s voice card."
+]
+},
+{
+"file": "p012-1.webp",
+"page": 12,
+"chapter": "1 Introduction",
+"width": 800,
+"height": 448,
+"captions_on_page": [
+"Figure 7 Eight-voice circuitry for the Prophet ’08."
+]
+},
+{
+"file": "p013-1.webp",
+"page": 13,
+"chapter": "2 Representation of Sound",
+"width": 644,
+"height": 335,
+"captions_on_page": []
+},
+{
+"file": "p014-1.webp",
+"page": 14,
+"chapter": "2 Representation of Sound",
+"width": 1200,
+"height": 600,
+"captions_on_page": []
+},
+{
+"file": "p014-2.webp",
+"page": 14,
+"chapter": "2 Representation of Sound",
+"width": 1200,
+"height": 600,
+"captions_on_page": []
+},
+{
+"file": "p015-1.webp",
+"page": 15,
+"chapter": "2 Representation of Sound",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p016-1.webp",
+"page": 16,
+"chapter": "2 Representation of Sound",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p021-1.webp",
+"page": 21,
+"chapter": "3 Additive Synthesis",
+"width": 933,
+"height": 1400,
+"captions_on_page": []
+},
+{
+"file": "p021-2.webp",
+"page": 21,
+"chapter": "3 Additive Synthesis",
+"width": 1170,
+"height": 1392,
+"captions_on_page": []
+},
+{
+"file": "p021-3.webp",
+"page": 21,
+"chapter": "3 Additive Synthesis",
+"width": 1024,
+"height": 683,
+"captions_on_page": []
+},
+{
+"file": "p022-1.webp",
+"page": 22,
+"chapter": "3 Additive Synthesis",
+"width": 945,
+"height": 1400,
+"captions_on_page": []
+},
+{
+"file": "p023-1.webp",
+"page": 23,
+"chapter": "3 Additive Synthesis",
+"width": 800,
+"height": 1314,
+"captions_on_page": [
+"Harmor, and Camel Audio (now Apple)’s Alchemy."
+]
+},
+{
+"file": "p023-2.webp",
+"page": 23,
+"chapter": "3 Additive Synthesis",
+"width": 800,
+"height": 531,
+"captions_on_page": [
+"Harmor, and Camel Audio (now Apple)’s Alchemy."
+]
+},
+{
+"file": "p023-3.webp",
+"page": 23,
+"chapter": "3 Additive Synthesis",
+"width": 1024,
+"height": 284,
+"captions_on_page": [
+"Harmor, and Camel Audio (now Apple)’s Alchemy."
+]
+},
+{
+"file": "p024-1.webp",
+"page": 24,
+"chapter": "3 Additive Synthesis",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p029-1.webp",
+"page": 29,
+"chapter": "3 Additive Synthesis",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p030-1.webp",
+"page": 30,
+"chapter": "3 Additive Synthesis",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p031-1.webp",
+"page": 31,
+"chapter": "3 Additive Synthesis",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p032-1.webp",
+"page": 32,
+"chapter": "3 Additive Synthesis",
+"width": 1400,
+"height": 486,
+"captions_on_page": []
+},
+{
+"file": "p033-1.webp",
+"page": 33,
+"chapter": "3 Additive Synthesis",
+"width": 1400,
+"height": 662,
+"captions_on_page": [
+"Flow has many available modules, and a patch can potentially have a large number of them."
+]
+},
+{
+"file": "p037-1.webp",
+"page": 37,
+"chapter": "4 Modulation",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p039-1.webp",
+"page": 39,
+"chapter": "4 Modulation",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p041-1.webp",
+"page": 41,
+"chapter": "4 Modulation",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p043-1.webp",
+"page": 43,
+"chapter": "4 Modulation",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p044-1.webp",
+"page": 44,
+"chapter": "4 Modulation",
+"width": 1024,
+"height": 299,
+"captions_on_page": [
+"MIDI control surface (such as discussed in SecFigure 38 Gizmo.",
+"Y dimension is the track."
+]
+},
+{
+"file": "p044-2.webp",
+"page": 44,
+"chapter": "4 Modulation",
+"width": 1024,
+"height": 598,
+"captions_on_page": [
+"MIDI control surface (such as discussed in SecFigure 38 Gizmo.",
+"Y dimension is the track."
+]
+},
+{
+"file": "p045-1.webp",
+"page": 45,
+"chapter": "4 Modulation",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p046-1.webp",
+"page": 46,
+"chapter": "4 Modulation",
+"width": 1400,
+"height": 374,
+"captions_on_page": []
+},
+{
+"file": "p046-2.webp",
+"page": 46,
+"chapter": "4 Modulation",
+"width": 1400,
+"height": 361,
+"captions_on_page": []
+},
+{
+"file": "p047-1.webp",
+"page": 47,
+"chapter": "4 Modulation",
+"width": 1400,
+"height": 830,
+"captions_on_page": []
+},
+{
+"file": "p047-2.webp",
+"page": 47,
+"chapter": "4 Modulation",
+"width": 800,
+"height": 511,
+"captions_on_page": []
+},
+{
+"file": "p048-1.webp",
+"page": 48,
+"chapter": "5 Subtractive Synthesis",
+"width": 800,
+"height": 509,
+"captions_on_page": []
+},
+{
+"file": "p048-2.webp",
+"page": 48,
+"chapter": "5 Subtractive Synthesis",
+"width": 800,
+"height": 1038,
+"captions_on_page": []
+},
+{
+"file": "p049-1.webp",
+"page": 49,
+"chapter": "5 Subtractive Synthesis",
+"width": 1024,
+"height": 715,
+"captions_on_page": []
+},
+{
+"file": "p049-2.webp",
+"page": 49,
+"chapter": "5 Subtractive Synthesis",
+"width": 661,
+"height": 528,
+"captions_on_page": []
+},
+{
+"file": "p050-1.webp",
+"page": 50,
+"chapter": "5 Subtractive Synthesis",
+"width": 800,
+"height": 536,
+"captions_on_page": []
+},
+{
+"file": "p050-2.webp",
+"page": 50,
+"chapter": "5 Subtractive Synthesis",
+"width": 500,
+"height": 452,
+"captions_on_page": []
+},
+{
+"file": "p050-3.webp",
+"page": 50,
+"chapter": "5 Subtractive Synthesis",
+"width": 1400,
+"height": 833,
+"captions_on_page": []
+},
+{
+"file": "p051-1.webp",
+"page": 51,
+"chapter": "5 Subtractive Synthesis",
+"width": 800,
+"height": 773,
+"captions_on_page": []
+},
+{
+"file": "p051-2.webp",
+"page": 51,
+"chapter": "5 Subtractive Synthesis",
+"width": 800,
+"height": 867,
+"captions_on_page": []
+},
+{
+"file": "p051-3.webp",
+"page": 51,
+"chapter": "5 Subtractive Synthesis",
+"width": 1054,
+"height": 843,
+"captions_on_page": []
+},
+{
+"file": "p051-4.webp",
+"page": 51,
+"chapter": "5 Subtractive Synthesis",
+"width": 700,
+"height": 549,
+"captions_on_page": []
+},
+{
+"file": "p051-5.webp",
+"page": 51,
+"chapter": "5 Subtractive Synthesis",
+"width": 1400,
+"height": 668,
+"captions_on_page": []
+},
+{
+"file": "p052-1.webp",
+"page": 52,
+"chapter": "5 Subtractive Synthesis",
+"width": 1400,
+"height": 637,
+"captions_on_page": []
+},
+{
+"file": "p052-2.webp",
+"page": 52,
+"chapter": "5 Subtractive Synthesis",
+"width": 938,
+"height": 581,
+"captions_on_page": []
+},
+{
+"file": "p052-3.webp",
+"page": 52,
+"chapter": "5 Subtractive Synthesis",
+"width": 640,
+"height": 260,
+"captions_on_page": []
+},
+{
+"file": "p052-4.webp",
+"page": 52,
+"chapter": "5 Subtractive Synthesis",
+"width": 864,
+"height": 409,
+"captions_on_page": []
+},
+{
+"file": "p052-5.webp",
+"page": 52,
+"chapter": "5 Subtractive Synthesis",
+"width": 1020,
+"height": 554,
+"captions_on_page": []
+},
+{
+"file": "p053-1.webp",
+"page": 53,
+"chapter": "5 Subtractive Synthesis",
+"width": 1024,
+"height": 301,
+"captions_on_page": [
+"A famous example of this is the Korg microKORG (Figure 61).",
+"Roland’s JX-8P analog synthesizer."
+]
+},
+{
+"file": "p053-2.webp",
+"page": 53,
+"chapter": "5 Subtractive Synthesis",
+"width": 720,
+"height": 131,
+"captions_on_page": [
+"A famous example of this is the Korg microKORG (Figure 61).",
+"Roland’s JX-8P analog synthesizer."
+]
+},
+{
+"file": "p053-3.webp",
+"page": 53,
+"chapter": "5 Subtractive Synthesis",
+"width": 800,
+"height": 277,
+"captions_on_page": [
+"A famous example of this is the Korg microKORG (Figure 61).",
+"Roland’s JX-8P analog synthesizer."
+]
+},
+{
+"file": "p053-4.webp",
+"page": 53,
+"chapter": "5 Subtractive Synthesis",
+"width": 800,
+"height": 495,
+"captions_on_page": [
+"A famous example of this is the Korg microKORG (Figure 61).",
+"Roland’s JX-8P analog synthesizer."
+]
+},
+{
+"file": "p053-5.webp",
+"page": 53,
+"chapter": "5 Subtractive Synthesis",
+"width": 800,
+"height": 351,
+"captions_on_page": [
+"A famous example of this is the Korg microKORG (Figure 61).",
+"Roland’s JX-8P analog synthesizer."
+]
+},
+{
+"file": "p053-6.webp",
+"page": 53,
+"chapter": "5 Subtractive Synthesis",
+"width": 800,
+"height": 664,
+"captions_on_page": [
+"A famous example of this is the Korg microKORG (Figure 61).",
+"Roland’s JX-8P analog synthesizer."
+]
+},
+{
+"file": "p054-1.webp",
+"page": 54,
+"chapter": "5 Subtractive Synthesis",
+"width": 1024,
+"height": 316,
+"captions_on_page": []
+},
+{
+"file": "p054-2.webp",
+"page": 54,
+"chapter": "5 Subtractive Synthesis",
+"width": 1073,
+"height": 849,
+"captions_on_page": []
+},
+{
+"file": "p054-3.webp",
+"page": 54,
+"chapter": "5 Subtractive Synthesis",
+"width": 1225,
+"height": 749,
+"captions_on_page": []
+},
+{
+"file": "p056-1.webp",
+"page": 56,
+"chapter": "5 Subtractive Synthesis",
+"width": 800,
+"height": 533,
+"captions_on_page": []
+},
+{
+"file": "p056-2.webp",
+"page": 56,
+"chapter": "5 Subtractive Synthesis",
+"width": 1024,
+"height": 98,
+"captions_on_page": []
+},
+{
+"file": "p057-1.webp",
+"page": 57,
+"chapter": "5 Subtractive Synthesis",
+"width": 800,
+"height": 635,
+"captions_on_page": []
+},
+{
+"file": "p058-1.webp",
+"page": 58,
+"chapter": "5 Subtractive Synthesis",
+"width": 1400,
+"height": 789,
+"captions_on_page": []
+},
+{
+"file": "p059-1.webp",
+"page": 59,
+"chapter": "5 Subtractive Synthesis",
+"width": 800,
+"height": 818,
+"captions_on_page": []
+},
+{
+"file": "p061-1.webp",
+"page": 61,
+"chapter": "6 Oscillators, Combiners, and Amplifiers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p062-1.webp",
+"page": 62,
+"chapter": "6 Oscillators, Combiners, and Amplifiers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p063-1.webp",
+"page": 63,
+"chapter": "6 Oscillators, Combiners, and Amplifiers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p064-1.webp",
+"page": 64,
+"chapter": "6 Oscillators, Combiners, and Amplifiers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p065-1.webp",
+"page": 65,
+"chapter": "6 Oscillators, Combiners, and Amplifiers",
+"width": 1400,
+"height": 262,
+"captions_on_page": [
+"Additive Synthesis We could build the wave by adding sine waves up to the Nyquist limit.",
+"Engineering, 24, 717–727.",
+"Computer Music Conference (ICMC)."
+]
+},
+{
+"file": "p066-1.webp",
+"page": 66,
+"chapter": "6 Oscillators, Combiners, and Amplifiers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p067-1.webp",
+"page": 67,
+"chapter": "6 Oscillators, Combiners, and Amplifiers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p068-1.webp",
+"page": 68,
+"chapter": "6 Oscillators, Combiners, and Amplifiers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p069-1.webp",
+"page": 69,
+"chapter": "6 Oscillators, Combiners, and Amplifiers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p070-1.webp",
+"page": 70,
+"chapter": "6 Oscillators, Combiners, and Amplifiers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p071-1.webp",
+"page": 71,
+"chapter": "6 Oscillators, Combiners, and Amplifiers",
+"width": 1024,
+"height": 330,
+"captions_on_page": [
+"Section 8 which also modifies phase: but they really are pretty different creatures."
+]
+},
+{
+"file": "p072-1.webp",
+"page": 72,
+"chapter": "6 Oscillators, Combiners, and Amplifiers",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p073-1.webp",
+"page": 73,
+"chapter": "6 Oscillators, Combiners, and Amplifiers",
+"width": 667,
+"height": 322,
+"captions_on_page": [
+"Algorithm 19, page 130 (“Pitch Shifting for One-Shot Playback“) to pitch-shift."
+]
+},
+{
+"file": "p077-1.webp",
+"page": 77,
+"chapter": "7 Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p078-1.webp",
+"page": 78,
+"chapter": "7 Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p079-1.webp",
+"page": 79,
+"chapter": "7 Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p080-1.webp",
+"page": 80,
+"chapter": "7 Filters",
+"width": 800,
+"height": 637,
+"captions_on_page": []
+},
+{
+"file": "p081-1.webp",
+"page": 81,
+"chapter": "7 Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p082-1.webp",
+"page": 82,
+"chapter": "7 Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p083-1.webp",
+"page": 83,
+"chapter": "7 Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p087-1.webp",
+"page": 87,
+"chapter": "7 Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p088-1.webp",
+"page": 88,
+"chapter": "7 Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p089-1.webp",
+"page": 89,
+"chapter": "7 Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p092-1.webp",
+"page": 92,
+"chapter": "7 Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p093-1.webp",
+"page": 93,
+"chapter": "7 Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p094-1.webp",
+"page": 94,
+"chapter": "7 Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p100-1.webp",
+"page": 100,
+"chapter": "7 Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p101-1.webp",
+"page": 101,
+"chapter": "7 Filters",
+"width": 865,
+"height": 1400,
+"captions_on_page": [
+"Q variable: first order filters cannot have resonance."
+]
+},
+{
+"file": "p102-1.webp",
+"page": 102,
+"chapter": "7 Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p103-1.webp",
+"page": 103,
+"chapter": "7 Filters",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p104-1.webp",
+"page": 104,
+"chapter": "7 Filters",
+"width": 800,
+"height": 226,
+"captions_on_page": [
+"For a 2-pole bandpass filter, the resonance Q = formant peak frequency / bandwidth."
+]
+},
+{
+"file": "p105-1.webp",
+"page": 105,
+"chapter": "7 Filters",
+"width": 1024,
+"height": 101,
+"captions_on_page": []
+},
+{
+"file": "p107-1.webp",
+"page": 107,
+"chapter": "8 Frequency Modulation Synthesis",
+"width": 800,
+"height": 543,
+"captions_on_page": [
+"FM, or more specifically its more easily controllable version Figure 3).",
+"Phase modulation is easier to explain, so we’ll begin with that."
+]
+},
+{
+"file": "p110-1.webp",
+"page": 110,
+"chapter": "8 Frequency Modulation Synthesis",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p111-1.webp",
+"page": 111,
+"chapter": "8 Frequency Modulation Synthesis",
+"width": 1400,
+"height": 1142,
+"captions_on_page": [
+"J0 ( I ) is the amplitude of the carrier, that is, the partial at f c ."
+]
+},
+{
+"file": "p113-1.webp",
+"page": 113,
+"chapter": "8 Frequency Modulation Synthesis",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p114-1.webp",
+"page": 114,
+"chapter": "8 Frequency Modulation Synthesis",
+"width": 1270,
+"height": 923,
+"captions_on_page": []
+},
+{
+"file": "p114-2.webp",
+"page": 114,
+"chapter": "8 Frequency Modulation Synthesis",
+"width": 1024,
+"height": 95,
+"captions_on_page": []
+},
+{
+"file": "p115-1.webp",
+"page": 115,
+"chapter": "8 Frequency Modulation Synthesis",
+"width": 1024,
+"height": 680,
+"captions_on_page": [
+"FS1R, and certain virtual analog synths with FM options."
+]
+},
+{
+"file": "p117-1.webp",
+"page": 117,
+"chapter": "9 Sampling and Sample Playback",
+"width": 800,
+"height": 1202,
+"captions_on_page": [
+"Roland, and Korg.",
+"Figure 140 A 1999 Mellotron Mk VI."
+]
+},
+{
+"file": "p117-2.webp",
+"page": 117,
+"chapter": "9 Sampling and Sample Playback",
+"width": 800,
+"height": 533,
+"captions_on_page": [
+"Roland, and Korg.",
+"Figure 140 A 1999 Mellotron Mk VI."
+]
+},
+{
+"file": "p119-1.webp",
+"page": 119,
+"chapter": "9 Sampling and Sample Playback",
+"width": 1024,
+"height": 512,
+"captions_on_page": []
+},
+{
+"file": "p119-10.webp",
+"page": 119,
+"chapter": "9 Sampling and Sample Playback",
+"width": 183,
+"height": 185,
+"captions_on_page": []
+},
+{
+"file": "p119-11.webp",
+"page": 119,
+"chapter": "9 Sampling and Sample Playback",
+"width": 183,
+"height": 185,
+"captions_on_page": []
+},
+{
+"file": "p119-12.webp",
+"page": 119,
+"chapter": "9 Sampling and Sample Playback",
+"width": 183,
+"height": 186,
+"captions_on_page": []
+},
+{
+"file": "p119-13.webp",
+"page": 119,
+"chapter": "9 Sampling and Sample Playback",
+"width": 183,
+"height": 186,
+"captions_on_page": []
+},
+{
+"file": "p119-14.webp",
+"page": 119,
+"chapter": "9 Sampling and Sample Playback",
+"width": 183,
+"height": 186,
+"captions_on_page": []
+},
+{
+"file": "p119-2.webp",
+"page": 119,
+"chapter": "9 Sampling and Sample Playback",
+"width": 1024,
+"height": 467,
+"captions_on_page": []
+},
+{
+"file": "p119-3.webp",
+"page": 119,
+"chapter": "9 Sampling and Sample Playback",
+"width": 183,
+"height": 185,
+"captions_on_page": []
+},
+{
+"file": "p119-4.webp",
+"page": 119,
+"chapter": "9 Sampling and Sample Playback",
+"width": 183,
+"height": 185,
+"captions_on_page": []
+},
+{
+"file": "p119-5.webp",
+"page": 119,
+"chapter": "9 Sampling and Sample Playback",
+"width": 183,
+"height": 185,
+"captions_on_page": []
+},
+{
+"file": "p119-6.webp",
+"page": 119,
+"chapter": "9 Sampling and Sample Playback",
+"width": 183,
+"height": 185,
+"captions_on_page": []
+},
+{
+"file": "p119-7.webp",
+"page": 119,
+"chapter": "9 Sampling and Sample Playback",
+"width": 183,
+"height": 185,
+"captions_on_page": []
+},
+{
+"file": "p119-8.webp",
+"page": 119,
+"chapter": "9 Sampling and Sample Playback",
+"width": 183,
+"height": 185,
+"captions_on_page": []
+},
+{
+"file": "p119-9.webp",
+"page": 119,
+"chapter": "9 Sampling and Sample Playback",
+"width": 183,
+"height": 185,
+"captions_on_page": []
+},
+{
+"file": "p120-1.webp",
+"page": 120,
+"chapter": "9 Sampling and Sample Playback",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p121-1.webp",
+"page": 121,
+"chapter": "9 Sampling and Sample Playback",
+"width": 1024,
+"height": 622,
+"captions_on_page": []
+},
+{
+"file": "p122-1.webp",
+"page": 122,
+"chapter": "9 Sampling and Sample Playback",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p124-1.webp",
+"page": 124,
+"chapter": "9 Sampling and Sample Playback",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p125-1.webp",
+"page": 125,
+"chapter": "9 Sampling and Sample Playback",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p134-1.webp",
+"page": 134,
+"chapter": "10 Effects and Physical Modeling",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p135-1.webp",
+"page": 135,
+"chapter": "10 Effects and Physical Modeling",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p138-1.webp",
+"page": 138,
+"chapter": "10 Effects and Physical Modeling",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p139-1.webp",
+"page": 139,
+"chapter": "10 Effects and Physical Modeling",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p140-1.webp",
+"page": 140,
+"chapter": "10 Effects and Physical Modeling",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p141-1.webp",
+"page": 141,
+"chapter": "10 Effects and Physical Modeling",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p142-1.webp",
+"page": 142,
+"chapter": "10 Effects and Physical Modeling",
+"width": 1400,
+"height": 786,
+"captions_on_page": []
+},
+{
+"file": "p146-1.webp",
+"page": 146,
+"chapter": "11 Controllers and MIDI",
+"width": 822,
+"height": 1024,
+"captions_on_page": []
+},
+{
+"file": "p147-1.webp",
+"page": 147,
+"chapter": "11 Controllers and MIDI",
+"width": 800,
+"height": 533,
+"captions_on_page": [
+"Yamaha CS-80 (Figure 54 on page 52) and the ASM Hydrasynth."
+]
+},
+{
+"file": "p147-2.webp",
+"page": 147,
+"chapter": "11 Controllers and MIDI",
+"width": 800,
+"height": 352,
+"captions_on_page": [
+"Yamaha CS-80 (Figure 54 on page 52) and the ASM Hydrasynth."
+]
+},
+{
+"file": "p147-3.webp",
+"page": 147,
+"chapter": "11 Controllers and MIDI",
+"width": 695,
+"height": 533,
+"captions_on_page": [
+"Yamaha CS-80 (Figure 54 on page 52) and the ASM Hydrasynth."
+]
+},
+{
+"file": "p148-1.webp",
+"page": 148,
+"chapter": "11 Controllers and MIDI",
+"width": 640,
+"height": 480,
+"captions_on_page": []
+},
+{
+"file": "p148-2.webp",
+"page": 148,
+"chapter": "11 Controllers and MIDI",
+"width": 367,
+"height": 349,
+"captions_on_page": []
+},
+{
+"file": "p148-3.webp",
+"page": 148,
+"chapter": "11 Controllers and MIDI",
+"width": 1024,
+"height": 576,
+"captions_on_page": []
+},
+{
+"file": "p149-1.webp",
+"page": 149,
+"chapter": "11 Controllers and MIDI",
+"width": 1024,
+"height": 379,
+"captions_on_page": []
+},
+{
+"file": "p149-2.webp",
+"page": 149,
+"chapter": "11 Controllers and MIDI",
+"width": 901,
+"height": 339,
+"captions_on_page": []
+},
+{
+"file": "p149-3.webp",
+"page": 149,
+"chapter": "11 Controllers and MIDI",
+"width": 800,
+"height": 586,
+"captions_on_page": []
+},
+{
+"file": "p149-4.webp",
+"page": 149,
+"chapter": "11 Controllers and MIDI",
+"width": 464,
+"height": 833,
+"captions_on_page": []
+},
+{
+"file": "p150-1.webp",
+"page": 150,
+"chapter": "11 Controllers and MIDI",
+"width": 780,
+"height": 534,
+"captions_on_page": [
+"Thru just forwarded the data received at MIDI In.",
+"A’s Out to B’s In, then connect another cable from B’s Thru Out, and Thru ports.",
+"A wouldn’t send data to D: but B would."
+]
+},
+{
+"file": "p158-1.webp",
+"page": 158,
+"chapter": "11 Controllers and MIDI",
+"width": 1400,
+"height": 1143,
+"captions_on_page": []
+},
+{
+"file": "p161-1.webp",
+"page": 161,
+"chapter": "12 The Fourier Transform",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p164-1.webp",
+"page": 164,
+"chapter": "12 The Fourier Transform",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p165-1.webp",
+"page": 165,
+"chapter": "12 The Fourier Transform",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p168-1.webp",
+"page": 168,
+"chapter": "12 The Fourier Transform",
+"width": 508,
+"height": 412,
+"captions_on_page": []
+},
+{
+"file": "p169-1.webp",
+"page": 169,
+"chapter": "12 The Fourier Transform",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p170-1.webp",
+"page": 170,
+"chapter": "12 The Fourier Transform",
+"width": 1024,
+"height": 681,
+"captions_on_page": [
+"O(lg N ), with a long sound, that N could be awfully big."
+]
+},
+{
+"file": "p172-1.webp",
+"page": 172,
+"chapter": "12 The Fourier Transform",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+},
+{
+"file": "p173-1.webp",
+"page": 173,
+"chapter": "12 The Fourier Transform",
+"width": 935,
+"height": 1210,
+"captions_on_page": [],
+"whole_page": true
+}
+]
+}

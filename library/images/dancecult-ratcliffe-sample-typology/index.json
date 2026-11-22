@@ -1,0 +1,16 @@
+{
+"source": "A Proposed Typology of Sampled Material Within Electronic Dance Music (Robert Ratcliffe, Dancecult 6(1), 2014)",
+"note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text. Entries marked whole_page are the whole page rendered as a picture, because its figures are drawn as lines and are not embedded pictures.",
+"images": [
+{
+"file": "p003-1.webp",
+"page": 3,
+"chapter": "A typology of sampled material",
+"width": 1400,
+"height": 933,
+"captions_on_page": [
+"Figure 1: A proposed typology of sampled material within EDM."
+]
+}
+]
+}

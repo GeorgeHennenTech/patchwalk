@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { BOX_IDS, DEST_NAMES, FAST_DESTS, fromTravel, INITIAL, MOD_DESTS, PARAMS, SLOW_DESTS, TABLE_GROUPS, TABLES, tableName, toTravel, type ParamSpec, type SynthState } from "../../synth/params";
+import { BOX_IDS, DEST_NAMES, FAST_DESTS, fromTravel, INITIAL, MOD_DESTS, PARAMS, SLOW_DESTS, TABLE_GROUPS, TABLES, tableName, toTravel, userTables, type ParamSpec, type SynthState } from "../../synth/params";
 import { slotPush, slotsTo } from "../../synth/macros";
 import { connect, currentDrag, dragName, endDrag } from "../../synth/connect";
 import { routes, routesTo, SOURCES, withRouteAmount, type Route } from "../../synth/mod";
@@ -56,6 +56,7 @@ export function TableOptions() {
   return (
     <>
       <option value="none">{tableName("none")}</option>
+      {userTables().length > 0 && <optgroup label="Your tables">{userTables().map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</optgroup>}
       {TABLE_GROUPS.map(([group, ids]) => <optgroup key={group} label={group}>{ids.map((t) => <option key={t} value={t}>{tableName(t)}</option>)}</optgroup>)}
     </>
   );

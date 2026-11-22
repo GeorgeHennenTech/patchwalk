@@ -6,7 +6,8 @@ import { modulated } from "./mod";
 import { Engine } from "./engine";
 import { arpCycle, arpStepSeconds, nextArpTime } from "./arp";
 import { applyMacros } from "./macros";
-import { INITIAL, type SynthState } from "./params";
+import { INITIAL, type SynthState, onTables, tablesRevision } from "./params";
+import { loadTables } from "./tablestore";
 import { newTrack, snapshot, trackAllReleased, trackFlag, trackNoteOn, trackState, type Track } from "./tracker";
 
 /** Computer-keyboard layout: A S D F G H J K are white keys from C, the row above gives the black keys. */
@@ -111,6 +112,9 @@ export function useSynth(host?: { engine: Engine; initial: SynthState; onChange:
     }
   }, [arpStop]);
   useEffect(() => () => { if (arp.current.timer) clearInterval(arp.current.timer); arp.current.shows.forEach(clearTimeout); }, []);
+  // the learner's own wavetables: read them in once, and give sounding notes their waves again whenever one is edited
+  const [, setTablesRev] = useState(0);
+  useEffect(() => { void loadTables(); return onTables(() => { engine.current?.refreshWaves(); setTablesRev(tablesRevision()); }); }, []);
   const arpStart = useCallback(() => {
     const eng = engine.current, a = arp.current;
     if (!eng || a.timer) return;

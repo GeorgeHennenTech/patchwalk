@@ -1,0 +1,52 @@
+{
+"source": "Rumble in the Jungle: City, Place and Uncanny Bass (Chris Christodoulou, Dancecult 3(1), 2011)",
+"note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text. Entries marked whole_page are the whole page rendered as a picture, because its figures are drawn as lines and are not embedded pictures.",
+"images": [
+{
+"file": "p008-1.webp",
+"page": 8,
+"chapter": "Rumble in the jungle",
+"width": 700,
+"height": 987,
+"captions_on_page": [
+"Figure 1: Flyer for Renegade Hardware club night at The End, London, December 2000."
+]
+},
+{
+"file": "p010-1.webp",
+"page": 10,
+"chapter": "Rumble in the jungle",
+"width": 896,
+"height": 900,
+"captions_on_page": [
+"Figure 2: Inside The Machine by Bad Company (2000)."
+]
+},
+{
+"file": "p013-1.webp",
+"page": 13,
+"chapter": "Rumble in the jungle",
+"width": 750,
+"height": 500,
+"captions_on_page": []
+},
+{
+"file": "p014-1.webp",
+"page": 14,
+"chapter": "Rumble in the jungle",
+"width": 700,
+"height": 998,
+"captions_on_page": []
+},
+{
+"file": "p015-1.webp",
+"page": 15,
+"chapter": "Rumble in the jungle",
+"width": 700,
+"height": 491,
+"captions_on_page": [
+"Figure 5: A “vamp in the machine” on a flyer for a Dreamscape rave, May 2000."
+]
+}
+]
+}

@@ -1,0 +1,38 @@
+{
+"source": "Syncopation, Body-Movement and Pleasure in Groove Music (Witek, Clarke, Wallentin, Kringelbach, Vuust, PLoS ONE 2014)",
+"note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text. Entries marked whole_page are the whole page rendered as a picture, because its figures are drawn as lines and are not embedded pictures.",
+"images": [
+{
+"file": "p005-1.webp",
+"page": 5,
+"chapter": "Syncopation, body-movement and pleasure",
+"width": 794,
+"height": 1400,
+"captions_on_page": []
+},
+{
+"file": "p006-1.webp",
+"page": 6,
+"chapter": "Syncopation, body-movement and pleasure",
+"width": 1238,
+"height": 812,
+"captions_on_page": []
+},
+{
+"file": "p008-1.webp",
+"page": 8,
+"chapter": "Syncopation, body-movement and pleasure",
+"width": 1325,
+"height": 845,
+"captions_on_page": []
+},
+{
+"file": "p009-1.webp",
+"page": 9,
+"chapter": "Syncopation, body-movement and pleasure",
+"width": 1400,
+"height": 851,
+"captions_on_page": []
+}
+]
+}

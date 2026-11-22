@@ -622,3 +622,37 @@ tr.dim td { opacity: 0.6; }
 .src-hit-where .linkish, .src-in .linkish { background: none; border: 0; color: var(--accent); text-decoration: underline; cursor: pointer; box-shadow: none; padding: 0; font-weight: 600; }
 .src-excerpt { margin: 4px 0 0; font-size: 0.92rem; }
 @media (max-width: 760px) { .src-table th:nth-child(4), .src-table td:nth-child(4), .src-table th:nth-child(7), .src-table td:nth-child(7), .src-table th:nth-child(2), .src-table td:nth-child(2) { display: none; } }
+
+/* ---- wavetable editor (drawn outside the synth's skin, on the page's own plain panels) ---- */
+.wted { position: fixed; inset: 0; z-index: 60; background: rgba(0, 0, 0, 0.55); display: flex; align-items: flex-start; justify-content: center; overflow: auto; padding: 18px 12px; }
+.wted-panel { position: relative; width: min(1180px, 100%); background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px 12px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4); font-size: 13px; }
+.wted-panel button, .wted-panel select, .wted-panel input[type="text"], .wted-panel input:not([type]) { font: inherit; color: var(--text); background: var(--panel); border: 1px solid var(--muted); border-radius: 6px; padding: 4px 8px; }
+.wted-panel button { cursor: pointer; }
+.wted-panel button:hover:not(:disabled) { border-color: var(--accent); }
+.wted-panel button:disabled { opacity: 0.45; cursor: default; }
+.wted-panel button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+.wted-panel label { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); }
+.wted-head, .wted-tools, .wted-binbar, .wted-formula, .wted-menus, .wted-strip-buttons { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+.wted-head { margin-bottom: 10px; } .wted-head strong { font-size: 16px; } .wted-head input:not([type]) { width: 190px; }
+.wted-close { margin-left: auto; } .wted-pos input { width: 150px; } .wted-pos output { min-width: 3.2em; color: var(--text); }
+.wted-tools { margin-bottom: 8px; } .wted-tools button { padding: 3px 7px; font-size: 12px; }
+.wted-wave, .wted-bins { display: block; width: 100%; background: var(--panel); border: 1px solid var(--muted); border-radius: 8px; touch-action: none; cursor: crosshair; }
+.wted-wave { height: 230px; } .wted-bins { height: 150px; }
+.wted-binbar { margin: 10px 0 6px; } .wted-label { color: var(--muted); margin-right: auto; }
+.wted-formula { margin: 10px 0 8px; } .wted-formula label { flex: 1 1 420px; } .wted-formula input { flex: 1; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; }
+.wted-menus select { max-width: 240px; }
+.wted-danger { margin-left: auto; color: var(--err) !important; }
+.wted-strip { margin-top: 10px; border-top: 1px solid var(--line); padding-top: 8px; }
+.wted-thumbs { list-style: none; display: flex; gap: 4px; overflow-x: auto; margin: 8px 0 0; padding: 0 0 6px; }
+.wted-thumbs li { flex: 0 0 auto; }
+.wted-thumbs button { display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 2px 3px; }
+.wted-thumbs li.in button { border-color: var(--accent); }
+.wted-thumbs li.on button { background: var(--accent-soft); border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.wted-thumbs span { font-size: 10px; color: var(--muted); }
+.wted-menu { position: absolute; z-index: 5; list-style: none; margin: 0; padding: 4px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3); max-height: 320px; overflow: auto; }
+.wted-menu button { display: block; width: 100%; text-align: left; border: none; background: none; padding: 4px 10px; }
+.wted-menu button:hover { background: var(--accent-soft); }
+.wted-menu-head { padding: 2px 10px 4px; color: var(--muted); font-size: 11px; }
+.wted-note { margin: 8px 0 2px; min-height: 1.4em; } .wted-fine { margin: 0; font-size: 12px; }
+.wted-mini canvas { vertical-align: middle; border: 1px solid var(--line); border-radius: 4px; }
+.edit-table { align-self: flex-start; font-size: 12px; }

@@ -7,7 +7,9 @@ import { dragColor, dragName, endDrag, startDrag, type Draggable } from "../../s
 import { MACRO_COLORS } from "../../synth/macros";
 import { FX_NAMES, FX_ORDER, fxOrderOf, moveFx, type FxId } from "../../synth/fx";
 import { adsr, ENV1_COLOR, envLevel, lfoHz, lfoStartPhase, lfoValue, routes, SOURCES, type Adsr, type ModSource } from "../../synth/mod";
-import { harmonic, isDrawn, TABLE_NOTES, spectrumA, HARMONICS, LFO_STEPS, MACRO_SLOTS, MACROS, PARAMS, type Group, type SynthState, spectrumB } from "../../synth/params";
+import { harmonic, isDrawn, isUserTable, tablesRevision, TABLE_NOTES, type BuiltInTable, type Table, spectrumA, HARMONICS, LFO_STEPS, MACRO_SLOTS, MACROS, PARAMS, type Group, type SynthState, spectrumB } from "../../synth/params";
+import { createPortal } from "react-dom";
+import { TableEditor } from "./TableEditor";
 import type { Synth } from "../../synth/useSynth";
 import { Control, isBox } from "./Controls";
 import { FilterCurve, Matrix, Reduction } from "./Views";
@@ -74,7 +76,7 @@ function Display({ module, synth, note }: { module: Module; synth: Synth; note: 
     if (module.source === "vel" || module.source === "key" || module.source === "wheel" || module.id.startsWith("fx-") || module.id === "voice") return "";
     if (module.source) return lfoPath(s[`${module.source as "lfo1"}Shape`], s[`${module.source as "lfo1"}Way`] === "up", s[`${module.source as "lfo1"}Steps`]);
     return NOISE_PATH;
-  }, [module, s.shape, s.table, s.position, s.phase, s.warp, s.warpAmount, s.bShape, s.bTable, s.bPosition, s.bPhase, s.envA, s.envD, s.envS, s.envR, s.env2A, s.env2D, s.env2S, s.env2R, s.lfo1Shape, s.lfo2Shape, s.lfo3Shape, s.lfo1Way, s.lfo2Way, s.lfo3Way, s.lfo1Steps, s.lfo2Steps, s.lfo3Steps]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [tablesRevision(), module, s.shape, s.table, s.position, s.phase, s.warp, s.warpAmount, s.bShape, s.bTable, s.bPosition, s.bPhase, s.envA, s.envD, s.envS, s.envR, s.env2A, s.env2D, s.env2S, s.env2R, s.lfo1Shape, s.lfo2Shape, s.lfo3Shape, s.lfo1Way, s.lfo2Way, s.lfo3Way, s.lfo1Steps, s.lfo2Steps, s.lfo3Steps]); // eslint-disable-line react-hooks/exhaustive-deps
   // While a note sounds, an oscillator's picture follows whatever is moving its wave (position, warp,
   // phase, shape), drawn straight onto the page each frame; it returns to the settings when the note stops.
   const wave = useRef<SVGPathElement>(null);
@@ -151,6 +153,8 @@ export function Rack({ synth, show, all, lesson, note }: { synth: Synth; show: P
   const on = (p: Panel) => all || show.includes(p);
   const s = synth.state;
   const [page, setPage] = useState<"synth" | "fx" | "matrix">("synth");
+  const [editing, setEditing] = useState<"a" | "b" | null>(null);
+  const noteOf = (t: Table): string | undefined => (isUserTable(t) ? "A table you made in the wavetable editor." : TABLE_NOTES[t as BuiltInTable]);
   const [tabs, setTabs] = useState<Record<string, string>>({ env: "env1", lfo: "lfo1", note: "vel" });
   /** A source that is not sent anywhere yet. */
   const idle = (m: Module) => !!m.source && s[`${m.source}Dest`] === "none";
@@ -164,9 +168,10 @@ export function Rack({ synth, show, all, lesson, note }: { synth: Synth; show: P
       <div className="mod-body">
         {/* an LFO's shape is shown whenever its controls are, so a lesson can point at it */}
         {(all || m.source?.startsWith("lfo")) && <Display module={m} synth={synth} note={note} />}
-        {(m.id === "a" || m.id === "b") && TABLE_NOTES[s[m.id === "a" ? "table" : "bTable"]] && (all || show.includes(m.id === "a" ? "table" : "bTable")) && (
-          <p className="table-note">{TABLE_NOTES[s[m.id === "a" ? "table" : "bTable"]]}</p>
+        {(m.id === "a" || m.id === "b") && noteOf(s[m.id === "a" ? "table" : "bTable"]) && (all || show.includes(m.id === "a" ? "table" : "bTable")) && (
+          <p className="table-note">{noteOf(s[m.id === "a" ? "table" : "bTable"])}</p>
         )}
+        {(m.id === "a" || m.id === "b") && all && <button className="link edit-table" onClick={() => setEditing(m.id as "a" | "b")}>Wavetable editor</button>}
         {m.source?.startsWith("lfo") && !isDrawn(s[`${m.source as "lfo1"}Shape`]) && (all || show.includes(`${m.source}Shape` as Panel)) && (
           <button className="link draw-own" title="Turns the current shape into sixteen bars you can drag to any height" onClick={() => {
             const id = m.source as "lfo1", shape = s[`${id}Shape`];
@@ -254,6 +259,7 @@ export function Rack({ synth, show, all, lesson, note }: { synth: Synth; show: P
   const mod = (id: string) => MOD_MODULES.find((m) => m.id === id)!;
   return (
     <>
+      {editing && createPortal(<TableEditor synth={synth} osc={editing} onClose={() => setEditing(null)} />, document.body)}
       <div className="synth-tabs" role="tablist" aria-label="Synth pages">
         {([["synth", "Synth"], ["fx", "FX"], ["matrix", "Matrix"]] as const).map(([id, label]) => <button key={id} role="tab" aria-selected={page === id} className={page === id ? "on" : ""} onClick={() => setPage(id)}>{label}{id === "fx" && FX_ORDER.some((f) => s[`${f}On`]) && <b>{FX_ORDER.filter((f) => s[`${f}On`]).length}</b>}</button>)}
       </div>

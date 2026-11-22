@@ -515,6 +515,13 @@ export class Engine {
     for (const v of this.voices) this.applyVoice(v, next, prev);
   }
 
+  /** A learner's wavetable was edited: give every sounding note its waves afresh, though no setting changed. */
+  refreshWaves(): void {
+    const now = this.state, before = { ...now, table: "none", bTable: "none" } as SynthState;
+    if (now.table === "none" && now.bTable === "none") return;
+    for (const v of this.voices) this.applyVoice(v, now, before);
+  }
+
   /** Make one sounding note match new settings, changing only what differs from the settings it had. */
   private applyVoice(v: Voice, next: SynthState, prev: SynthState): void {
     const t = this.ctx.currentTime;

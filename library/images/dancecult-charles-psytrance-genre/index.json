@@ -1,0 +1,92 @@
+{
+"source": "Genre in Practice: Categories, Metadata and Music-Making in Psytrance Culture (Christopher David Charles, Dancecult 12(1), 2020)",
+"note": "Images embedded in the PDF, one file per image, named p<page>-<n>.webp. 'captions_on_page' lists short title-like lines found on the same page; they are candidates, not matched to a specific image. Private reference material: same rules as library text. Entries marked whole_page are the whole page rendered as a picture, because its figures are drawn as lines and are not embedded pictures.",
+"images": [
+{
+"file": "p006-1.webp",
+"page": 6,
+"chapter": "Genre in practice in psytrance",
+"width": 960,
+"height": 472,
+"captions_on_page": [
+"Normative examples in psyculture include “glitchy”, “funky”, “atmospheric” and “euphoric”."
+]
+},
+{
+"file": "p010-1.webp",
+"page": 10,
+"chapter": "Genre in practice in psytrance",
+"width": 1052,
+"height": 1047,
+"captions_on_page": []
+},
+{
+"file": "p012-1.webp",
+"page": 12,
+"chapter": "Genre in practice in psytrance",
+"width": 907,
+"height": 220,
+"captions_on_page": []
+},
+{
+"file": "p012-2.webp",
+"page": 12,
+"chapter": "Genre in practice in psytrance",
+"width": 907,
+"height": 220,
+"captions_on_page": []
+},
+{
+"file": "p013-1.webp",
+"page": 13,
+"chapter": "Genre in practice in psytrance",
+"width": 1400,
+"height": 1393,
+"captions_on_page": [
+"Artwork by Jazzmine, co-founder of Blue Hour Sounds, reproduced with permission."
+]
+},
+{
+"file": "p014-1.webp",
+"page": 14,
+"chapter": "Genre in practice in psytrance",
+"width": 907,
+"height": 220,
+"captions_on_page": []
+},
+{
+"file": "p016-1.webp",
+"page": 16,
+"chapter": "Genre in practice in psytrance",
+"width": 1400,
+"height": 1259,
+"captions_on_page": []
+},
+{
+"file": "p018-1.webp",
+"page": 18,
+"chapter": "Genre in practice in psytrance",
+"width": 907,
+"height": 283,
+"captions_on_page": []
+},
+{
+"file": "p018-2.webp",
+"page": 18,
+"chapter": "Genre in practice in psytrance",
+"width": 907,
+"height": 220,
+"captions_on_page": []
+},
+{
+"file": "p019-1.webp",
+"page": 19,
+"chapter": "Genre in practice in psytrance",
+"width": 980,
+"height": 581,
+"captions_on_page": [
+"Messages from the Resonator (2020)."
+]
+}
+]
+}

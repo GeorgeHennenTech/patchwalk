@@ -1832,6 +1832,70 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   tables. **Nobody has heard them.** No lesson uses them yet. Still far short of Serum: no editor, no
   import, no tables made from recorded sound. **No book on designing wavetables exists** (searched twice);
   the papers and chapters that do are at the end of `docs/LITERATURE.md`.
+- **Wavetable editor (22 Nov 2026, owner: "lets make one as good as what Serum has... research all of the
+  features that they have and clone it").** The feature list was taken from the Serum 2 User Guide in the
+  library (pages 274 to 311 and 346 to 347: the editor, importing audio, the formula parser, the appendix).
+  **What is copied is what the editor can do; the code, wording and look are ours, and no Xfer table, preset
+  formula or artwork is used (rule 4).** Opened by "Wavetable editor" on Osc A or Osc B in the whole synth.
+  - `src/synth/wtedit.ts` (pure, tested in `tests/wtedit.test.ts`): a frame is 2048 samples, a table up to 256
+    frames. `fft`, `toBins`/`fromBins` (strength and phase of each harmonic); the twelve drawing tools with a
+    grid and Mirror (`draw`); the harmonic area's commands (`binCommand`: clear all, above, below; make a saw;
+    random low, with halves, all; random gaps; fade the top; octave up and down; repeat a group) and `setBin`;
+    frame commands (insert, remove ranges, keep, every nth, move, copy and paste, eight sorts); the Single and
+    All menus (normalise each or together, offset, flips, zero crossing, fades and crossfades, keep the lowest
+    harmonics, sample-rate reduction, remove the first harmonic, low spectra and phases, split in halves, join
+    pairs, pulse width from a frame, line up first harmonics, strengths or phases from this frame or from the
+    other oscillator, subtract the other oscillator, blur across harmonics or across frames); morphing
+    (`morphAt`: none, crossfade, spectral; `renderMorph` writes the in-between frames out); import
+    (`periodOf` by autocorrelation, `averagePeriod`, `splitFixed`, `splitFollowing` with or without zero
+    snapping, `splitByHarmonics`, `splitSpectral` for blocks of 256 to 2048, `fromImage`, `splitSizeOf` for a
+    typed length or note name, `readWav`); export (`tableWav` 16-bit and 32-bit, `table8bit`).
+  - `src/synth/wtformula.ts`: our own safe reader for the guide's formula language (its functions, operators,
+    a `? :` choice, and the variables w, x, y, z, q, in, sel, rand). y or z writes every frame (a one-frame
+    table grows to 64); q writes harmonics. `FORMULA_EXAMPLES` are ours, not Serum's presets.
+  - Tables the learner makes: `Table` is now a built-in name or `u:<id>` (`isUserTable`). `params.ts` keeps a
+    registry (`setUserTable`, `userTables`, `tablesRevision`, `onTables`, `tableSamples`, `tableMorph`);
+    `blend` plays a table's own morph mode. `src/synth/tablestore.ts` keeps them in the browser's IndexedDB
+    (`patchwalk-tables`; `holdTable` plays an edit at once and saves 0.7 s later; `loadTables` runs when a
+    synth starts). The engine has `refreshWaves()` so sounding notes follow an edit. The wavetable menu lists
+    "Your tables" first. **A saved sound or Studio track stores only the table's id: on another computer the
+    table is missing and the basic shape plays. Tables are not yet stored with the account or the Library tab.**
+  - `src/ui/synth/TableEditor.tsx` (drawn over the page through a portal, on plain panels): wave display to
+    draw on, harmonic display (strengths on top, phases underneath; right-click for the commands; even or odd
+    only, snap to quarters, scale by number), formula box with starting formulas, menus for Frames, Sort, This
+    frame, All frames, Morph, Bring in and Save as a file, a strip of frame pictures (click, Shift-click a
+    range, drag to reorder, drop a file on one), Undo and Redo (80 steps, Ctrl+Z), Hold a note, a position
+    slider. Opening it on a built-in table starts from a copy of that table.
+  - Checked in a browser: a formula `q<=3` gave the synth harmonics 1,1,1,0; drawing changed them and Undo
+    put them back; an every-frame formula made 64 frames; every 8th, a spectral morph and a reverse sort
+    worked; "Make a saw" and dragging a bar to zero did what they say; a 441 Hz WAV with a second harmonic
+    came in as 256 frames cut every 100.0 samples and **played back with the second harmonic 6.3 dB under the
+    first and the third 80 dB down**; a 16-bit WAV of 256 frames was saved; the table was listed under "Your
+    tables" and was still there after a reload. **Nobody has heard it or used it by hand.**
+  - **Where it still falls short of Serum, honestly:** the synth plays only the first 64 harmonics of a frame
+    (`HARMONICS`; Serum plays the whole 2048-sample cycle), so sharp drawings sound smoother than they look
+    and low notes are duller than Serum's: raising `HARMONICS` is the most valuable next step for the whole
+    synth. No 3D view of the table. Import was tested on clean tones only; the pitch-following modes are
+    simple. No "send to noise oscillator", no text-file overrides, no saving of the learner's own formulas,
+    no Serum-format WAV header (so Serum will not know the morph mode of a file saved here), no Osc C.
+    Where the guide does not say exactly what a command does (the grid's meaning in Filter and Sample redux,
+    "Nudge all phases", the random commands' ranges) the choice is ours and is written in `wtedit.ts`.
+- **Free texts fetched (21 to 22 Nov 2026, owner: "find all of these free ones").** The session's network
+  blocked nearly every host, so the owner approved adding fourteen hosts to the `patchwalk` environment's
+  allowed list. A helper then took in **eleven texts** (list, sources and licences in `docs/LITERATURE.md`,
+  "Taken in on 21 Nov 2026 (free texts)"; cards in `SOURCES`): Sean Luke's *Computational Music Synthesis*
+  (CC BY-ND; 173 pages), Witek and others 2014 on syncopation and groove (CC BY), Butler's "Turning the Beat
+  Around" (saved under the journal's terms: storing and sharing for research allowed, republishing not), and
+  eight *Dancecult* articles on breakbeat, jungle, the hardcore continuum, IDM, the bass drop, sampling,
+  dubstep and psytrance (CC BY-NC-SA). The library holds 49 texts. **Nobody has read their bodies: the cards
+  were written from abstracts.** Solberg's "bass drop" paper measured no listeners and must not be used to
+  claim a technique causes a feeling. Not obtained, with the reason for each in that section: Open Music
+  Theory (its site refuses automated requests), Shelvock's and Hockman's theses (they redirect to hosts not
+  allowed: `hdl.handle.net`, `mcgill.scholaris.ca`), Understanding Basic Music Theory, Välimäki 2006 (a bot
+  check), Raman 1934 (site under maintenance), Holzapfel 2014 (Zenodo refused), Fontana and Rocchesso (no
+  file), Cook's PhISM (not found), Synth Secrets (the site forbids reproduction), Smith's online book (no
+  licence), Scavone's and Cook's theses (scanned), Knowles and Sonion. **DeSantis's *Making Music* is not
+  free: Ableton's site gives 24 of its 74 chapters.** The owner can download any of these and upload them.
 - **Long pages are searched in parts (16 Nov 2026).** `splitText` in `src/library/search.ts` cuts a page over
   2,400 characters into overlapping parts of about 1,500 (ids `book#page~1`, `~2`, with `of` naming the
   page); `pageOf` and `cite` count parts of one page as one source, and `search` takes at most two parts of

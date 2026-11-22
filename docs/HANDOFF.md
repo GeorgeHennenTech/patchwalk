@@ -619,3 +619,14 @@ The synth has 33 wavetables (23 new), chosen from a grouped drop-down (`CLAUDE.m
 wavetables"). 797 passing tests in 38 files. Next for wavetables, if the owner asks: lessons that use
 them, then an editor so tables can be drawn in the app. The owner was also given the full list of
 literature still wanted; it lives in `docs/LITERATURE.md`.
+
+## 22 Nov 2026: a wavetable editor, and eleven free texts
+- **Wavetable editor** on Osc A and Osc B (whole synth, "Wavetable editor"): drawing tools, harmonic editing,
+  frame, sort, single, all and morph menus, a formula box, audio and picture import, export; tables are kept
+  in the browser. Details, what was checked and where it falls short of Serum are in `CLAUDE.md` ("Wavetable
+  editor"). **Most valuable follow-up: raise the synth's 64-harmonic limit; then store tables with the
+  account, a 3D view, and lessons on the editor.**
+- **Eleven free texts** were taken in after the owner allowed fourteen more hosts (`CLAUDE.md`, "Free texts
+  fetched"); 49 texts in the library. The rest are listed with why each could not be had.
+- 829 passing tests in 39 files. Everything since the quick wins is on branch `claude/new-session-dfvcsr`,
+  not on the live site: the owner has still not said "yes" to copying it to main.

@@ -155,3 +155,8 @@ All thirty numbered items are built except Dynamic Tube (part of item 26). What 
 below, note effects on keys played live, and whatever the owner's ear says is wrong. When checking anything
 in the Studio page by script, loop bar 1 first: the example song is empty after its first bars. A level follower made from ready parts must smooth with `createIIRFilter`:
 the ordinary low-pass set to a few Hz read a tenth short (`follower` in `fxnodes.ts`).
+
+## Added outside the numbered list
+- [x] **Pitch shift** (23 Nov 2026): exact interval, speed kept; Signalsmith Stretch does the shifting. Measured:
+  +7, +12, -12 semitones on 440 Hz gave 659.2, 880.5, 220.9 Hz. About an eighth of a second late.
+- The **Reverb** is now a plate reverb after Dattorro's 1997 paper (same knobs).

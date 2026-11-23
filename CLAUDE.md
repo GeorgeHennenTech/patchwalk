@@ -1908,6 +1908,60 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   **Nobody has heard it: low notes of saws, squares and bright tables are now noticeably buzzier, which is
   correct, and lessons that describe a sound's brightness were not re-read.** Checks in lessons and tests
   did not need changing.
+- **Open-source tools added (23 Nov 2026, owner: "add all" to a list of seven).** A helper surveyed free tools;
+  its full report was given to the owner in chat. **`docs/THIRD_PARTY.md` lists everything that is not our
+  own, with licences: keep it up to date.** What was added:
+  1. **Browser tests that are kept**: `npm run e2e` (`@playwright/test`, pinned to 1.63.0 to match the
+     browser in the build session; `playwright.config.ts`; `e2e/*.e2e.ts`, six tests: a low saw's harmonics
+     through the real engine, the wavetable editor, Studio timing, Fit to tempo, the Pitch shift device and
+     stretch, the modelled drums). `E2E_URL` points them at another copy of the site. In the build session
+     run them with `PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers`. **The built site shows the sign-in screen
+     with no API behind it, so these tests run against `npm run dev` only.**
+  2. **`npm run check`** = types, lint (`oxlint`, rules in `.oxlintrc.json`) and unit tests; `npm run unused`
+     (`knip`, `knip.json`) lists dead files and exports. Their first run removed unused code and one dead
+     file (`src/library/catalogue.ts`). `tests/properties.test.ts` uses `fast-check` (random cases for MIDI
+     files, the FFT, table files). **`.github/workflows/check.yml` runs all of it on every push; nobody has
+     looked at whether that workflow passes on GitHub.** When chaining commands in a shell, use
+     `set -o pipefail`: a failed check once slipped into a push because `| tail` hid it.
+  3. **Reverb is a plate reverb** (`src/synth/plate.ts`): the network of Dattorro's 1997 paper, its delay
+     lengths, taps and defaults checked against the paper's figure 1 and tables 1 and 2 (library page
+     pictures p003 and p004). `reverbImpulse` (used by the practice synth and the Studio's Reverb) is that
+     plate struck once (`plateImpulse`), so its slow wobble is frozen. Ours: `plateDecay` (fade time to
+     decay gain) and the level trim (same energy as the old fading-noise impulse, so Mix means what it did).
+     Measured: the tail falls 60 dB in 1.07, 1.99, 3.89 s for sizes 1, 2, 4; the two sides are unrelated
+     sounds; an 8 s impulse takes 0.2 s to make. Not built: the plate running live with its wobble, damping
+     and diffusion knobs.
+  4. **Time-stretch and pitch-shift** (`src/daw/stretch.ts`, Signalsmith Stretch, MIT, a 99 KB file fetched
+     when first needed; the one piece of sound code that is not ours). **Fit to tempo** on a drum pad that
+     plays a sound file: a menu stretches the sound, pitch kept, to the nearest whole number of beats (or a
+     chosen number) at the song's tempo and keeps it as a new stored sound (`fitSample` in `useStudio`,
+     `rateToFit`, `beatsNear`; refused past four times). **Pitch shift** device (`pitchshift`; 32 devices):
+     semitones, cents, "Keep character", mix; its inside arrives a moment after it is built, so an export
+     waits (`devicesSettled`); the shifted sound is about an eighth of a second late. Measured in a browser:
+     a 440 Hz tone came out at 659.2, 880.5 and 220.9 Hz for +7, +12 and -12; a sound at half speed lasted
+     exactly twice as long at 440.7 Hz with its clicks at 0.501, 1.000 and 1.501 s; the built site's own
+     copy of the library ran. The old Shifter is unchanged. Not built: stretch on the sampler, on audio
+     clips (there are none), or following tempo changes; nothing guesses a loop's tempo from its sound.
+  5. **Scanned PDFs**: `scripts/ingest_pdf.py --ocr` reads a page that has no text of its own from its
+     picture with Tesseract (`apt-get update && apt-get install -y tesseract-ocr` first: the session does
+     not keep it). Tried on a made-up scanned page only. The script no longer runs when imported.
+  6. **Search gets a second look** (`src/library/rerank.ts`, `api/ask.ts`): the keyword search hands over 24
+     passages and `claude-haiku-5-5` (effort low, structured output) picks six from their first 600
+     characters. Code keeps it safe (`applyPicks`: only numbers on the list, two parts a page, gaps filled
+     from the search's order) and any failure, a 20 s timeout included, gives the search's own six. One
+     more small paid call per question, under the same who-pays rule. Walkthroughs and "in Serum" builds do
+     not use it yet. **Not run against the real API.**
+  7. **Four modelled drums** (`src/daw/drummodels.ts`; Drum menu: Kick, Snare, Closed hat, Open hat
+     "(circuit model)"): ported from the MIT-licensed source of the Plaits module (Emilie Gillet; the file
+     carries the notice). **Do not use the module's or maker's name for them** (the author's request; the
+     credit is in the file, a tooltip and `docs/THIRD_PARTY.md`). Only the STM32 folders of that repository
+     are MIT; the AVR ones are GPL. A hit is worked out whole at 48 kHz the first time and kept; Tune, Decay
+     and Tone work. The settings they are played with (`MODEL_SETTINGS`) are ours. Measured: the kick rings
+     near 52 Hz after starting higher, the snare's shell at 185 Hz, hats centred above 4 kHz, a closed hat
+     cuts an open one. **Nobody has heard them.** New racks still start with the old drums.
+  Not done from the helper's list: free starter sounds (VCSL, Adventure Kid Waveforms). Their licence files
+  must be read at the source first, and **the owner has been asked whether one person's free single-cycle
+  collection fits the "never copy a maker's wavetable data" rule: no answer yet.**
 - **Long pages are searched in parts (16 Nov 2026).** `splitText` in `src/library/search.ts` cuts a page over
   2,400 characters into overlapping parts of about 1,500 (ids `book#page~1`, `~2`, with `of` naming the
   page); `pageOf` and `cite` count parts of one page as one source, and `search` takes at most two parts of
@@ -2012,6 +2066,7 @@ stored outside the server. Not checked on the live site: whether Chrome offers "
 - `npm run dev` — app at http://localhost:5173; `/api/lesson` is served locally too. Put the key in `.env.local`.
 - `npm test` — Vitest. Tests that need the pack presets skip when `fixtures/local/` is absent.
 - `npm run build` — typecheck + production build.
+- `npm run check` — types, lint and unit tests. `npm run e2e` — browser tests (see "Open-source tools added"). `npm run unused` — dead code.
 - `UPDATE_BASELINE=1 npx vitest run tests/baseline.test.ts` — regenerate `src/patch/init-baseline.json` from Init.
 
 ## Deploy

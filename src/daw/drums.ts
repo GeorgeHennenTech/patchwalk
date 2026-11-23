@@ -2,11 +2,11 @@
 // and the Studio all work from the same rules. A pattern is a grid: one lane per pad, one cell per step,
 // each cell off or struck at one of three strengths. A lane carries its pad's sound settings as well.
 
-export const VOICES = ["kick", "snare", "clap", "hat", "openhat", "tomlow", "tomhigh", "rim", "ride", "ridebell", "crash", "shaker", "tambourine", "cowbell", "clave", "snap", "sub", "congahigh", "congalow"] as const;
+export const VOICES = ["kick", "snare", "clap", "hat", "openhat", "tomlow", "tomhigh", "rim", "ride", "ridebell", "crash", "shaker", "tambourine", "cowbell", "clave", "snap", "sub", "congahigh", "congalow", "mkick", "msnare", "mhat", "mohat"] as const;
 /** The drums a new rack starts with. The ride bell is there to choose for a pad, not given a pad of its own. */
 export const DEFAULT_VOICES = ["kick", "snare", "clap", "hat", "openhat", "tomlow", "tomhigh", "rim", "ride"] as const;
 export type Voice = (typeof VOICES)[number];
-export const VOICE_NAMES: Record<Voice, string> = { kick: "Kick", snare: "Snare", clap: "Clap", hat: "Closed hat", openhat: "Open hat", tomlow: "Low tom", tomhigh: "High tom", rim: "Rim", ride: "Ride", ridebell: "Ride bell", crash: "Crash", shaker: "Shaker", tambourine: "Tambourine", cowbell: "Cowbell", clave: "Clave", snap: "Finger snap", sub: "Long sub kick", congahigh: "High conga", congalow: "Low conga" };
+export const VOICE_NAMES: Record<Voice, string> = { kick: "Kick", snare: "Snare", clap: "Clap", hat: "Closed hat", openhat: "Open hat", tomlow: "Low tom", tomhigh: "High tom", rim: "Rim", ride: "Ride", ridebell: "Ride bell", crash: "Crash", shaker: "Shaker", tambourine: "Tambourine", cowbell: "Cowbell", clave: "Clave", snap: "Finger snap", sub: "Long sub kick", congahigh: "High conga", congalow: "Low conga", mkick: "Kick (circuit model)", msnare: "Snare (circuit model)", mhat: "Closed hat (circuit model)", mohat: "Open hat (circuit model)" };
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
 /** A cell: 0 is silent; 1 soft, 2 normal, 3 accented. */
@@ -65,7 +65,7 @@ export interface Pattern {
 }
 export const STEPS_PER_BEAT = 4, STEPS_PER_BAR = 16, BPM_MIN = 60, BPM_MAX = 200, SWING_MAX = 75;
 
-export const newPad = (id: string, voice: Voice, name: string = VOICE_NAMES[voice]): Pad => ({ id, name, voice, level: 80, mute: false, solo: false, tune: 0, pan: 0, start: 0, length: 100, fade: 0, choke: voice === "hat" || voice === "openhat" ? 1 : 0 });
+export const newPad = (id: string, voice: Voice, name: string = VOICE_NAMES[voice]): Pad => ({ id, name, voice, level: 80, mute: false, solo: false, tune: 0, pan: 0, start: 0, length: 100, fade: 0, choke: voice === "hat" || voice === "openhat" || voice === "mhat" || voice === "mohat" ? 1 : 0 });
 /**
  * A sound file cut into equal slices, one pad each, in order: for chopping a break. A pad's length is a share
  * of what is left after its start, so slice i of n is 100 / (n - i) percent.

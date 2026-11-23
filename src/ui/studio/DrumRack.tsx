@@ -64,6 +64,7 @@ export function DrumRack({ pattern, onChange, studio, trackId, picked, onPick, s
         <div className="rack-source">
           <span className="rack-now">{own ? <>Plays your sound <b>{own.name}</b></> : lane.sample ? "Its sound file is not in this browser, so the built-in drum plays" : "Plays a built-in drum"}</span>
           {!own && <label>Drum <select value={lane.voice} onChange={(e) => { const next = setLane(pattern, picked, { voice: e.target.value as Voice }); onChange(next); hear(picked, next); }}>{VOICES.map((v) => <option key={v} value={v}>{VOICE_NAMES[v]}</option>)}</select></label>}
+          {!own && lane.voice.startsWith("m") && /^m(kick|snare|o?hat)$/.test(lane.voice) && <span className="muted" title="Ported from the published source code of the Plaits module (Emilie Gillet, MIT licence). The settings it is played with are ours.">A model of an analogue drum circuit, from open-source code</span>}
           <input ref={picker} type="file" accept="audio/*,.wav,.mp3,.flac,.ogg,.aif,.aiff,.m4a" hidden onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) void take(picked, f); }} />
           <button className="primary" onClick={() => picker.current?.click()}>Upload a sound…</button>
           {lane.sample && <button onClick={() => onChange(setSample(pattern, picked))}>Use the built-in drum</button>}

@@ -199,6 +199,14 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [x] Eleven free texts taken into the library after the owner allowed more hosts: Luke's Computational Music Synthesis, Witek 2014, Butler 2001, eight Dancecult articles (22 Nov 2026)
 - [ ] Wavetables next: raise the synth's 64-harmonic limit; store tables with the account; a 3D view; lessons on the editor and the new tables
 - [x] Synth keeps 512 harmonics instead of 64 (23 Nov 2026)
+- [x] Kept browser tests, lint, dead-code finder, property tests, on-push workflow (23 Nov 2026)
+- [x] Plate reverb from the Dattorro paper, in the synth and the Studio (23 Nov 2026)
+- [x] Studio: Fit to tempo on pads, and a clean Pitch shift device (23 Nov 2026)
+- [x] Ingest script reads scanned PDFs (--ocr) (23 Nov 2026)
+- [x] Guide: a small model takes a second look at search results (23 Nov 2026; not run live)
+- [x] Four drums from open-source circuit models (23 Nov 2026)
+- [ ] Free starter sounds (VCSL, Adventure Kid Waveforms): read licences at the source; owner to say whether AKWF fits the wavetable rule
+- [ ] Take in the scanned theses (Scavone, Cook) with --ocr once the owner uploads them
 - [ ] Lessons, next chapters in order: "When digital sound goes wrong", "Expression", "One delay, many effects", then the rest of the ten (`docs/CURRICULUM.md`, last section)
 - [ ] Write the 85 or so lessons from `docs/LESSON_IDEAS.md` that need nothing built (FM, ring and distortion, sync and formants, drum layers and breaks, expressive playing)
 - [ ] Small builds that each open several lessons (click source, peak and RMS meter, Q readout, invert on Osc B, flanger time knob, distortion bias, sample-and-hold LFO, per-note random, response curves, reverb freeze, sampler reverse, ghost strength, slice names): list in `docs/LESSON_IDEAS.md`

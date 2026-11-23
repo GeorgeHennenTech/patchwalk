@@ -637,3 +637,13 @@ Measuring and drawing cycles use the wavetable editor's FFT (`measureCycle`, `dr
 browser: a low saw's upper harmonics are present at the right strength, and high notes do not fold back.
 Nobody has heard it. A survey of free open-source tools worth adding was also asked for; its result was
 given to the owner in chat and nothing was installed.
+
+## 23 Nov 2026: tools added
+The owner said "add all" to seven suggestions. Now in the project: kept browser tests (`npm run e2e`), lint,
+a dead-code finder and property tests (`npm run check`, `npm run unused`), a workflow that runs them on each
+push, a plate reverb from the Dattorro paper, time-stretch ("Fit to tempo" on drum pads) and a clean Pitch
+shift device, OCR for scanned PDFs (`--ocr`), a small-model second look at guide search results, and four
+drums ported from open-source circuit models. Details and measurements: `CLAUDE.md`, "Open-source tools
+added"; licences: `docs/THIRD_PARTY.md`. Nobody has heard the reverb, the stretch or the drums. The search
+change has not run against the real API. Waiting on the owner: whether Adventure Kid Waveforms fit the
+wavetable rule, and the usual "yes" to copy the branch to the live site.

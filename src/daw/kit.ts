@@ -2,11 +2,13 @@
 // is struck: nothing recorded, so nothing here is anybody else's sound) or one of the learner's own sound
 // files, decoded once and played back from a chosen start, for a chosen length, with a fade.
 import { padWindow, tuneRate, type Pad } from "./drums";
+import { MODEL_RATE, modelHit, type ModelVoice } from "./drummodels";
 
 export class Kit {
   readonly out: GainNode;
   private noise: AudioBuffer;
   private buffers = new Map<string, AudioBuffer>();
+  private models = new Map<string, AudioBuffer>();
   /** What is still ringing in each choke group, so the next pad of that group can cut it off. */
   private ringing = new Map<string, GainNode[]>();
   private rate = 1;
@@ -61,6 +63,21 @@ export class Kit {
     cut.connect(amp).connect(to);
     for (const ratio of [1, 1.483, 1.764, 2.317, 2.891, 3.469]) { const osc = this.ctx.createOscillator(); osc.type = "square"; osc.frequency.value = base * ratio * this.rate; osc.connect(cut); osc.start(t); osc.stop(t + decay * this.ring + 0.02); }
   }
+  /**
+   * A drum from `drummodels.ts`: the hit is worked out whole the first time it is needed (for this strength,
+   * decay and tone) and kept, then played like a recording. Tune changes its speed.
+   */
+  private model(to: AudioNode, voice: ModelVoice, t: number, v: number, decay: number, tone: number): void {
+    const strength = Math.round(v * 20) / 20, key = `${voice}|${strength}|${decay.toFixed(2)}|${tone.toFixed(2)}`;
+    let buf = this.models.get(key);
+    if (!buf) {
+      const samples = modelHit(voice, strength, decay, tone);
+      buf = this.ctx.createBuffer(1, samples.length, MODEL_RATE); buf.getChannelData(0).set(samples);
+      if (this.models.size > 200) this.models.clear();
+      this.models.set(key, buf);
+    }
+    const src = this.ctx.createBufferSource(); src.buffer = buf; src.playbackRate.value = this.rate; src.connect(to); src.start(t);
+  }
   /** The metronome's click: higher on the first beat of a bar. */
   tick(t: number, first: boolean): void { this.rate = 1; this.tone(this.out, "sine", t, first ? 1760 : 1175, first ? 1760 : 1175, 0.02, 0.22, 0.03); }
   /**
@@ -107,6 +124,7 @@ export class Kit {
       case "congahigh": this.tone(bus, "sine", t, 420, 330, 0.04, 0.7 * v, 0.2); this.hiss(bus, t, "bandpass", 1900, 1.5, 0.25 * v, 0.02); break;
       case "congalow": this.tone(bus, "sine", t, 280, 215, 0.05, 0.75 * v, 0.28); this.hiss(bus, t, "bandpass", 1300, 1.5, 0.22 * v, 0.02); break;
       case "rim": this.tone(bus, "triangle", t, 830, 800, 0.02, 0.5 * v, 0.035); this.hiss(bus, t, "bandpass", 3200, 2, 0.3 * v, 0.02); break;
+      case "mkick": case "msnare": case "mhat": case "mohat": this.model(bus, pad.voice, t, v, (pad.decay ?? 100) / 100, (pad.tone ?? 0) / 100); break;
     }
   }
 }

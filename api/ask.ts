@@ -9,10 +9,14 @@ import { kvFromEnv } from "../src/store/kv.js";
 import { answerKey, ownKey, recallShared, rememberShared } from "../src/store/shared.js";
 import { libraryVersion, loadLibrary } from "./_library.js";
 import { search, type Index } from "../src/library/search.js";
+import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
+import { rerank, RERANK_POOL, RERANK_SYSTEM, RerankSchema } from "../src/library/rerank.js";
 
 export { loadLibrary };
 
 const MODEL = "claude-opus-5-5";
+/** The small model that takes a second look at what the search found (the owner asked for a small model here). */
+const RERANK_MODEL = "claude-haiku-5-5";
 
 const json = (status: number, body: unknown) =>
   new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json", "cache-control": "no-store" } });
@@ -55,9 +59,21 @@ export async function POST(request: Request): Promise<Response> {
   }
   // A follow-up ("and what about its rate?") is searched together with the question before it.
   const before = parsed.data.history?.at(-1)?.question ?? "";
-  const hits = search(index, `${parsed.data.question} ${(parsed.data.context ?? "").split("\n")[0]} ${before}`, 6);
+  const found = search(index, `${parsed.data.question} ${(parsed.data.context ?? "").split("\n")[0]} ${before}`, RERANK_POOL);
 
   const client = pays.key ? new Anthropic({ apiKey: pays.key }) : new Anthropic();
+  // A small model reads the opening of each passage found and picks the six that fit the question best.
+  // If it fails for any reason the search's own best six are used, so this can only help.
+  const { hits } = await rerank(`${before ? `(Earlier question: ${before}) ` : ""}${parsed.data.question}`, found, 6, async (prompt) => {
+    const picked = await client.messages.parse({
+      model: RERANK_MODEL,
+      max_tokens: 2000,
+      system: RERANK_SYSTEM,
+      output_config: { effort: "low", format: zodOutputFormat(RerankSchema) },
+      messages: [{ role: "user", content: prompt }],
+    }, { timeout: 20_000, maxRetries: 0 });
+    return picked.parsed_output?.picks ?? [];
+  });
   const model: GuideModel = async ({ question, context, passages, history }) => {
     const response = await client.messages.create({
       model: MODEL,

@@ -443,3 +443,30 @@ describe("the layout of a guide answer", () => {
     expect(layout([{ text: "First.\n\nShort answer: late", sources: [] }]).lead).toBeUndefined(); // only an opening line counts
   });
 });
+
+describe("the second look at search results", async () => {
+  const { applyPicks, rerank, rerankPrompt, RERANK_CHARS } = await import("../src/library/rerank");
+  const hit = (id: string, of?: string) => ({ score: 1, passage: { id, source: "Book", section: "Chapter", text: `${id} `.repeat(400), page: 1, ...(of ? { of } : {}) } });
+  const hits = ["a", "b", "c", "d", "e", "f", "g", "h"].map((x) => hit(x));
+  it("keeps the model's order, ignores numbers that are not on the list and repeats, and fills up from the search's order", () => {
+    expect(applyPicks(hits, [5, 99, 5, 0, -1, 2], 4).map((h) => h.passage.id)).toEqual(["e", "b", "a", "c"]);
+    expect(applyPicks(hits, [], 3).map((h) => h.passage.id)).toEqual(["a", "b", "c"]);
+  });
+  it("takes at most two parts of one page", () => {
+    const parts = [hit("p~1", "p"), hit("p~2", "p"), hit("p~3", "p"), hit("q")];
+    expect(applyPicks(parts, [3, 2, 1], 4).map((h) => h.passage.id)).toEqual(["p~3", "p~2", "q"]);
+  });
+  it("falls back to the search's own best when the model fails, chooses nothing usable, or is not needed", async () => {
+    expect((await rerank("q", hits, 3, async () => { throw new Error("down"); })).hits.map((h) => h.passage.id)).toEqual(["a", "b", "c"]);
+    expect(await rerank("q", hits, 3, async () => [])).toMatchObject({ reranked: false });
+    expect(await rerank("q", hits, 3, async () => [42])).toMatchObject({ reranked: false });
+    let asked = 0; const few = await rerank("q", hits.slice(0, 3), 3, async () => { asked++; return [3]; });
+    expect(asked).toBe(0); expect(few.hits).toHaveLength(3);
+    expect((await rerank("q", hits, 3, async () => [8, 7])).hits.map((h) => h.passage.id)).toEqual(["h", "g", "a"]);
+  });
+  it("shows the model only the opening of each passage", () => {
+    const prompt = rerankPrompt("how do I assign an LFO?", hits, 6);
+    expect(prompt).toContain("[8] Book, page 1 (Chapter)");
+    expect(prompt.length).toBeLessThan(hits.length * (RERANK_CHARS + 80) + 800);
+  });
+});

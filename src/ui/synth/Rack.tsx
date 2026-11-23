@@ -49,12 +49,13 @@ export function lfoPath(shape: SynthState["lfo1Shape"], oneWay = false, steps?: 
 
 /** One cycle of a wave, drawn from its harmonics and start phase: the same recipe the sound is made from. */
 export function wavePath(h: ArrayLike<number>, phaseCycles: number, cos?: ArrayLike<number>, w = 200, height = 64, points = 160): string {
-  const ys: number[] = [];
+  const ys: number[] = [], top = Math.min(h.length, Math.floor(points / 2) + 1);
   let peak = 1e-9;
   for (let i = 0; i <= points; i++) {
     const t = i / points + phaseCycles;
     let y = 0;
-    for (let n = 1; n < h.length; n++) { if (h[n]) y += h[n]! * Math.sin(2 * Math.PI * n * t); if (cos?.[n]) y += cos[n]! * Math.cos(2 * Math.PI * n * t); }
+    // a picture this wide cannot show more than its points allow: the harmonics past that are left out of the drawing only
+    for (let n = 1; n < top; n++) { if (h[n]) y += h[n]! * Math.sin(2 * Math.PI * n * t); if (cos?.[n]) y += cos[n]! * Math.cos(2 * Math.PI * n * t); }
     ys.push(y); peak = Math.max(peak, Math.abs(y));
   }
   return ys.map((y, i) => `${i === 0 ? "M" : "L"}${((i / points) * w).toFixed(1)} ${(height / 2 - (y / peak) * (height / 2 - 5)).toFixed(1)}`).join(" ");

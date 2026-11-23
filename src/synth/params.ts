@@ -1,7 +1,7 @@
 // The practice synth's settings. One flat, typed state object is the single source of truth: the audio
 // engine renders it, the controls edit it, and lessons check it. Units are exact (Hz, dB, cents, degrees)
 // because this is our own instrument.
-import { harmonicsOf, type Morph } from "./wtedit";
+import { fft, harmonicsOf, type Morph } from "./wtedit";
 
 export const SHAPES = ["sine", "triangle", "square", "saw"] as const;
 export type Shape = (typeof SHAPES)[number];
@@ -546,7 +546,32 @@ export function harmonic(shape: Shape, n: number): number {
   }
 }
 
-export const HARMONICS = 64;
+/**
+ * How many harmonics of a wave the synth keeps. 512 is the editor's own count: a low note's saw is then as
+ * bright as a real one. The browser leaves out the harmonics that would pass half the sample rate for the
+ * note being played, so high notes do not fold back.
+ */
+export const HARMONICS = 512;
+/** One cycle drawn out for measuring or warping: 16 points to a cycle of the highest harmonic. */
+const CYCLE = 8192;
+/** Measure one drawn-out cycle (a power of two long) as harmonics, at the scale where a full saw's first harmonic is 1. */
+function measureCycle(y: ArrayLike<number>): { sin: Float32Array; cos: Float32Array } {
+  const M = y.length, re = Float64Array.from(y), im = new Float64Array(M), sin = new Float32Array(HARMONICS + 1), cos = new Float32Array(HARMONICS + 1);
+  fft(re, im);
+  for (let n = 1; n <= HARMONICS && n < M / 2; n++) { sin[n] = (-im[n]! * Math.PI) / M; cos[n] = (re[n]! * Math.PI) / M; }
+  return { sin, cos };
+}
+/** The other way: harmonics (at any one scale) drawn out as `size` points of one cycle, at that same scale. */
+function drawCycle(sin: ArrayLike<number>, cos: ArrayLike<number> | undefined, size: number): Float64Array {
+  const re = new Float64Array(size), im = new Float64Array(size);
+  for (let n = 1; n < sin.length && n < size / 2; n++) {
+    const s = sin[n] ?? 0, c = cos?.[n] ?? 0;
+    if (!s && !c) continue;
+    re[n] = c / 2; im[n] = -s / 2; re[size - n] = c / 2; im[size - n] = s / 2;
+  }
+  fft(re, im, true);
+  return re;
+}
 
 /** One frame of a wavetable: the size of each harmonic's sine part and, for shapes that need it, its cosine part. */
 interface Frame { sin: (n: number) => number; cos?: (n: number) => number }
@@ -556,13 +581,8 @@ function fromWave(wave: (x: number) => number): Frame {
   let done: { sin: Float32Array; cos: Float32Array } | undefined;
   const measure = () => {
     if (done) return done;
-    const M = 2048, y = Float32Array.from({ length: M }, (_, i) => wave(i / M)), sin = new Float32Array(HARMONICS + 1), cos = new Float32Array(HARMONICS + 1);
-    for (let n = 1; n <= HARMONICS; n++) {
-      let a = 0, b = 0;
-      for (let i = 0; i < M; i++) { const w = (2 * Math.PI * n * i) / M; a += y[i]! * Math.sin(w); b += y[i]! * Math.cos(w); }
-      // a wave that swings from -1 to 1 is scaled to sit at about the level of the basic saw (whose first harmonic is 1)
-      sin[n] = (Math.PI * a) / M; cos[n] = (Math.PI * b) / M;
-    }
+    // a wave that swings from -1 to 1 sits at about the level of the basic saw (whose first harmonic is 1)
+    const { sin, cos } = measureCycle(Float64Array.from({ length: CYCLE }, (_, i) => wave(i / CYCLE)));
     return (done = { sin, cos });
   };
   return { sin: (n) => measure().sin[n]!, cos: (n) => measure().cos[n]! };
@@ -631,7 +651,7 @@ const FRAMES: Record<Exclude<BuiltInTable, "none">, Frame[]> = {
   // sine -> triangle -> square -> saw
   basic: SHAPES.map((s) => plain((n: number) => harmonic(s, n))),
   // a saw with more and more of its harmonics let through: dull to bright
-  bright: [1, 2, 4, 8, 16, 32, 64].map((top) => plain((n: number) => (n <= top ? 1 / n : 0))),
+  bright: [1, 2, 4, 8, 16, 32, HARMONICS].map((top) => plain((n: number) => (n <= top ? 1 / n : 0))),
   // a saw with a resonant bump that climbs: a rough "oo" to "ee"
   vowel: [3, 5, 8, 12, 18].map((peak) => plain((n: number) => (1 / n) * (1 + 4 * Math.exp(-((n - peak) ** 2) / (2 * (peak / 4 + 0.6) ** 2))))),
   // phase distortion: a sine (d = 0.5) bent further and further toward a saw (d near 0)
@@ -714,7 +734,8 @@ export const tableMorph = (table: Table): Morph => framesOf(table)?.morph ?? "cr
 /** Every frame of a table (or one cycle of a basic shape) drawn out as samples, so the editor can start from it. */
 export function tableSamples(table: Table, shape: Shape = "saw", size = 2048): Float32Array[] {
   const frames = framesOf(table)?.frames ?? [plain((n) => harmonic(shape, n))];
-  return frames.map((f) => Float32Array.from({ length: size }, (_, i) => { let y = 0; for (let n = 1; n <= HARMONICS; n++) { const a = (2 * Math.PI * n * i) / size, s = f.sin(n), c = f.cos?.(n) ?? 0; if (s) y += s * Math.sin(a); if (c) y += c * Math.cos(a); } return y / (Math.PI / 2); }));
+  const list = (f: Frame, part: "sin" | "cos") => Float32Array.from({ length: HARMONICS + 1 }, (_, n) => (n ? (part === "sin" ? f.sin(n) : f.cos?.(n) ?? 0) : 0));
+  return frames.map((f) => Float32Array.from(drawCycle(list(f, "sin"), f.cos ? list(f, "cos") : undefined, size), (y) => y / (Math.PI / 2)));
 }
 
 /** Oscillator B's harmonics: its basic shape, or its own wavetable read at its own position. */
@@ -844,7 +865,6 @@ export function warpValue(mode: Warp, amount: number, p: number, y: number): num
 
 /** A wave as harmonics with both parts: `sin` alone describes the unwarped shapes; warping adds `cos`. */
 export interface Spectrum { sin: Float32Array; cos: Float32Array }
-const CYCLE = 2048;
 const warpCache = new Map<string, Spectrum>();
 /**
  * Oscillator A's harmonics after warp. The unwarped wave is drawn out as one cycle, read through
@@ -858,8 +878,8 @@ export function spectrumA(state: Pick<SynthState, "shape" | "table" | "position"
   const key = `${state.shape}|${state.table}|${position}|${state.warp}|${amount}`;
   const known = warpCache.get(key);
   if (known) return known;
-  const base = new Float32Array(CYCLE + 1);
-  for (let i = 0; i <= CYCLE; i++) { let y = 0; for (let n = 1; n < h.length; n++) { if (h[n]) y += h[n]! * Math.sin((2 * Math.PI * n * i) / CYCLE); if (hc[n]) y += hc[n]! * Math.cos((2 * Math.PI * n * i) / CYCLE); } base[i] = y; }
+  const drawn = drawCycle(h, hc, CYCLE), base = new Float64Array(CYCLE + 1);
+  base.set(drawn); base[CYCLE] = drawn[0]!;
   const warped = new Float32Array(CYCLE);
   const heights = state.warp === "flip" || state.warp === "fold" || state.warp === "diode";
   let peak = 1e-9;
@@ -869,12 +889,8 @@ export function spectrumA(state: Pick<SynthState, "shape" | "table" | "position"
     const y = base[k]! + (base[k + 1]! - base[k]!) * (at - k);
     warped[i] = heights ? warpValue(state.warp, amount, i / CYCLE, y / peak) * peak : y;
   }
-  const sin = new Float32Array(h.length), cos = new Float32Array(h.length);
-  for (let n = 1; n < h.length; n++) {
-    let s = 0, c = 0;
-    for (let i = 0; i < CYCLE; i++) { const x = (2 * Math.PI * n * i) / CYCLE; s += warped[i]! * Math.sin(x); c += warped[i]! * Math.cos(x); }
-    sin[n] = (2 * s) / CYCLE; cos[n] = (2 * c) / CYCLE;
-  }
+  // measured at the scale the harmonics came in at (measureCycle works at pi/2 times that)
+  const m = measureCycle(warped), sin = m.sin.map((v) => v / (Math.PI / 2)), cos = m.cos.map((v) => v / (Math.PI / 2));
   if (warpCache.size > 600) warpCache.clear();
   warpCache.set(key, { sin, cos });
   return { sin, cos };

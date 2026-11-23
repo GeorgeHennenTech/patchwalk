@@ -630,3 +630,10 @@ literature still wanted; it lives in `docs/LITERATURE.md`.
   fetched"); 49 texts in the library. The rest are listed with why each could not be had.
 - 829 passing tests in 39 files. Everything since the quick wins is on branch `claude/new-session-dfvcsr`,
   not on the live site: the owner has still not said "yes" to copying it to main.
+
+## 23 Nov 2026: 512 harmonics
+The practice synth now keeps 512 harmonics of every wave (it was 64): `HARMONICS` in `src/synth/params.ts`.
+Measuring and drawing cycles use the wavetable editor's FFT (`measureCycle`, `drawCycle`). Measured in a
+browser: a low saw's upper harmonics are present at the right strength, and high notes do not fold back.
+Nobody has heard it. A survey of free open-source tools worth adding was also asked for; its result was
+given to the owner in chat and nothing was installed.

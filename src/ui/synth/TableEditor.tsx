@@ -267,7 +267,7 @@ export function TableEditor({ synth, osc, onClose }: { synth: Synth; osc: "a" | 
           </ol>
         </div>
         <p className="wted-note" role="status">{note}</p>
-        <p className="wted-fine muted">The synth plays the first 64 harmonics of each frame, so very fine detail in a drawing is smoothed when you hear it. Tables are kept in this browser. {doc.frames.length > 1 && <>The wave between frames at the current position looks like this: <MiniWave wave={morphAt(doc.frames, pos / 100, doc.morph)} /></>}</p>
+        <p className="wted-fine muted">The synth plays the first 512 harmonics of each frame: everything the harmonic display shows. Tables are kept in this browser. {doc.frames.length > 1 && <>The wave between frames at the current position looks like this: <MiniWave wave={morphAt(doc.frames, pos / 100, doc.morph)} /></>}</p>
       </div>
     </div>
   );

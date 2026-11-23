@@ -1872,10 +1872,8 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
     came in as 256 frames cut every 100.0 samples and **played back with the second harmonic 6.3 dB under the
     first and the third 80 dB down**; a 16-bit WAV of 256 frames was saved; the table was listed under "Your
     tables" and was still there after a reload. **Nobody has heard it or used it by hand.**
-  - **Where it still falls short of Serum, honestly:** the synth plays only the first 64 harmonics of a frame
-    (`HARMONICS`; Serum plays the whole 2048-sample cycle), so sharp drawings sound smoother than they look
-    and low notes are duller than Serum's: raising `HARMONICS` is the most valuable next step for the whole
-    synth. No 3D view of the table. Import was tested on clean tones only; the pitch-following modes are
+  - **Where it still falls short of Serum, honestly:** (the 64-harmonic limit named here at first was raised
+    to 512 on 23 Nov 2026, see below.) No 3D view of the table. Import was tested on clean tones only; the pitch-following modes are
     simple. No "send to noise oscillator", no text-file overrides, no saving of the learner's own formulas,
     no Serum-format WAV header (so Serum will not know the morph mode of a file saved here), no Osc C.
     Where the guide does not say exactly what a command does (the grid's meaning in Filter and Sample redux,
@@ -1896,6 +1894,20 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   file), Cook's PhISM (not found), Synth Secrets (the site forbids reproduction), Smith's online book (no
   licence), Scavone's and Cook's theses (scanned), Knowles and Sonion. **DeSantis's *Making Music* is not
   free: Ableton's site gives 24 of its 74 chapters.** The owner can download any of these and upload them.
+- **The synth keeps 512 harmonics, not 64 (23 Nov 2026, owner: "raise the 64 harmonic limit").** `HARMONICS` in
+  `params.ts` is 512, the wavetable editor's own count, so a frame is played as drawn and a low saw is as
+  bright as a real one. To keep it fast, measuring a drawn cycle and drawing one out go through the editor's
+  FFT (`measureCycle`, `drawCycle`; `CYCLE` is 8192 points), used by `fromWave`, `tableSamples` and the warp
+  in `spectrumA` (about 2 ms a warp setting; before the change the same code would have taken about 30).
+  The "Dark to bright" table's last frame is the full saw; the impulse-train table still stops at 64 on
+  purpose. `wavePath` in `Rack.tsx` draws only the harmonics its 160 points can show. Measured: in the
+  browser a 55 Hz saw's harmonics 64, 100, 200 and 300 were within 0.15 dB of 1/n (with 64 kept, the 65th was
+  161 dB down, that is, absent); a 2,093 Hz saw had nothing that was not a harmonic above -126 dB, so high
+  notes do not fold back (the browser leaves out harmonics past half the sample rate for each note);
+  through the real engine and page the same low note read within 1 dB of 1/n at harmonics 100 to 300.
+  **Nobody has heard it: low notes of saws, squares and bright tables are now noticeably buzzier, which is
+  correct, and lessons that describe a sound's brightness were not re-read.** Checks in lessons and tests
+  did not need changing.
 - **Long pages are searched in parts (16 Nov 2026).** `splitText` in `src/library/search.ts` cuts a page over
   2,400 characters into overlapping parts of about 1,500 (ids `book#page~1`, `~2`, with `of` naming the
   page); `pageOf` and `cite` count parts of one page as one source, and `search` takes at most two parts of

@@ -1985,3 +1985,32 @@ describe("the wavetables added on 21 Nov 2026", () => {
     expect(mags("rect", 100)[1]!).toBeLessThan(0.01);                                        // both halves up: the first harmonic is gone
   });
 });
+
+describe("the synth keeps 512 harmonics", () => {
+  const base = { shape: "saw" as const, table: "none" as const, position: 0, warp: "none" as const, warpAmount: 0 };
+  it("a saw's harmonics run on as 1/n to the 512th", async () => {
+    const { HARMONICS, harmonicsA } = await import("../src/synth/params");
+    expect(HARMONICS).toBe(512);
+    const h = harmonicsA(base);
+    for (const n of [65, 200, 512]) expect(h[n]!).toBeCloseTo(1 / n, 9);
+  });
+  it("a drawn-out saw measures within 0.2 dB of 1/n right to the top, and a table drawn out and measured again comes back the same", async () => {
+    const { magnitudesA, tableSamples } = await import("../src/synth/params");
+    const { harmonicsOf } = await import("../src/synth/wtedit");
+    const m = magnitudesA({ shape: "sine", table: "syncsaw", position: 0 });
+    for (const n of [1, 64, 300, 512]) expect(Math.abs(20 * Math.log10(m[n]! * n))).toBeLessThan(0.2);
+    const back = harmonicsOf(tableSamples("fm2")[6]!, 512), was = magnitudesA({ shape: "sine", table: "fm2", position: 50 });
+    for (let n = 1; n <= 40; n++) expect(Math.hypot(back.sin[n]!, back.cos[n]!)).toBeCloseTo(was[n]!, 4);
+  });
+  it("warp still works: sync at full plays a sine four times as fast, and a warped saw has harmonics past the 64th", async () => {
+    const { spectrumA } = await import("../src/synth/params");
+    const s = spectrumA({ ...base, shape: "sine", warp: "sync", warpAmount: 100 });
+    expect(Math.hypot(s.sin[4]!, s.cos[4]!)).toBeGreaterThan(0.99);
+    expect(Math.hypot(s.sin[1]!, s.cos[1]!)).toBeLessThan(0.01);
+    const w = spectrumA({ ...base, warp: "bend", warpAmount: 40 });
+    expect(Math.hypot(w.sin[200]!, w.cos[200]!)).toBeGreaterThan(0.001);
+    const t0 = performance.now();
+    for (let a = 1; a <= 50; a++) spectrumA({ ...base, warp: "mirror", warpAmount: a });
+    expect(performance.now() - t0).toBeLessThan(500);
+  });
+});

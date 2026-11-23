@@ -14,7 +14,7 @@ describe("rules that must hold for any input", () => {
       const file = { ppq: 480, bpm, tracks: tracks.map((notes, i) => ({ name: `T${i}`, channel: i, notes })) };
       const back = readMidi(writeMidi(file));
       expect(back).toBeDefined();
-      expect(Math.round(back!.bpm)).toBe(bpm);
+      expect(Math.round(back!.bpm ?? 0)).toBe(bpm);
       const key = (n: { note: number; start: number; length: number; velocity: number }) => `${n.start}:${n.note}:${n.length}:${n.velocity}`;
       const withNotes = back!.tracks.filter((t) => t.notes.length);
       const sent = tracks.filter((t) => t.length);

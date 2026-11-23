@@ -2,7 +2,7 @@
 """Take a book supplied as one or more PDF parts into the private library: text and pictures together.
 
     python3 scripts/ingest_pdf.py <book-id> "<Title>" part1.pdf part2.pdf ... [--skip-pages 3-22]
-        [--running "RIFT MANUAL" --headings "Welcome to Rift|Play View|Distortion|..."] [--png]
+        [--running "RIFT MANUAL" --headings "Welcome to Rift|Play View|Distortion|..."] [--png] [--ocr]
 
 Writes library/<book-id>.json            { id, title, pages: [{ page, chapter, text }] }
        library/images/<book-id>/*.webp   pictures embedded in the PDF, named p<page>-<n>.webp
@@ -14,6 +14,8 @@ The chapter of a page is read from its running header ("<Chapter title> <page nu
 pictures, blank shapes (drop shadows, empty boxes) and exact repeats are dropped. Some manuals instead print "<RUNNING TITLE> | <page>" with the chapter
 and section as letter-spaced lines around it ("P L AY V I E W"): give --running and the real headings with
 --headings, and the chapter becomes "Play View: Distortion". Rule lines and tab runs are removed. Needs poppler-utils (pdftotext, pdfimages, pdfinfo) and Pillow.
+--ocr reads scanned pages (those with no text of their own) from their pictures with Tesseract
+(`apt-get update && apt-get install -y tesseract-ocr`); read a sample of the result before trusting it.
 Same privacy rules as the rest of library/: private repository only.
 """
 import hashlib, io, json, os, re, subprocess, sys, tempfile
@@ -36,6 +38,20 @@ def is_dark(im):
     small = im.convert("L"); small.thumbnail((200, 200))
     hist = small.histogram()
     return sum(hist[:40]) / max(1, sum(hist)) > 0.985
+
+OCR_BELOW = 40   # a page with fewer letters than this from pdftotext is treated as a scan
+
+def ocr_page(pdf, n, dpi=300):
+    """The text of one page read from its picture by Tesseract (Apache-2.0). Formulas and tables come out badly."""
+    with tempfile.TemporaryDirectory() as tmp:
+        subprocess.run(["pdftoppm", "-r", str(dpi), "-gray", "-f", str(n), "-l", str(n), "-png", pdf, f"{tmp}/p"], check=True, capture_output=True)
+        shots = sorted(os.listdir(tmp))
+        if not shots: return ""
+        out = subprocess.run(["tesseract", f"{tmp}/{shots[0]}", "-", "--psm", "1", "-l", "eng"], capture_output=True)
+        text = out.stdout.decode("utf-8", "replace")
+    # join words broken across lines, and drop lines that are only specks
+    text = re.sub(r"(\w)-\n+(\w)", r"\1\2", text)
+    return "\n".join(l for l in text.split("\n") if not l.strip() or re.search(r"[A-Za-z0-9]{2}", l)).strip()
 
 def main():
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
@@ -69,6 +85,12 @@ def main():
     for pdf in parts:
         count = int(re.search(rb"Pages:\s+(\d+)", run("pdfinfo", pdf)).group(1))
         text = run("pdftotext", pdf, "-").decode("utf-8", "replace").split("\f")
+        if "--ocr" in sys.argv:
+            # a scanned page has no text of its own: read it from its picture
+            text += [""] * (count - len(text))
+            for n in range(1, count + 1):
+                if len(re.sub(r"\s", "", text[n - 1])) < OCR_BELOW:
+                    text[n - 1] = ocr_page(pdf, n)
         captions = {}
         for n in range(1, count + 1):
             page = offset + n
@@ -147,4 +169,5 @@ def main():
     size = sum(os.path.getsize(f"{out_img}/{f}") for f in os.listdir(out_img))
     print(f"{book}: {len(pages)} pages of text (last page {offset}), {len(images)} pictures on {len({i['page'] for i in images})} pages, {size / 1e6:.1f} MB of pictures")
 
-main()
+if __name__ == "__main__":
+    main()

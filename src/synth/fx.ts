@@ -3,6 +3,7 @@
 // impulse) that tests and pictures share; the second half is the Web Audio chain the engine drives.
 // Every effect is always in the path: "off" means its own signal is turned down, so switching one on or
 // off never restarts a note.
+import { plateImpulse } from "./plate";
 import { beatsOf } from "./mod";
 import { stageResponse } from "./filter";
 import type { SynthState } from "./params";
@@ -72,20 +73,11 @@ export const delaySeconds = (s: Pick<SynthState, "delaySync" | "delayDiv" | "del
 export const echoesToSilence = (feedback: number) => (feedback <= 0 ? 1 : feedback >= 100 ? Infinity : Math.ceil(Math.log(0.001) / Math.log(feedback / 100)));
 
 /**
- * The reverb's impulse: noise that dies away, reaching 60 dB down after `seconds`. Playing any sound
- * through it gives that sound the same dying tail. The noise is generated from a fixed seed so the room is
- * the same every time; the two channels differ so the tail is wide.
+ * The reverb's impulse, reaching 60 dB down after `seconds`: a plate reverb (Dattorro 1997, see `plate.ts`)
+ * struck once and written down. Playing any sound through it gives that sound the same tail. It is the
+ * same every time, and its two sides are different sounds, so the tail is wide.
  */
-export function reverbImpulse(seconds: number, sampleRate: number): [Float32Array<ArrayBuffer>, Float32Array<ArrayBuffer>] {
-  const len = Math.max(1, Math.round(seconds * sampleRate * 1.1)), k = Math.log(1000) / (seconds * sampleRate);
-  let seed = 22222;
-  const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 2147483648 - 1; };
-  const left = new Float32Array(len), right = new Float32Array(len);
-  // the level is set so a longer room is not simply a louder one
-  const level = Math.sqrt(k * 2);
-  for (let i = 0; i < len; i++) { const e = Math.exp(-k * i) * level; left[i] = rnd() * e; right[i] = rnd() * e; }
-  return [left, right];
-}
+export const reverbImpulse = (seconds: number, sampleRate: number): [Float32Array<ArrayBuffer>, Float32Array<ArrayBuffer>] => plateImpulse(seconds, sampleRate);
 
 /**
  * The browser's compressor quietly turns its own output up, by 0.6 of the reduction a full-level signal

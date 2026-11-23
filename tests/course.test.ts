@@ -918,13 +918,36 @@ describe("effects", () => {
     expect(delaySeconds({ delaySync: "beat", delayDiv: "1", delayTime: 300, bpm: 90 })).toBeCloseTo(2 / 3, 9);
     expect(echoesToSilence(0)).toBe(1); expect(echoesToSilence(50)).toBe(10); expect(echoesToSilence(75)).toBe(25);
   });
-  it("the reverb's impulse dies away to a thousandth after its size, and is the same every time", () => {
+  it("the reverb's impulse falls 60 dB in about its size, is the same every time, and differs side to side", () => {
+    const fall = (seconds: number, rate: number) => {
+      const [l, r] = reverbImpulse(seconds, rate), n = l.length, left = new Float64Array(n + 1);
+      for (let i = n - 1; i >= 0; i--) left[i] = left[i + 1]! + l[i]! ** 2 + r[i]! ** 2;
+      const db = (i: number) => 10 * Math.log10(left[i]! / left[0]!);
+      let a = 0, b = 0; for (let i = 0; i < n; i++) { if (!a && db(i) <= -5) a = i; if (db(i) <= -35) { b = i; break; } }
+      return { seconds: ((b - a) / rate) * 2, energy: left[0]! };
+    };
+    for (const s of [1, 2, 4]) { const f = fall(s, 16000); expect(f.seconds / s).toBeGreaterThan(0.85); expect(f.seconds / s).toBeLessThan(1.15); expect(f.energy).toBeCloseTo(2 / 3, 2); }
     const [l, r] = reverbImpulse(1, 8000);
-    const rms = (x: Float32Array, from: number) => Math.sqrt(x.slice(from, from + 400).reduce((s, v) => s + v * v, 0) / 400);
-    expect(20 * Math.log10(rms(l, 7600) / rms(l, 0))).toBeGreaterThan(-63);
-    expect(20 * Math.log10(rms(l, 7600) / rms(l, 0))).toBeLessThan(-50);
-    expect(l[100]).not.toBe(r[100]);
-    expect(reverbImpulse(1, 8000)[0][100]).toBe(l[100]);
+    let both = 0, el = 0, er = 0; for (let i = 0; i < l.length; i++) { both += l[i]! * r[i]!; el += l[i]! ** 2; er += r[i]! ** 2; }
+    expect(Math.abs(both / Math.sqrt(el * er))).toBeLessThan(0.1);
+    expect(reverbImpulse(1, 8000)[0][900]).toBe(l[900]);
+  });
+  it("the plate is the paper's network: its delay lengths, taps and defaults, and it rings without blowing up", async () => {
+    const { Plate, PLATE, PLATE_INPUT, PLATE_TANK, PLATE_TAPS, PLATE_RATE, plateDecay } = await import("../src/synth/plate");
+    expect(PLATE_RATE).toBe(29761);
+    expect(PLATE_INPUT).toEqual([142, 107, 379, 277]);
+    expect(PLATE_TANK).toEqual({ left: { mod: 672, delay1: 4453, allpass: 1800, delay2: 3720 }, right: { mod: 908, delay1: 4217, allpass: 2656, delay2: 3163 } });
+    expect(PLATE).toMatchObject({ excursion: 16, decay: 0.5, decayDiffusion1: 0.7, decayDiffusion2: 0.5, inputDiffusion1: 0.75, inputDiffusion2: 0.625, bandwidth: 0.9995, damping: 0.0005 });
+    expect(PLATE_TAPS.left.map(([, at]) => at)).toEqual([266, 2974, 1913, 1996, 1990, 187, 1066]);
+    expect(PLATE_TAPS.right.map(([, at]) => at)).toEqual([353, 3627, 1228, 2673, 2111, 335, 121]);
+    expect(plateDecay(2)).toBeGreaterThan(plateDecay(1));
+    // with the paper's settings and its wobble on: steady noise in, a bounded sound out, and silence after it dies
+    const p = new Plate(PLATE_RATE), out: [number, number] = [0, 0];
+    let seed = 7, peak = 0; const rnd = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 2147483648 - 1; };
+    for (let i = 0; i < PLATE_RATE; i++) { p.step(rnd(), rnd(), out); peak = Math.max(peak, Math.abs(out[0]), Math.abs(out[1])); }
+    expect(peak).toBeGreaterThan(0.1); expect(peak).toBeLessThan(8);
+    let late = 0; for (let i = 0; i < PLATE_RATE * 6; i++) { p.step(0, 0, out); if (i > PLATE_RATE * 5.5) late = Math.max(late, Math.abs(out[0])); }
+    expect(late).toBeLessThan(peak / 1000);
   });
   it("the compressor's hidden boost is cancelled, so it only turns down until make-up is added", () => {
     expect(compAutoMakeupCancelDb(0, 4)).toBeCloseTo(0, 9);

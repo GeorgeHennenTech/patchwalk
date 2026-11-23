@@ -164,7 +164,7 @@ export const DEVICES: DeviceSpec[] = [
   ] },
   { kind: "spectrum", name: "Spectrum", like: "Spectrum", view: "spectrum", wide: true, about: "Shows how much of each frequency is in the sound at this point in the chain. It changes nothing.", params: [] },
   { kind: "tuner", name: "Tuner", like: "Tuner", view: "tuner", about: "Shows the note a single-note sound is playing and how many cents sharp or flat it is. It changes nothing.", params: [] },
-  { kind: "reverb", name: "Reverb", like: "Reverb", note: "A plain room made from fading noise: no early reflections, and its character is not tuned by ear.", about: "A room: the sound carries on after it stops, for as long as the decay time.", params: [
+  { kind: "reverb", name: "Reverb", like: "Reverb", note: "A plate reverb after Dattorro's 1997 paper, struck once and replayed: its slow wobble is frozen, and nobody has tuned it by ear.", about: "A room: the sound carries on after it stops, for as long as the decay time.", params: [
     { id: "decay", label: "Decay", min: 0.2, max: 10, step: 0.1, def: 1.8, unit: "s", log: true }, { id: "predelay", label: "Pre-delay", min: 0, max: 250, step: 1, def: 10, unit: "ms" },
     hz("lowcut", "Low cut", 20, 1000, 120), hz("highcut", "High cut", 1000, 20000, 8000), pct("mix", "Dry / wet", 25),
   ] },

@@ -6,7 +6,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { DrawKind, Drawing } from "../library/draw";
 import { beatsPerSecond, compOutDb, echoes, fmPartials, foldBack, foldDrive, foldedHarmonics, foldedSine } from "../synth/models";
-import { Frame, H, L, PH, PW, Sliders, T, W, path, short } from "./drawkit";
+import { Frame, H, L, PH, PW, Sliders, T, W, short } from "./drawkit";
 
 type Values = Record<string, number>;
 const startValues = (d: Drawing): Values => Object.fromEntries(d.variables.map((v) => [v.name, v.value]));

@@ -1,0 +1,9 @@
+{
+  "rules": {
+    "no-unused-expressions": "off",
+    "no-control-regex": "off",
+    "unicorn/no-useless-spread": "off",
+    "unicorn/no-useless-fallback-in-spread": "off",
+    "unicorn/prefer-string-starts-ends-with": "off"
+  }
+}

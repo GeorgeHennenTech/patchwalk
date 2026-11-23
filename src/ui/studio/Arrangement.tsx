@@ -3,7 +3,7 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import { STEPS_PER_BAR } from "../../daw/drums";
 import { BEAT, CLIP_BARS, MASTER_START, placeName, clipAt, placeClip, removeReturn, setAuto, setReturn, setSend, setTrack, removeTrack, type Clip, type Song, type Track } from "../../daw/song";
-import { SHAPES, drawShape, type Shape, MAX_LANES, addLane, bendPoint, lanePath, overKey, dropPoint, fromUnit, movePoint, putPoint, removeLane, retargetLane, targetsOf, valueAt, type AutoLane, type AutoTarget } from "../../daw/automation";
+import { SHAPES, drawShape, type Shape, MAX_LANES, addLane, bendPoint, lanePath, overKey, dropPoint, fromUnit, movePoint, putPoint, removeLane, retargetLane, targetsOf, type AutoLane, type AutoTarget } from "../../daw/automation";
 
 /** A colour for each track, by its place in the list. */
 export const TRACK_COLORS = ["#ffb347", "#5fe0ff", "#b6f36a", "#ff8fc2", "#c9a2ff", "#ffe66b", "#7dffb0", "#ff9a7a"];

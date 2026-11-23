@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_VOICES, GENRE_STARTERS, STARTERS, STRENGTH, VOICES, audible, clearAll, emptyPattern, fromRows, nextStrength, setHit, setLane, setLength, setSwing, setTempo, stepSeconds, stepTime, strikes, tidyPattern } from "../src/daw/drums";
+import { DEFAULT_VOICES, GENRE_STARTERS, STARTERS, STRENGTH, audible, clearAll, emptyPattern, fromRows, nextStrength, setHit, setLane, setLength, setSwing, setTempo, stepSeconds, stepTime, strikes, tidyPattern } from "../src/daw/drums";
 import { withSaved, withoutSaved } from "../src/daw/store";
 
 describe("drum pattern", () => {

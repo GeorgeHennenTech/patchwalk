@@ -14,27 +14,15 @@ import aoUrl from "../assets/diagrams/res2/ao.webp";
 
 const { front: W, back: WB, height: H, depth: D } = RES2;
 const BASE = 0.9;          // the cabinet stands on a plinth this high (illustrative)
-const T = 0.018;           // panel thickness (illustrative)
-const GLOW = "#ff2e93", GREY = "#b4b7bd";
+const GLOW = "#ff2e93";
 const WAVE_SPEED = 0.55;  // how fast the drawn wavefronts travel, metres a second (sound itself: 343)
 const WAVE_REACH = 4.5;   // how far they are drawn, metres
 const lengthText = (m: number) => (m >= 1 ? `${m.toFixed(m >= 10 ? 0 : 1)} m` : m >= 0.01 ? `${(m * 100).toFixed(m >= 0.1 ? 0 : 1)} cm` : `${(m * 1000).toFixed(0)} mm`);
 const toHz = (v: number) => 20 * Math.pow(1000, v), toV = (hz: number) => Math.log(hz / 20) / Math.log(1000);
 const hzText = (hz: number) => (hz >= 999.5 ? `${(hz / 1000).toFixed(hz >= 10000 ? 0 : 1)} kHz` : `${Math.round(hz)} Hz`);
 /** A point on the front, from metres across and down the drawing, to model space (x right, y up, z towards the listener). */
-const px = (x: number) => x - W / 2, py = (y: number) => BASE + H - y;
+const py = (y: number) => BASE + H - y;
 
-/** A horn seen from the front: four sloping walls from a mouth to a smaller throat `depth` behind it, and a back to the throat. */
-function hornGeometry(m: { x0: number; x1: number; y0: number; y1: number }, t: { x0: number; x1: number; y0: number; y1: number }, depth: number): THREE.BufferGeometry {
-  const M = [[m.x0, m.y0], [m.x1, m.y0], [m.x1, m.y1], [m.x0, m.y1]].map(([x, y]) => [px(x!), py(y!), 0]);
-  const Th = [[t.x0, t.y0], [t.x1, t.y0], [t.x1, t.y1], [t.x0, t.y1]].map(([x, y]) => [px(x!), py(y!), -depth]);
-  const pts: number[] = [];
-  const quad = (a: number[], b: number[], c: number[], d: number[]) => pts.push(...a, ...b, ...c, ...a, ...c, ...d);
-  for (let i = 0; i < 4; i++) quad(M[i]!, M[(i + 1) % 4]!, Th[(i + 1) % 4]!, Th[i]!);
-  quad(Th[0]!, Th[1]!, Th[2]!, Th[3]!);
-  const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3)); g.computeVertexNormals();
-  return g;
-}
 
 export default function Res2View() {
   const mount = useRef<HTMLDivElement>(null), stage = useRef<Stage | undefined>(undefined);
@@ -81,7 +69,6 @@ export default function Res2View() {
     studio(st.scene, 0, 6);
     // a second, softer light from the other side, so the cabinet's dark paint does not go black in shadow
     const fill = new THREE.DirectionalLight(0xdfe6ff, 1.1); fill.position.set(-3, 2.5, -2.5); st.scene.add(fill); st.scene.environmentIntensity = 0.9;
-    const add = (id: string, mesh: THREE.Object3D, mats: THREE.MeshStandardMaterial[], parent: THREE.Object3D = st.scene) => { mesh.userData.id = id; parent.add(mesh); if (parent === st.scene) st.pickable.push(mesh); (groups[id] ??= []).push(...mats); for (const m of mats) m.emissive.set(GLOW); return mesh; };
     // the cabinet itself: modelled in Blender from the maker's drawing (scripts/blender/res2.py), one object per part,
     // with the soft shadowing where surfaces meet worked out there and laid over it here
     const PART: Record<string, string> = { Body: "body", Handles: "body", Panel: "body", Bolts: "body", MidHorn: "midHorn", HighHorn: "highHorn", Plug: "plug", BassHorn: "bassHorn", Divider: "bassHorn", Strut: "bassHorn", Flypoints: "fly", Plate: "plate", Sockets: "plate" };

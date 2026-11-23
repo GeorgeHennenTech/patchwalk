@@ -13,7 +13,7 @@ import { macroSlots } from "../synth/macros";
 import { routes } from "../synth/mod";
 import { EAR, type EarKind } from "../course/ear";
 import { ScoreView } from "./Score";
-import { beatHz, destName, INITIAL, noteToHz, PARAMS, SHAPES, type Shape, type SynthState } from "../synth/params";
+import { beatHz, destName, INITIAL, PARAMS, type SynthState } from "../synth/params";
 import { useSynth, type Synth } from "../synth/useSynth";
 import { AskBox } from "./Answer";
 import { SerumVersion } from "./SerumVersion";

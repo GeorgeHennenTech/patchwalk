@@ -6,7 +6,6 @@ import { parseCard, type Card } from "./lesson/cards";
 import { INIT_BASELINE } from "./patch/baseline";
 import { Badge } from "./ui/Badge";
 import { AskView } from "./ui/AskView";
-import { WalkLibrary } from "./ui/Walkthrough";
 import { DriverPage } from "./ui/DriverDiagram";
 import ModelLabs from "./ui/ModelLabs";
 import DawView from "./ui/DawView";

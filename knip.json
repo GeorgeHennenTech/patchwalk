@@ -1,0 +1,6 @@
+{
+  "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "entry": ["api/*.ts", "middleware.ts", "tests/**/*.test.ts", "e2e/*.e2e.ts", "src/daw/dsp.worklet.ts"],
+  "project": ["src/**/*.{ts,tsx}", "api/**/*.ts", "tests/**/*.ts", "e2e/**/*.ts"],
+  "ignoreExportsUsedInFile": true
+}

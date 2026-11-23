@@ -5,3 +5,5 @@ dist
 .env.*.local
 .vercel
 fixtures/local/
+test-results
+playwright-report

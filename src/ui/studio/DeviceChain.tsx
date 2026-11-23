@@ -8,8 +8,6 @@ const round = (v: number) => (Math.abs(v) >= 100 ? Math.round(v) : Number(v.toFi
 const shown = (s: ParamSpec, v: number) => (s.id === "note" ? noteName(v) : s.unit === "Hz" && v >= 1000 ? `${round(v / 1000)} kHz` : s.choices ? s.choices[v] ?? String(v) : s.id.endsWith("pan") ? (v === 0 ? "centre" : v < 0 ? `${-v} left` : `${v} right`) : `${v > 0 && s.min < 0 && s.unit === "dB" ? "+" : ""}${v}${s.unit ? ` ${s.unit}` : ""}`);
 
 // A slider that moves in ratios (frequencies, times) keeps its place as a number from 0 to 1000.
-const toSlider = (s: ParamSpec, v: number) => Math.round((1000 * Math.log(v / s.min)) / Math.log(s.max / s.min));
-const fromSlider = (s: ParamSpec, x: number) => s.min * (s.max / s.min) ** (x / 1000);
 
 const groupsOf = (spec: { params: ParamSpec[] }) => [...new Set(spec.params.map((s) => s.group).filter((g): g is string => !!g))];
 // A knob's place along its travel, 0 to 1 (frequencies and times travel in ratios), and back onto its steps.

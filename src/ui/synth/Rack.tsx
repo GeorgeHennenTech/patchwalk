@@ -7,7 +7,7 @@ import { dragColor, dragName, endDrag, startDrag, type Draggable } from "../../s
 import { MACRO_COLORS } from "../../synth/macros";
 import { FX_NAMES, FX_ORDER, fxOrderOf, moveFx, type FxId } from "../../synth/fx";
 import { adsr, ENV1_COLOR, envLevel, lfoHz, lfoStartPhase, lfoValue, routes, SOURCES, type Adsr, type ModSource } from "../../synth/mod";
-import { harmonic, isDrawn, isUserTable, tablesRevision, TABLE_NOTES, type BuiltInTable, type Table, spectrumA, HARMONICS, LFO_STEPS, MACRO_SLOTS, MACROS, PARAMS, type Group, type SynthState, spectrumB } from "../../synth/params";
+import { isDrawn, isUserTable, tablesRevision, TABLE_NOTES, type BuiltInTable, type Table, spectrumA, LFO_STEPS, MACRO_SLOTS, MACROS, PARAMS, type Group, type SynthState, spectrumB } from "../../synth/params";
 import { createPortal } from "react-dom";
 import { TableEditor } from "./TableEditor";
 import type { Synth } from "../../synth/useSynth";
@@ -60,7 +60,6 @@ export function wavePath(h: ArrayLike<number>, phaseCycles: number, cos?: ArrayL
   }
   return ys.map((y, i) => `${i === 0 ? "M" : "L"}${((i / points) * w).toFixed(1)} ${(height / 2 - (y / peak) * (height / 2 - 5)).toFixed(1)}`).join(" ");
 }
-const shapeHarmonics = (shape: SynthState["bShape"]) => Array.from({ length: HARMONICS + 1 }, (_, n) => (n ? harmonic(shape, n) : 0));
 const SINE = [0, 1];
 /** A fixed scribble standing for noise: it has no shape to draw. */
 const NOISE_PATH = Array.from({ length: 67 }, (_, i) => `${i === 0 ? "M" : "L"}${i * 3} ${(32 + Math.sin(i * 12.9898) * Math.cos(i * 78.233) * 24).toFixed(1)}`).join(" ");

@@ -6,7 +6,7 @@ import { isUserTable, tableMorph, tableName, tableSamples, type UserTableId } fr
 import { forgetTable, heldTable, holdTable, newTableId } from "../../synth/tablestore";
 import type { Synth } from "../../synth/useSynth";
 import {
-  alignFundamental, averagePeriod, BIN_COMMAND_NAMES, BIN_COMMANDS, binCommand, BINS, blank, blurFrames, blurPhasesBins, blurSpectraBins, crossfadeEdges, draw, fadeEdges, flipHorizontal, flipVertical,
+  alignFundamental, averagePeriod, BIN_COMMAND_NAMES, BIN_COMMANDS, binCommand, blank, blurFrames, blurPhasesBins, blurSpectraBins, crossfadeEdges, draw, fadeEdges, flipHorizontal, flipVertical,
   FRAME, fromImage, insertAfter, joinPairs, keepRange, lowPass, MAX_FRAMES, morphAt, moveFrame, normalize, normalizeSame, pasteFrames, pwmFrom, readWav, reduceTo, removeDc, removeFundamental, removeLowPhases,
   removeLowSpectra, removeRange, renderMorph, sameplace, sampleRedux, sawFrame, setBin, setPhasesFrom, setSpectraFrom, shiftToZero, SORT_NAMES, SORTS, sortFrames, splitByHarmonics, splitFixed, splitFollowing,
   splitHalves, splitSizeOf, splitSpectral, stretchTo, subtractSpectra, table8bit, tableWav, toBins, TOOL_NAMES, TOOLS, zeroPhases, type BinCommand, type Morph, type Sort, type Tool, type Wave,

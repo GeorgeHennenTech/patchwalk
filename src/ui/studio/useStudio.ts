@@ -1,4 +1,6 @@
 // The Studio's state: the song, the transport that plays it, and the learner's own sounds.
+import { beatsNear, rateToFit, stretchSamples } from "../../daw/stretch";
+import { encodeWav } from "../../daw/wav";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Transport, type Loop } from "../../daw/transport";
 import { STARTERS } from "../../daw/drums";
@@ -131,11 +133,26 @@ export function useStudio() {
     setSamples((list) => (list.some((s) => s.id === id) ? list : [...list, info]));
     return { ...info, shared: shareSound(info.name, bytes) };
   }, []);
+  /**
+   * A copy of a stored sound, stretched so that it lasts a whole number of beats at the song's tempo (its
+   * pitch is kept). The copy is stored like an uploaded file. Throws an Error whose message can be shown.
+   */
+  const fitSample = useCallback(async (id: string, name: string, bpm: number, have: number, beats?: number): Promise<SampleInfo & { beats: number; rate: number }> => {
+    const sound = transport.current!.sound(id);
+    if (!sound) throw new Error("That sound is not loaded in this browser.");
+    const seconds = sound.channels[0]!.length / sound.rate, want = beats ?? beatsNear(seconds, bpm), rate = rateToFit(seconds, want, bpm);
+    if (rate < 0.25 || rate > 4) throw new Error("That would stretch the sound more than four times, which sounds bad. Choose another number of beats.");
+    let out: Float32Array[];
+    try { out = await stretchSamples(sound.channels, sound.rate, { rate }); } catch { throw new Error("The browser could not stretch that sound."); }
+    const wav = encodeWav(out[0]!, out[1] ?? out[0]!, sound.rate);
+    const made = await addSample(new File([wav], `${name.slice(0, 26)} at ${Math.round(bpm)}.wav`, { type: "audio/wav" }), have);
+    return { id: made.id, name: made.name, beats: want, rate };
+  }, [addSample]);
   const removeSample = useCallback((id: string) => {
     transport.current!.forget(id); void deleteSample(id).catch(() => undefined);
     setSamples((list) => list.filter((s) => s.id !== id));
     change((s) => dropSongSample(s, id));
   }, [change]);
-  return { mark, undo, redo, canUndo: past.current.length > 0, canRedo: future.current.length > 0, song, change, playing, toggle, playFrom, step, setLoop, transport: transport.current!, samples, addSample, removeSample };
+  return { mark, undo, redo, canUndo: past.current.length > 0, canRedo: future.current.length > 0, song, change, playing, toggle, playFrom, step, setLoop, transport: transport.current!, samples, addSample, fitSample, removeSample };
 }
 export type Studio = ReturnType<typeof useStudio>;

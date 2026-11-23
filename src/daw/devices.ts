@@ -138,6 +138,9 @@ export const DEVICES: DeviceSpec[] = [
     pct("drive", "Drive", 0), pct("crunch", "Crunch", 0), { id: "transients", label: "Transients", min: -100, max: 100, step: 1, def: 0, unit: "%" },
     pct("boom", "Boom", 0), hz("boomFreq", "Boom at", 30, 120, 55), pct("boomDecay", "Boom rings", 50), hz("damp", "Damp above", 1000, 20000, 20000), db("out", "Output", -24, 12), pct("mix", "Dry / wet", 100),
   ] },
+  { kind: "pitchshift", name: "Pitch shift", like: "Shifter", note: "The shifting is done by Signalsmith Stretch, a ready-made method (the one piece of sound code here that is not ours). The shifted sound comes out about an eighth of a second late; nobody has judged it by ear here.", about: "Moves the sound up or down by a musical interval and keeps its speed. Cleaner and more exact than the Shifter's pitch mode.", params: [
+    { id: "semis", label: "Semitones", min: -24, max: 24, step: 1, def: 7 }, { id: "cents", label: "Cents", min: -50, max: 50, step: 1, def: 0 }, sw("formant", "Keep character"), pct("mix", "Dry / wet", 100),
+  ] },
   { kind: "shifter", name: "Shifter", like: "Shifter", note: "Pitch mode warbles a little and can sit a few Hz off the exact interval, more so with a short window; a longer window is smoother but blurs fast hits.", about: "Moves the sound up or down: by a musical interval (pitch), or by a fixed number of Hz, which turns it metallic.", params: [
     menu("mode", "Mode", ["Pitch", "Frequency"]), { id: "semis", label: "Semitones", min: -24, max: 24, step: 1, def: 7, when: (p) => !p.mode }, { id: "cents", label: "Cents", min: -50, max: 50, step: 1, def: 0, when: (p) => !p.mode },
     { id: "window", label: "Window", min: 20, max: 200, step: 1, def: 60, unit: "ms", when: (p) => !p.mode }, { id: "hz", label: "Move by", min: -2000, max: 2000, step: 1, def: 100, unit: "Hz", when: (p) => !!p.mode }, pct("mix", "Dry / wet", 100),

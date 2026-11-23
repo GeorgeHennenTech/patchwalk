@@ -19,13 +19,24 @@ export function DrumRack({ pattern, onChange, studio, trackId, picked, onPick, s
   const [note, setNote] = useState("");
   const [over, setOver] = useState(-1);
   const picker = useRef<HTMLInputElement>(null);
-  const { samples, addSample, removeSample, transport } = studio;
+  const { samples, addSample, fitSample, removeSample, transport, song } = studio;
+  const [fitting, setFitting] = useState(false);
   const lane = pattern.lanes[picked], on = audible(pattern);
   const hear = (i: number, p: Pattern = pattern) => { const l = p.lanes[i]; if (l) transport.hitPad(trackId, l); };
   const take = async (i: number, file: File) => {
     setNote(""); onPick(i);
     try { const s = await addSample(file, samples.length); const next = setLane(setSample(pattern, i, s.id), i, { name: s.name.slice(0, 24), start: 0, length: 100, fade: 0 }); onChange(next); hear(i, next); void s.shared.then(setNote); }
     catch (e) { setNote(e instanceof Error ? e.message : "That file could not be used."); }
+  };
+  // a loop stretched to last a whole number of beats at the song's tempo, kept as a new sound on this pad
+  const fit = async (i: number, id: string, name: string, beats?: number) => {
+    setNote("Stretching…"); setFitting(true);
+    try {
+      const made = await fitSample(id, name, song.bpm, samples.length, beats);
+      const next = setLane(setSample(pattern, i, made.id), i, { start: 0, length: 100, fade: 0 }); onChange(next); hear(i, next);
+      setNote(`Now ${made.beats} beat${made.beats === 1 ? "" : "s"} long at ${Math.round(song.bpm)} bpm (played at ${made.rate.toFixed(2)} times its speed, pitch kept). The original is still under Samples.`);
+    } catch (e) { setNote(e instanceof Error ? e.message : "That sound could not be stretched."); }
+    setFitting(false);
   };
   const set = (change: Parameters<typeof setLane>[2]) => onChange(setLane(pattern, picked, change));
   const own = lane?.sample ? samples.find((s) => s.id === lane.sample) : undefined;
@@ -56,6 +67,9 @@ export function DrumRack({ pattern, onChange, studio, trackId, picked, onPick, s
           <input ref={picker} type="file" accept="audio/*,.wav,.mp3,.flac,.ogg,.aif,.aiff,.m4a" hidden onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) void take(picked, f); }} />
           <button className="primary" onClick={() => picker.current?.click()}>Upload a sound…</button>
           {lane.sample && <button onClick={() => onChange(setSample(pattern, picked))}>Use the built-in drum</button>}
+          {own && <label title="Stretch this sound, keeping its pitch, so it lasts this many beats at the song's tempo">Fit to tempo <select value="" disabled={fitting} aria-label="Fit to tempo" onChange={(e) => { const v = e.target.value; if (v) void fit(picked, own.id, own.name, v === "auto" ? undefined : Number(v)); }}>
+            <option value="">…</option><option value="auto">Nearest whole length</option>{[1, 2, 4, 8, 16, 32].map((b) => <option key={b} value={b}>{b} beat{b === 1 ? "" : "s"}</option>)}
+          </select></label>}
         </div>
         {note && <p className={/library|browser/.test(note) && !/could not|does not/i.test(note) ? "daw-sound-ok" : "daw-sound-note"} role="status">{note}</p>}
         {own && <Wave peaks={transport.peaks(own.id)} start={lane.start} length={lane.length} fade={lane.fade} seconds={transport.seconds(own.id)} />}

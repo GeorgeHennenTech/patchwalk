@@ -5,7 +5,7 @@ import { Engine } from "../synth/engine";
 import { Kit } from "./kit";
 import { audibleOf, stepSeconds, stepTime, type Pad } from "./drums";
 import { chainShape, type Device } from "./devices";
-import { chainReady, prepareDevices } from "./fxnodes";
+import { chainReady, devicesSettled, prepareDevices } from "./fxnodes";
 import { buildDevice, type LiveDevice } from "./fxnodes";
 import { masterGain, sendGain, songEvents, type Song } from "./song";
 import { automate, hasAutomation } from "./automation";
@@ -124,6 +124,8 @@ export class Transport {
   /** Decode one of the learner's sounds. Works before anything has been played. Gives back its length in seconds. */
   load(id: string, bytes: ArrayBuffer): Promise<number> { this.boot(); return this.kit!.load(id, bytes); }
   forget(id: string): void { this.kit?.forget(id); }
+  /** A stored sound's samples, one array per side, and its rate; nothing when it is not loaded. */
+  sound(id: string): { channels: Float32Array[]; rate: number } | undefined { const b = this.kit?.buffer(id); return b ? { channels: Array.from({ length: Math.min(2, b.numberOfChannels) }, (_, c) => b.getChannelData(c)), rate: b.sampleRate } : undefined; }
   peaks(id: string, n?: number): number[] { return this.kit?.peaks(id, n) ?? []; }
   seconds(id: string): number { return this.kit?.seconds(id) ?? 0; }
   /** How loud the left and right sides of everything are right now, in dB (very low when silent). */
@@ -143,6 +145,7 @@ export class Transport {
     const ctx = this.ctx as unknown as OfflineAudioContext, song = this.read();
     await prepareDevices(ctx);
     this.began = 0.05; this.sync();
+    await devicesSettled(ctx);   // a device whose inside is fetched (the pitch shifter) must be in place before the first sample
     for (let n = 0; n < song.bars * 16; n++) for (const e of songEvents(song, n, n + 1)) {
       const at = this.began + e.at;
       if (e.kind === "hit") this.kit!.hit(e.pad, at, e.strength, this.ins.get(e.track) ?? this.master!, e.track);

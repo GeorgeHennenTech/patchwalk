@@ -2,6 +2,7 @@
 // same way: the sound goes both through the effect and straight past it, and switching the device on or off
 // crossfades between the two, so nothing clicks and nothing restarts.
 import { CURVES, CAB_BUMP_Q, PRESENCE_HZ, TONE_HIGH_HZ, TONE_LOW_HZ, TONE_MID_HZ, ampDrive, cabinetOf, driveTable, pedalDrive, erosionSwing, ECHO_WOBBLE, FILTER_DELAY_LINES, autoFilterKind, echoDriveGain, echoSeconds, filterDelayLine, CHANNEL_CUT_HZ, CHANNEL_HIGH_HZ, CHANNEL_LOW_HZ, CHANNEL_MID_Q, DELAY_MAX_SECONDS, CHORUS_SWING, dbToGain, delayRouting, delayTimes, eq3Gains, eq8Band, lfoRateHz, mixGains, octavesToQ, overdriveGain, overdriveToneHz, panHarmonics, satTable, utilityMatrix, softClipTable, SOFT_CLIP_REACH, COLOUR_Q, DC_CUT_HZ, type Device } from "./devices";
+import { stretchNode } from "./stretch";
 import { FLANGER_BASE, FLANGER_SWING, PHASER_Q, PHASER_STAGES, PHASER_SWING_CENTS, reverbImpulse } from "../synth/fx";
 import { DSP_KINDS } from "./dsp";
 import workletUrl from "./dsp.worklet.ts?worker&url";
@@ -46,6 +47,21 @@ function mixer(ctx: BaseAudioContext, lag = 0) {
 }
 const SMOOTH = 0.012;
 
+// Devices whose inside arrives a moment after they are built (the pitch shifter's is fetched and started by
+// its own library). An export waits for them with `devicesSettled`.
+const arriving = new WeakMap<BaseAudioContext, Set<Promise<unknown>>>();
+export const devicesSettled = (ctx: BaseAudioContext): Promise<unknown> => Promise.allSettled([...(arriving.get(ctx) ?? [])]);
+function pitchshift(ctx: BaseAudioContext): Core {
+  const m = mixer(ctx);
+  let node: Awaited<ReturnType<typeof stretchNode>> | undefined, want = { semitones: 0, formantCompensation: false }, sent = "";
+  const send = () => { const now = JSON.stringify(want); if (node && now !== sent) { sent = now; node.schedule({ active: true, ...want }); } };
+  const coming = stretchNode(ctx).then((n) => { node = n; m.input.connect(n); n.connect(m.wet); m.nodes.push(n); send(); }, () => undefined);
+  const set = arriving.get(ctx) ?? new Set(); set.add(coming); arriving.set(ctx, set);
+  return { input: m.input, output: m.output, nodes: m.nodes, set(p, t) {
+    want = { semitones: (p.semis ?? 7) + (p.cents ?? 0) / 100, formantCompensation: !!p.formant };
+    send(); m.set(p.mix ?? 100, t);
+  } };
+}
 function utility(ctx: BaseAudioContext): Core {
   const input = ctx.createGain();
   input.channelCount = 2; input.channelCountMode = "explicit"; input.channelInterpretation = "speakers"; // a mono sound becomes the same on both sides
@@ -325,7 +341,7 @@ function cabinet(ctx: BaseAudioContext): Core {
 function viewer(size: number) {
   return (ctx: BaseAudioContext): Core => { const pass = ctx.createGain(), a = ctx.createAnalyser(); a.fftSize = size; a.smoothingTimeConstant = 0.7; pass.connect(a); return { input: pass, output: pass, nodes: [pass, a], analyser: a, set() { /* nothing to set */ } }; };
 }
-const CORES: Record<string, (ctx: BaseAudioContext, p: P) => Core> = { comp: worklet("comp", 2), beatrepeat: worklet("beatrepeat"), vinyl: worklet("vinyl"), amp, pedal, cabinet, spectrum: viewer(4096), tuner: viewer(4096), glue: worklet("glue", 2), limiter: worklet("limiter"), gate: worklet("gate", 2), crush: worklet("crush"), resonators: worklet("resonators"), multiband: worklet("multiband", 2), drumbus: worklet("drumbus"), shifter: worklet("shifter"), erosion, autofilter, phaser, echo, filterdelay, utility, eq3, eq8, channeleq, sat, overdrive, autopan, chorus, delay, reverb };
+const CORES: Record<string, (ctx: BaseAudioContext, p: P) => Core> = { comp: worklet("comp", 2), beatrepeat: worklet("beatrepeat"), vinyl: worklet("vinyl"), amp, pedal, cabinet, spectrum: viewer(4096), tuner: viewer(4096), glue: worklet("glue", 2), limiter: worklet("limiter"), gate: worklet("gate", 2), crush: worklet("crush"), resonators: worklet("resonators"), multiband: worklet("multiband", 2), drumbus: worklet("drumbus"), shifter: worklet("shifter"), pitchshift, erosion, autofilter, phaser, echo, filterdelay, utility, eq3, eq8, channeleq, sat, overdrive, autopan, chorus, delay, reverb };
 
 /** The audio for one device, or nothing when the kind is unknown. */
 export function buildDevice(ctx: BaseAudioContext, d: Device, bpm = 120, origin = 0): LiveDevice | undefined {

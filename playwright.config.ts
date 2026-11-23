@@ -9,10 +9,11 @@ export default defineConfig({
   workers: 1,
   reporter: "list",
   use: {
-    baseURL: "http://localhost:5173",
+    baseURL: process.env.E2E_URL ?? "http://localhost:5173",
     viewport: { width: 1500, height: 1250 },
     trace: "off",
     launchOptions: { args: ["--autoplay-policy=no-user-gesture-required"] },
   },
-  webServer: { command: "npm run dev", url: "http://localhost:5173", reuseExistingServer: true, timeout: 60_000 },
+  // set E2E_URL to try another copy of the site (a built one from `npm run preview`, say); then no server is started here
+  webServer: process.env.E2E_URL ? undefined : { command: "npm run dev", url: "http://localhost:5173", reuseExistingServer: true, timeout: 60_000 },
 });

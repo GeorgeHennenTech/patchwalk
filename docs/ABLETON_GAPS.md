@@ -77,3 +77,127 @@ Spectral Time (XL, p.495-503), Collision and Electric (L each, p.540-556), Sampl
 ### Not possible or not worth it in a browser
 Ableton Link (a page cannot join a local network session), external hardware effects and instruments,
 cue/pre-listen outputs, MIDI timecode, video, MPE editing (the synth has no per-note inputs).
+
+---
+
+# Checked again on 25 Nov 2026: what is still missing
+
+A helper re-read this file and the manual's section list (pages 49-690 and 811-856) against the code. Everything
+ticked above is confirmed built. Sizes: S = hours, M = a day or two, L = many days. Pages are the manual's.
+Fixed the same day and so not listed: fader range in dB, a mix readout, automating sends, phrygian and other scales.
+
+## Arrangement and editing
+- Songs longer than 32 bars, more than 8 tracks, duplicating and reordering tracks (51, 113). M
+- A loop brace to drag, with start and length fields (121, 848). M
+- Cut, paste, duplicate, delete and insert time (128). M
+- Clips off the beat; drum clips over 4 bars; snap off; grid shortcuts (123, 128, 854). M
+- Start offset and a loop inside a clip, so a short clip repeats when stretched (157-161). M
+- Clip name and colour, track colour (156). S
+- Linked-track editing (132). M
+- Follow and scroll options, fit to height and width, scrubbing (113, 158, 852). S
+
+## Session View and launching
+- Clip slots, scenes, launch quantize, stop buttons (135-148). L
+- Launch modes, legato, follow actions, clip nudge (241-251). M after the above
+- Recording a Session performance into the arrangement (145). M
+
+## Audio
+- Audio tracks and audio clips on the timeline (54, 165). L
+- Warp markers, warp modes, quantizing audio (177-190). L (stretching exists only for drum pads)
+- Clip gain, pitch, reverse, crop, fades and crossfades (123, 166-171). M
+- Recording from a microphone or input; monitoring; arming (254, 287-289). L
+- Resampling the Studio's own output to a track (259). M
+- Comping with take lanes (301-305). L
+- Audio to MIDI (232-233). L
+- Slicing at the hits themselves; 32 slices (229). M
+
+## MIDI editing and tools
+- Fold to rows that hold notes, without a key (197). S
+- Stretch notes with markers; crop a clip; deactivate notes (210-211). S each
+- Multi-clip editing and focus mode (211-215). M
+- Velocity ramps by drawing, velocity range, note-off velocity (204-207). S
+- Quantize amount and settings on the page; record quantization (203, 296). S
+- Step recording; Capture what was just played (293, 299). M
+- Note effects on live keys and in the exported MIDI file (our own limit). M
+- MPE per-note editing (217-227). L
+
+## Mixing and routing
+- Group tracks (278). M
+- Track-to-track routing, before or after effects (259-263). M
+- Sends before the fader; returns sending to returns; more than two returns (280). S-M
+- Solo on returns; solo-in-place (284). S
+- Track delay (286) and delay compensation (328): our limiter and pitch shift make a track late and nothing corrects it. M
+- Crossfader (281). S
+- Track freeze and flatten (822); would also ease the slow export. M
+- A CPU load meter (820). S
+
+## Automation and modulation
+- Tempo automation (366); automating drum pads, note effects, switches and menus. M
+- Synth knobs moving on screen while automated, and marked. S
+- Stretch and skew a selection of points; simplify (362-363). S-M
+- Clip envelopes: modulation that lives in the clip (367-378). L
+- LFO, Envelope Follower and Shaper devices that move any knob (667-669). M
+
+## Instruments
+- Sampler: its own filter, envelopes, LFO, loop crossfade, warp (615-620). M
+- A multisample instrument with key and velocity zones (583-608). L
+- An FM synth with four operators (561-582). L
+- A drum sampler with per-slot filter and drive (558-560); per-pad filter and drive on our rack. M
+- The drum synth set with their own knobs (657-665). M
+- Collision, Electric, Tension (540-556, 623-636): physical models, on hold by the owner's decision. L each
+- Wavetable: a sound file as a table inside the Studio, a random-per-note source, more unison modes (638-648). M
+
+## Audio effects
+No counterpart yet: Grain Delay (446, M), Dynamic Tube (423, S), Hybrid Reverb with your own impulse (448, M),
+Vocoder (512, M-L), Corpus (412, L), Looper (457, L), Spectral Resonator (495, L), Spectral Time (499, L),
+Align Delay (666, S).
+Controls ours lack: Compressor RMS and expand modes, sidechain EQ and listen, curve display (405-410, M); Glue and
+Gate sidechain EQ (442-445, S); Limiter lookahead and stereo link (456, S); EQ Eight mid/side and left/right,
+oversampling (429-431, M); Reverb size, early reflections, diffusion, chorus, freeze, width (483-487, M); Auto
+filter 24 dB slope, more circuits, drive, stepped sweep (392-394, M); Beat repeat pitch, filter, variation (396);
+Delay freeze and modes (418); Echo's own reverb, gate, noise, stereo modes (424-428, M); Chorus ensemble and
+vibrato (403, S); Phaser-flanger doubler, notches, envelope follower (474-477, M); Multiband per-band solo and
+timings (465, M); Shifter LFO, follower, ring mode, delay (490-493, M); Saturator drawable curve (488, S); Redux
+jitter and filter (478, S); Spectrum and Tuner options (503-508, S).
+
+## MIDI effects
+- Arpeggiator: more styles, retrigger, repeats, velocity decay, transposition steps (517-520). M
+- Chord velocity per note (521); Note length on release (522); Random and Pitch extras (523-524); Scale's
+  editable map (525); Velocity modes and curve (526). S each
+- Envelope MIDI, Expression Control, Shaper MIDI (671-677). M
+
+## Racks, macros, groups
+- Instrument and effect racks with parallel chains (332-337). L
+- Macro knobs over a chain, randomize, stored variations (346-349). M
+- Key, velocity and chain-select zones (338-341). M
+- Drum rack: per-pad effect chains, sends inside the rack, the pad overview (342-345). M
+- Our limits of 8 effects a track and 4 automation lanes. S
+
+## Browser, files, export
+- Device presets, default presets, hot-swap (79, 312-314). M
+- Hearing a break, sound, rack or song before loading (77). S
+- Collections and tags (68-71). S
+- Saving a clip with its devices; template songs; merging one song into another (92-97). S-M each
+- Export of a selection or loop only, single tracks (stems), normalize, sample rate and bit depth, dither,
+  compressed formats (85-90). M
+- MIDI import of a whole multi-track file. S
+
+## Tempo, time signature, groove
+- Time signatures other than 4/4, and changes along the song (119, 161). L
+- Tempo nudge (177). S
+- A groove pool: timing, random and velocity amounts per clip, commit, extract (235-240). M
+- Metronome sound and rhythm settings (295). S
+
+## Controllers and mapping
+- MIDI map mode (684-686). M; key map mode (689). S; takeover modes (683). S
+
+## Cannot be done in a browser, or out of scope
+Push hardware; Link and clock sync; VST and Audio Unit plug-ins; External Instrument and Effect, cue output, audio
+and MIDI port setup; Max for Live programming; video; Ableton's cloud, packs and project files; Ableton's own file
+formats (only MIDI files move both ways); Ctrl/Cmd+T (the browser keeps it).
+
+## The helper's next ten
+1. Audio tracks with audio clips and warping. 2. Session View with scenes. 3. Longer songs, more tracks, a loop
+brace and the time commands. 4. Device presets and hot-swap. 5. Racks with macro knobs. 6. Group tracks and delay
+compensation. 7. Export of a selection and of stems, with normalize. 8. Groove pool. 9. Sampler filter, envelopes
+and LFO; slicing at the hits. 10. LFO and envelope-follower devices, with tempo automation.

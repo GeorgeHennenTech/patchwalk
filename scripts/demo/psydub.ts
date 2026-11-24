@@ -31,8 +31,8 @@ const patch = (sound: string, p: Partial<SynthState>): SynthState => ({ ...sound
 
 export interface Mix { drums: number; perc: number; bass: number; acid: number; pad: number; bell: number; zap: number; atmos: number; gain: { perc: number; bass: number; acid: number; pad: number; bell: number; zap: number; atmos: number }; limiter: number }
 // Set from measured stems of the peak section. The drums' fader is near its top and three quiet tracks carry
-// a Utility for the rest, because a fader only reaches +2 dB.
-export const MIX: Mix = { drums: 92, perc: 100, bass: 66, acid: 76, pad: 78, bell: 74, zap: 70, atmos: 66, gain: { perc: 8, bass: 0, acid: 5, pad: 4, bell: 10, zap: 24, atmos: 14 }, limiter: 4 };
+// a Utility for the rest. (Fader places above 80 were set again when the fader's top became +6 dB.)
+export const MIX: Mix = { drums: 84, perc: 86, bass: 66, acid: 76, pad: 78, bell: 74, zap: 70, atmos: 66, gain: { perc: 8, bass: 0, acid: 5, pad: 4, bell: 10, zap: 24, atmos: 14 }, limiter: 4 };
 
 export function psydub(mix: Mix = MIX): Song {
   let s = newSong("Deep Stitch");
@@ -192,7 +192,7 @@ export function psydub(mix: Mix = MIX): Song {
     clips: [{ id: "c1", start: 0, bars: 16, notes: [n(50, 0, 255)] }, { id: "c2", start: 16, bars: 16, notes: [n(50, 0, 250)] }],
     auto: [   // four lanes; the band-pass climbs before each new section: the risers
       lane("s:cutoff", [[0, hzv(400)], [6 * B, hzv(500)], [7 * B + 15, hzv(4000), 0.5], [8 * B, hzv(600)], [14 * B, hzv(600)], [15 * B + 15, hzv(6000), 0.5], [16 * B, hzv(800)], [22 * B, hzv(800)], [23 * B + 15, hzv(7000), 0.5], [24 * B, hzv(500)], [26 * B, hzv(500)], [27 * B + 15, hzv(9000), 0.6], [28 * B, hzv(700)], [31 * B + 15, hzv(300)]]),
-      lane("level", [[0, 0.3], [2 * B, mix.atmos / 100], [8 * B, 0.45], [14 * B, 0.45], [15 * B + 15, 0.8], [16 * B, 0.4], [22 * B, 0.4], [23 * B + 15, 0.85], [24 * B, mix.atmos / 100], [27 * B + 15, 0.9], [28 * B, 0.4], [31 * B + 15, 0.5]]),
+      lane("level", [[0, 0.3], [2 * B, mix.atmos / 100], [8 * B, 0.45], [14 * B, 0.45], [15 * B + 15, 0.8], [16 * B, 0.4], [22 * B, 0.4], [23 * B + 15, 0.83], [24 * B, mix.atmos / 100], [27 * B + 15, 0.84], [28 * B, 0.4], [31 * B + 15, 0.5]]),
       lane(`d:${atmosFx[0]!.id}:mix`, [[0, 0.8], [8 * B, 0.6], [24 * B, 0.9], [28 * B, 0.6]]),
       lane("s:resonance", [[0, 0.2], [14 * B, 0.2], [15 * B + 15, 0.5], [16 * B, 0.2], [26 * B, 0.2], [27 * B + 15, 0.6], [28 * B, 0.2]]),
     ] };
@@ -201,7 +201,7 @@ export function psydub(mix: Mix = MIX): Song {
   const plateFx = chain(["reverb", { decay: 4.6, predelay: 32, lowcut: 300, highcut: 6000, mix: 100 }], ["eq8", { b1type: 0, b1freq: 250, b6freq: 3500, b6gain: -2 }]);
   const echoFx = chain(["echo", { sync: 1, div: 3, feedback: 60, lowcut: 300, highcut: 3200, drive: 30, wobble: 28, wobbleRate: 0.3, duck: 0, mix: 100 }], ["sat", { curve: 0, drive: 5, out: -2, soft: 1 }], ["autofilter", { type: 2, freq: 1100, res: 1.2, lfo: 1.2, sync: 1, div: 8, shape: 0 }], ["reverb", { decay: 1.6, predelay: 0, lowcut: 400, highcut: 4500, mix: 22 }]);
   const fb = (v: number) => lin(v, 0, 95);
-  s = setReturn(s, "ra", { name: "A Long plate", level: 76, devices: plateFx, auto: [lane("level", [[0, 0.76], [24 * B, 0.76], [26 * B, 0.95], [28 * B, 0.76]])] });
+  s = setReturn(s, "ra", { name: "A Long plate", level: 76, devices: plateFx, auto: [lane("level", [[0, 0.76], [24 * B, 0.76], [26 * B, 0.85], [28 * B, 0.76]])] });
   s = setReturn(s, "rb", { name: "B Dub echo", level: 70, devices: echoFx, auto: [lane(`d:${echoFx[0]!.id}:feedback`, [[0, fb(60)], ...throws.flatMap((b): [number, number][] => [[b * B + 8, fb(60)], [b * B + 14, fb(90)], [(b + 1) * B + 4, fb(90)], [(b + 1) * B + 10, fb(60)]])])] });
   const masterFx = chain(["eq8", { b1type: 0, b1freq: 27, b2type: 1, b2freq: 70, b2gain: -2.5, b8gain: 2 }], ["multiband", { freqLow: 130, freqHigh: 3000, labove: -20, lratio: 3, mabove: -22, mratio: 2, habove: -24, hratio: 2, amount: 70, out: 2 }], ["glue", { threshold: -16, ratio: 1, attack: 5, release: 2, makeup: 2 }], ["sat", { curve: 0, drive: 2, out: 0, soft: 1 }], ["limiter", { gain: mix.limiter, ceiling: -1, release: 150 }]);
   const built = { ...s, tracks: [drumTrack, percTrack, bassTrack, acidTrack, padTrack, bellTrack, zapTrack, atmosTrack], masterFx,

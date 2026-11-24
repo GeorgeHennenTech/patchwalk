@@ -37,10 +37,20 @@ export async function stretchSamples(channels: Float32Array[], sampleRate: numbe
   const frames = channels[0]?.length ?? 0, sides = Math.min(2, Math.max(1, channels.length));
   if (!frames) return channels;
   const out = Math.max(1, Math.round(frames / rate));
-  const ctx = new OfflineAudioContext(sides, out, sampleRate), node = await (await load())(ctx, { numberOfInputs: 0, numberOfOutputs: 1, outputChannelCount: [sides] });
-  node.connect(ctx.destination);
-  await node.addBuffers(channels.slice(0, sides));
-  node.schedule({ active: true, input: 0, rate, semitones, output: 0 });
-  const done = await ctx.startRendering();
-  return Array.from({ length: sides }, (_, c) => done.getChannelData(c).slice());
+  const loud = (list: Float32Array[]) => list.some((c) => { for (let i = 0; i < c.length; i += 7) if (Math.abs(c[i]!) > 1e-5) return true; return false; });
+  // The stretcher is told what to do by messages to the audio thread. If the working-out starts before they
+  // have landed the result is silence, so a moment is left for them, and a silent result from a sound that
+  // is not silent is worked out again with a longer wait.
+  const once = async (wait: number): Promise<Float32Array[]> => {
+    const ctx = new OfflineAudioContext(sides, out, sampleRate), node = await (await load())(ctx, { numberOfInputs: 0, numberOfOutputs: 1, outputChannelCount: [sides] });
+    node.connect(ctx.destination);
+    await node.addBuffers(channels.slice(0, sides));
+    node.schedule({ active: true, input: 0, rate, semitones, output: 0 });
+    await new Promise<void>((r) => setTimeout(r, wait));
+    const done = await ctx.startRendering();
+    return Array.from({ length: sides }, (_, c) => done.getChannelData(c).slice());
+  };
+  const heard = loud(channels.slice(0, sides));
+  for (const wait of [40, 150, 400]) { const got = await once(wait); if (!heard || loud(got)) return got; }
+  throw new Error("the stretcher gave silence");
 }

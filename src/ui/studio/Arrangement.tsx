@@ -2,7 +2,7 @@
 // mixer controls at the right-hand end of its lane (where Ableton's Arrangement View keeps them).
 import { Fragment, useEffect, useRef, useState } from "react";
 import { STEPS_PER_BAR } from "../../daw/drums";
-import { BEAT, CLIP_BARS, MASTER_START, placeName, clipAt, placeClip, removeReturn, setAuto, setReturn, setSend, setTrack, removeTrack, type Clip, type Song, type Track } from "../../daw/song";
+import { faderText, BEAT, CLIP_BARS, MASTER_START, placeName, clipAt, placeClip, removeReturn, setAuto, setReturn, setSend, setTrack, removeTrack, type Clip, type Song, type Track } from "../../daw/song";
 import { SHAPES, drawShape, type Shape, MAX_LANES, addLane, bendPoint, lanePath, overKey, dropPoint, fromUnit, movePoint, putPoint, removeLane, retargetLane, targetsOf, type AutoLane, type AutoTarget } from "../../daw/automation";
 
 /** A colour for each track, by its place in the list. */
@@ -26,7 +26,7 @@ const ZOOMS = [0, 70, 120, 200, 320], ZOOM_KEY = "patchwalk.zoom.v1", SIDE = 330
  * One automation lane: a line along the song. Click an empty place to add a point, drag a point to move it
  * (sideways only as far as its neighbours), double-click a point to remove it.
  */
-type Strip = { name: string; auto?: AutoLane[]; devices: Track["devices"]; patch?: object; sampler?: object; master?: boolean };
+type Strip = { name: string; auto?: AutoLane[]; devices: Track["devices"]; patch?: object; sampler?: object; master?: boolean; kind?: string };
 function AutoLaneRow({ track, lane, index, steps, cols, onLanes, onMark, span, off }: { /** switched off for now: its control was moved by hand */ off?: boolean; /** where a ready-made shape is drawn: the selected clip's bars, or the whole song */ span: { from: number; length: number; name: string }; track: Strip; lane: AutoLane; index: number; steps: number; cols: React.CSSProperties; onLanes: (next: AutoLane[]) => void; onMark: () => void }) {
   const area = useRef<HTMLDivElement>(null), held = useRef<number | null>(null), bend = useRef<{ i: number; y: number; c: number; up: boolean } | null>(null), lanes = useRef(track.auto ?? []); lanes.current = track.auto ?? [];
   const [tip, setTip] = useState("");
@@ -72,7 +72,20 @@ export function LevelBar({ read, wide }: { read: () => number; wide?: boolean })
   return <i className={`lvl${wide ? " wide" : ""}`} aria-hidden="true"><span ref={bar} /></i>;
 }
 
-export function Arrangement({ song, mark, onMarkAt, overridden, live, back, onBack, onSeek, onMarker, onChange, levelOf, masterLevel, picked, also = [], onPick, onAdd, onPlace, onBars, onMark = () => undefined, step, loop, renaming }: { /** the time marker: a place in the song (in bars) where a clip can be cut, set by clicking on a track's lane */ mark?: number; onMarkAt?: (bars: number) => void; /** automation lanes switched off for now (as `overKey` names them) */ overridden?: ReadonlySet<string>; /** name, rename or remove the marker on a bar (a right-click or double-click on its number) */ onMarker?: (bar: number) => void; /** play from a bar (a click on its number) */ onSeek?: (bar: number) => void; /** the selected return track, and how to select one */ back?: string; onBack?: (id: string) => void; /** the song with automated settings where they stand right now: only the faders are drawn from it */ live?: Song; /** called before an edit that should be its own step to undo */ onMark?: () => void; /** a track's level right now, in dB */ levelOf?: (track: string) => number; /** the whole song's level right now, in dB */ masterLevel?: () => number; /** a clip was dropped on a bar of a track (copy: Alt was held) */ onPlace: (fromTrack: string, clip: string, toTrack: string, bar: number, copy: boolean) => void; /** a clip's right edge was dragged to a new length */ onBars: (track: string, clip: string, bars: number) => void; song: Song; onChange: (next: Song | ((s: Song) => Song)) => void; picked: { track?: string; clip?: string }; /** more clips of the selected track, selected with Shift or Ctrl/Cmd */ also?: readonly string[]; onPick: (track: string, clip?: string, add?: boolean) => void; onAdd: (track: string, bar: number) => void; step: number; /** the looped stretch, in bars */ loop?: { start: number; bars: number }; /** the track whose name box should take the keyboard */ renaming?: string }) {
+/** The master's readout in words: average level (not the peak) and how wide the mix is. Updated a few times a second. */
+function StereoRead({ read }: { read: () => { average: number; width: number; alike: number } }) {
+  const el = useRef<HTMLSpanElement>(null);
+  useEffect(() => { let avg = -120, wide = -120; const id = window.setInterval(() => { const r = read(), span = el.current; if (!span) return;
+    // eased, so the numbers can be read
+    avg = r.average < -90 ? -120 : avg < -90 ? r.average : avg + (r.average - avg) * 0.3; wide = r.width < -90 ? -120 : wide < -90 ? r.width : wide + (r.width - wide) * 0.3;
+    span.textContent = avg < -90 ? "avg — · width —" : `avg ${avg.toFixed(1)} dB · width ${wide < -60 ? "mono" : `${wide.toFixed(0)} dB`}`;
+    span.className = `arr-stereo${r.alike < -0.2 ? " bad" : ""}`;
+    span.title = `Average level of the whole mix (not its peak), and how wide it is: the level of what differs between left and right against what they share. 0 dB is very wide, -20 dB nearly mono.${r.alike < -0.2 ? " The two sides are working against each other: on one speaker much of this would vanish." : ""}`;
+  }, 250); return () => window.clearInterval(id); }, [read]);
+  return <span ref={el} className="arr-stereo" aria-label="Average level and stereo width of the mix">avg — · width —</span>;
+}
+
+export function Arrangement({ song, mark, onMarkAt, overridden, live, back, onBack, onSeek, onMarker, onChange, levelOf, masterLevel, masterStereo, picked, also = [], onPick, onAdd, onPlace, onBars, onMark = () => undefined, step, loop, renaming }: { /** the time marker: a place in the song (in bars) where a clip can be cut, set by clicking on a track's lane */ mark?: number; onMarkAt?: (bars: number) => void; /** automation lanes switched off for now (as `overKey` names them) */ overridden?: ReadonlySet<string>; /** name, rename or remove the marker on a bar (a right-click or double-click on its number) */ onMarker?: (bar: number) => void; /** play from a bar (a click on its number) */ onSeek?: (bar: number) => void; /** the selected return track, and how to select one */ back?: string; onBack?: (id: string) => void; /** the song with automated settings where they stand right now: only the faders are drawn from it */ live?: Song; /** called before an edit that should be its own step to undo */ onMark?: () => void; /** a track's level right now, in dB */ levelOf?: (track: string) => number; /** the whole song's level right now, in dB */ masterLevel?: () => number; /** the whole mix: average level, width and how alike the two sides are */ masterStereo?: () => { average: number; width: number; alike: number }; /** a clip was dropped on a bar of a track (copy: Alt was held) */ onPlace: (fromTrack: string, clip: string, toTrack: string, bar: number, copy: boolean) => void; /** a clip's right edge was dragged to a new length */ onBars: (track: string, clip: string, bars: number) => void; song: Song; onChange: (next: Song | ((s: Song) => Song)) => void; picked: { track?: string; clip?: string }; /** more clips of the selected track, selected with Shift or Ctrl/Cmd */ also?: readonly string[]; onPick: (track: string, clip?: string, add?: boolean) => void; onAdd: (track: string, bar: number) => void; step: number; /** the looped stretch, in bars */ loop?: { start: number; bars: number }; /** the track whose name box should take the keyboard */ renaming?: string }) {
   const bars = Array.from({ length: song.bars }, (_, i) => i), cols = { gridTemplateColumns: `repeat(${song.bars / BEAT}, minmax(12px, 1fr))` }, Q = 1 / BEAT, beats = [0, 1, 2, 3];
   // Dragging a clip: sideways to another bar, up or down to another track of the same kind; Alt copies. Dragging
   // its right edge changes its length. Nothing moves until the pointer has gone a few pixels, so a click is a click.
@@ -151,7 +164,7 @@ export function Arrangement({ song, mark, onMarkAt, overridden, live, back, onBa
             <button className={`trk-on${t.mute ? "" : " on"}`} aria-pressed={!t.mute} aria-label={`${t.name} on`} title="Track on or off (0)" onClick={() => onChange((s) => setTrack(s, t.id, { mute: !t.mute }))}>{ti + 1}</button>
             <button className={`trk-solo${t.solo ? " on" : ""}`} aria-pressed={t.solo} aria-label={`Solo ${t.name}`} title="Solo: hear only this track (S)" onClick={() => onChange((s) => setTrack(s, t.id, { solo: !t.solo }))}>S</button>
             <span className="arr-mix">
-              <input type="range" className={`arr-level${lanesOff(t.id, "level", t.auto)}`} min={0} max={100} value={lt.level} aria-label={`${t.name} level`} title={`Level ${lt.level}`} onChange={(e) => onChange((s) => setTrack(s, t.id, { level: Number(e.target.value) }))} onDoubleClick={() => onChange((s) => setTrack(s, t.id, { level: 80 }))} />
+              <input type="range" className={`arr-level${lanesOff(t.id, "level", t.auto)}`} min={0} max={100} value={lt.level} aria-label={`${t.name} level`} title={`Level: ${faderText(lt.level)} (double-click for 0 dB)`} onChange={(e) => onChange((s) => setTrack(s, t.id, { level: Number(e.target.value) }))} onDoubleClick={() => onChange((s) => setTrack(s, t.id, { level: 80 }))} />
               {levelOf && <LevelBar read={() => levelOf(t.id)} />}
             </span>
             <input type="range" className={`arr-pan${lanesOff(t.id, "pan", t.auto)}`} min={-100} max={100} step={5} value={lt.pan} aria-label={`${t.name} pan`} title={t.pan === 0 ? "Pan: centre (double-click to centre)" : `Pan: ${Math.abs(t.pan)} ${t.pan < 0 ? "left" : "right"} (double-click to centre)`} onChange={(e) => onChange((s) => setTrack(s, t.id, { pan: Number(e.target.value) }))} onDoubleClick={() => onChange((s) => setTrack(s, t.id, { pan: 0 }))} />
@@ -174,7 +187,7 @@ export function Arrangement({ song, mark, onMarkAt, overridden, live, back, onBa
             <input type="text" className="arr-name" value={r.name} maxLength={24} aria-label="Return track name" onChange={(e) => onChange((s) => setReturn(s, r.id, { name: e.target.value }))} onKeyDown={(e) => { if (e.key === "Enter" || e.key === "Escape") (e.target as HTMLInputElement).blur(); }} />
             <button className={`trk-on${r.mute ? "" : " on"}`} aria-pressed={!r.mute} aria-label={`${r.name} on`} title="Return track on or off" onClick={() => onChange((s) => setReturn(s, r.id, { mute: !r.mute }))}>{r.id === "ra" ? "A" : "B"}</button>
             <span className="arr-mix">
-              <input type="range" className={`arr-level${lanesOff(r.id, "level", r.auto)}`} min={0} max={100} value={r.level} aria-label={`${r.name} level`} title={`Level ${r.level}`} onChange={(e) => onChange((s) => setReturn(s, r.id, { level: Number(e.target.value) }))} onDoubleClick={() => onChange((s) => setReturn(s, r.id, { level: 80 }))} />
+              <input type="range" className={`arr-level${lanesOff(r.id, "level", r.auto)}`} min={0} max={100} value={r.level} aria-label={`${r.name} level`} title={`Level: ${faderText(r.level)} (double-click for 0 dB)`} onChange={(e) => onChange((s) => setReturn(s, r.id, { level: Number(e.target.value) }))} onDoubleClick={() => onChange((s) => setReturn(s, r.id, { level: 80 }))} />
               {levelOf && <LevelBar read={() => levelOf(r.id)} />}
             </span>
             <input type="range" className="arr-pan" min={-100} max={100} step={5} value={r.pan} aria-label={`${r.name} pan`} title="Pan (double-click to centre)" onChange={(e) => onChange((s) => setReturn(s, r.id, { pan: Number(e.target.value) }))} onDoubleClick={() => onChange((s) => setReturn(s, r.id, { pan: 0 }))} />
@@ -192,6 +205,7 @@ export function Arrangement({ song, mark, onMarkAt, overridden, live, back, onBa
           <span className="arr-mix">
             <input type="range" className={`arr-level${lanesOff("master", "level", song.masterAuto)}`} min={0} max={100} value={live?.volume ?? song.volume} aria-label="Master volume" title={`Master volume ${live?.volume ?? song.volume}`} onChange={(e) => onChange((s) => ({ ...s, volume: Number(e.target.value) }))} onDoubleClick={() => onChange((s) => ({ ...s, volume: MASTER_START }))} />
             {masterLevel && <LevelBar read={masterLevel} wide />}
+            {masterStereo && <StereoRead read={masterStereo} />}
           </span>
           {autoButton("master", master, setMaster)}
         </div>

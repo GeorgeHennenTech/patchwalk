@@ -656,3 +656,7 @@ tr.dim td { opacity: 0.6; }
 .wted-note { margin: 8px 0 2px; min-height: 1.4em; } .wted-fine { margin: 0; font-size: 12px; }
 .wted-mini canvas { vertical-align: middle; border: 1px solid var(--line); border-radius: 4px; }
 .edit-table { align-self: flex-start; font-size: 12px; }
+
+/* the master's readout: average level and stereo width, in words */
+.daw2 .arr-stereo { font-size: 10px; font-variant-numeric: tabular-nums; color: #b9bcc2; white-space: nowrap; margin-left: 6px; }
+.daw2 .arr-stereo.bad { color: #ff6b5e; }

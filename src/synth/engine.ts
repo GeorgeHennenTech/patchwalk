@@ -476,6 +476,8 @@ export class Engine {
     const now = this.ctx.currentTime;
     return { note: v.note, velocity: v.velocity, age: now - v.startedAt, held: v.releasedAt === undefined ? Infinity : v.releasedAt - v.startedAt, startedAt: v.startedAt };
   }
+  /** The same step, asked for from outside: an export has no timer worth trusting, so it asks at each sixteenth. */
+  slowStep(): void { this.tick(); }
   /** Bring the knobs that sources move by code up to date. Runs about fifty times a second while audio is on. */
   private tick(): void {
     const now = this.ctx.currentTime;

@@ -2,7 +2,7 @@
 // top, a browser down the left, the arrangement in the middle with each track's mixer controls at its right
 // end, and a detail view along the bottom that shows either the clip (notes or drum steps) or the device (the
 // synth or the drum rack). The keyboard shortcuts are Live's wherever this Studio has the thing they act on.
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DrumGrid } from "./DrumGrid";
 import { Arrangement } from "./studio/Arrangement";
 import { DrumRack } from "./studio/DrumRack";
@@ -134,6 +134,7 @@ export default function DawView() {
     if (add && c && t === picked.track && picked.clip && c !== picked.clip) { setAlso((a) => (a.includes(c) ? a.filter((x) => x !== c) : [...a, c])); return; }
     setPicked({ track: t, clip: c }); setPad(0); setAlso([]);
   };
+  const masterStereo = useCallback(() => transport.stereo(), [transport]);
   const open = (s: Song) => { if (playing) toggle(); change(s); pick(s.tracks[0]?.id, s.tracks[0]?.clips[0]?.id); };
   const add = (trackId: string, bar: number) => { const made = addClip(song, trackId, bar); if (made) { change(made.song); pick(trackId, made.clip); setView("clip"); } };
   // while the song plays, sliders and faders are drawn where their automation has put them
@@ -389,7 +390,7 @@ export default function DawView() {
               <button onClick={() => { studio.mark(); const next = addReturn(song); change(next); setRet(next.returns.find((r) => !song.returns.some((x) => x.id === r.id))?.id); }} disabled={song.returns.length >= MAX_RETURNS} title="A return track has no clips: tracks send some of their sound to it and it comes back through its effects, so one reverb or delay can serve every track">+ Return track</button>
             </span>
           </div>
-          <Arrangement song={song} mark={mark} onMarkAt={setMark} overridden={over} onMarker={(bar) => { const had = song.markers?.find((m) => m.bar === bar)?.name ?? ""; const name = window.prompt(had ? `Rename the marker on bar ${bar + 1}, or empty the box to remove it` : `Name this place (bar ${bar + 1}): intro, drop, break…`, had); if (name !== null) { studio.mark(); change((s) => setMarker(s, bar, name)); } }} live={live} back={back?.id} onBack={setRet} onSeek={(bar) => playFrom(bar * STEPS_PER_BAR)} onChange={change} onMark={() => studio.mark()} levelOf={(id) => transport.trackLevel(id)} masterLevel={() => { const l = transport.levels(); return Math.max(l.left, l.right) + 3; }} picked={picked} also={also} onPick={pick} onAdd={add} onPlace={(from, c, to, bar, copy) => { const made = placeClip(song, from, c, to, bar, copy); if (!made) { studio.mark(); return; }   /* a drop where it already is: the start of a length drag, its own step to undo */ studio.mark(); change(made.song); pick(made.track, made.clip); setNote(copy ? "Copied the clip." : "Moved the clip."); }} onBars={(t, c, bars) => change((s) => setClipBars(s, t, c, bars))} step={step} loop={loop} renaming={renaming} />
+          <Arrangement song={song} mark={mark} onMarkAt={setMark} overridden={over} onMarker={(bar) => { const had = song.markers?.find((m) => m.bar === bar)?.name ?? ""; const name = window.prompt(had ? `Rename the marker on bar ${bar + 1}, or empty the box to remove it` : `Name this place (bar ${bar + 1}): intro, drop, break…`, had); if (name !== null) { studio.mark(); change((s) => setMarker(s, bar, name)); } }} live={live} back={back?.id} onBack={setRet} onSeek={(bar) => playFrom(bar * STEPS_PER_BAR)} onChange={change} onMark={() => studio.mark()} levelOf={(id) => transport.trackLevel(id)} masterLevel={() => { const l = transport.levels(); return Math.max(l.left, l.right) + 3; }} masterStereo={masterStereo} picked={picked} also={also} onPick={pick} onAdd={add} onPlace={(from, c, to, bar, copy) => { const made = placeClip(song, from, c, to, bar, copy); if (!made) { studio.mark(); return; }   /* a drop where it already is: the start of a length drag, its own step to undo */ studio.mark(); change(made.song); pick(made.track, made.clip); setNote(copy ? "Copied the clip." : "Moved the clip."); }} onBars={(t, c, bars) => change((s) => setClipBars(s, t, c, bars))} step={step} loop={loop} renaming={renaming} />
         </div>
       </div>
 

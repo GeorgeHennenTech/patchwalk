@@ -24,9 +24,11 @@ export const SYNTH_TARGETS: string[] = MACRO_DESTS.filter((id) => !["none", "bpm
 const SYNTH: AutoTarget[] = SYNTH_TARGETS.map((id) => { const p = PARAMS[id]!; return { id: `s:${id}`, label: p.label, min: p.min!, max: p.max!, step: p.step ?? 1, unit: p.unit, log: p.log, group: `Synth: ${p.group}` }; });
 
 /** What can be automated on a track: its level, its pan, and every slider of every effect on it (not menus or switches). */
-export function targetsOf(t: { devices: Device[]; patch?: object; sampler?: object; master?: boolean }): AutoTarget[] {
+export function targetsOf(t: { devices: Device[]; patch?: object; sampler?: object; master?: boolean; /** set on tracks only */ kind?: string }): AutoTarget[] {
   const out: AutoTarget[] = t.master ? [{ id: "level", label: "Master volume", min: 0, max: 100, step: 1, group: "Master" }] : [{ id: "level", label: "Track level", min: 0, max: 100, step: 1, group: "Track" }, { id: "pan", label: "Track pan", min: -100, max: 100, step: 1, group: "Track" }];
   t.devices.forEach((d, i) => { const spec = specOf(d.kind); for (const p of spec?.params ?? []) if (!p.choices) out.push({ id: `d:${d.id}:${p.id}`, label: `${i + 1} ${spec!.name}: ${p.group ? `${p.group} ` : ""}${p.label}`, min: p.min, max: p.max, step: p.step, unit: p.unit, log: p.log, group: "Effects" }); });
+  // a track (not a return, not the master) can also have what it sends to each return track moved
+  if (t.kind) for (const [id, name] of [["ra", "A"], ["rb", "B"]] as const) out.push({ id: `send:${id}`, label: `Send to return ${name}`, min: 0, max: 100, step: 1, group: "Track" });
   if (t.sampler) out.push(...SAMPLER); else if (t.patch) out.push(...SYNTH);
   return out;
 }
@@ -64,6 +66,7 @@ export function automateTrack<T extends Auto>(t: T, step: number, /** targets wh
   const targets = targetsOf(t), knobs: [string, number][] = []; let next: T = t;
   for (const lane of lanes) { const target = targets.find((x) => x.id === lane.target), v = valueAt(lane.points, step); if (!target || v === undefined) continue; const value = fromUnit(target, v);
     if (lane.target === "level") next = { ...next, level: value }; else if (lane.target === "pan") next = { ...next, pan: value };
+    else if (lane.target.startsWith("send:")) { const id = lane.target.slice(5), had = (next as { sends?: Record<string, number> }).sends; if (had?.[id] !== value) next = { ...next, sends: { ...had, [id]: value } }; }
     else if (lane.target.startsWith("s:")) knobs.push([lane.target.slice(2), value]);
     else if (lane.target.startsWith("m:")) { if (next.sampler && (next.sampler as Record<string, unknown>)[lane.target.slice(2)] !== value) next = { ...next, sampler: { ...next.sampler, [lane.target.slice(2)]: value } }; }
     else { const [, id, param] = lane.target.split(":"); next = { ...next, devices: next.devices.map((d) => (d.id === id ? { ...d, p: { ...d.p, [param!]: value } } : d)) }; } }

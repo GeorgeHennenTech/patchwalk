@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { drawShape, shapePoints, SHAPES, carryAuto, recordMoves, masterStrip, MAX_LANES, SYNTH_TARGETS, addLane, automate, automateTrack, dropPoint, fromUnit, hasAutomation, movePoint, putPoint, removeLane, retargetLane, targetsOf, tidyAuto, toUnit, valueAt } from "../src/daw/automation";
 import { addDevice, setDeviceParam } from "../src/daw/devices";
-import { addClip, addReturn, moveClip, placeClip, newSong, setAuto, setDevices, tidySong } from "../src/daw/song";
+import { DRUMS_START, addClip, addReturn, moveClip, placeClip, newSong, setAuto, setDevices, tidySong } from "../src/daw/song";
 
 const pts = [{ at: 16, v: 0 }, { at: 32, v: 1 }, { at: 48, v: 0.5 }];
 describe("automation", () => {
@@ -30,7 +30,7 @@ describe("automation", () => {
     const half = automate(song, 8), t = half.tracks[0]!;
     expect(t.level).toBe(50); expect(t.pan).toBe(song.tracks[0]!.pan); expect(t.devices[0]!.p.lfo).toBe(4); expect(t.devices[0]!.p.freq).toBe(1200);
     expect(half.tracks[1]).toBe(song.tracks[1]);                         // a track with no automation is the very same object
-    expect(song.tracks[0]!.level).toBe(80);                               // the knob itself stays where it was left
+    expect(song.tracks[0]!.level).toBe(DRUMS_START);                      // the knob itself stays where it was left
     expect(automateTrack({ ...song.tracks[0]!, auto: [{ target: "d:gone:x", points: [{ at: 0, v: 1 }] }] }, 3).devices).toBe(song.tracks[0]!.devices);   // a lane whose setting is gone does nothing
   });
   it("points are added in order, moved only as far as their neighbours, and removed", () => {

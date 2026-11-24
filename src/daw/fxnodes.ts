@@ -55,7 +55,9 @@ function pitchshift(ctx: BaseAudioContext): Core {
   const m = mixer(ctx);
   let node: Awaited<ReturnType<typeof stretchNode>> | undefined, want = { semitones: 0, formantCompensation: false }, sent = "";
   const send = () => { const now = JSON.stringify(want); if (node && now !== sent) { sent = now; node.schedule({ active: true, ...want }); } };
-  const coming = stretchNode(ctx).then((n) => { node = n; m.input.connect(n); n.connect(m.wet); m.nodes.push(n); send(); }, () => undefined);
+  // After the node arrives it is told what to do by a message to the audio thread; a moment is left for that
+  // message to land, or an export that starts at once can find the shifter still idle and render silence.
+  const coming = stretchNode(ctx).then((n) => { node = n; m.input.connect(n); n.connect(m.wet); m.nodes.push(n); send(); return new Promise<void>((done) => setTimeout(done, 60)); }, () => undefined);
   const set = arriving.get(ctx) ?? new Set(); set.add(coming); arriving.set(ctx, set);
   return { input: m.input, output: m.output, nodes: m.nodes, set(p, t) {
     want = { semitones: (p.semis ?? 7) + (p.cents ?? 0) / 100, formantCompensation: !!p.formant };

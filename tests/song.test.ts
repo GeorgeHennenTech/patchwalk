@@ -402,3 +402,39 @@ describe("random loudness, and finding the next marker", () => {
     expect(markerFrom(newSong(), 3, 1)).toBeUndefined();
   });
 });
+
+describe("faders, song lengths and the readout of the mix", () => {
+  it("a fader is unchanged up to 80 and reaches +6 dB at the top", async () => {
+    const { faderDb, faderGain, faderText } = await import("../src/daw/song");
+    expect(faderGain(80)).toBeCloseTo(1, 9); expect(faderGain(40)).toBeCloseTo(0.5, 9); expect(faderGain(0)).toBe(0);
+    expect(faderDb(100)).toBeCloseTo(6, 9); expect(faderDb(90)).toBeCloseTo(3, 9); expect(faderGain(100)).toBeCloseTo(1.995, 2);
+    expect(faderText(80)).toBe("0.0 dB"); expect(faderText(100)).toBe("+6.0 dB"); expect(faderText(40)).toBe("-6.0 dB"); expect(faderText(0)).toBe("silent");
+    for (let v = 1; v <= 100; v++) expect(faderGain(v)).toBeGreaterThan(faderGain(v - 1));
+  });
+  it("a song with a length the Studio does not offer takes the next length up and keeps its clips", async () => {
+    const { tidySong, newSong } = await import("../src/daw/song");
+    const base = newSong(), synth = base.tracks[1]!;
+    const song = { ...base, bars: 12, tracks: [base.tracks[0]!, { ...synth, clips: [{ id: "c1", start: 10, bars: 2, notes: [{ note: 60, start: 0, length: 4, velocity: 100 }] }] }] };
+    const tidy = tidySong(JSON.parse(JSON.stringify(song)))!;
+    expect(tidy.bars).toBe(16); expect(tidy.tracks[1]!.clips).toHaveLength(1);
+    expect(tidySong({ ...base, bars: 64 })!.bars).toBe(32); expect(tidySong({ ...base, bars: 3 })!.bars).toBe(4); expect(tidySong({ ...base, bars: "x" })!.bars).toBe(8);
+  });
+  it("the mix readout: mono reads no width, opposite sides read as fighting, a sine reads its average", async () => {
+    const { stereoOf } = await import("../src/daw/transport");
+    const n = 2048, sine = Float32Array.from({ length: n }, (_, i) => Math.sin((2 * Math.PI * 8 * i) / n)), other = Float32Array.from({ length: n }, (_, i) => Math.sin((2 * Math.PI * 13 * i) / n));
+    const mono = stereoOf(sine, sine); expect(mono.average).toBeCloseTo(-3.01, 1); expect(mono.width).toBeLessThan(-100); expect(mono.alike).toBeCloseTo(1, 6);
+    const flipped = stereoOf(sine, sine.map((v) => -v)); expect(flipped.alike).toBeCloseTo(-1, 6); expect(flipped.width).toBeGreaterThan(60);
+    const wide = stereoOf(sine, other); expect(Math.abs(wide.alike)).toBeLessThan(0.01); expect(wide.width).toBeCloseTo(0, 1);
+  });
+  it("a track's sends can be automated, and the new scales are there", async () => {
+    const { targetsOf, automateTrack } = await import("../src/daw/automation");
+    const { newSong } = await import("../src/daw/song"); const { SCALES } = await import("../src/daw/notefx");
+    const t = newSong().tracks[1]!;
+    expect(targetsOf(t).map((x) => x.id)).toEqual(expect.arrayContaining(["send:ra", "send:rb"]));
+    expect(targetsOf({ devices: [], master: true }).some((x) => x.id.startsWith("send:"))).toBe(false);
+    const moved = automateTrack({ ...t, auto: [{ target: "send:rb", points: [{ at: 0, v: 0 }, { at: 16, v: 1 }] }] }, 8);
+    expect(moved.sends?.rb).toBe(50);
+    expect(SCALES.slice(0, 8).map((s) => s.name)).toEqual(["Major", "Minor", "Dorian", "Mixolydian", "Harmonic minor", "Major pentatonic", "Minor pentatonic", "Blues"]);
+    expect(SCALES.find((s) => s.name === "Phrygian")?.steps).toEqual([0, 1, 3, 5, 7, 8, 10]);
+  });
+});

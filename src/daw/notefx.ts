@@ -13,6 +13,8 @@ const KEYS = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 export const SCALES: { name: string; steps: number[] }[] = [
   { name: "Major", steps: [0, 2, 4, 5, 7, 9, 11] }, { name: "Minor", steps: [0, 2, 3, 5, 7, 8, 10] }, { name: "Dorian", steps: [0, 2, 3, 5, 7, 9, 10] }, { name: "Mixolydian", steps: [0, 2, 4, 5, 7, 9, 10] },
   { name: "Harmonic minor", steps: [0, 2, 3, 5, 7, 8, 11] }, { name: "Major pentatonic", steps: [0, 2, 4, 7, 9] }, { name: "Minor pentatonic", steps: [0, 3, 5, 7, 10] }, { name: "Blues", steps: [0, 3, 5, 6, 7, 10] },
+  // added later, at the end so that a saved Scale effect still points at the scale it was given
+  { name: "Phrygian", steps: [0, 1, 3, 5, 7, 8, 10] }, { name: "Lydian", steps: [0, 2, 4, 6, 7, 9, 11] }, { name: "Locrian", steps: [0, 1, 3, 5, 6, 8, 10] }, { name: "Phrygian dominant", steps: [0, 1, 4, 5, 7, 8, 10] }, { name: "Melodic minor", steps: [0, 2, 3, 5, 7, 9, 11] }, { name: "Whole tone", steps: [0, 2, 4, 6, 8, 10] },
 ];
 export const ARP_STYLES = ["Up", "Down", "Up and down", "As written", "Random"];
 export const ARP_RATES = [{ name: "1/32", steps: 0.5 }, { name: "1/16 triplet", steps: 2 / 3 }, { name: "1/16", steps: 1 }, { name: "1/8 triplet", steps: 4 / 3 }, { name: "1/8", steps: 2 }, { name: "1/4", steps: 4 }];

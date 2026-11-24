@@ -24,6 +24,16 @@ export interface ReturnTrack { id: string; name: string; level: number; pan: num
 export const MAX_RETURNS = 2, RETURN_IDS = ["ra", "rb"] as const;
 /** A send's 0-to-100 as a gain: 100 sends the track at its full level, 50 a quarter of that (12 dB less). Our own choice of curve. */
 export const sendGain = (v: number) => (clamp(v, 0, 100) / 100) ** 2;
+/**
+ * A fader's 0-to-100 as a gain. 80 is "no change" (0 dB), as it always was, and below it nothing has changed
+ * (40 is 6 dB down, 0 is silence). Above 80 the fader now reaches +6 dB at the top, where it used to reach
+ * only +2: the same top as the fader in Live.
+ */
+export const FADER_ZERO = 80, FADER_TOP_DB = 6;
+export const faderDb = (level: number): number => { const v = clamp(level, 0, 100); return v <= 0 ? -Infinity : v <= FADER_ZERO ? 20 * Math.log10(v / FADER_ZERO) : ((v - FADER_ZERO) / (100 - FADER_ZERO)) * FADER_TOP_DB; };
+export const faderGain = (level: number): number => { const db = faderDb(level); return db === -Infinity ? 0 : 10 ** (db / 20); };
+/** A fader's place as words: "0.0 dB", "-6.0 dB", "+3.5 dB", "silent". */
+export const faderText = (level: number): string => { const db = faderDb(level); return db === -Infinity ? "silent" : `${db > 0 ? "+" : ""}${db.toFixed(1)} dB`; };
 export interface DrumTrack extends TrackBase { kind: "drums"; pads: Pad[]; clips: DrumClip[] }
 export interface SynthTrack extends TrackBase { kind: "synth"; patch: SynthState; clips: SynthClip[]; /** note effects, in front of the synth: they change the clip's notes before they are played */ noteFx: Device[]; /** when set, the track's instrument is a sampler playing this sound file, and the synth is silent */ sampler?: SamplerSet }
 export type Track = DrumTrack | SynthTrack;
@@ -40,17 +50,19 @@ export const CLIP_BARS: Record<Track["kind"], readonly number[]> = { drums: [1, 
 
 /** Sounds a new synth track can start from: the practice synth's own settings, chosen by us. */
 export const SOUNDS: { name: string; patch: Partial<SynthState> }[] = [
-  { name: "Soft pad", patch: { shape: "saw", voices: 5, detune: 22, spread: 80, filterOn: true, cutoff: 1800, resonance: 10, envA: 600, envD: 800, envS: 80, envR: 1200, chorusOn: true, reverbOn: true, reverbSize: 3, reverbMix: 35, volumeDb: -16 } },
-  { name: "Bass", patch: { shape: "saw", octave: -2, subOn: true, filterOn: true, cutoff: 600, resonance: 20, envA: 2, envD: 250, envS: 60, envR: 80, voiceMode: "mono", volumeDb: -12 } },
-  { name: "Pluck", patch: { shape: "saw", filterOn: true, cutoff: 700, resonance: 15, env2Dest: "cutoff", env2Amount: 55, env2D: 220, envA: 2, envD: 260, envS: 0, envR: 180, delayOn: true, delayMix: 25, volumeDb: -12 } },
-  { name: "Lead", patch: { shape: "square", filterOn: true, cutoff: 4200, resonance: 12, envA: 4, envD: 300, envS: 75, envR: 120, voiceMode: "mono", glide: 60, volumeDb: -14 } },
-  { name: "Big saw chords", patch: { shape: "saw", voices: 7, detune: 30, spread: 100, filterOn: true, cutoff: 5200, resonance: 8, envA: 4, envD: 500, envS: 85, envR: 220, reverbOn: true, reverbSize: 2, reverbMix: 20, volumeDb: -17 } },
-  { name: "Plain saw", patch: {} },
+  { name: "Soft pad", patch: { shape: "saw", voices: 5, detune: 22, spread: 80, filterOn: true, cutoff: 1800, resonance: 10, envA: 600, envD: 800, envS: 80, envR: 1200, chorusOn: true, reverbOn: true, reverbSize: 3, reverbMix: 35, volumeDb: -10 } },
+  { name: "Bass", patch: { shape: "saw", octave: -2, subOn: true, filterOn: true, cutoff: 600, resonance: 20, envA: 2, envD: 250, envS: 60, envR: 80, voiceMode: "mono", volumeDb: -6 } },
+  { name: "Pluck", patch: { shape: "saw", filterOn: true, cutoff: 700, resonance: 15, env2Dest: "cutoff", env2Amount: 55, env2D: 220, envA: 2, envD: 260, envS: 0, envR: 180, delayOn: true, delayMix: 25, volumeDb: -6 } },
+  { name: "Lead", patch: { shape: "square", filterOn: true, cutoff: 4200, resonance: 12, envA: 4, envD: 300, envS: 75, envR: 120, voiceMode: "mono", glide: 60, volumeDb: -8 } },
+  { name: "Big saw chords", patch: { shape: "saw", voices: 7, detune: 30, spread: 100, filterOn: true, cutoff: 5200, resonance: 8, envA: 4, envD: 500, envS: 85, envR: 220, reverbOn: true, reverbSize: 2, reverbMix: 20, volumeDb: -11 } },
+  { name: "Plain saw", patch: { volumeDb: -6 } },
 ];
 export const soundPatch = (name: string): SynthState => ({ ...INITIAL, ...(SOUNDS.find((s) => s.name === name)?.patch ?? {}) });
 
+export const DRUMS_START = 40;
 const track = (id: string, kind: Track["kind"], name: string): Track => (kind === "drums"
-  ? { id, kind, name, level: 80, pan: 0, mute: false, solo: false, auto: [], devices: [], pads: defaultPads(), clips: [] }
+  // a new drum track starts 6 dB down: the drums are much louder than a synth at the same fader place
+  ? { id, kind, name, level: DRUMS_START, pan: 0, mute: false, solo: false, auto: [], devices: [], pads: defaultPads(), clips: [] }
   : { id, kind, name, level: 80, pan: 0, mute: false, solo: false, auto: [], devices: [], noteFx: [], patch: soundPatch("Soft pad"), clips: [] });
 export const newSong = (name = "New song"): Song => ({ name, bpm: 120, swing: 0, bars: 8, volume: MASTER_START, returns: [], tracks: [track("t1", "drums", "Drums"), track("t2", "synth", "Soft pad")] });
 
@@ -341,7 +353,9 @@ export const dropSongSample = (s: Song, id: string): Song => ({ ...s, tracks: s.
 /** A song read back from storage, made safe. */
 export function tidySong(raw: unknown): Song | undefined {
   if (!raw || typeof raw !== "object") return undefined;
-  const r = raw as Partial<Song>, bars = (SONG_BARS as readonly number[]).includes(r.bars as number) ? (r.bars as number) : 8;
+  const r = raw as Partial<Song>;
+  // a length that is not one the Studio offers becomes the next one up (it used to become 8 bars whatever was asked, which dropped every clip after bar 8)
+  const asked = Number(r.bars), bars = (SONG_BARS as readonly number[]).includes(asked) ? asked : Number.isFinite(asked) && asked > 0 ? (SONG_BARS.find((b) => b >= asked) ?? SONG_BARS.at(-1)!) : 8;
   const song: Song = { name: typeof r.name === "string" ? r.name.slice(0, 40) : "Song", bpm: clamp(Math.round(Number(r.bpm) || 120), BPM_MIN, BPM_MAX), swing: clamp(Math.round(Number(r.swing) || 0), 0, SWING_MAX), bars, tracks: [], returns: [], volume: r.volume === undefined ? MASTER_START : clamp(Math.round(Number(r.volume) || 0), 0, 100) };
   for (const g of Array.isArray(r.returns) ? r.returns : []) {
     if (!g || typeof g !== "object" || !(RETURN_IDS as readonly string[]).includes(g.id) || song.returns.some((x) => x.id === g.id)) continue;

@@ -7,7 +7,7 @@ import { audibleOf, stepSeconds, stepTime, type Pad } from "./drums";
 import { chainShape, type Device } from "./devices";
 import { chainReady, devicesSettled, prepareDevices } from "./fxnodes";
 import { buildDevice, type LiveDevice } from "./fxnodes";
-import { masterGain, sendGain, songEvents, type Song } from "./song";
+import { faderGain, masterGain, sendGain, songEvents, type Song } from "./song";
 import { automate, hasAutomation } from "./automation";
 import { playSample, type SampleVoice } from "./sampler";
 
@@ -16,6 +16,13 @@ export const MASTER = "master";
 const AHEAD = 0.12, EVERY_MS = 25;
 export interface Loop { start: number; bars: number }
 
+/** Average level, width and likeness of two sides (see `Transport.stereo`). Pure, so it can be tested. */
+export function stereoOf(l: ArrayLike<number>, r: ArrayLike<number>): { average: number; width: number; alike: number } {
+  let ll = 0, rr = 0, lr = 0, mid = 0, side = 0; const n = Math.min(l.length, r.length);
+  for (let i = 0; i < n; i++) { const x = l[i]!, y = r[i]!; ll += x * x; rr += y * y; lr += x * y; mid += ((x + y) / 2) ** 2; side += ((x - y) / 2) ** 2; }
+  const db = (v: number) => 10 * Math.log10(v / Math.max(1, n) + 1e-12);
+  return { average: db((ll + rr) / 2), width: side < 1e-12 ? -120 : db(side) - db(mid), alike: ll > 1e-12 && rr > 1e-12 ? lr / Math.sqrt(ll * rr) : 1 };
+}
 export class Transport {
   ctx?: AudioContext;
   private kit?: Kit;
@@ -73,7 +80,7 @@ export class Transport {
       this.outs.set(strip.id, out); this.pans.set(strip.id, pan); this.taps.set(strip.id, tap); this.ins.set(strip.id, ctx.createGain()); }
     for (const strip of strips) {
       const out = this.outs.get(strip.id)!, input = this.ins.get(strip.id)!;
-      out.gain.setTargetAtTime(strip.heard ? strip.level / 80 : 0, t, 0.015);
+      out.gain.setTargetAtTime(strip.heard ? faderGain(strip.level) : 0, t, 0.015);
       this.pans.get(strip.id)?.pan.setTargetAtTime(strip.pan / 100, t, 0.015);
       // The effects: wired again only when a device is added, removed or moved, or told to listen to a different
       // track; a setting is changed in place. "~": some devices are still loading and are passed by until they are.
@@ -133,6 +140,16 @@ export class Transport {
     const read = (a?: AnalyserNode) => { if (!a) return -120; const b = new Float32Array(a.fftSize); a.getFloatTimeDomainData(b); let s = 0; for (const v of b) s += v * v; return 10 * Math.log10(s / b.length + 1e-12); };
     return { left: read(this.meterL), right: read(this.meterR) };
   }
+  /**
+   * The whole mix right now, for the master's readout: its average level in dB (not the peak), how wide it is
+   * (the level of what differs between the two sides against what they share, in dB: very negative is mono)
+   * and how alike the sides are (1 the same, 0 unrelated, -1 opposite: a mix near -1 vanishes on one speaker).
+   */
+  stereo(): { average: number; width: number; alike: number } {
+    const a = this.meterL, b = this.meterR; if (!a || !b) return { average: -120, width: -120, alike: 1 };
+    const l = new Float32Array(a.fftSize), r = new Float32Array(b.fftSize); a.getFloatTimeDomainData(l); b.getFloatTimeDomainData(r);
+    return stereoOf(l, r);
+  }
   /** How loud one track is right now, after its level and pan: its peak in dB (very low when silent). */
   trackLevel(trackId: string): number { const a = this.taps.get(trackId); if (!a) return -120; const b = new Float32Array(a.fftSize); a.getFloatTimeDomainData(b); let m = 0; for (const v of b) { const x = Math.abs(v); if (x > m) m = x; } return 20 * Math.log10(m + 1e-6); }
   /**
@@ -159,7 +176,8 @@ export class Transport {
     // Whatever happens while it is paused, it must be let go, or the export would wait for ever.
     hand(0);
     for (let n = 0; n < steps; n++) { const at = this.began + n * stepSeconds(song.bpm); void ctx.suspend(at).then(() => {
-      try { if (moving) { this.place = n; this.sync(); } if (n + 1 < steps) hand(n + 1); } catch (e) { console.warn(`export: step ${n} could not be prepared`, e); } finally { void ctx.resume(); }
+      try { if (moving) { this.place = n; this.sync(); } for (const e of this.engines.values()) e.engine.slowStep();   // knobs that an LFO or envelope moves by code (wavetable position, warp and the like)
+        if (n + 1 < steps) hand(n + 1); } catch (e) { console.warn(`export: step ${n} could not be prepared`, e); } finally { void ctx.resume(); }
     }).catch(() => undefined); }
     const buf = await ctx.startRendering(); this.place = -1;
     return buf;

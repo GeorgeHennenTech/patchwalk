@@ -1962,6 +1962,29 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   Not done from the helper's list: free starter sounds (VCSL, Adventure Kid Waveforms). Their licence files
   must be read at the source first, and **the owner has been asked whether one person's free single-cycle
   collection fits the "never copy a maker's wavetable data" rule: no answer yet.**
+- **A whole track written in the Studio as a test (24 Nov 2026, owner: "write a glitch hop track in the DAW and make
+  sure that everything works").** `scripts/demo/glitchhop.ts` builds "Stitch Glitch" (16 bars, 104 bpm, swing 22,
+  E minor) through the Studio's own functions and `tidySong`: modelled drums with a drum bus and a beat repeat
+  whose chance is automated for stutters; a mono wobble bass (LFO on cutoff synced to the beat, fold warp,
+  automated cutoff); a vowel-table pad ducked by a compressor that listens to the drums; a formant pluck
+  through crusher, echo and auto pan with note effects; a "bits" table turned into a random arpeggio; a noise
+  riser; plate and echo returns; EQ, glue compressor and limiter on the master. The result is
+  `src/daw/demos/glitchhop.json`, **opened from the Studio's browser: Songs, "Stitch Glitch (demo)"**;
+  `tests/demo-song.test.ts` keeps script and file in step (`UPDATE_DEMO=1` rewrites the file) and
+  `e2e/demo.e2e.ts` opens and plays it on the real page. It was mixed by rendering stems with `renderSong`
+  and measuring them (three passes); the owner was sent the rendered file. **Nobody has heard it but the
+  owner; the assistant cannot.** Final render: peak -1.9 dB, average -14.6 dB, no clipping.
+  **What the exercise found (none fixed yet):**
+  1. **Drums and synth are far apart in level.** At the same fader place the drums' stem peaked at +8 dB while
+     synth tracks sat 20 to 50 dB lower, and a track's fader is linear and tops out at +2 dB (`level / 80`).
+     The demo works round it (drum fader at 32, synth volume at 0 dB, a Utility of +14 to +22 dB on three
+     tracks). The Studio needs sensible default levels and a fader with real range, in dB.
+  2. **Exporting is slow:** about 90 to 105 s for this 40 s song (five synth tracks).
+  3. **Short, spiky sounds** (the pluck, the arpeggio) had peaks 23 to 27 dB over their average; a limiter on
+     each track tamed them. There is no loudness reading (LUFS) or stereo-width reading anywhere in the
+     Studio; the mix came out bass-heavy (40% of its energy under 60 Hz) and narrow (side 16 dB under mid).
+  4. Everything else did what it should: every clip, device, automation lane, note effect, return, marker
+     and master effect was accepted and played, with no page errors.
 - **Long pages are searched in parts (16 Nov 2026).** `splitText` in `src/library/search.ts` cuts a page over
   2,400 characters into overlapping parts of about 1,500 (ids `book#page~1`, `~2`, with `of` naming the
   page); `pageOf` and `cite` count parts of one page as one source, and `search` takes at most two parts of

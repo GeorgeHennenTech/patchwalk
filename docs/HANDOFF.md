@@ -647,3 +647,9 @@ drums ported from open-source circuit models. Details and measurements: `CLAUDE.
 added"; licences: `docs/THIRD_PARTY.md`. Nobody has heard the reverb, the stretch or the drums. The search
 change has not run against the real API. Waiting on the owner: whether Adventure Kid Waveforms fit the
 wavetable rule, and the usual "yes" to copy the branch to the live site.
+
+## 24 Nov 2026: a demo track, and what it found
+The assistant wrote a 16-bar glitch-hop track in the Studio as a full test ("Stitch Glitch", in the Studio's
+Songs list; source `scripts/demo/glitchhop.ts`). It all worked, and it showed three things to fix: drums and
+synth tracks are 20 to 50 dB apart with a fader that only reaches +2 dB; exporting a 40 s song takes about a
+minute and a half; there is no loudness or width meter. See `CLAUDE.md`, "A whole track written in the Studio".

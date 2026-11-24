@@ -207,6 +207,10 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [x] Four drums from open-source circuit models (23 Nov 2026)
 - [ ] Free starter sounds (VCSL, Adventure Kid Waveforms): read licences at the source; owner to say whether AKWF fits the wavetable rule
 - [ ] Take in the scanned theses (Scavone, Cook) with --ocr once the owner uploads them
+- [x] Demo track "Stitch Glitch" written in the Studio as a full test; in the Songs list (24 Nov 2026)
+- [ ] Studio: sensible default levels between drums and synth, and track faders in dB with real range
+- [ ] Studio: faster export (a 40 s song takes about 90 s)
+- [ ] Studio: a loudness (LUFS) and stereo-width meter on the master
 - [ ] Lessons, next chapters in order: "When digital sound goes wrong", "Expression", "One delay, many effects", then the rest of the ten (`docs/CURRICULUM.md`, last section)
 - [ ] Write the 85 or so lessons from `docs/LESSON_IDEAS.md` that need nothing built (FM, ring and distortion, sync and formants, drum layers and breaks, expressive playing)
 - [ ] Small builds that each open several lessons (click source, peak and RMS meter, Q readout, invert on Osc B, flanger time knob, distortion bias, sample-and-hold LFO, per-note random, response curves, reverb freeze, sampler reverse, ghost strength, slice names): list in `docs/LESSON_IDEAS.md`

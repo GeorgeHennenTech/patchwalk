@@ -36,8 +36,19 @@ export const faderGain = (level: number): number => { const db = faderDb(level);
 export const faderText = (level: number): string => { const db = faderDb(level); return db === -Infinity ? "silent" : `${db > 0 ? "+" : ""}${db.toFixed(1)} dB`; };
 export interface DrumTrack extends TrackBase { kind: "drums"; pads: Pad[]; clips: DrumClip[] }
 export interface SynthTrack extends TrackBase { kind: "synth"; patch: SynthState; clips: SynthClip[]; /** note effects, in front of the synth: they change the clip's notes before they are played */ noteFx: Device[]; /** when set, the track's instrument is a sampler playing this sound file, and the synth is silent */ sampler?: SamplerSet }
-export type Track = DrumTrack | SynthTrack;
-export type Clip = DrumClip | SynthClip;
+/** A sound file on the timeline. It plays from `offset` for as long as the clip lasts (or until the file ends). */
+export interface AudioClip extends ClipBase { /** the stored sound file's id */ sample: string; /** the file's name, shown on the clip */ label: string; /** how long the file is, in seconds */ seconds: number; /** seconds into the file where the clip starts playing */ offset: number; /** dB, -24 to 12 */ gain: number; /** semitones, -24 to 24: played faster or slower, so the length changes with it */ tune: number; /** warp: when set, the file is this many beats long, and is played at the speed that makes that true at the song's tempo (its pitch moves with the speed) */ beats?: number }
+/** An audio track has no instrument: its clips are sound files. */
+export interface AudioTrack extends TrackBase { kind: "audio"; clips: AudioClip[] }
+export type Track = DrumTrack | SynthTrack | AudioTrack;
+export type Clip = DrumClip | SynthClip | AudioClip;
+/** Which kind of track a clip belongs on. */
+export const clipKind = (c: Clip): Track["kind"] => ("hits" in c ? "drums" : "notes" in c ? "synth" : "audio");
+/** How fast an audio clip's file is played: 1 is as recorded. Tune moves it; warp sets it from the song's tempo. */
+export const audioRate = (c: Pick<AudioClip, "seconds" | "tune" | "beats">, bpm: number): number => Math.pow(2, c.tune / 12) * (c.beats && c.seconds > 0 ? c.seconds / ((c.beats * 60) / bpm) : 1);
+/** How many bars an audio clip's file lasts from its offset at the song's tempo. */
+export const audioBars = (c: Pick<AudioClip, "seconds" | "tune" | "beats" | "offset">, bpm: number): number => (Math.max(0, c.seconds - c.offset) / audioRate(c, bpm)) / ((240) / bpm);
+export const AUDIO_GAIN = { min: -24, max: 12 } as const, AUDIO_TUNE = 24;
 export interface Song { name: string; bpm: number; swing: number; /** length in bars */ bars: number; tracks: Track[]; /** the master volume, 0 to 100 */ volume: number; /** return tracks: A, then B */ returns: ReturnTrack[]; /** effects on everything, just before the master volume */ masterFx?: Device[]; /** the key the song is in: the piano roll lights these notes' rows */ scale?: { root: number; name: string }; /** named places along the song (intro, drop, break), by the bar they sit on */ markers?: { bar: number; name: string }[]; /** automation of the master volume and the master's effects */ masterAuto?: AutoLane[]; /** when true, a clip that is moved leaves its automation where it was */ lockAuto?: boolean }
 export const MASTER_START = 85;
 /** The master volume as a gain: its starting place is a little under full, to leave room when tracks add up. */
@@ -46,7 +57,7 @@ export const masterGain = (volume: number) => 0.9 * (clamp(volume, 0, 100) / MAS
 export const SONG_BARS = [4, 8, 16, 32] as const, MAX_TRACKS = 8, NOTE_LOW = 0, NOTE_HIGH = 127;
 /** Clip lengths each kind of track allows, in bars. */
 /** A drum clip can be 1 to 4 bars; a note clip any whole number of bars up to 16. */
-export const CLIP_BARS: Record<Track["kind"], readonly number[]> = { drums: [1, 2, 3, 4], synth: Array.from({ length: 16 }, (_, i) => i + 1) };
+export const CLIP_BARS: Record<Track["kind"], readonly number[]> = { drums: [1, 2, 3, 4], synth: Array.from({ length: 16 }, (_, i) => i + 1), audio: Array.from({ length: 32 }, (_, i) => i + 1) };
 
 /** Sounds a new synth track can start from: the practice synth's own settings, chosen by us. */
 export const SOUNDS: { name: string; patch: Partial<SynthState> }[] = [
@@ -60,7 +71,7 @@ export const SOUNDS: { name: string; patch: Partial<SynthState> }[] = [
 export const soundPatch = (name: string): SynthState => ({ ...INITIAL, ...(SOUNDS.find((s) => s.name === name)?.patch ?? {}) });
 
 export const DRUMS_START = 40;
-const track = (id: string, kind: Track["kind"], name: string): Track => (kind === "drums"
+const track = (id: string, kind: Track["kind"], name: string): Track => (kind === "audio" ? { id, kind, name, level: 80, pan: 0, mute: false, solo: false, auto: [], devices: [], clips: [] } : kind === "drums"
   // a new drum track starts 6 dB down: the drums are much louder than a synth at the same fader place
   ? { id, kind, name, level: DRUMS_START, pan: 0, mute: false, solo: false, auto: [], devices: [], pads: defaultPads(), clips: [] }
   : { id, kind, name, level: 80, pan: 0, mute: false, solo: false, auto: [], devices: [], noteFx: [], patch: soundPatch("Soft pad"), clips: [] });
@@ -85,7 +96,7 @@ export const isFree = (s: Song, t: Track, bar: number, bars: number, except?: st
 
 export function addTrack(s: Song, kind: Track["kind"], sound = "Soft pad"): Song {
   if (s.tracks.length >= MAX_TRACKS) return s;
-  const id = freeId(s.tracks.map((t) => t.id), "t"), t = track(id, kind, kind === "drums" ? "Drums" : sound);
+  const id = freeId(s.tracks.map((t) => t.id), "t"), t = track(id, kind, kind === "drums" ? "Drums" : kind === "audio" ? "Audio" : sound);
   return { ...s, tracks: [...s.tracks, t.kind === "synth" ? { ...t, patch: { ...soundPatch(sound), bpm: s.bpm } } : t] };
 }
 export const removeTrack = (s: Song, id: string): Song => ({ ...s, tracks: s.tracks.filter((t) => t.id !== id) });
@@ -115,7 +126,7 @@ export const setSongBars = (s: Song, bars: number): Song => ({ ...s, bars, track
 /** Put a new one-bar clip on a track at a bar. Gives back the song and the clip's id, or nothing when the bar is taken. */
 export function addClip(s: Song, trackId: string, bar: number): { song: Song; clip: string } | undefined {
   const t = trackOf(s, trackId);
-  if (!t) return undefined;
+  if (!t || t.kind === "audio") return undefined;   // an audio clip is made from a sound file: addAudioClip
   // a bar long, or as long as the room before the next clip (or the song's end) when that is less
   const next = Math.min(s.bars, ...t.clips.filter((c) => c.start >= bar).map((c) => c.start)), bars = Math.min(1, snapBar(next - bar));
   if (bars < BEAT || !isFree(s, t, bar, bars)) return undefined;
@@ -123,6 +134,23 @@ export function addClip(s: Song, trackId: string, bar: number): { song: Song; cl
   const clip: Clip = t.kind === "drums" ? { id, start: bar, bars, hits: {} } : { id, start: bar, bars, notes: [] };
   return { song: withTrack(s, trackId, (x) => ({ ...x, clips: [...x.clips, clip] } as Track)), clip: id };
 }
+/** Put a sound file on an audio track as a clip: at `bar` or the first free place after it, as long as the file lasts at the song's tempo (to the beat above), cut short where the next clip or the song's end is in the way. */
+export function addAudioClip(s: Song, trackId: string, file: { id: string; name: string; seconds: number }, bar = 0): { song: Song; clip: string } | undefined {
+  const t = trackOf(s, trackId);
+  if (!t || t.kind !== "audio" || !(file.seconds > 0)) return undefined;
+  const want = Math.min(CLIP_BARS.audio.at(-1)!, Math.max(BEAT, Math.ceil(file.seconds / (240 / s.bpm) / BEAT - 1e-6) * BEAT));
+  for (let at = snapBar(Math.max(0, bar)); at < s.bars; at += BEAT) {
+    if (clipAt(t, at)) continue;
+    const next = Math.min(s.bars, ...t.clips.filter((c) => c.start >= at).map((c) => c.start)), bars = Math.min(want, snapBar(next - at));
+    if (bars < BEAT) continue;
+    const id = freeId(t.clips.map((c) => c.id), "c"), clip: AudioClip = { id, start: at, bars, sample: file.id, label: file.name.slice(0, 40), seconds: file.seconds, offset: 0, gain: 0, tune: 0 };
+    return { song: withTrack(s, trackId, (x) => ({ ...x, clips: [...x.clips, clip] } as Track)), clip: id };
+  }
+  return undefined;
+}
+/** Change an audio clip's settings (gain, tune, offset, warp). */
+export const setAudioClip = (s: Song, trackId: string, clipId: string, change: Partial<Pick<AudioClip, "gain" | "tune" | "offset" | "beats" | "sample" | "seconds" | "label">>): Song => withClip(s, trackId, clipId, (c) => { if (clipKind(c) !== "audio") return c; const a = { ...(c as AudioClip), ...change }; if (!(a.beats! > 0)) delete a.beats; return tidyAudioClip(a); });
+const tidyAudioClip = (a: AudioClip): AudioClip => { const seconds = clamp(Number(a.seconds) || 0, 0, 3600), out: AudioClip = { ...a, label: String(a.label ?? "").slice(0, 40), seconds, offset: clamp(Number(a.offset) || 0, 0, Math.max(0, seconds - 0.01)), gain: clamp(Number(a.gain) || 0, AUDIO_GAIN.min, AUDIO_GAIN.max), tune: clamp(Math.round(Number(a.tune) || 0), -AUDIO_TUNE, AUDIO_TUNE) }; if (Number.isFinite(a.beats) && a.beats! > 0) out.beats = clamp(Math.round(a.beats! * 4) / 4, 0.25, 512); else delete out.beats; return out; };
 export const removeClip = (s: Song, trackId: string, clipId: string): Song => withTrack(s, trackId, (t) => ({ ...t, clips: t.clips.filter((c) => c.id !== clipId) } as Track));
 /** Copy a clip into the first free place after it. Nothing when there is no room. */
 export function duplicateClip(s: Song, trackId: string, clipId: string): { song: Song; clip: string } | undefined {
@@ -138,7 +166,7 @@ export function duplicateClip(s: Song, trackId: string, clipId: string): { song:
 /** Put a copy of a clip (from anywhere) on a track, in the first free place at or after a bar. Nothing when the kinds differ or there is no room. */
 export function pasteClip(s: Song, trackId: string, clip: Clip, atBar: number): { song: Song; clip: string } | undefined {
   const t = trackOf(s, trackId);
-  if (!t || ("hits" in clip) !== (t.kind === "drums")) return undefined;
+  if (!t || clipKind(clip) !== t.kind) return undefined;
   for (let bar = Math.max(0, atBar); bar + clip.bars <= s.bars; bar++) {
     if (!isFree(s, t, bar, clip.bars)) continue;
     const id = freeId(t.clips.map((x) => x.id), "c"), copy = JSON.parse(JSON.stringify({ ...clip, id, start: bar })) as Clip;
@@ -163,6 +191,7 @@ export function setClipBars(s: Song, trackId: string, clipId: string, bars: numb
   const steps = bars * STEPS_PER_BAR;
   return withClip(s, trackId, clipId, (x) => ("hits" in x
     ? { ...x, bars, hits: Object.fromEntries(Object.entries(x.hits).map(([k, row]) => [k, Array.from({ length: steps }, (_, i) => row[i % (x.bars * STEPS_PER_BAR)] ?? 0)])) }
+    : !("notes" in x) ? { ...x, bars }
     : { ...x, bars, notes: x.notes.filter((n) => n.start < steps).map((n) => ({ ...n, length: Math.min(n.length, steps - n.start) })) }));
 }
 
@@ -224,7 +253,7 @@ export function duplicateNotes(notes: NoteEv[], keys: ReadonlySet<string>, steps
 /** The note of a clip that covers a key at a step. */
 export const noteAt = (c: SynthClip, note: number, step: number): NoteEv | undefined => c.notes.find((n) => n.note === note && step >= n.start && step < n.start + n.length);
 
-export type SongEvent = { track: string; /** seconds from the start of playing */ at: number; /** step within the song */ step: number } & ({ kind: "hit"; pad: Pad; strength: number } | { kind: "note"; note: number; seconds: number; velocity: number });
+export type SongEvent = { track: string; /** seconds from the start of playing */ at: number; /** step within the song */ step: number } & ({ kind: "hit"; pad: Pad; strength: number } | { kind: "note"; note: number; seconds: number; velocity: number } | { kind: "audio"; sample: string; /** seconds into the file */ offset: number; /** how long it sounds, in seconds of the song */ seconds: number; rate: number; /** as a multiplier */ gain: number });
 /**
  * Everything that sounds from step `from` up to but not including `until`. Steps count on for ever from the
  * moment Play was pressed; the song (or the looped stretch of it, `loop`, in bars) goes round and round.
@@ -288,10 +317,10 @@ export const setChance = (notes: NoteEv[], keys: ReadonlySet<string>, chance: nu
 export function doubleClip(s: Song, trackId: string, clipId: string): Song {
   const t = trackOf(s, trackId), c = clipOf(t, clipId); if (!t || !c) return s;
   const bars = c.bars * 2, steps = c.bars * STEPS_PER_BAR;
-  if (!okBars(t.kind, bars) || !isFree(s, t, c.start, bars, c.id)) return s;
+  if (t.kind === "audio" || !okBars(t.kind, bars) || !isFree(s, t, c.start, bars, c.id)) return s;
   return withClip(s, trackId, clipId, (x) => ("hits" in x
     ? { ...x, bars, hits: Object.fromEntries(Object.entries(x.hits).map(([id, row]) => { const one = row.slice(0, steps); while (one.length < steps) one.push(0); return [id, [...one, ...one]]; })) }
-    : { ...x, bars, notes: [...x.notes, ...x.notes.map((n) => ({ ...n, start: n.start + steps }))] }));
+    : "notes" in x ? { ...x, bars, notes: [...x.notes, ...x.notes.map((n) => ({ ...n, start: n.start + steps }))] } : x));
 }
 /** Scatter loudness: each chosen note (every note when none is chosen) is played up to `amount` harder or softer, as the dice fall. */
 export function randomVelocity(notes: NoteEv[], keys: ReadonlySet<string>, amount: number, dice: () => number = Math.random): { notes: NoteEv[]; keys: Set<string> } {
@@ -328,7 +357,7 @@ export function sliceToTrack(s: Song, sample: string, name: string, n: number): 
 export const setSampler = (s: Song, trackId: string, sampler: SamplerSet | undefined): Song => ({ ...s, tracks: s.tracks.map((t) => { if (t.id !== trackId || t.kind !== "synth") return t; if (sampler) return { ...t, sampler }; const { sampler: _gone, ...rest } = t; return rest; }) });
 /** Put a new chain of note effects on a synth track. */
 export const setNoteFx = (s: Song, trackId: string, noteFx: Device[]): Song => ({ ...s, tracks: s.tracks.map((t) => (t.id === trackId && t.kind === "synth" ? { ...t, noteFx } : t)) });
-export function songEvents(s: Song, from: number, until: number, loop?: { start: number; bars: number }, /** the dice for notes that have a chance */ rand: () => number = Math.random): SongEvent[] {
+export function songEvents(s: Song, from: number, until: number, loop?: { start: number; bars: number }, /** the dice for notes that have a chance */ rand: () => number = Math.random, /** true when step `from` is where playing begins: an audio clip already under way there is joined part-way through */ enter = false): SongEvent[] {
   const first = (loop?.start ?? 0) * STEPS_PER_BAR, span = Math.max(1, (loop?.bars ?? s.bars)) * STEPS_PER_BAR, on = audibleOf(s.tracks), out: SongEvent[] = [];
   for (let n = from; n < until; n++) {
     const step = first + (((n % span) + span) % span), bar = step / STEPS_PER_BAR, at = stepTime(n, s.bpm, s.swing);
@@ -337,6 +366,15 @@ export function songEvents(s: Song, from: number, until: number, loop?: { start:
       const c = clipAt(t, bar);
       if (!c || c.off) return;
       const local = step - c.start * STEPS_PER_BAR;
+      if (t.kind === "audio") {
+        // a sound file starts with its clip; a clip already under way where playing begins (or where a loop comes round) is joined there
+        const a = c as AudioClip, begins = Math.abs(local) < 1e-6 || (local > 0 && local < 1 && step === Math.ceil(c.start * STEPS_PER_BAR - 1e-9));
+        if (!begins && !((enter && n === from) || step === first)) return;
+        const rate = audioRate(a, s.bpm), into = Math.max(0, local) * stepSeconds(s.bpm), offset = a.offset + into * rate;
+        const last = Math.min((c.start + c.bars) * STEPS_PER_BAR, first + span), seconds = Math.min((last - step) * stepSeconds(s.bpm), (a.seconds - offset) / rate);
+        if (seconds > 0.005) out.push({ track: t.id, at, step, kind: "audio", sample: a.sample, offset, seconds, rate, gain: Math.pow(10, a.gain / 20) });
+        return;
+      }
       if (t.kind === "drums") {
         const sounding = audibleOf(t.pads);
         t.pads.forEach((pad, j) => { const hit = (c as DrumClip).hits[pad.id]?.[local] ?? 0; if (hit && sounding[j] && pad.level > 0) out.push({ track: t.id, at, step, kind: "hit", pad, strength: STRENGTH[hit] * (pad.level / 100) }); });
@@ -349,13 +387,13 @@ export function songEvents(s: Song, from: number, until: number, loop?: { start:
   return out;
 }
 /** Whether anything is written in the song apart from some clips of one track (the ones about to be replaced). */
-export const hasOtherMusic = (s: Song, trackId: string, clipIds: readonly string[]): boolean => s.tracks.some((t) => t.clips.some((c) => !(t.id === trackId && clipIds.includes(c.id)) && ("hits" in c ? Object.values(c.hits).some((row) => row.some(Boolean)) : c.notes.length > 0)));
+export const hasOtherMusic = (s: Song, trackId: string, clipIds: readonly string[]): boolean => s.tracks.some((t) => t.clips.some((c) => !(t.id === trackId && clipIds.includes(c.id)) && ("hits" in c ? Object.values(c.hits).some((row) => row.some(Boolean)) : "notes" in c ? c.notes.length > 0 : true)));
 /** Every sound-file id the song's pads use. */
-export const samplesUsed = (s: Song): string[] => [...new Set(s.tracks.flatMap((t) => (t.kind === "drums" ? t.pads.map((p) => p.sample).filter((x): x is string => !!x) : t.sampler ? [t.sampler.sample] : [])))];
+export const samplesUsed = (s: Song): string[] => [...new Set(s.tracks.flatMap((t) => (t.kind === "drums" ? t.pads.map((p) => p.sample).filter((x): x is string => !!x) : t.kind === "audio" ? t.clips.map((c) => c.sample) : t.sampler ? [t.sampler.sample] : [])))];
 /** Change the ids of sound files on every pad (a sound's id became one made from its bytes). */
-export const renameSamples = (s: Song, ids: Record<string, string>): Song => (samplesUsed(s).some((id) => ids[id]) ? { ...s, tracks: s.tracks.map((t) => (t.kind === "drums" ? { ...t, pads: t.pads.map((p) => (p.sample && ids[p.sample] ? { ...p, sample: ids[p.sample]! } : p)) } : t.sampler && ids[t.sampler.sample] ? { ...t, sampler: { ...t.sampler, sample: ids[t.sampler.sample]! } } : t)) } : s);
+export const renameSamples = (s: Song, ids: Record<string, string>): Song => (samplesUsed(s).some((id) => ids[id]) ? { ...s, tracks: s.tracks.map((t) => (t.kind === "drums" ? { ...t, pads: t.pads.map((p) => (p.sample && ids[p.sample] ? { ...p, sample: ids[p.sample]! } : p)) } : t.kind === "audio" ? { ...t, clips: t.clips.map((c) => (ids[c.sample] ? { ...c, sample: ids[c.sample]! } : c)) } : t.sampler && ids[t.sampler.sample] ? { ...t, sampler: { ...t.sampler, sample: ids[t.sampler.sample]! } } : t)) } : s);
 /** Take a sound off every pad of every track. */
-export const dropSongSample = (s: Song, id: string): Song => ({ ...s, tracks: s.tracks.map((t) => (t.kind === "drums" ? { ...t, pads: t.pads.map((p) => { if (p.sample !== id) return p; const { sample: _old, ...rest } = p; return rest; }) } : t)) });
+export const dropSongSample = (s: Song, id: string): Song => ({ ...s, tracks: s.tracks.map((t) => (t.kind === "drums" ? { ...t, pads: t.pads.map((p) => { if (p.sample !== id) return p; const { sample: _old, ...rest } = p; return rest; }) } : t.kind === "audio" ? { ...t, clips: t.clips.filter((c) => c.sample !== id) } : t)) });
 
 /** A song read back from storage, made safe. */
 export function tidySong(raw: unknown): Song | undefined {
@@ -376,17 +414,18 @@ export function tidySong(raw: unknown): Song | undefined {
   const sc = (r as { scale?: { root?: unknown; name?: unknown } }).scale; if (sc && typeof sc.name === "string" && Number.isInteger(sc.root) && (sc.root as number) >= 0 && (sc.root as number) < 12) song.scale = { root: sc.root as number, name: sc.name.slice(0, 30) };
   const tidySends = (raw: unknown) => { const out: Record<string, number> = {}; if (raw && typeof raw === "object") for (const x of song.returns) { const v = Number((raw as Record<string, unknown>)[x.id]); if (Number.isFinite(v) && v > 0) out[x.id] = clamp(Math.round(v), 0, 100); } return out; };
   for (const g of Array.isArray(r.tracks) ? r.tracks.slice(0, MAX_TRACKS) : []) {
-    if (!g || typeof g !== "object" || (g.kind !== "drums" && g.kind !== "synth")) continue;
+    if (!g || typeof g !== "object" || (g.kind !== "drums" && g.kind !== "synth" && (g as { kind?: unknown }).kind !== "audio")) continue;
     const id = typeof g.id === "string" && /^[\w-]{1,24}$/.test(g.id) && !song.tracks.some((t) => t.id === g.id) ? g.id : freeId(song.tracks.map((t) => t.id), "t");
     const base = { id, name: typeof g.name === "string" ? g.name.slice(0, 24) : "Track", level: clamp(Number(g.level ?? 80) || 0, 0, 100), pan: clamp(Math.round(Number((g as { pan?: unknown }).pan) || 0), -100, 100), mute: g.mute === true, solo: g.solo === true, devices: tidyDevices(g.devices), auto: tidyAuto((g as { auto?: unknown }).auto, bars * STEPS_PER_BAR), ...(Object.keys(tidySends((g as { sends?: unknown }).sends)).length ? { sends: tidySends((g as { sends?: unknown }).sends) } : {}) };
-    const t: Track = g.kind === "drums" ? { ...base, kind: "drums", pads: tidyPads(g.pads).length ? tidyPads(g.pads) : defaultPads(), clips: [] } : { ...base, kind: "synth", noteFx: tidyDevices((g as { noteFx?: unknown }).noteFx, "note"), patch: { ...clean(g.patch), bpm: song.bpm }, clips: [], ...(tidySampler((g as { sampler?: unknown }).sampler) ? { sampler: tidySampler((g as { sampler?: unknown }).sampler)! } : {}) };
+    const t: Track = (g as { kind?: unknown }).kind === "audio" ? { ...base, kind: "audio", clips: [] } : g.kind === "drums" ? { ...base, kind: "drums", pads: tidyPads(g.pads).length ? tidyPads(g.pads) : defaultPads(), clips: [] } : { ...base, kind: "synth", noteFx: tidyDevices((g as { noteFx?: unknown }).noteFx, "note"), patch: { ...clean((g as SynthTrack).patch), bpm: song.bpm }, clips: [], ...(tidySampler((g as { sampler?: unknown }).sampler) ? { sampler: tidySampler((g as { sampler?: unknown }).sampler)! } : {}) };
     for (const c of Array.isArray(g.clips) ? g.clips : []) {
       if (!c || typeof c !== "object") continue;
       const cb = okBars(t.kind, Number(c.bars)) ? Number(c.bars) : 1, start = snapBar(Number(c.start));
       if (!Number.isFinite(start) || !isFree(song, t, start, cb)) continue;
       const cid = typeof c.id === "string" && /^[\w-]{1,24}$/.test(c.id) && !t.clips.some((x) => x.id === c.id) ? c.id : freeId(t.clips.map((x) => x.id), "c"), steps = cb * STEPS_PER_BAR;
       const off = c.off === true ? { off: true } : {};
-      if (t.kind === "drums") { const hits = (c as DrumClip).hits; t.clips.push({ id: cid, start, bars: cb, ...off, hits: Object.fromEntries(t.pads.map((p) => [p.id, tidySteps(hits && typeof hits === "object" ? hits[p.id] : undefined, steps)])) }); }
+      if (t.kind === "audio") { const a = c as unknown as AudioClip; if (typeof a.sample === "string" && /^[\w-]{1,64}$/.test(a.sample) && Number(a.seconds) > 0) t.clips.push(tidyAudioClip({ id: cid, start, bars: cb, ...off, sample: a.sample, label: a.label, seconds: a.seconds, offset: a.offset, gain: a.gain, tune: a.tune, beats: a.beats } as AudioClip)); }
+      else if (t.kind === "drums") { const hits = (c as DrumClip).hits; t.clips.push({ id: cid, start, bars: cb, ...off, hits: Object.fromEntries(t.pads.map((p) => [p.id, tidySteps(hits && typeof hits === "object" ? hits[p.id] : undefined, steps)])) }); }
       else { const notes = (c as SynthClip).notes; t.clips.push({ id: cid, start, bars: cb, ...off, notes: (Array.isArray(notes) ? notes : []).filter((n) => n && [n.note, n.start, n.length].every(Number.isFinite) && n.start >= 0 && n.start < steps).slice(0, 512).map((n) => tidyNote({ ...n, velocity: Number(n.velocity) || 100 }, steps)) }); }
     }
     song.tracks.push(t);
@@ -397,7 +436,7 @@ export function tidySong(raw: unknown): Song | undefined {
 // ---- moving, copying, splitting and joining clips, as a DAW's arrangement does ----
 /** A clip's contents fitted to another track: drum rows go to the pads in the same places; notes go as they are. */
 function fitted(c: Clip, from: Track, to: Track): Clip | undefined {
-  if (("hits" in c) !== (to.kind === "drums") || !okBars(to.kind, c.bars)) return undefined;
+  if (clipKind(c) !== to.kind || !okBars(to.kind, c.bars)) return undefined;
   if (!("hits" in c) || from.id === to.id || from.kind !== "drums" || to.kind !== "drums") return c;
   const steps = c.bars * STEPS_PER_BAR;
   return { ...c, hits: Object.fromEntries(to.pads.map((p, i) => [p.id, (c.hits[from.pads[i]?.id ?? ""] ?? Array.from({ length: steps }, () => 0 as Hit)).slice()])) };
@@ -433,6 +472,8 @@ export function splitClip(s: Song, trackId: string, clipId: string, at?: number)
     const id = b === 0 ? c.id : freeId([...taken, ...ids], "c"), lo = Math.round((cuts[b]! - c.start) * STEPS_PER_BAR), hi = Math.round(((cuts[b + 1] ?? end) - c.start) * STEPS_PER_BAR); ids.push(id);
     const base = { id, start: cuts[b]!, bars: (hi - lo) / STEPS_PER_BAR, ...(c.off ? { off: true } : {}) };
     parts.push("hits" in c ? { ...base, hits: Object.fromEntries(Object.entries(c.hits).map(([k, row]) => [k, row.slice(lo, hi)])) }
+      // the later part of a sound file starts further into the file
+      : !("notes" in c) ? { ...c, ...base, offset: c.offset + lo * stepSeconds(s.bpm) * audioRate(c, s.bpm) }
       : { ...base, notes: c.notes.filter((n) => n.start >= lo && n.start < hi).map((n) => ({ ...n, start: n.start - lo, length: Math.min(n.length, hi - n.start) })) });
   }
   return { song: withTrack(s, trackId, (x) => ({ ...x, clips: [...x.clips.filter((y) => y.id !== c.id), ...parts] } as Track)), clips: ids };
@@ -440,7 +481,7 @@ export function splitClip(s: Song, trackId: string, clipId: string, at?: number)
 /** Join clips that sit next to each other on one track into a single clip, if a clip may be that long. */
 export function joinClips(s: Song, trackId: string, clipIds: readonly string[]): { song: Song; clip: string } | undefined {
   const t = trackOf(s, trackId), cs = (t?.clips ?? []).filter((c) => clipIds.includes(c.id)).sort((a, b) => a.start - b.start);
-  if (!t || cs.length < 2) return undefined;
+  if (!t || cs.length < 2 || t.kind === "audio") return undefined;
   const bars = cs.reduce((n, c) => n + c.bars, 0), first = cs[0]!;
   if (!okBars(t.kind, bars) || cs.some((c, i) => i > 0 && c.start !== cs[i - 1]!.start + cs[i - 1]!.bars)) return undefined;
   let at = 0; const steps = bars * STEPS_PER_BAR;

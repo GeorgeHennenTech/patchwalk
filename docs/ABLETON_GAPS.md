@@ -201,3 +201,7 @@ formats (only MIDI files move both ways); Ctrl/Cmd+T (the browser keeps it).
 brace and the time commands. 4. Device presets and hot-swap. 5. Racks with macro knobs. 6. Group tracks and delay
 compensation. 7. Export of a selection and of stems, with normalize. 8. Groove pool. 9. Sampler filter, envelopes
 and LFO; slicing at the hits. 10. LFO and envelope-follower devices, with tempo automation.
+
+**26 Nov 2026:** audio tracks are built as a first version (item 1 of the next ten): clips of sound files, warp by
+speed, gain, transpose, start point, and a keep-pitch stretch made once. Still missing from that item: warp markers
+and warp modes, clip fades, reverse, recording audio, dragging files from the computer onto a lane.

@@ -760,3 +760,6 @@ tr.dim td { opacity: 0.6; }
 .daw2 .primary, .daw2 .br-up { border-radius: 0; box-shadow: none; }
 .daw2 .pad-wave { background: #2b2b2b; border-radius: 0; } .daw2 .pad-wave .in { fill: #ff9a3c; } .daw2 .pad-wave .out { fill: #6a6a6a; }
 .daw2 .arr .arr-clip svg rect { fill: #101010; }
+/* audio clip editor */
+.daw2 .aclip { display: grid; gap: 8px; } .daw2 .aclip-wave { height: 110px; width: 100%; }
+.daw2 .aclip-set { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; } .daw2 .aclip-set label { display: inline-flex; align-items: center; gap: 6px; } .daw2 .aclip-set input[type=range] { width: 120px; } .daw2 .aclip-set b { min-width: 52px; font-weight: 600; }

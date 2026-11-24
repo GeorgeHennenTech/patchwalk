@@ -167,6 +167,7 @@ export class Transport {
     const hand = (n: number) => { for (const e of songEvents(song, n, n + 1)) {
       const at = this.began + e.at;
       if (e.kind === "hit") this.kit!.hit(e.pad, at, e.strength, this.ins.get(e.track) ?? this.master!, e.track);
+      else if (e.kind === "audio") this.playAudio(e, at);
       else this.playNote(song, e.track, e.note, at, e.seconds, e.velocity);
     } };
     // The browser is paused at every sixteenth. There the automated settings are moved, and the hits and notes
@@ -195,6 +196,19 @@ export class Transport {
   note(trackId: string, note: number, seconds = 0.3, velocity = 100): void {
     this.ready();
     this.playNote(this.read(), trackId, note, this.ctx!.currentTime + 0.005, seconds, velocity);
+  }
+  /** The sound files of audio clips that are playing or about to: stopped when the song stops. */
+  private audio = new Set<AudioBufferSourceNode>();
+  /** Play a stretch of an audio clip's sound file. */
+  private playAudio(e: { track: string; sample: string; offset: number; seconds: number; rate: number; gain: number }, at: number): void {
+    const ctx = this.ctx!, buffer = this.kit!.buffer(e.sample), to = this.ins.get(e.track);
+    if (!buffer || !to || e.offset >= buffer.duration) return;
+    const src = ctx.createBufferSource(), g = ctx.createGain(), start = Math.max(at, ctx.currentTime), end = start + e.seconds, edge = Math.min(0.004, e.seconds / 4);
+    src.buffer = buffer; src.playbackRate.value = e.rate;
+    // a few milliseconds of fade at each end, so a cut in the middle of a sound does not click
+    g.gain.setValueAtTime(e.offset > 0.001 ? 0 : e.gain, start); g.gain.linearRampToValueAtTime(e.gain, start + edge); g.gain.setValueAtTime(e.gain, end - edge); g.gain.linearRampToValueAtTime(0, end);
+    src.connect(g).connect(to); src.start(start, e.offset); src.stop(end + 0.01);
+    this.audio.add(src); src.onended = () => { this.audio.delete(src); g.disconnect(); };
   }
   /** One note of a track at a time: through its sampler when it has one (and the file is loaded), otherwise its synth. */
   private playNote(song: Song, trackId: string, note: number, at: number, seconds: number, velocity: number): void {
@@ -230,9 +244,10 @@ export class Transport {
       if (hasAutomation(song)) { this.place = Math.max(0, this.position()); this.sync(); } else if (this.place >= 0) { this.place = -1; this.sync(); }
       while (this.began + stepTime(this.next, song.bpm, song.swing) < ctx.currentTime + AHEAD) {
         let step = -1;
-        for (const e of songEvents(song, this.next, this.next + 1, this.loop)) {
+        for (const e of songEvents(song, this.next, this.next + 1, this.loop, undefined, this.next === first)) {
           const at = this.began + e.at;
           if (e.kind === "hit") this.kit!.hit(e.pad, at, e.strength, this.ins.get(e.track) ?? this.master!, e.track);
+          else if (e.kind === "audio") this.playAudio(e, at);
           else this.playNote(song, e.track, e.note, at, e.seconds, e.velocity);
           step = e.step;
         }
@@ -257,6 +272,7 @@ export class Transport {
     if (this.timer !== undefined) window.clearInterval(this.timer);
     this.timer = undefined; this.due = []; this.shown = -1;
     for (const e of this.engines.values()) e.engine.stopScheduled();
+    for (const src of this.audio) { try { src.stop(); } catch { /* not started */ } } this.audio.clear();
     if (this.place >= 0) { this.place = -1; this.sync(); }      // back to where the knobs were left
   }
   /** Where the song has got to, in steps and parts of a step (swing left out), or -1 when stopped. For writing down what is played. */

@@ -674,3 +674,10 @@ bottom-left. Not done from the audit: Automation Arm, left-edge resize, time sel
 effects and the drum rack in it, tempo beyond 60 to 200. `docs/ABLETON_GAPS.md` ends with what the manual has that
 the Studio lacks and a suggested next ten (audio tracks and warping first, then Session View).
 **Next step:** ask the owner which of the "next ten" to build; nobody has yet tried the changed Studio by hand.
+
+## Studio: light-grey look and audio tracks (26 Nov 2026)
+The owner asked for the Studio to look as close to Ableton as possible and then for building to carry on. The look
+is one block at the end of `src/styles.css`. Audio tracks are built as a first version: sound files as clips on
+the timeline, with warp by speed, gain, transpose, start point and a keep-pitch stretch made once (details in
+`CLAUDE.md`, same date). **Next step:** from the "next ten" in `docs/ABLETON_GAPS.md`, Session View or longer
+songs and more tracks; and for audio, check an exported file, then fades and dragging files onto a lane.

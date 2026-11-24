@@ -98,6 +98,6 @@ export const midiBars = (notes: MidiNote[], ppq: number): number => Math.max(1, 
 
 /** A whole song as a MIDI file: a track per track, clips at their bars. */
 export function songToMidi(s: Song): Uint8Array {
-  return writeMidi({ ppq: PPQ, bpm: s.bpm, tracks: s.tracks.map((t) => ({ name: t.name, channel: t.kind === "drums" ? 9 : 0,
+  return writeMidi({ ppq: PPQ, bpm: s.bpm, tracks: s.tracks.flatMap((t) => (t.kind === "audio" ? [] : [t])).map((t) => ({ name: t.name, channel: t.kind === "drums" ? 9 : 0,
     notes: t.kind === "drums" ? t.clips.flatMap((c) => hitsToMidi(t.pads.map((p) => c.hits[p.id] ?? []), c.start * STEPS_PER_BAR)) : t.clips.flatMap((c) => notesToMidi(c.notes, c.start * STEPS_PER_BAR)) })) });
 }

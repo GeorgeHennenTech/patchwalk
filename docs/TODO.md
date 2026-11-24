@@ -220,6 +220,9 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [x] Studio: aligned with Ableton's Arrangement View: double-click loading, C3 naming and all 128 notes, 0 on notes, loop that stays, Home, solo alone, A and W keys, Control Bar order, pad 1 bottom-left (25 Nov)
 - [ ] Studio, left from the Ableton audit: Automation Arm, resize a clip from its left edge, time selection, MIDI effects and the drum rack in one device row, tempo 20 to 999 with decimals, Ctrl-drag copy on Windows
 - [ ] Studio, biggest gaps against the manual (see the end of docs/ABLETON_GAPS.md): audio tracks with warping, Session View, longer songs and more tracks, device presets, racks with macros
+- [x] Studio: light-grey look in the spirit of Ableton's default theme (26 Nov)
+- [x] Studio: audio tracks, first version: sound files as clips, warp by speed, gain, transpose, keep-pitch stretch (26 Nov)
+- [ ] Studio audio: check an exported file with an audio track; fades; drag a file onto a lane; warp that keeps pitch and follows tempo
 - [ ] Lessons, next chapters in order: "When digital sound goes wrong", "Expression", "One delay, many effects", then the rest of the ten (`docs/CURRICULUM.md`, last section)
 - [ ] Write the 85 or so lessons from `docs/LESSON_IDEAS.md` that need nothing built (FM, ring and distortion, sync and formants, drum layers and breaks, expressive playing)
 - [ ] Small builds that each open several lessons (click source, peak and RMS meter, Q readout, invert on Osc B, flanger time knob, distortion bias, sample-and-hold LFO, per-note random, response curves, reverb freeze, sampler reverse, ghost strength, slice names): list in `docs/LESSON_IDEAS.md`

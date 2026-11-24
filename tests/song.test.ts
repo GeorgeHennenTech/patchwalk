@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { STARTERS, STRENGTH } from "../src/daw/drums";
-import { toggleNotesOff, soloOnly, sliceToTrack, quantizeNotes, snapStep, GRIDS, setMarker, doubleClip, inKey, invertNotes, legatoNotes, reverseNotes, scaleTime, setChance, noteKey as keyOf, addReturn, removeReturn, sendGain, setReturn, setSend, addClip, addTrack, clipOf, clipPattern, duplicateClip, isFree, moveClip, newSong, putNote, removeClip, setClipBars, setNotes, setSongBars, setSongTempo, setTrack, songEvents, tidySong, trackOf, withPattern, MAX_TRACKS, type DrumTrack, type DrumClip, type SynthClip, type Song } from "../src/daw/song";
+import { samplesUsed, addAudioClip, setAudioClip, audioRate, audioBars, type AudioClip, type SongEvent, toggleNotesOff, soloOnly, sliceToTrack, quantizeNotes, snapStep, GRIDS, setMarker, doubleClip, inKey, invertNotes, legatoNotes, reverseNotes, scaleTime, setChance, noteKey as keyOf, addReturn, removeReturn, sendGain, setReturn, setSend, addClip, addTrack, clipOf, clipPattern, duplicateClip, isFree, moveClip, newSong, putNote, removeClip, setClipBars, setNotes, setSongBars, setSongTempo, setTrack, songEvents, tidySong, trackOf, withPattern, MAX_TRACKS, type DrumTrack, type DrumClip, type SynthClip, type Song } from "../src/daw/song";
 
 /** A song with one bar of four-on-the-floor on bar 1 and a chord on bars 1 to 2. */
 function demo(): { song: Song; drums: string; synth: string; beat: string; chord: string } {
@@ -465,5 +465,57 @@ describe("as in Ableton: notes switched off, and solo on its own", () => {
     const s = putNote(putNote(d.song, d.synth, d.chord, { note: 0, start: 4, length: 1, velocity: 90 }), d.synth, d.chord, { note: 127, start: 5, length: 1, velocity: 90 });
     const notes = (clipOf(trackOf(s, d.synth), d.chord) as SynthClip).notes.map((n) => n.note);
     expect(notes).toContain(0); expect(notes).toContain(127);
+  });
+});
+
+describe("audio tracks: sound files on the timeline", () => {
+  const file = { id: "habc", name: "loop.wav", seconds: 4 };
+  const withAudio = () => { const s = addTrack({ ...newSong(), bpm: 120 }, "audio"), id = s.tracks.at(-1)!.id; return { s, id }; };
+  it("a file becomes a clip as long as it lasts at the tempo, on the beat, cut short by what is in the way", () => {
+    const { s, id } = withAudio();
+    const a = addAudioClip(s, id, file, 0)!;                       // 4 s at 120 bpm is 2 bars
+    const c = clipOf(trackOf(a.song, id), a.clip) as AudioClip;
+    expect([c.start, c.bars, c.offset, c.gain, c.tune]).toEqual([0, 2, 0, 0, 0]);
+    const b = addAudioClip(a.song, id, { ...file, seconds: 0.6 }, 0)!;   // bar 1 is taken: the next free place; 0.6 s is 1.2 beats, so 2 beats
+    const d = clipOf(trackOf(b.song, id), b.clip) as AudioClip;
+    expect([d.start, d.bars]).toEqual([2, 0.5]);
+    expect(addAudioClip(s, s.tracks[0]!.id, file, 0)).toBeUndefined();   // not on a drum track
+    expect(addClip(s, id, 0)).toBeUndefined();                           // and no empty clip on an audio track
+  });
+  it("speed: tune moves it, warp sets it from the tempo", () => {
+    expect(audioRate({ seconds: 4, tune: 0 }, 120)).toBe(1);
+    expect(audioRate({ seconds: 4, tune: 12 }, 120)).toBeCloseTo(2);
+    expect(audioRate({ seconds: 4, tune: 0, beats: 8 }, 120)).toBeCloseTo(1);     // 8 beats at 120 is 4 s: as recorded
+    expect(audioRate({ seconds: 4, tune: 0, beats: 8 }, 60)).toBeCloseTo(0.5);    // half the tempo: half the speed
+    expect(audioBars({ seconds: 4, tune: 0, beats: 8, offset: 0 }, 60)).toBeCloseTo(2);
+  });
+  it("plays from the clip's start, joins part-way where playing begins, and stops at the clip's end", () => {
+    const { s, id } = withAudio(), a = addAudioClip(s, id, file, 1)!;
+    const all = songEvents(a.song, 0, 64).filter((e) => e.kind === "audio");
+    expect(all).toHaveLength(1);
+    const e = all[0] as Extract<SongEvent, { kind: "audio" }>;
+    expect([e.step, e.offset, e.rate, e.gain]).toEqual([16, 0, 1, 1]);
+    expect(e.seconds).toBeCloseTo(4);
+    // starting a bar into the clip: joined 2 s into the file, with 2 s left
+    expect(songEvents(a.song, 32, 33).filter((x) => x.kind === "audio")).toHaveLength(0);
+    const mid = songEvents(a.song, 32, 33, undefined, undefined, true).find((x) => x.kind === "audio") as Extract<SongEvent, { kind: "audio" }>;
+    expect(mid.offset).toBeCloseTo(2); expect(mid.seconds).toBeCloseTo(2);
+    // a loop over the clip's second bar joins it every time round, and ends with the loop
+    const looped = songEvents(a.song, 0, 32, { start: 2, bars: 1 }).filter((x) => x.kind === "audio") as Extract<SongEvent, { kind: "audio" }>[];
+    expect(looped).toHaveLength(2); expect(looped[0]!.offset).toBeCloseTo(2); expect(looped[0]!.seconds).toBeCloseTo(2);
+    // a clip shorter than the file is cut at its end; gain and tune are carried
+    let short = setClipBars(a.song, id, a.clip, 1); short = setAudioClip(short, id, a.clip, { gain: -6, tune: 12 });
+    const cut = songEvents(short, 16, 17)[0] as Extract<SongEvent, { kind: "audio" }>;
+    expect(cut.seconds).toBeCloseTo(2); expect(cut.rate).toBeCloseTo(2); expect(cut.gain).toBeCloseTo(0.501, 2);
+  });
+  it("a split clip's second half starts further into the file; the song survives tidying; MIDI leaves audio out", () => {
+    const { s, id } = withAudio(), a = addAudioClip(s, id, file, 0)!;
+    const cut = splitClip(a.song, id, a.clip, 1)!;
+    const [x, y] = cut.clips.map((c) => clipOf(trackOf(cut.song, id), c) as AudioClip);
+    expect([x!.bars, x!.offset, y!.start, y!.bars]).toEqual([1, 0, 1, 1]); expect(y!.offset).toBeCloseTo(2);
+    const back = tidySong(JSON.parse(JSON.stringify(cut.song)))!;
+    expect(back.tracks.at(-1)!.kind).toBe("audio"); expect(back.tracks.at(-1)!.clips).toHaveLength(2);
+    expect(samplesUsed(back)).toContain("habc");
+    expect(tidySong({ ...JSON.parse(JSON.stringify(cut.song)), tracks: [{ kind: "audio", name: "x", clips: [{ start: 0, bars: 1, sample: "../bad", seconds: 3 }] }] })!.tracks[0]!.clips).toHaveLength(0);
   });
 });

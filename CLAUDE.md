@@ -2071,6 +2071,32 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   - `e2e/aslive.e2e.ts` checks these on the real page (nine browser tests now). **When checking by script: browser
     rows need `dblclick`, and Home no longer plays (press Space).** `docs/ABLETON_GAPS.md` ends with the list of what
     is still missing from the manual, checked again on 25 Nov, and a suggested next ten.
+- **Studio: Ableton's light-grey look, and audio tracks (26 Nov 2026, owner: "make the interface/UI look as close to
+  ableton as possible. then start building whatever").**
+  - *Look:* a block at the end of `styles.css` ("Studio: mid-light grey look") re-colours everything under `.daw2`
+    in the spirit of Live's default theme: mid greys, black text, square corners, orange for switches that are on,
+    pale blue for the chosen browser row, clips in their track's colour with a darker name strip and black contents,
+    track names on the track's colour, a light piano roll with orange notes, flat thin faders with a small dark
+    handle, grey pads. **Our own CSS only: no Ableton artwork, fonts or logo, and it is not pixel-identical.** The
+    older dark rules are still above it; change colours in that last block.
+  - *Audio tracks (the first of the "next ten" in `docs/ABLETON_GAPS.md`):* a third kind of track, `AudioTrack`
+    (`kind: "audio"`), whose clips are sound files: `AudioClip { sample, label, seconds, offset, gain (dB), tune
+    (semitones), beats? }` in `song.ts`, with `addAudioClip` (as long as the file lasts at the tempo, to the beat
+    above; at the time marker or the next free place), `setAudioClip`, `audioRate`, `audioBars`, `clipKind`.
+    `songEvents` gives an `audio` event where a clip starts, **and where playing begins or a loop comes round inside
+    one** (its last argument, `enter`), cut at the clip's or the loop's end; `Transport.playAudio` plays that stretch
+    of the file with 4 ms fades and stops it when the song stops. A split clip's second half starts further into
+    the file; audio clips cannot be joined or doubled; MIDI export leaves audio tracks out; `tidySong`,
+    `samplesUsed`, `renameSamples` and `dropSongSample` know the kind. On the page: **"+ Audio track"; with an
+    audio track selected, double-click a sound under Samples to put it on the timeline**; the clip shows the file's
+    shape; `AudioClipPanel` in the Clip view has Warp (off, or "the file is N beats long": played at the speed that
+    makes that true at the song's tempo, so **its pitch moves with the speed**), Gain, Transpose (speed, so length
+    changes), Start, and **"Stretch to tempo, keep pitch"** (a stretched copy made once with the stretcher, for the
+    tempo at that moment). Tested in `tests/song.test.ts` and on the real page (`e2e/audio.e2e.ts`: a one-second
+    tone was loud while it lasted and silent after; an octave up it was over in half the time). **Not checked: an
+    exported file with an audio track (same code path as playing). Nobody has heard it.** Not built: warp that keeps
+    pitch while following tempo changes, warp markers, fades and crossfades you can set, reversing, dragging a file
+    from the computer onto a lane, recording sound, a clip longer than 32 bars, looping a clip's file.
 - **Long pages are searched in parts (16 Nov 2026).** `splitText` in `src/library/search.ts` cuts a page over
   2,400 characters into overlapping parts of about 1,500 (ids `book#page~1`, `~2`, with `of` naming the
   page); `pageOf` and `cite` count parts of one page as one source, and `search` takes at most two parts of

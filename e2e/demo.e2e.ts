@@ -7,11 +7,11 @@ test("the demo song opens from the Studio's Songs list and plays with sound on t
   await page.goto("/");
   await page.getByRole("tab", { name: "Studio" }).click();
   await page.locator(".daw2").getByText("Songs", { exact: true }).first().click();
-  await page.getByText("Stitch Glitch (demo)").click();
+  await page.getByText("Stitch Glitch (demo)").dblclick();
   await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem("patchwalk.song.v1") ?? "{}").name)).toBe("Stitch Glitch");
   const song = await page.evaluate(() => JSON.parse(localStorage.getItem("patchwalk.song.v1")!));
   expect(song.tracks.map((t: { name: string }) => t.name)).toEqual(["Drums", "Vowel pad", "Wobble bass", "Glitch pluck", "Bits", "Riser"]);
-  await page.keyboard.press("Escape"); await page.keyboard.press("Home");
+  await page.keyboard.press("Escape"); await page.keyboard.press("Space");
   type T = { levels(): { left: number; right: number }; trackLevel(id: string): number; position(): number };
   const loudest: Record<string, number> = {}; let master = -200;
   for (let i = 0; i < 26; i++) {
@@ -34,12 +34,12 @@ test("the psydub demo (eight tracks, the most there can be) opens and plays with
   await page.goto("/");
   await page.getByRole("tab", { name: "Studio" }).click();
   await page.locator(".daw2").getByText("Songs", { exact: true }).first().click();
-  await page.getByText("Deep Stitch (demo)").click();
+  await page.getByText("Deep Stitch (demo)").dblclick();
   await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem("patchwalk.song.v1") ?? "{}").name)).toBe("Deep Stitch");
   const tracks = await page.evaluate(() => JSON.parse(localStorage.getItem("patchwalk.song.v1")!).tracks.length);
   expect(tracks).toBe(8);
   // play from the marker "Groove" region by starting at the top and letting it run
-  await page.keyboard.press("Escape"); await page.keyboard.press("Home");
+  await page.keyboard.press("Escape"); await page.keyboard.press("Space");
   type T = { levels(): { left: number; right: number }; position(): number };
   type T2 = T & { ctx: AudioContext };
   const read = () => page.evaluate(() => { const t = (window as unknown as { __patchwalkTransport: T2 }).__patchwalkTransport; return { m: Math.max(t.levels().left, t.levels().right), at: t.position(), time: t.ctx.currentTime }; });

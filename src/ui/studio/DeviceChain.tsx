@@ -27,7 +27,7 @@ export function Knob({ s, v, name, set, auto }: { /** it has automation: "on" wh
     else if (e.key === "Home") { e.preventDefault(); set(s.min); } else if (e.key === "End") { e.preventDefault(); set(s.max); } else if (e.key === "Delete" || e.key === "Backspace") { e.preventDefault(); e.stopPropagation(); set(s.def); } };
   return (
     <div className="dev-knob">
-      <span className="dev-label">{s.label}{auto && <i className={`knob-auto ${auto}`} title={auto === "on" ? "This knob has automation" : "Its automation is switched off because you moved it. “Back to automation” in the top bar switches it on again."} />}</span>
+      <span className="dev-label">{s.label}{auto && <i className={`knob-auto ${auto}`} title={auto === "on" ? "This knob has automation" : "Its automation is switched off because you moved it. “Re-enable automation” in the top bar switches it on again."} />}</span>
       <svg viewBox="0 0 36 36" className="knob" role="slider" tabIndex={0} aria-label={name} aria-valuemin={s.min} aria-valuemax={s.max} aria-valuenow={v} aria-valuetext={shown(s, v)}
         onPointerDown={(e) => { e.preventDefault(); e.currentTarget.setPointerCapture(e.pointerId); e.currentTarget.focus(); held.current = { y: e.clientY, t }; }}
         onPointerMove={(e) => { const h = held.current; if (h) set(fromTravel(s, h.t + (h.y - e.clientY) / (e.shiftKey ? 900 : 150))); }}
@@ -179,7 +179,7 @@ export function DeviceChain({ devices, onChange, reduction, analyser, kind = "au
     else if (what === "add" && list.some((x) => x.kind === value)) { const added = addDevice(devices, value!); if (added === devices) return; const next = added.slice(), d = next.pop()!; next.splice(at, 0, d); onChange(next); } };
   const allow = (at: number) => (e: React.DragEvent) => { if (e.dataTransfer.types.includes(DRAG_DEVICE)) { e.preventDefault(); setOver(at); } };
   return (
-    <div className={`chain ${kind}`} aria-label={kind === "note" ? "Note effects on this track" : "Effects on this track"} onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setOver(undefined); }}>
+    <div className={`chain ${kind}`} aria-label={kind === "note" ? "MIDI effects on this track" : "Effects on this track"} onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setOver(undefined); }}>
       <div className="chain-row">
         {lead}
         {devices.map((d, i) => { const spec = specOf(d.kind); if (!spec) return null; return (

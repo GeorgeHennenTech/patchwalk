@@ -11,7 +11,7 @@ import { SLICE_COUNTS, slicePads, BPM_MAX, BPM_MIN, STEPS_PER_BAR, STRENGTH, SWI
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
-export interface NoteEv { /** MIDI note number */ note: number; /** steps from the clip's start */ start: number; /** steps */ length: number; /** 1 to 127 */ velocity: number; /** percent chance that it plays each time round (1 to 99); left out means always */ chance?: number }
+export interface NoteEv { /** MIDI note number */ note: number; /** steps from the clip's start */ start: number; /** steps */ length: number; /** 1 to 127 */ velocity: number; /** percent chance that it plays each time round (1 to 99); left out means always */ chance?: number; /** switched off: kept and drawn, but silent */ off?: true }
 interface ClipBase { id: string; /** the bar it starts on, counting from 0 */ start: number; bars: number; /** switched off: it stays on the grid and makes no sound */ off?: boolean }
 export interface DrumClip extends ClipBase { /** for each pad's id, its row of steps */ hits: Record<string, Hit[]> }
 export interface SynthClip extends ClipBase { notes: NoteEv[] }
@@ -43,7 +43,7 @@ export const MASTER_START = 85;
 /** The master volume as a gain: its starting place is a little under full, to leave room when tracks add up. */
 export const masterGain = (volume: number) => 0.9 * (clamp(volume, 0, 100) / MASTER_START);
 
-export const SONG_BARS = [4, 8, 16, 32] as const, MAX_TRACKS = 8, NOTE_LOW = 24, NOTE_HIGH = 96;
+export const SONG_BARS = [4, 8, 16, 32] as const, MAX_TRACKS = 8, NOTE_LOW = 0, NOTE_HIGH = 127;
 /** Clip lengths each kind of track allows, in bars. */
 /** A drum clip can be 1 to 4 bars; a note clip any whole number of bars up to 16. */
 export const CLIP_BARS: Record<Track["kind"], readonly number[]> = { drums: [1, 2, 3, 4], synth: Array.from({ length: 16 }, (_, i) => i + 1) };
@@ -193,7 +193,7 @@ export const FINE = 24, MIN_NOTE = 0.25;
 export const snapStep = (x: number) => Math.round(x * FINE) / FINE;
 /** The grids the piano roll can be set to, in sixteenth steps. */
 export const GRIDS: { name: string; steps: number }[] = [{ name: "1/4", steps: 4 }, { name: "1/8", steps: 2 }, { name: "1/16", steps: 1 }, { name: "1/32", steps: 0.5 }, { name: "1/8 triplet", steps: 4 / 3 }, { name: "1/16 triplet", steps: 2 / 3 }, { name: "1/32 triplet", steps: 1 / 3 }];
-export const tidyNote = (n: NoteEv, steps: number): NoteEv => { const start = clamp(snapStep(n.start), 0, steps - MIN_NOTE); return { note: clamp(Math.round(n.note), NOTE_LOW, NOTE_HIGH), start, length: clamp(snapStep(n.length), MIN_NOTE, steps - start), velocity: clamp(Math.round(n.velocity), 1, 127), ...(Number.isFinite(n.chance) && n.chance! < 100 ? { chance: clamp(Math.round(n.chance!), 0, 99) } : {}) }; };
+export const tidyNote = (n: NoteEv, steps: number): NoteEv => { const start = clamp(snapStep(n.start), 0, steps - MIN_NOTE); return { note: clamp(Math.round(n.note), NOTE_LOW, NOTE_HIGH), start, length: clamp(snapStep(n.length), MIN_NOTE, steps - start), velocity: clamp(Math.round(n.velocity), 1, 127), ...(Number.isFinite(n.chance) && n.chance! < 100 ? { chance: clamp(Math.round(n.chance!), 0, 99) } : {}), ...(n.off ? { off: true as const } : {}) }; };
 /** Add a note, or replace the one that starts at the same place on the same key. */
 export const putNote = (s: Song, trackId: string, clipId: string, n: NoteEv): Song => withClip(s, trackId, clipId, (c) => ("notes" in c ? { ...c, notes: [...c.notes.filter((x) => !sameNote(x, n)), tidyNote(n, c.bars * STEPS_PER_BAR)].sort((a, b) => a.start - b.start || a.note - b.note) } : c));
 export const dropNote = (s: Song, trackId: string, clipId: string, n: Pick<NoteEv, "note" | "start">): Song => withClip(s, trackId, clipId, (c) => ("notes" in c ? { ...c, notes: c.notes.filter((x) => !(x.note === n.note && x.start === n.start)) } : c));
@@ -232,11 +232,18 @@ export type SongEvent = { track: string; /** seconds from the start of playing *
  */
 const played = new WeakMap<NoteEv[], { chain: Device[]; bars: number; out: FxNote[] }>();
 /** A clip's notes as they are actually played: after the track's note effects. Worked out once per change. */
+const sounding = new WeakMap<NoteEv[], NoteEv[]>();
+/** A clip's notes without the ones that are switched off. */
+const soundingNotes = (notes: NoteEv[]): NoteEv[] => { if (!notes.some((n) => n.off)) return notes; let f = sounding.get(notes); if (!f) { f = notes.filter((n) => !n.off); sounding.set(notes, f); } return f; };
+/** Switch the chosen notes off (silent, but kept) or back on: off if any of them is on. */
+export const toggleNotesOff = (notes: NoteEv[], keys: ReadonlySet<string>): NoteEv[] => { const off = notes.some((n) => keys.has(noteKey(n)) && !n.off); return notes.map((n) => { if (!keys.has(noteKey(n)) || !!n.off === off) return n; const { off: _was, ...rest } = n; return off ? { ...rest, off: true as const } : rest; }); };
+/** Solo one track and take every other track's solo away (what a plain click on S does); an already-soloed track is un-soloed. */
+export const soloOnly = (s: Song, id: string): Song => { const was = trackOf(s, id)?.solo; return { ...s, tracks: s.tracks.map((t) => (t.id === id ? { ...t, solo: !was } : t.solo ? { ...t, solo: false } : t)) as Track[] }; };
 export function playedNotes(t: SynthTrack, c: SynthClip): FxNote[] {
-  if (!t.noteFx.some((d) => d.on)) return c.notes;
+  if (!t.noteFx.some((d) => d.on)) return soundingNotes(c.notes);
   const have = played.get(c.notes);
   if (have && have.chain === t.noteFx && have.bars === c.bars) return have.out;
-  const out = applyNoteFx(t.noteFx, c.notes, c.bars * STEPS_PER_BAR);
+  const out = applyNoteFx(t.noteFx, soundingNotes(c.notes), c.bars * STEPS_PER_BAR);
   played.set(c.notes, { chain: t.noteFx, bars: c.bars, out });
   return out;
 }

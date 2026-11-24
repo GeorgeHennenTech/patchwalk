@@ -2035,6 +2035,42 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   synth's slow modulation still stand still in an export, so every moving sound here uses automation or the
   fast destinations; sends cannot be automated (the echo throws automate the echo's own mix and feedback);
   there is no phrygian scale for the key display; and there is still no loudness or width meter.
+- **Studio brought into line with Ableton's Arrangement View, and small fixes (24 to 25 Nov 2026, owner: "fix these
+  little things, and then... make sure everything in our daw lines up with the arrangement and placement and function
+  of ableton perfectly. then tell me what we're still missing").** A helper compared every area of the Studio with the
+  manual in the library (pages cited in its report); its "top 20" were built. **It is not a perfect match and must not
+  be called one: see "still differs" below.**
+  - *Little things first:* faders reach +6 dB and read in dB (`faderDb`, `faderGain`, `faderText`; 80 is 0 dB); new
+    drum tracks start at 40 (`DRUMS_START`) and the starting sounds are 6 dB louder; a song handed in with an odd
+    length takes the next size up; sends can be automated (`send:ra`, `send:rb`); the master shows average level and
+    stereo width (`transport.stereo`, `StereoRead`; not LUFS); six more scales; an export steps the synth's slow
+    modulation; the stretcher retries if it starts before its settings land.
+  - *As in Live now:* **browser: one click chooses a row and plays it, a double-click or Enter loads it** (`item`,
+    `chosen`); categories are Sounds, Drums, Audio Effects, MIDI Effects, Clips (the breaks), Samples, Racks, Songs;
+    track headers stay on screen at every zoom; the piano roll has all 128 notes and **note 60 is C3** (Studio only:
+    `noteName` in `PianoRoll.tsx` and `devices.ts`; the lessons keep their own naming); **0 switches the selected
+    notes off** (`NoteEv.off`, `toggleNotesOff`, grey, not played), with no notes the clip, with no clip the track;
+    **the loop stays where it was put**: Ctrl/Cmd+L puts it on the selected clip, the Loop button only switches it
+    (`loopAt`, `loopOn`); a click on empty lane deselects the clip; **Home puts the time marker at the start and does
+    not play**; double-click Stop goes back to the start; left and right nudge the selected clip a beat (or the time
+    marker when no clip is selected); double-click a clip for Clip view, a track name for Device view; Fold (rows with
+    notes) and Scale (rows of the key) are two buttons; **S solos one track alone** unless Ctrl/Cmd is held
+    (`soloOnly`); right-click no longer deletes a note; **A** (automation mode) and **W** (fit the song) work while the
+    computer keyboard is off, with an A button, Lock, and |◀ Set ▶| above the track names; F12, Ctrl/Cmd+F (browser
+    search), Ctrl/Cmd+Alt+L (hide the detail view), Ctrl/Cmd+Alt+T (return track), Delete on a fader (reset); a click
+    on a clip's name strip puts the marker at its start and paste goes to the marker; pad 1 is bottom-left; the
+    Control Bar reads Tap, tempo, swing, Click, count-in | position, play, stop, record, Overdub, Re-enable
+    automation, Loop. Renamed to Live's words: Velocity, Randomize, MIDI Effects, Audio Effects, Scale, Re-enable
+    automation, "Duplicate clip" and "Duplicate loop". Opening a song no longer lights "Re-enable automation".
+  - *Still differs (not built):* tempo is whole numbers 60 to 200 (the synth's own tempo knob has that range); no
+    Automation Arm (Record always writes automation); clips resize from the right edge only; copy-drag is Alt on
+    every computer; no time selection across lanes; MIDI effects sit in a strip above the instrument, not in one
+    row; the drum rack is not a device in the row; a drum clip opens a step grid, not the note editor; automation
+    lanes are rows of their own and one click adds a point; no locator dragging; Draw mode does not paint several
+    notes; the scale belongs to the song, not the clip.
+  - `e2e/aslive.e2e.ts` checks these on the real page (nine browser tests now). **When checking by script: browser
+    rows need `dblclick`, and Home no longer plays (press Space).** `docs/ABLETON_GAPS.md` ends with the list of what
+    is still missing from the manual, checked again on 25 Nov, and a suggested next ten.
 - **Long pages are searched in parts (16 Nov 2026).** `splitText` in `src/library/search.ts` cuts a page over
   2,400 characters into overlapping parts of about 1,500 (ids `book#page~1`, `~2`, with `of` naming the
   page); `pageOf` and `cite` count parts of one page as one source, and `search` takes at most two parts of

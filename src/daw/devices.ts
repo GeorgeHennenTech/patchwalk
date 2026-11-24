@@ -33,7 +33,7 @@ export const AMP_TYPES = ["Clean", "Crunch", "Heavy"], PEDAL_TYPES = ["Overdrive
 export const CABINETS = [{ name: "1 x 12", low: 90, bump: 120, lift: 3, top: 5500 }, { name: "2 x 12", low: 80, bump: 110, lift: 4, top: 5000 }, { name: "4 x 10", low: 100, bump: 140, lift: 3, top: 6000 }, { name: "4 x 12", low: 70, bump: 100, lift: 5, top: 4500 }];
 export const AUTO_FILTER_TYPES = ["Low-pass", "High-pass", "Band-pass", "Notch"];
 const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-export const noteName = (n: number) => `${NOTE_NAMES[((n % 12) + 12) % 12]}${Math.floor(n / 12) - 1}`;
+export const noteName = (n: number) => `${NOTE_NAMES[((n % 12) + 12) % 12]}${Math.floor(n / 12) - 2}`;
 const lfoParams = (extra: Partial<ParamSpec> = {}): ParamSpec[] => [menu("shape", "LFO shape", PAN_SHAPES, 0, extra), sw("sync", "LFO in beats", 0, extra),
   { id: "rate", label: "LFO speed", min: 0.05, max: 20, step: 0.01, def: 1, unit: "Hz", log: true, ...extra, when: (p) => !p.sync }, menu("div", "One turn every", LFO_DIVS.map((d) => d.name), 4, { ...extra, when: (p) => !!p.sync })];
 const FD_LINES: [string, string, number, number, number][] = [["l", "Left", 2, 800, -100], ["m", "Both", 4, 2000, 0], ["r", "Right", 3, 5000, 100]];

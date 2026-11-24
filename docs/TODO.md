@@ -216,6 +216,10 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [x] Fixed: Echo ran away with Drive on; long exports never finished (25 Nov 2026)
 - [ ] Studio: a song whose length is not 4, 8, 16 or 32 bars is cut to 8 bars when opened
 - [ ] Studio: sends cannot be automated
+- [x] Studio: faders in dB up to +6, send automation, mix readout (average and width), more scales, odd song lengths kept (25 Nov)
+- [x] Studio: aligned with Ableton's Arrangement View: double-click loading, C3 naming and all 128 notes, 0 on notes, loop that stays, Home, solo alone, A and W keys, Control Bar order, pad 1 bottom-left (25 Nov)
+- [ ] Studio, left from the Ableton audit: Automation Arm, resize a clip from its left edge, time selection, MIDI effects and the drum rack in one device row, tempo 20 to 999 with decimals, Ctrl-drag copy on Windows
+- [ ] Studio, biggest gaps against the manual (see the end of docs/ABLETON_GAPS.md): audio tracks with warping, Session View, longer songs and more tracks, device presets, racks with macros
 - [ ] Lessons, next chapters in order: "When digital sound goes wrong", "Expression", "One delay, many effects", then the rest of the ten (`docs/CURRICULUM.md`, last section)
 - [ ] Write the 85 or so lessons from `docs/LESSON_IDEAS.md` that need nothing built (FM, ring and distortion, sync and formants, drum layers and breaks, expressive playing)
 - [ ] Small builds that each open several lessons (click source, peak and RMS meter, Q readout, invert on Osc B, flanger time knob, distortion bias, sample-and-hold LFO, per-note random, response curves, reverb freeze, sampler reverse, ghost strength, slice names): list in `docs/LESSON_IDEAS.md`

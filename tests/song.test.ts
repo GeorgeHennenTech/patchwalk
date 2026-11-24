@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { STARTERS, STRENGTH } from "../src/daw/drums";
-import { sliceToTrack, quantizeNotes, snapStep, GRIDS, setMarker, doubleClip, inKey, invertNotes, legatoNotes, reverseNotes, scaleTime, setChance, noteKey as keyOf, addReturn, removeReturn, sendGain, setReturn, setSend, addClip, addTrack, clipOf, clipPattern, duplicateClip, isFree, moveClip, newSong, putNote, removeClip, setClipBars, setNotes, setSongBars, setSongTempo, setTrack, songEvents, tidySong, trackOf, withPattern, MAX_TRACKS, type DrumTrack, type DrumClip, type SynthClip, type Song } from "../src/daw/song";
+import { toggleNotesOff, soloOnly, sliceToTrack, quantizeNotes, snapStep, GRIDS, setMarker, doubleClip, inKey, invertNotes, legatoNotes, reverseNotes, scaleTime, setChance, noteKey as keyOf, addReturn, removeReturn, sendGain, setReturn, setSend, addClip, addTrack, clipOf, clipPattern, duplicateClip, isFree, moveClip, newSong, putNote, removeClip, setClipBars, setNotes, setSongBars, setSongTempo, setTrack, songEvents, tidySong, trackOf, withPattern, MAX_TRACKS, type DrumTrack, type DrumClip, type SynthClip, type Song } from "../src/daw/song";
 
 /** A song with one bar of four-on-the-floor on bar 1 and a chord on bars 1 to 2. */
 function demo(): { song: Song; drums: string; synth: string; beat: string; chord: string } {
@@ -64,7 +64,7 @@ describe("a song", () => {
     const { song, synth, chord } = demo();
     const s = setNotes(song, synth, chord, [{ note: 60, start: 30, length: 9, velocity: 300 }, { note: 60, start: 30, length: 1, velocity: 80 }, { note: 200, start: -4, length: 0, velocity: 0 }]);
     const notes = (clipOf(trackOf(s, synth), chord) as SynthClip).notes;
-    expect(notes).toEqual([{ note: 96, start: 0, length: 0.25, velocity: 1 }, { note: 60, start: 30, length: 2, velocity: 127 }]);
+    expect(notes).toEqual([{ note: 127, start: 0, length: 0.25, velocity: 1 }, { note: 60, start: 30, length: 2, velocity: 127 }]);
   });
 });
 
@@ -151,7 +151,7 @@ describe("editing with the keys: selected notes and clips", () => {
     expect(shiftNotes(notes, two, -5, 0, 16).notes).toBe(notes); // already at the start
     const far = shiftNotes(notes, two, 99, 99, 16);
     expect(Math.max(...far.notes.map((n) => n.start + n.length))).toBeLessThanOrEqual(16);
-    expect(Math.max(...far.notes.map((n) => n.note))).toBeLessThanOrEqual(96);
+    expect(Math.max(...far.notes.map((n) => n.note))).toBeLessThanOrEqual(127);
     expect(far.notes).toHaveLength(3);
   });
   it("makes the selection longer or shorter, never under the shortest note or past the end", () => {
@@ -436,5 +436,34 @@ describe("faders, song lengths and the readout of the mix", () => {
     expect(moved.sends?.rb).toBe(50);
     expect(SCALES.slice(0, 8).map((s) => s.name)).toEqual(["Major", "Minor", "Dorian", "Mixolydian", "Harmonic minor", "Major pentatonic", "Minor pentatonic", "Blues"]);
     expect(SCALES.find((s) => s.name === "Phrygian")?.steps).toEqual([0, 1, 3, 5, 7, 8, 10]);
+  });
+});
+
+describe("as in Ableton: notes switched off, and solo on its own", () => {
+  it("a note switched off is kept but not played, and comes back", () => {
+    const d = demo(), clip = () => clipOf(trackOf(d.song, d.synth), d.chord) as SynthClip;
+    const off = toggleNotesOff(clip().notes, new Set(["60:0"]));
+    expect(off.find((n) => n.note === 60)!.off).toBe(true);
+    expect(off.filter((n) => n.off)).toHaveLength(1);
+    d.song = setNotes(d.song, d.synth, d.chord, off);
+    expect(clip().notes).toHaveLength(3);
+    const heard = songEvents(d.song, 0, 1).filter((e) => e.kind === "note").map((e) => (e as { note: number }).note).sort();
+    expect(heard).toEqual([57, 64]);
+    const on = toggleNotesOff(clip().notes, new Set(["60:0"]));
+    expect(on.some((n) => n.off)).toBe(false);
+    // a mixed selection is all switched off first
+    expect(toggleNotesOff(off, new Set(["60:0", "57:0"])).filter((n) => n.off)).toHaveLength(2);
+  });
+  it("a plain solo takes the other solos away; soloing the soloed track clears it", () => {
+    const s = newSong(), [a, b] = s.tracks.map((t) => t.id) as [string, string];
+    const one = soloOnly(setTrack(s, a, { solo: true }), b);
+    expect(one.tracks.map((t) => !!t.solo)).toEqual([false, true]);
+    expect(soloOnly(one, b).tracks.some((t) => t.solo)).toBe(false);
+  });
+  it("every MIDI note can be written", () => {
+    const d = demo();
+    const s = putNote(putNote(d.song, d.synth, d.chord, { note: 0, start: 4, length: 1, velocity: 90 }), d.synth, d.chord, { note: 127, start: 5, length: 1, velocity: 90 });
+    const notes = (clipOf(trackOf(s, d.synth), d.chord) as SynthClip).notes.map((n) => n.note);
+    expect(notes).toContain(0); expect(notes).toContain(127);
   });
 });

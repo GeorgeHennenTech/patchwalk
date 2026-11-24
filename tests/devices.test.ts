@@ -166,7 +166,7 @@ describe("auto filter, echo, filter delay", () => {
     expect(filterDelayLine(p, "l", 120)).toMatchObject({ hears: [1, 0], seconds: 0.25, pan: -1, level: 1 });
     expect(filterDelayLine(p, "m", 120)).toMatchObject({ hears: [0.5, 0.5], level: 0 });
     expect(filterDelayLine(p, "r", 120)).toMatchObject({ hears: [0, 1], seconds: 0.375, pan: 1 });
-    expect(noteName(60)).toBe("C4"); expect(noteName(57)).toBe("A3");
+    expect(noteName(60)).toBe("C3"); expect(noteName(57)).toBe("A2");
   });
 });
 

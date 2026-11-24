@@ -663,3 +663,14 @@ and each switched off is a clean bypass. The three checks are in `scripts/checks
 automation lanes. Writing it found and fixed two faults: the Echo ran away whenever Drive was on, and a long
 song's export never finished (notes are now handed to the export one step ahead; exports are about twice as
 fast). Open: export is still slower than real time, track faders have too little range, no loudness meter.
+
+## Studio aligned with Ableton's Arrangement View (25 Nov 2026)
+The owner asked for the Studio to match Live's arrangement, placement and function, then for what is still missing.
+A helper audited every area against the manual; its top twenty mismatches were fixed (list in `CLAUDE.md`, same
+date). Biggest changes a user will notice: browser rows load on a **double-click** (one click chooses and previews);
+note 60 is **C3** and the roll shows all 128 notes; **0** switches selected notes off; the **loop stays put**;
+**Home** no longer plays; **S** solos alone; **A** and **W** work with the computer keyboard off; pad 1 is
+bottom-left. Not done from the audit: Automation Arm, left-edge resize, time selection, one device row with MIDI
+effects and the drum rack in it, tempo beyond 60 to 200. `docs/ABLETON_GAPS.md` ends with what the manual has that
+the Studio lacks and a suggested next ten (audio tracks and warping first, then Session View).
+**Next step:** ask the owner which of the "next ten" to build; nobody has yet tried the changed Studio by hand.

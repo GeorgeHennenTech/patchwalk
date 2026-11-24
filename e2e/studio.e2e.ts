@@ -6,7 +6,7 @@ test("the Studio plays in time: the position moves at the song's tempo", async (
   await page.goto("/");
   await page.getByRole("tab", { name: "Studio" }).click();
   await page.keyboard.press("Escape");
-  await page.keyboard.press("Home");
+  await page.keyboard.press("Space");
   type T = { playing: boolean; position(): number; ctx: AudioContext };
   await expect.poll(() => page.evaluate(() => (window as unknown as { __patchwalkTransport?: T }).__patchwalkTransport?.playing ?? false)).toBe(true);
   const read = () => page.evaluate(() => { const t = (window as unknown as { __patchwalkTransport: T }).__patchwalkTransport; return { at: t.position(), time: t.ctx.currentTime }; });

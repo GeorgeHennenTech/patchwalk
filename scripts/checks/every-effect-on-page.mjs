@@ -11,17 +11,16 @@ const daw = page.locator(".daw2");
 await page.evaluate(() => { const t = window.__patchwalkTransport; void t; });
 const trackName = "Riser";
 await daw.getByText(trackName, { exact: true }).first().click(); await page.waitForTimeout(200);
-await daw.getByText("Effects", { exact: true }).first().click(); await page.waitForTimeout(200);
-await page.keyboard.press("Escape"); await page.keyboard.press("Home"); await page.waitForTimeout(600);
+await page.keyboard.press("Escape"); await page.keyboard.press("Space"); await page.waitForTimeout(600);
 const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const status = () => page.locator(".daw-status").innerText();
 const level = () => page.evaluate(() => { const l = window.__patchwalkTransport.levels(); return Math.round(Math.max(l.left, l.right)); });
 const rows = [];
-for (const [family, list] of [["fx", lists.fx], ["note", lists.note]]) for (const d of list) {
+for (const [family, list] of [["fx", lists.fx], ["note", lists.note]]) { await daw.getByRole("tab", { name: family === "note" ? "MIDI Effects" : "Audio Effects", exact: true }).click(); await page.waitForTimeout(200); for (const d of list) {
   const row = { name: d.name, family }, before = errs.length;
   try {
-    const playing = await page.evaluate(() => window.__patchwalkTransport.playing); if (!playing) { await page.keyboard.press("Home"); await page.waitForTimeout(300); }
-    await daw.locator("li button").filter({ hasText: new RegExp(`^${esc(d.name)}$`) }).first().click({ timeout: 4000 });
+    const playing = await page.evaluate(() => window.__patchwalkTransport.playing); if (!playing) { await page.keyboard.press("Escape"); await page.keyboard.press("Space"); await page.waitForTimeout(300); }
+    await daw.locator("li button").filter({ hasText: new RegExp(`^${esc(d.name)}$`) }).first().dblclick({ timeout: 4000 });
     const panel = page.locator(`.chain${family === "note" ? ".note" : ":not(.note)"} section.dev[aria-label="${d.name}"]`).last();
     await panel.waitFor({ timeout: 4000 }); row.added = true; row.status = (await status()).slice(0, 40);
     row.knobs = await panel.locator('[role=slider]').count(); row.switches = await panel.locator(".dev-sw").count(); row.menus = await panel.locator("select").count();
@@ -35,7 +34,7 @@ for (const [family, list] of [["fx", lists.fx], ["note", lists.note]]) for (cons
   } catch (e) { row.fail = e.message.split("\n")[0].slice(0, 140); }
   row.errors = errs.slice(before).map((x) => x.slice(0, 120));
   rows.push(row);
-}
+} }
 await page.keyboard.press("Space");
 const after = await page.evaluate(() => { const s = JSON.parse(localStorage.getItem("patchwalk.song.v1")); const t = s.tracks.find((x) => x.name === "Riser"); return { devices: t.devices.map((d) => d.kind), noteFx: t.noteFx.map((d) => d.kind) }; });
 fs.writeFileSync("ui.json", JSON.stringify({ rows, after, errs }));

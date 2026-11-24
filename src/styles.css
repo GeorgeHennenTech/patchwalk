@@ -541,7 +541,7 @@ tr.dim td { opacity: 0.6; }
 /* zoom: bars drawn wider than the window scroll sideways; the track column stays in view at the right */
 .daw2 .arr-bars { min-width: var(--barsw, 0px); }
 .daw2 .arr.zoomed .arr-bars { flex: none; width: var(--barsw); }
-.daw2 .arr.zoomed .arr-side { position: sticky; right: 0; z-index: 6; margin-left: auto; }
+.daw2 .arr .arr-side { position: sticky; right: 0; z-index: 6; margin-left: auto; }
 .daw2 .arr-zoom { margin-left: auto; display: flex; gap: 2px; } .daw2 .arr-zoom button { width: 22px; height: 18px; padding: 0; line-height: 1; border: 1px solid var(--line); background: var(--s2); color: var(--ink); border-radius: 3px; font-size: 13px; } .daw2 .arr-zoom button:disabled { opacity: 0.35; }
 
 /* return tracks and the send sliders that feed them */
@@ -566,7 +566,8 @@ tr.dim td { opacity: 0.6; }
 .daw2 .arr-top .arr-bars { grid-auto-rows: 22px; } .daw2 button.arr-bar-n { overflow: hidden; white-space: nowrap; }
 .daw2 .br-hear { font-size: 9px; }
 
-.daw2 .roll { position: relative; } .daw2 .roll-fold { position: sticky; left: 4px; top: 4px; z-index: 6; float: left; margin: 4px 0 -26px 4px; font-size: 10.5px; padding: 1px 6px; } .daw2 .roll-fold.on { background: var(--on); color: #1c1c1c; border-color: var(--on); }
+.daw2 .roll { position: relative; } .daw2 .roll-fold { position: sticky; left: 4px; top: 4px; z-index: 6; float: left; margin: 4px 0 -26px 4px; display: flex; gap: 2px; } .daw2 .roll-fold button { font-size: 10px; padding: 0 4px; } .daw2 .roll-fold button.on { background: var(--on); color: #1c1c1c; border-color: var(--on); }
+.daw2 .roll-note.off { background: #6d6d72; color: #d0d0d4; }
 .roll.folded .roll-key { font-size: 9px; }
 
 /* the sampler as a device */
@@ -660,3 +661,10 @@ tr.dim td { opacity: 0.6; }
 /* the master's readout: average level and stereo width, in words */
 .daw2 .arr-stereo { font-size: 10px; font-variant-numeric: tabular-nums; color: #b9bcc2; white-space: nowrap; margin-left: 6px; }
 .daw2 .arr-stereo.bad { color: #ff6b5e; }
+
+/* Above the track headers: automation mode, lock, marker buttons (where Live keeps them) */
+.daw2 .arr-side-top { gap: 3px; } .daw2 .arr-side-top > button { height: 18px; padding: 0 5px; line-height: 1; border: 1px solid var(--line); background: var(--s2); color: var(--ink); border-radius: 3px; font-size: 10.5px; text-transform: none; letter-spacing: 0; } .daw2 .arr-side-top > button.on { background: var(--on); color: #1c1c1c; border-color: var(--on); } .daw2 .arr-side-top > button:disabled { opacity: 0.4; }
+/* Browser: one click chooses a row, a double-click loads it */
+.daw2 .br-items li.chosen > button:first-child { background: var(--s3); outline: 1px solid var(--on); }
+/* Drum rack: pad 1 bottom-left, rising in rows of four */
+.rack-pads { display: flex; flex-wrap: wrap-reverse; } .rack-pads .pad { width: calc((100% - 21px) / 4); }

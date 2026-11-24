@@ -373,6 +373,13 @@ export const autoFilterDb = (p: Record<string, number>, f: number, sampleRate = 
 export const ECHO_WOBBLE = 0.004, ECHO_MAX_DRIVE = 8;
 export const echoSeconds = (p: Record<string, number>, bpm: number) => clamp(p.sync ? ((DELAY_DIVS[p.div ?? 4] ?? DELAY_DIVS[4]!).beats * 60) / bpm : (p.ms ?? 350) / 1000, 0.001, DELAY_MAX_SECONDS);
 export const echoDriveGain = (drive: number) => 1 + (clamp(drive ?? 0, 0, 100) / 100) * (ECHO_MAX_DRIVE - 1);
+/**
+ * The gain of the echo's feedback path. The drive curve sits inside the loop and turns quiet sound up by
+ * g / tanh(g); left alone, that made the loop louder each time round at quite ordinary settings (drive 30
+ * with feedback 60 ran away). The path is turned down by the same amount, so a quiet repeat comes back at
+ * exactly `feedback` of the one before and a loud one is squashed: the loop can never grow.
+ */
+export const echoFeedbackGain = (feedback: number, drive: number) => { const g = echoDriveGain(drive), f = Math.min(0.95, clamp(feedback ?? 0, 0, 100) / 100); return g === 1 ? f : (f * Math.tanh(g)) / g; };
 
 // ---- Filter delay ----
 export const FILTER_DELAY_LINES = ["l", "m", "r"] as const;

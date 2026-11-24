@@ -146,13 +146,21 @@ export class Transport {
     await prepareDevices(ctx);
     this.began = 0.05; this.sync();
     await devicesSettled(ctx);   // a device whose inside is fetched (the pitch shifter) must be in place before the first sample
-    for (let n = 0; n < song.bars * 16; n++) for (const e of songEvents(song, n, n + 1)) {
+    const steps = song.bars * 16, moving = hasAutomation(song);
+    const hand = (n: number) => { for (const e of songEvents(song, n, n + 1)) {
       const at = this.began + e.at;
       if (e.kind === "hit") this.kit!.hit(e.pad, at, e.strength, this.ins.get(e.track) ?? this.master!, e.track);
       else this.playNote(song, e.track, e.note, at, e.seconds, e.velocity);
-    }
-    // automation: the browser is paused at every sixteenth to move the automated settings, then let go again
-    if (hasAutomation(song)) for (let n = 0; n < song.bars * 16; n++) { const at = this.began + n * stepSeconds(song.bpm); void ctx.suspend(at).then(() => { this.place = n; this.sync(); void ctx.resume(); }).catch(() => undefined); }
+    } };
+    // The browser is paused at every sixteenth. There the automated settings are moved, and the hits and notes
+    // of the step after are handed over: one step ahead, as when the song plays live. (Handing the whole song
+    // over at the start made every note exist from the first moment, so a song twice as long took about four
+    // times as long to work out, and a 32-bar song with eight tracks did not finish in ten minutes.)
+    // Whatever happens while it is paused, it must be let go, or the export would wait for ever.
+    hand(0);
+    for (let n = 0; n < steps; n++) { const at = this.began + n * stepSeconds(song.bpm); void ctx.suspend(at).then(() => {
+      try { if (moving) { this.place = n; this.sync(); } if (n + 1 < steps) hand(n + 1); } catch (e) { console.warn(`export: step ${n} could not be prepared`, e); } finally { void ctx.resume(); }
+    }).catch(() => undefined); }
     const buf = await ctx.startRendering(); this.place = -1;
     return buf;
   }

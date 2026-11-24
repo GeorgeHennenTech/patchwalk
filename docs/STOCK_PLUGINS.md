@@ -164,3 +164,7 @@ the ordinary low-pass set to a few Hz read a tenth short (`follower` in `fxnodes
 ## Checked together on a whole track (24 Nov 2026)
 All 32 effects and 8 note effects were run on the demo song (`scripts/checks/`): every one works, and every
 one switched off leaves the song unchanged to the last bit. Re-run those checks after adding or changing one.
+
+## Fixed on 25 Nov 2026
+- **Echo**: with Drive on, the feedback loop gained level each time round (it ran away at Drive 30, feedback
+  60). The loop is now turned down by what the drive curve adds (`echoFeedbackGain`), so it can never grow.

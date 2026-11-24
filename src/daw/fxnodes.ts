@@ -1,7 +1,7 @@
 // The audio of each device, built from the settings and maths in `devices.ts`. Every device is wrapped the
 // same way: the sound goes both through the effect and straight past it, and switching the device on or off
 // crossfades between the two, so nothing clicks and nothing restarts.
-import { CURVES, CAB_BUMP_Q, PRESENCE_HZ, TONE_HIGH_HZ, TONE_LOW_HZ, TONE_MID_HZ, ampDrive, cabinetOf, driveTable, pedalDrive, erosionSwing, ECHO_WOBBLE, FILTER_DELAY_LINES, autoFilterKind, echoDriveGain, echoSeconds, filterDelayLine, CHANNEL_CUT_HZ, CHANNEL_HIGH_HZ, CHANNEL_LOW_HZ, CHANNEL_MID_Q, DELAY_MAX_SECONDS, CHORUS_SWING, dbToGain, delayRouting, delayTimes, eq3Gains, eq8Band, lfoRateHz, mixGains, octavesToQ, overdriveGain, overdriveToneHz, panHarmonics, satTable, utilityMatrix, softClipTable, SOFT_CLIP_REACH, COLOUR_Q, DC_CUT_HZ, type Device } from "./devices";
+import { CURVES, CAB_BUMP_Q, PRESENCE_HZ, TONE_HIGH_HZ, TONE_LOW_HZ, TONE_MID_HZ, ampDrive, cabinetOf, driveTable, pedalDrive, erosionSwing, ECHO_WOBBLE, FILTER_DELAY_LINES, autoFilterKind, echoDriveGain, echoFeedbackGain, echoSeconds, filterDelayLine, CHANNEL_CUT_HZ, CHANNEL_HIGH_HZ, CHANNEL_LOW_HZ, CHANNEL_MID_Q, DELAY_MAX_SECONDS, CHORUS_SWING, dbToGain, delayRouting, delayTimes, eq3Gains, eq8Band, lfoRateHz, mixGains, octavesToQ, overdriveGain, overdriveToneHz, panHarmonics, satTable, utilityMatrix, softClipTable, SOFT_CLIP_REACH, COLOUR_Q, DC_CUT_HZ, type Device } from "./devices";
 import { stretchNode } from "./stretch";
 import { FLANGER_BASE, FLANGER_SWING, PHASER_Q, PHASER_STAGES, PHASER_SWING_CENTS, reverbImpulse } from "../synth/fx";
 import { DSP_KINDS } from "./dsp";
@@ -270,7 +270,7 @@ function echo(ctx: BaseAudioContext): Core {
   return { input: m.input, output: m.output, nodes: [...m.nodes, sum, d, low, high, shape, fb, late, duck, down, lfo, wob, ...fol.nodes], set(p, t, bpm) {
     const g = echoDriveGain(p.drive ?? 0);
     if (g !== made) { if (g === 1) shape.curve = null; else { const n = 4097, c = new Float32Array(n); for (let i = 0; i < n; i++) c[i] = Math.tanh(((2 * i) / (n - 1) - 1) * g) / Math.tanh(g); shape.curve = c; } made = g; }
-    to(d.delayTime, Math.max(0, echoSeconds(p, bpm) - block), t); to(fb.gain, Math.min(0.95, (p.feedback ?? 50) / 100), t); to(low.frequency, p.lowcut ?? 150, t); to(high.frequency, p.highcut ?? 5000, t);
+    to(d.delayTime, Math.max(0, echoSeconds(p, bpm) - block), t); to(fb.gain, echoFeedbackGain(p.feedback ?? 50, p.drive ?? 0), t); to(low.frequency, p.lowcut ?? 150, t); to(high.frequency, p.highcut ?? 5000, t);
     to(wob.gain, ((p.wobble ?? 0) / 100) * ECHO_WOBBLE, t); to(lfo.frequency, p.wobbleRate ?? 0.5, t); to(down.gain, -(p.duck ?? 0) / 100, t); m.set(p.mix ?? 35, t);
   } };
 }

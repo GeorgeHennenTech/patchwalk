@@ -207,3 +207,16 @@ describe("Utility's choice of side, and the Saturator's soft clip", () => {
     const t = softClipTable(); expect(t[(t.length - 1) / 2]).toBe(0); expect(t[t.length - 1]).toBeCloseTo(softClip(SOFT_CLIP_REACH), 6); expect(t[0]).toBeCloseTo(-softClip(SOFT_CLIP_REACH), 6);
   });
 });
+
+describe("the echo's feedback path", () => {
+  it("never lets a quiet sound come back louder than it went in, whatever the drive", async () => {
+    const { echoDriveGain, echoFeedbackGain } = await import("../src/daw/devices");
+    for (const drive of [0, 10, 30, 60, 100]) for (const feedback of [20, 60, 95, 100]) {
+      const g = echoDriveGain(drive), small = g === 1 ? 1 : g / Math.tanh(g);   // what the drive curve does to a quiet sound
+      const loop = echoFeedbackGain(feedback, drive) * small;
+      expect(loop).toBeCloseTo(Math.min(0.95, feedback / 100), 9);
+      expect(loop).toBeLessThan(1);
+    }
+    expect(echoFeedbackGain(50, 0)).toBe(0.5);
+  });
+});

@@ -2001,6 +2001,40 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   it into bands), and the Channel EQ set flat is not quite transparent (the difference is 31 dB down);
   Saturator, Overdrive, Amp, Pedal and Drum bus pushed hard on a full mix reach full scale, as expected,
   because nothing after them holds the level; Pitch shift and Shifter come out late, as documented.
+- **A second demo at the Studio's limits, and two real faults fixed (25 Nov 2026, owner: "make a psydub track with
+  really advanced sound design... i want to test the limits of this DAW").** `scripts/demo/psydub.ts` builds
+  "Deep Stitch" (32 bars, 86 bpm, D minor; `src/daw/demos/psydub.json`; Studio browser: Songs, "Deep Stitch
+  (demo)"): **eight tracks, 60 effects, 26 automation lanes, 39 clips, about 1,800 hits and notes.** Drums
+  with eight effects and four lanes (beat-repeat stutters and echo "throws" at phrase ends); hand drums rung
+  through resonators tuned to the key; a sliding dub bass ducked by the kick; an acid line (resonant 24 dB
+  filter, slides, velocity opening the filter, and a fast LFO on the cutoff that velocity scales through the
+  matrix); a pad of two wavetables through two filters side by side in sixteen-bar clips; an FM bell whose
+  FM dies away with the note; "zaps" whose pitch falls four octaves; noise sung into a chord by resonators,
+  with crackle, also making the risers; a long plate and a dub echo on the returns with automated feedback;
+  five effects and a fade on the master. Final file: 91.9 s, peak -1.9 dB, average -13.5 dB, no clipping.
+  The owner was sent it. **Nobody but the owner can judge how it sounds.**
+  **Faults found and fixed:**
+  1. **The Echo ran away whenever Drive was on.** The drive curve sits inside the feedback loop and turned
+     quiet sound up (by 3.1 times at Drive 30), so at feedback 60 each repeat came back louder until it filled
+     the track. `echoFeedbackGain` in `devices.ts` now turns the loop down by the same amount: a quiet repeat
+     returns at exactly the feedback set, a loud one is squashed, and the loop can never grow (tested).
+  2. **A long export never finished.** Every hit and note of the song was created at the start, so the
+     browser carried all of them through every moment and each automation step updated all of them: twice
+     the length cost about four times the time, and this song did not finish in ten minutes. `Transport.render`
+     now pauses at every sixteenth and hands over the next step's hits and notes there, one step ahead as in
+     live playing. This song exports in 4 min 18 s; the glitch-hop demo went from about 95 s to 50 s with
+     the same measured result. A step that fails while paused is reported and the export carries on
+     (before, it would have waited for ever, silently).
+  **Limits met, as designed:** a ninth track, a third return, a ninth effect on a track, a fifth lane, a 65th
+  point, a 17th pad, a 17-bar clip and an overlapping clip are each refused or held at the limit.
+  **Still weak (not fixed):** export is still slower than real time (4 min 18 s for 92 s); drums and synths
+  still need opposite fader extremes and Utility gain to balance (the drum fader here is at 92 and the hand
+  drums at 100 plus 8 dB, while in the glitch-hop demo the drums sat at 32: a track's level depends heavily
+  on its effects, and the fader has too little range either way); a song handed in with a length that is not
+  4, 8, 16 or 32 bars is set to 8 bars by `tidySong`, which would drop its later clips; knobs moved by the
+  synth's slow modulation still stand still in an export, so every moving sound here uses automation or the
+  fast destinations; sends cannot be automated (the echo throws automate the echo's own mix and feedback);
+  there is no phrygian scale for the key display; and there is still no loudness or width meter.
 - **Long pages are searched in parts (16 Nov 2026).** `splitText` in `src/library/search.ts` cuts a page over
   2,400 characters into overlapping parts of about 1,500 (ids `book#page~1`, `~2`, with `of` naming the
   page); `pageOf` and `cite` count parts of one page as one source, and `search` takes at most two parts of

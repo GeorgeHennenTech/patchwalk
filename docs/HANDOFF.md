@@ -657,3 +657,9 @@ minute and a half; there is no loudness or width meter. See `CLAUDE.md`, "A whol
 ## 24 Nov 2026: every effect tried on the demo track
 All 32 effects and 8 note effects were run on the demo song, by rendering and on the real page: all work,
 and each switched off is a clean bypass. The three checks are in `scripts/checks/` for re-running by hand.
+
+## 25 Nov 2026: a psydub demo at the Studio's limits; two faults fixed
+"Deep Stitch" (Studio, Songs list; source `scripts/demo/psydub.ts`) uses all eight tracks, 60 effects and 26
+automation lanes. Writing it found and fixed two faults: the Echo ran away whenever Drive was on, and a long
+song's export never finished (notes are now handed to the export one step ahead; exports are about twice as
+fast). Open: export is still slower than real time, track faders have too little range, no loudness meter.

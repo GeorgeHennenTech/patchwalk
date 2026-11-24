@@ -211,6 +211,7 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [ ] Studio: sensible default levels between drums and synth, and track faders in dB with real range
 - [ ] Studio: faster export (a 40 s song takes about 90 s)
 - [ ] Studio: a loudness (LUFS) and stereo-width meter on the master
+- [x] Every stock effect and note effect tried on the demo track: all 40 work (24 Nov 2026)
 - [ ] Lessons, next chapters in order: "When digital sound goes wrong", "Expression", "One delay, many effects", then the rest of the ten (`docs/CURRICULUM.md`, last section)
 - [ ] Write the 85 or so lessons from `docs/LESSON_IDEAS.md` that need nothing built (FM, ring and distortion, sync and formants, drum layers and breaks, expressive playing)
 - [ ] Small builds that each open several lessons (click source, peak and RMS meter, Q readout, invert on Osc B, flanger time knob, distortion bias, sample-and-hold LFO, per-note random, response curves, reverb freeze, sampler reverse, ghost strength, slice names): list in `docs/LESSON_IDEAS.md`

@@ -160,3 +160,7 @@ the ordinary low-pass set to a few Hz read a tenth short (`follower` in `fxnodes
 - [x] **Pitch shift** (23 Nov 2026): exact interval, speed kept; Signalsmith Stretch does the shifting. Measured:
   +7, +12, -12 semitones on 440 Hz gave 659.2, 880.5, 220.9 Hz. About an eighth of a second late.
 - The **Reverb** is now a plate reverb after Dattorro's 1997 paper (same knobs).
+
+## Checked together on a whole track (24 Nov 2026)
+All 32 effects and 8 note effects were run on the demo song (`scripts/checks/`): every one works, and every
+one switched off leaves the song unchanged to the last bit. Re-run those checks after adding or changing one.

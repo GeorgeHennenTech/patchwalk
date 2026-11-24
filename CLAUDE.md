@@ -1985,6 +1985,22 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
      Studio; the mix came out bass-heavy (40% of its energy under 60 Hz) and narrow (side 16 dB under mid).
   4. Everything else did what it should: every clip, device, automation lane, note effect, return, marker
      and master effect was accepted and played, with no page errors.
+- **Every stock effect tried on the demo track (24 Nov 2026, owner's request).** Three long checks, kept in
+  `scripts/checks/` (see its README; too slow for `npm run e2e`): (1) two bars of the demo rendered through
+  each of the 32 effects on the master, as it comes, pushed hard, and switched off, with the dice fixed so
+  renders can be compared sample by sample; (2) each of the 8 note effects on the pluck's notes; (3) on the
+  real page with the song playing, every effect and note effect clicked onto a track, a knob turned, a menu
+  and a switch set, switched off and on, and removed. **Result: all 40 work. No errors, no silence, no
+  runaway levels; every effect switched off left the song identical to the last bit (-86 dB, the file's own
+  rounding); Spectrum and Tuner change nothing; every effect changes the sound when pushed; every note
+  effect did its job** (Chord 22 notes to 65, Note echo to 81 with falling loudness, Pitch up an octave,
+  Scale onto the chosen scale, Note length to 0.03 s, Velocity into its range, Random and Arpeggiator
+  changing pitches and order). Things noticed, none of them faults: **two renders of one song differ unless
+  the dice are fixed** (note chance, Random, the drums' noise), so compare renders only with `Math.random`
+  seeded; the Three-band EQ and Multiband dynamics shift the sound's timing even when set flat (they split
+  it into bands), and the Channel EQ set flat is not quite transparent (the difference is 31 dB down);
+  Saturator, Overdrive, Amp, Pedal and Drum bus pushed hard on a full mix reach full scale, as expected,
+  because nothing after them holds the level; Pitch shift and Shifter come out late, as documented.
 - **Long pages are searched in parts (16 Nov 2026).** `splitText` in `src/library/search.ts` cuts a page over
   2,400 characters into overlapping parts of about 1,500 (ids `book#page~1`, `~2`, with `of` naming the
   page); `pageOf` and `cite` count parts of one page as one source, and `search` takes at most two parts of

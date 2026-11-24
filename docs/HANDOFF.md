@@ -653,3 +653,7 @@ The assistant wrote a 16-bar glitch-hop track in the Studio as a full test ("Sti
 Songs list; source `scripts/demo/glitchhop.ts`). It all worked, and it showed three things to fix: drums and
 synth tracks are 20 to 50 dB apart with a fader that only reaches +2 dB; exporting a 40 s song takes about a
 minute and a half; there is no loudness or width meter. See `CLAUDE.md`, "A whole track written in the Studio".
+
+## 24 Nov 2026: every effect tried on the demo track
+All 32 effects and 8 note effects were run on the demo song, by rendering and on the real page: all work,
+and each switched off is a clean bypass. The three checks are in `scripts/checks/` for re-running by hand.

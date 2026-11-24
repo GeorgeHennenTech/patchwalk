@@ -668,3 +668,95 @@ tr.dim td { opacity: 0.6; }
 .daw2 .br-items li.chosen > button:first-child { background: var(--s3); outline: 1px solid var(--on); }
 /* Drum rack: pad 1 bottom-left, rising in rows of four */
 .rack-pads { display: flex; flex-wrap: wrap-reverse; } .rack-pads .pad { width: calc((100% - 21px) / 4); }
+
+/* ---- Studio: mid-light grey look, in the spirit of Live's default theme (26 Nov 2026, owner's request).
+   Colours, proportions and square corners only: our own CSS, no Ableton artwork, fonts or logo. ---- */
+.daw2 { --s0: #858585; --s1: #a5a5a5; --s2: #b8b8b8; --s3: #cdcdcd; --ink: #0f0f0f; --dim: #333; --on: #ffb132; --line: #595959; --well: #c9c9c9; --lane: #8e8e8e; --lane2: #878787;
+  font: 11.5px/1.3 "Helvetica Neue", Arial, system-ui, sans-serif; border-radius: 0; box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35); }
+.daw2 button, .daw2 select, .daw2 input[type=text], .daw2 input[type=number], .daw2 input[type=search] { border-radius: 0; padding: 2px 7px; border-color: #4a4a4a; }
+.daw2 input[type=text], .daw2 input[type=number], .daw2 .br-find { background: var(--well); color: var(--ink); border-radius: 0; }
+.daw2 .tb { padding: 4px 8px; gap: 6px 14px; }
+.daw2 .tb-pos { background: var(--well); color: var(--ink); border-radius: 0; border-color: #4a4a4a; }
+.daw2 .tb-play { color: #0f0f0f; } .daw2 .tb-play.on { background: #3ad45b; border-color: #2a2a2a; color: #0f0f0f; }
+.daw2 .tb-rec { color: #c41f1f; } .daw2 .tb-rec.on { background: #f03a3a; color: #fff; border-color: #2a2a2a; }
+.daw2 .tb-back { background: #f0483a; color: #fff; }
+.daw2 .seg button.on, .daw2 .tb-tog.on, .daw2 [role=tab].on, .daw2 .primary, .daw2 .trk-on.on, .daw2 .arr-side-top > button.on, .daw2 .roll-fold button.on { background: var(--on); color: #0f0f0f; border-color: #3a3a3a; }
+.daw2 .daw-keys dt { color: #7a3d00; }
+/* browser: a darker sidebar of categories, a lighter list */
+.daw2 .br { background: var(--s1); } .daw2 .br-cats { background: #969696; padding-top: 4px; }
+.daw2 .br-cats button { color: #1a1a1a; padding: 3px 8px; } .daw2 .br-cats button.on { background: #b3d7e6; color: #000; }
+.daw2 .br-items li.chosen > button:first-child { background: #b3d7e6; outline: 0; }
+.daw2 .br-items li button:first-child:hover { background: #bcbcbc; }
+.daw2 .br-items li:nth-child(even) > button:first-child:not(:hover) { background-color: rgba(0, 0, 0, 0.045); } .daw2 .br-items li.chosen:nth-child(even) > button:first-child { background: #b3d7e6; }
+/* arrangement */
+.daw2 .arr { background: #6f6f6f; gap: 1px; padding-bottom: 0; }
+.daw2 .arr .arr-bars { background: var(--lane); }
+.daw2 .arr .arr-top .arr-bars { background: #a0a0a0; } .daw2 .arr-bar-n { color: #111; border-radius: 0; }
+.daw2 .arr .arr-slot { background: var(--lane); border-radius: 0; } .daw2 .arr .arr-slot.four { background: var(--lane2); } .daw2 .arr .arr-slot.part { background: var(--lane); }
+.daw2 .arr .arr-slot:hover { background: #9a9a9a; }
+.daw2 .arr .arr-clip { border-radius: 0; background: color-mix(in srgb, var(--tc) 62%, #9a9a9a); color: #0a0a0a; outline: 1px solid rgba(0, 0, 0, 0.45); outline-offset: -1px; }
+.daw2 .arr .arr-clip:hover { background: color-mix(in srgb, var(--tc) 72%, #a8a8a8); }
+.daw2 .arr .arr-clip.picked { outline: 2px solid #111; background: color-mix(in srgb, var(--tc) 45%, #e9e9e9); }
+.daw2 .arr .arr-clip .arr-clip-name { background: var(--tc); color: #0a0a0a; }
+.daw2 .arr .arr-clip.off { background: #9a9a9a; } .daw2 .arr .arr-clip.off .arr-clip-name { background: #7c7c7c; }
+.daw2 .arr-side { background: #9c9c9c; } .daw2 .arr-row.picked .arr-side { background: #bdbdbd; }
+.daw2 .arr-side-top { background: #a0a0a0; border-left-color: #a0a0a0; color: #222; }
+.daw2 .arr .arr-name { background: var(--tc, #b5b5b5); color: #0a0a0a; border-radius: 0; border-color: #3a3a3a; font-size: 11.5px; padding: 2px 5px; }
+.daw2 .arr .arr-name.master, .daw2 .arr-return .arr-name { background: #b5b5b5; }
+.daw2 .trk-on, .daw2 .trk-solo, .daw2 .trk-auto { border-radius: 0; }
+.daw2 .trk-solo.on { background: #3f8fe8; color: #fff; border-color: #2a2a2a; }
+.daw2 .trk-auto.on { background: #f0483a; color: #fff; border-color: #2a2a2a; }
+.daw2 .lvl { background: #3c3c3c; border-radius: 0; }
+.daw2 .arr-auto .arr-bars { background: #7d7d7d; } .daw2 .arr-auto .arr-side { background: #969696; border-left-color: #f0483a; }
+.daw2 .auto-pt { background: #fff; border-color: #e02a1c; } .daw2 .auto-line, .daw2 .arr-auto svg path { stroke: #e02a1c; }
+.daw2 .arr-return .arr-bars, .daw2 .arr-master .arr-bars { background: #7b7b7b; color: #1a1a1a; }
+.daw2 .arr-return .arr-side { border-left-color: #6a6a6a; } .daw2 .arr-master .arr-side { background: #9c9c9c; border-left-color: #4a4a4a; }
+.daw2 .arr-return .trk-on.on { background: var(--on); color: #0f0f0f; }
+.daw2 .arr-return-note { color: #1c1c1c; }
+.daw2 .arr-now { background: #111; } .daw2 .arr-cut { border-color: #111; }
+.daw2 .arr-loop { background: #d9d9d9; border: 1px solid #222; opacity: 0.85; }
+.daw2 .arr-mark { border-radius: 0; }
+.daw2 .arr-stereo { color: #222; }
+.daw2 .arr-zoom button { border-radius: 0; }
+/* detail view */
+.daw2 .detail { background: #8f8f8f; border-top-color: #4a4a4a; } .daw2 .detail-head { background: var(--s1); }
+.daw2 .daw-song { background: var(--s1); color: #222; padding: 4px 8px; }
+.daw2 .daw-status { background: var(--s1); color: #1c1c1c; }
+.daw2 .daw-hint, .daw2 .daw-roll-help { color: #1c1c1c; }
+.daw2 .linkish { color: #222; }
+/* piano roll: light rows, darker rows under the black keys, notes in the clip colour */
+.daw2 .roll { background: #a9a9a9; border-radius: 0; border: 1px solid #4a4a4a; }
+.daw2 .roll .roll-key { background: #f1f1f1; color: #111; border-bottom-color: #9a9a9a; } .daw2 .roll .roll-key.black { background: #2b2b2b; color: #ddd; }
+.daw2 .roll-area { background-color: #a9a9a9; background-image: linear-gradient(to right, rgba(0, 0, 0, 0.1) 1px, transparent 1px), linear-gradient(to right, rgba(0, 0, 0, 0.22) 1px, transparent 1px), linear-gradient(to right, rgba(0, 0, 0, 0.5) 1px, transparent 1px); }
+.daw2 .roll-row.black { background: rgba(0, 0, 0, 0.09); } .daw2 .roll-row.c { border-bottom: 1px solid rgba(0, 0, 0, 0.3); }
+.daw2 .roll-row.key { background: rgba(255, 255, 255, 0.16); } .daw2 .roll-row.key.root { background: rgba(255, 255, 255, 0.32); }
+.daw2 .roll-note { background: #ff9a3c; border: 1px solid #2a1400; border-radius: 0; color: #1c0d00; }
+.daw2 .roll-note.picked { background: #fff3e0; border-color: #000; box-shadow: 0 0 0 1px #000; color: #000; }
+.daw2 .roll-note.off { background: #c4c4c4; border-color: #6a6a6a; color: #444; }
+.daw2 .roll-now { background: #111; } .daw2 .roll-box { border-color: #111; background: rgba(255, 255, 255, 0.25); }
+.daw2 .roll-vel, .daw2 .roll-vel-name { background: #9a9a9a; color: #111; } .daw2 .roll-vel-area { background-image: linear-gradient(to right, rgba(0, 0, 0, 0.2) 1px, transparent 1px); }
+.daw2 .roll-vel-area i { background: #e0461f; } .daw2 .roll-vel-area i.picked { background: #111; }
+/* step grid and pads */
+.daw2 .drum-grid { background: #9c9c9c; color: #111; border-radius: 0; border: 1px solid #4a4a4a; }
+.daw2 .drum-grid .drum-name, .daw2 .drum-grid .drum-flag { background: var(--s2); border-color: #4a4a4a; border-radius: 0; color: #111; }
+.daw2 .drum-grid .drum-flag.on { background: var(--on); color: #111; } .daw2 .drum-grid .drum-flag.solo.on { background: #3f8fe8; color: #fff; }
+.daw2 .drum-grid .drum-clear { color: #333; }
+.daw2 .drum-grid .cell, .daw2 .daw-key .cell { background: #b4b4b4; border-color: #6e6e6e; border-radius: 0; } .daw2 .drum-grid .cell.odd { background: #a6a6a6; }
+.daw2 .cell.h1 { background: #ffd39a !important; border-color: #5a3a00 !important; } .daw2 .cell.h2 { background: #ff9a3c !important; border-color: #3a1c00 !important; } .daw2 .cell.h3 { background: #e0461f !important; border-color: #2a0a00 !important; box-shadow: none !important; }
+.daw2 .drum-grid .cell.now { border-color: #000; box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.55); }
+.daw2 .rack-pads { background: #7b7b7b; border-radius: 0; }
+.daw2 .rack-pads .pad { background: #b8b8b8; border: 1px solid #3a3a3a; border-radius: 0; color: #0f0f0f; box-shadow: none; }
+.daw2 .rack-pads .pad small { color: #333; } .daw2 .rack-pads .pad.picked { border-color: #000; box-shadow: 0 0 0 2px #111; background: #d9d9d9; }
+.daw2 .rack-pads .pad.lit { background: var(--on); } .daw2 .rack-pads .pad.lit small { color: #111; } .daw2 .rack-pads .pad.add { background: none; color: #222; border-style: dashed; }
+/* faders: thin flat tracks with a small dark handle, not the page's round orange sliders */
+.daw2 input[type=range] { -webkit-appearance: none; appearance: none; height: 12px; background: transparent; padding: 0; border: 0; cursor: ew-resize; }
+.daw2 input[type=range]::-webkit-slider-runnable-track { height: 4px; background: #3c3c3c; border: 0; }
+.daw2 input[type=range]::-moz-range-track { height: 4px; background: #3c3c3c; border: 0; }
+.daw2 input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 7px; height: 12px; margin-top: -4px; background: #111; border: 1px solid #e8e8e8; border-radius: 0; }
+.daw2 input[type=range]::-moz-range-thumb { width: 6px; height: 11px; background: #111; border: 1px solid #e8e8e8; border-radius: 0; }
+.daw2 input[type=range].automated::-webkit-slider-thumb { background: #e02a1c; } .daw2 input[type=range].automated::-moz-range-thumb { background: #e02a1c; }
+.daw2 input[type=range].automated.off::-webkit-slider-thumb { background: #777; } .daw2 input[type=range].automated.off::-moz-range-thumb { background: #777; }
+.daw2 .chain { background: #7b7b7b; border: 1px solid #3a3a3a; border-radius: 0; }
+.daw2 .primary, .daw2 .br-up { border-radius: 0; box-shadow: none; }
+.daw2 .pad-wave { background: #2b2b2b; border-radius: 0; } .daw2 .pad-wave .in { fill: #ff9a3c; } .daw2 .pad-wave .out { fill: #6a6a6a; }
+.daw2 .arr .arr-clip svg rect { fill: #101010; }

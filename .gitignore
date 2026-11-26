@@ -7,3 +7,6 @@ dist
 fixtures/local/
 test-results
 playwright-report
+
+# Splice sound files for the built-in drum kits: kept out of the repo until the owner decides (see CLAUDE.md, 26 Nov 2026)
+src/assets/kits/

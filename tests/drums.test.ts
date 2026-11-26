@@ -111,7 +111,7 @@ describe("the learner's own drum sounds", () => {
     expect(checkFile("notes.txt", "text/plain", 5000)).toMatch(/sound file/);
     expect(checkFile("a.wav", "audio/wav", 0)).toMatch(/empty/);
     expect(checkFile("a.wav", "audio/wav", SAMPLE_MAX_BYTES + 1)).toMatch(/12 MB/);
-    expect(checkFile("a.wav", "audio/wav", 10, 64)).toMatch(/Delete one/);
+    expect(checkFile("a.wav", "audio/wav", 10, 300)).toMatch(/Delete one/);
     expect(sampleName("My Kick 01.wav")).toBe("My Kick 01");
   });
 });

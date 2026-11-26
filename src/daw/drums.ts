@@ -147,6 +147,27 @@ export const GENRE_STARTERS: Pattern[] = [
   fromRows("Electro: classic", 125, { kick: "X.....x...x.x...", snare: "....X.......X...", hat: "x.x.x.x.x.x.x.x.", clap: "....x.......x...", openhat: "..............o." }, 0),
   fromRows("Electro: broken", 128, { kick: "X..x....x.x.....", snare: "....X.......X..x", hat: "xxx.xxx.xxx.xxx.", tomlow: "..............x." }, 0),
   fromRows("Electro: rim funk", 120, { kick: "X.....x..x..x...", clap: "....X.......X...", rim: "..x..x....x..x..", hat: "x.x.x.x.x.x.x.x." }, 0),
+  // Funk and jazz (27 Nov 2026). The swung "Jazz" ones (and the bossa) are written with one step as an EIGHTH note, so the
+  // tempo shown is half the tempo felt (70 here is a medium swing at 140) and one clip bar is two bars of music;
+  // "Jazz: fusion" and "Jazz: hip-hop swing" are ordinary sixteenths. No waltz: a clip cannot be in three yet.
+  fromRows("Funk: on the one", 100, { kick: "X.....x...x..x..", snare: "....X..o.o..X..o", hat: "x.x.x.x.x.x.x.x." }, 0),
+  fromRows("Funk: sixteenth hats", 96, { kick: "X..x......x.x...", snare: "....X.......X...", hat: "XoxoXoxoXoxoXoxo" }, 0),
+  fromRows("Funk: syncopated kick", 104, { kick: "X..x..x...x....x", snare: "....X..o....X.o.", hat: "x.x.x.x.x.x.x.x.", openhat: "..............o." }, 0),
+  fromRows("Funk: ghost notes", 98, { kick: "X.....x.x.....x.", snare: "..o.X.oo.o.oX.o.", hat: "x.x.x.x.x.x.x.x." }, 0),
+  fromRows("Funk: open hat barks", 108, { kick: "X..x....x.x.....", snare: "....X.......X...", hat: "x.x.x...x.x.x...", openhat: "......x.......x." }, 0),
+  fromRows("Funk: linear", 100, { kick: "X.....x..x......", snare: "....X.......X...", hat: "..xx.x.xx.xx.xxx" }, 0),
+  fromRows("Funk: half-time shuffle", 90, { kick: "X.........x.....", snare: "..o...o.X.o...o.", hat: "x.xxx.xxx.xxx.xx" }, 60),
+  fromRows("Funk: street beat", 96, { kick: "X.....x...x.x...", snare: "x.ox.ox.x.ox.oxX", openhat: "..............o." }, 45),
+  fromRows("Funk: disco funk", 112, { kick: "X...x...x...x...", snare: "....X.......X...", hat: "xoxoxoxoxoxoxoxo", openhat: "..x...x...x...x." }, 0),
+  fromRows("Funk: two bars", 102, { kick: "X.....x...x..x..X..x..x...x.....", snare: "....X..o.o..X.......X..o....X.oo", hat: "x.x.x.x.x.x.x.x.x.x.x.x.x.x.x.x.", openhat: "..............o...............o." }, 0),
+  fromRows("Jazz: swing ride", 70, { ride: "x.xxx.xxx.xxx.xx", hat: "..x...x...x...x.", kick: "o...o...o...o...", snare: "...........o...." }, 62),
+  fromRows("Jazz: comping", 75, { ride: "x.xxx.xxx.xxx.xx", hat: "..x...x...x...x.", snare: "...o......o..o..", kick: ".......x........" }, 62),
+  fromRows("Jazz: slow swing", 60, { ride: "x.xxx.xxx.xxx.xx", hat: "..x...x...x...x.", snare: ".....o.......o..", kick: "o.......o......." }, 64),
+  fromRows("Jazz: shuffle", 65, { hat: "xxxxxxxxxxxxxxxx", snare: "..X...X...X...X.", kick: "x...x...x...x..." }, 62),
+  fromRows("Jazz: bossa nova", 70, { rim: "x..x..x...x..x..", hat: "xxxxxxxxxxxxxxxx", kick: "x..xx..xx..xx..x" }, 0),
+  fromRows("Jazz: fusion", 110, { kick: "X..x..x..x....x.", snare: "....X..o.o..X...", ride: "x.x.x.x.x.x.x.x.", hat: "..x...x...x...x." }, 0),
+  fromRows("Jazz: hip-hop swing", 88, { kick: "X......x..x.....", snare: "....X.......X...", ride: "x.x.x.x.x.x.x.x.", rim: ".......o.....o.." }, 55),
+  fromRows("Jazz: four bars with bombs", 72, { ride: "x.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xx", hat: "..x...x...x...x...x...x...x...x.", snare: "...o......o..o.......o...o....oo", kick: "o...o...o..x....o...o.....x.o..." }, 62),
   fromRows("Glitch stutter", 110, { kick: "X.....x...x.....X..x..x...x.....", snare: "....X.......X.......X.......X.xx", hat: "x.xox.x.xxxox.x.x.xox.xxx.x.oooo", tomhigh: "...............x.............o.." }, 15),
   // Boom bap: slow, swung, a heavy kick and a snare on beats 2 and 4, soft "ghost" hits between
   fromRows("Boom bap: classic", 90, { kick: "X......x..x.....", snare: "....X.......X...", hat: "x.x.x.x.x.x.x.x." }, 40),

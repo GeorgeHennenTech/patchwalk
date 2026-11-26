@@ -2113,6 +2113,12 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   assistant's memory with no text in the library behind them: check against a source before a lesson teaches them.**
   "Reggae: one drop" has no hit on the first beat on purpose (the starter test allows that one). Nobody has heard
   them. Splice sounds for kits still wait on the owner's go-ahead to spend credits and on where the sounds may live.
+- **Funk and jazz patterns (27 Nov 2026, owner's request; "we can use these breaks in the lessons later").**
+  Eighteen more `GENRE_STARTERS` (74 now): ten "Funk: ..." and eight "Jazz: ...". **The swung jazz ones and the bossa
+  are written with one step as an eighth note** (the drum grid has no triplets), so their tempo is half the tempo
+  felt and one clip bar is two bars of music; the comment in `drums.ts` says so. Common shapes written for this page,
+  on the built-in drums, not heard by anyone. Not possible yet: anything in three (waltz, 6/8). The owner means these
+  patterns to be used by rhythm lessons later.
 - **Long pages are searched in parts (16 Nov 2026).** `splitText` in `src/library/search.ts` cuts a page over
   2,400 characters into overlapping parts of about 1,500 (ids `book#page~1`, `~2`, with `of` naming the
   page); `pageOf` and `cite` count parts of one page as one source, and `search` takes at most two parts of

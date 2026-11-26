@@ -57,7 +57,8 @@ describe("drum pattern", () => {
       expect(s.lanes.map((l) => l.id)).toEqual([...DEFAULT_VOICES]);
       for (const l of s.lanes) expect(l.steps).toHaveLength(s.length);
       expect(strikes(s, 0, s.length).length).toBeGreaterThan(6);
-      expect(s.lanes[0]!.steps[0]).toBeGreaterThan(0); // a kick on the first beat
+      // something on the first beat (a one drop is the exception: its whole point is the empty first beat)
+      if (s.name !== "Reggae: one drop") expect(s.lanes.some((l) => l.steps[0]! > 0)).toBe(true);
     }
   });
   it("makes a stored pattern safe", () => {

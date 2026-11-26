@@ -225,6 +225,7 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [ ] Studio audio: check an exported file with an audio track; fades; drag a file onto a lane; warp that keeps pitch and follows tempo
 - [x] Studio: four boom bap and four breakbeat starting patterns under Clips (26 Nov)
 - [ ] Studio: genre drum kits from the owner's Splice sounds, with patterns saved for them. Waiting on: the Splice connector reconnected, and the owner's answer on sharing those sounds with friends
+- [x] Studio: 39 more starting drum patterns across the owner's genre list (trip-hop, breaks, big beat, jungle, liquid and halftime DnB, glitch-hop, dubstep, UK garage, footwork, club pop, psydub, reggae and dub, eastern, electro) (26 Nov)
 - [ ] Lessons, next chapters in order: "When digital sound goes wrong", "Expression", "One delay, many effects", then the rest of the ten (`docs/CURRICULUM.md`, last section)
 - [ ] Write the 85 or so lessons from `docs/LESSON_IDEAS.md` that need nothing built (FM, ring and distortion, sync and formants, drum layers and breaks, expressive playing)
 - [ ] Small builds that each open several lessons (click source, peak and RMS meter, Q readout, invert on Osc B, flanger time knob, distortion bias, sample-and-hold LFO, per-note random, response curves, reverb freeze, sampler reverse, ghost strength, slice names): list in `docs/LESSON_IDEAS.md`

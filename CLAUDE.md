@@ -2106,6 +2106,13 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   the live site's library (patterns ship in code, or the owner saves them from the Studio), and **Splice licenses its
   sounds to the account holder for use in music, not for passing the sounds on, so they should not go into the
   library that friends share, nor into the repo, without the owner checking their licence.**
+- **39 more genre patterns (26 Nov 2026, owner's list).** `GENRE_STARTERS` now holds 56 patterns: trip-hop, more
+  breaks, big beat, jungle, liquid and halftime DnB, glitch-hop, dubstep, UK garage, footwork and juke, club pop,
+  psydub, reggae and dub, electro, and four "Eastern" ones (maqsum, baladi, saidi, ayoub: low tom as "dum", rim as
+  "tek"). All on the built-in drums, common shapes written for this page. **The Eastern four were written from the
+  assistant's memory with no text in the library behind them: check against a source before a lesson teaches them.**
+  "Reggae: one drop" has no hit on the first beat on purpose (the starter test allows that one). Nobody has heard
+  them. Splice sounds for kits still wait on the owner's go-ahead to spend credits and on where the sounds may live.
 - **Long pages are searched in parts (16 Nov 2026).** `splitText` in `src/library/search.ts` cuts a page over
   2,400 characters into overlapping parts of about 1,500 (ids `book#page~1`, `~2`, with `of` naming the
   page); `pageOf` and `cite` count parts of one page as one source, and `search` takes at most two parts of

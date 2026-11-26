@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DrumGrid } from "./DrumGrid";
 import { Arrangement } from "./studio/Arrangement";
 import { AudioClipPanel } from "./studio/AudioClipPanel";
+import { KITS, kitFile, kitSlots, type DrumKit } from "../daw/kits";
 import { DrumRack } from "./studio/DrumRack";
 import { automate, movedLanes, overKey, recordMoves } from "../daw/automation";
 import { DRAG_DEVICE, DeviceChain } from "./studio/DeviceChain";
@@ -22,7 +23,7 @@ import { PianoRoll } from "./studio/PianoRoll";
 import { TrackSynth } from "./studio/TrackSynth";
 import { firstSong, useStudio } from "./studio/useStudio";
 import { libPut } from "../guide/library";
-import { newPad, SLICE_COUNTS, BPM_MAX, BPM_MIN, GENRE_STARTERS, STARTERS, STEPS_PER_BAR, SWING_MAX, VOICES, VOICE_NAMES, addPad, clearAll, setHit, setSample, tidySteps, type Pattern, type Voice } from "../daw/drums";
+import { newPad, freeId, SLICE_COUNTS, BPM_MAX, BPM_MIN, GENRE_STARTERS, STARTERS, STEPS_PER_BAR, SWING_MAX, VOICES, VOICE_NAMES, addPad, clearAll, setHit, setSample, tidySteps, type Pattern, type Voice } from "../daw/drums";
 import { PPQ, hitsToMidi, midiBars, midiToHits, midiToNotes, notesToMidi, readMidi, songToMidi, writeMidi } from "../daw/midi";
 import { tidySong, addAudioClip, setAudioClip, clipKind, BEAT, soloOnly, toggleNotesOff, CLIP_BARS, okBars, placeName, MAX_RETURNS, MAX_TRACKS, addReturn, setReturn, SONG_BARS, SOUNDS, addClip, addTrack, clipOf, clipPattern, duplicateClip, duplicateNotes, doubleClip, setMarker, markerFrom, randomVelocity, setSampler, sliceToTrack, quantizeNotes, GRIDS, invertNotes, legatoNotes, reverseNotes, scaleTime, hasOtherMusic, moveClip, newSong, noteKey, pasteClip, removeClip, setClipBars, joinClips, placeClip, splitClip, setDevices, setNoteFx, setNotes, setPatch, setSongBars, setSongSwing, setSongTempo, setTrack, shiftNotes, soundPatch, stretchNotes, toggleClipOff, trackOf, withPads, withPattern, type Clip, type DrumClip, type DrumTrack, type NoteEv, type Song } from "../daw/song";
 import { loadBreaks, loadRacks, loadSaved, loadSongs, rackOnto, saveSong, storeBreaks, storeRacks, storeSongs, withNamed, withSavedSong, withoutSavedSong, type Break, type Rack } from "../daw/store";
@@ -167,7 +168,7 @@ export default function DawView() {
     }, adopt ? setSongSwing(setSongTempo(s, tempo!.bpm), tempo!.swing) : s));
     setNote(`${targets.length > 1 ? `Filled ${targets.length} clips` : "Filled the clip"} with “${name}”.${tail}`);
   };
-  const fill = (from: Pattern) => fillWith(from.name, from.length / STEPS_PER_BAR, (l, _i, used) => { const src = l.sample || used.has(l.voice) ? undefined : from.lanes.find((x) => x.voice === l.voice); if (src) used.add(l.voice); return src?.steps; },
+  const fill = (from: Pattern) => fillWith(from.name, from.length / STEPS_PER_BAR, (l, _i, used) => { const src = used.has(l.voice) ? undefined : from.lanes.find((x) => x.voice === l.voice); if (src) used.add(l.voice); return src?.steps; },
     from.bpm !== song.bpm || from.swing !== song.swing ? ` It was written for ${from.bpm} bpm${from.swing ? ` with ${from.swing}% swing` : ""}; the song stays at ${song.bpm}.` : "", { bpm: from.bpm, swing: from.swing });
   const engine = track?.kind === "synth" ? transport.engine(track.id) : undefined;
 
@@ -239,6 +240,29 @@ export default function DawView() {
     const made = addTrack(song, "synth", name), id = made.tracks.at(-1)!.id;
     if (made === song) { setNote("A song holds eight tracks at most."); return; }
     change(setPatch(made, id, { ...patch, bpm: song.bpm })); pick(id); setNote(`Added a synth track with the sound “${name}”.`);
+  };
+  // A built-in kit: its sound files are fetched, kept like uploaded sounds, and put on the selected drum track's pads.
+  // Each goes on the first pad of its kind (the kick's file on the kick pad), so the starting patterns still fit.
+  const [kitBusy, setKitBusy] = useState("");
+  const useKit = async (kit: DrumKit) => {
+    if (!track || track.kind !== "drums" || !pattern) { setNote("Select a drum track first, then double-click a kit."); return; }
+    if (kitBusy) return;
+    setKitBusy(kit.id); setNote(`Fetching the ${kit.name} kit…`);
+    try {
+      const got: [Voice, { id: string }][] = [];
+      for (const [voice, slot] of kitSlots(kit)) {
+        const url = await kitFile(kit, slot); if (!url) continue;
+        const bytes = await (await fetch(url)).arrayBuffer();
+        const made = await studio.addSample(new File([bytes], `${kit.name} ${VOICE_NAMES[voice] ?? voice}.wav`, { type: "audio/wav" }), 0);
+        got.push([voice, made]);
+      }
+      if (!got.length) { setNote(`The ${kit.name} kit's sound files are not on this copy of the site.`); return; }
+      studio.mark();
+      change((s) => { const t = trackOf(s, track.id); if (!t || t.kind !== "drums") return s; let pads = t.pads.slice();
+        for (const [voice, made] of got) { const i = pads.findIndex((p) => p.voice === voice); if (i >= 0) pads[i] = { ...pads[i]!, sample: made.id, name: VOICE_NAMES[voice] ?? pads[i]!.name, tune: 0, start: 0, length: 100, fade: 0 }; else if (pads.length < 16) pads = [...pads, { ...newPad(freeId(pads.map((p) => p.id), "p"), voice), sample: made.id }]; }
+        return withPads(s, track.id, pads); });
+      setView("device"); setNote(`Put the ${kit.name} kit on ${track.name}: ${got.length} of its pads now play the kit's sounds, the rest keep the built-in drums. The starting patterns under Clips fit it.`);
+    } catch (e) { setNote(e instanceof Error ? e.message : "The kit could not be loaded."); } finally { setKitBusy(""); }
   };
   const usePad = (voice: Voice, sample?: { id: string; name: string }) => {
     if (!track || track.kind !== "drums" || !pattern) { setNote("Select a drum track first, then click a drum to add it as a pad."); return; }
@@ -378,7 +402,7 @@ export default function DawView() {
           <div className="br-items">
             <input type="search" className="br-find" value={find} placeholder="Search this list" aria-label="Search this list" onChange={(e) => setFind(e.target.value)} onKeyDown={(e) => { if (e.key === "Escape") setFind(""); e.stopPropagation(); }} />
             {cat === "Sounds" && <><p className="br-hint">Double-click a sound to put it on the selected synth track, or to add a synth track.</p><ul>{SOUNDS.map((s) => item(s.name, () => useSound(s.name, soundPatch(s.name))))}</ul>{patches.length > 0 && <><h4>Your sounds</h4><ul>{patches.map((p) => item(p.name, () => useSound(p.name, p.state)))}</ul></>}</>}
-            {cat === "Drums" && <><p className="br-hint">Click a drum to hear it. Double-click to add it as a pad on the selected drum track.</p><ul>{VOICES.map((v) => item(VOICE_NAMES[v], () => usePad(v), undefined, undefined, undefined, () => transport.hitPad("", newPad("hear", v))))}</ul></>}
+            {cat === "Drums" && <>{KITS.length > 0 && <><h4>Kits</h4><p className="br-hint">Sets of recorded drum sounds, one for each style. Double-click a kit to put it on the selected drum track.</p><ul>{KITS.map((k) => item(`${k.name} kit`, () => { void useKit(k); }, `${kitSlots(k).length} sounds: ${kitSlots(k).map(([v]) => VOICE_NAMES[v] ?? v).join(", ")}`))}</ul><h4>Single drums</h4></>}<p className="br-hint">Click a drum to hear it. Double-click to add it as a pad on the selected drum track.</p><ul>{VOICES.map((v) => item(VOICE_NAMES[v], () => usePad(v), undefined, undefined, undefined, () => transport.hitPad("", newPad("hear", v))))}</ul></>}
             {cat === "Samples" && <><input ref={sampleIn} type="file" multiple accept="audio/*,.wav,.mp3,.flac,.ogg,.aif,.aiff,.m4a" hidden onChange={(e) => { const files = [...(e.target.files ?? [])]; e.target.value = ""; if (files.length) void upload(files); }} /><button className="br-up primary" onClick={() => sampleIn.current?.click()}>Upload sound files…</button><p className="br-hint">Your sound files. Click one to hear it. Double-click to add it as a pad on the selected drum track; with a synth track selected, to play it across the keys (a sampler); with an audio track selected, to put it on the timeline as a clip at the time marker. You can choose several files at once.</p>{samples.length === 0 ? <p className="br-none">None yet.</p> : <ul>{samples.map((s) => item(s.name, () => { if (track?.kind === "audio") { const made = addAudioClip(song, track.id, { id: s.id, name: s.name, seconds: transport.seconds(s.id) }, mark !== undefined ? mark : clip ? clip.start + clip.bars : 0); if (!made) { setNote(transport.seconds(s.id) > 0 ? "There is no free room on this track from there on." : "That sound is still being read. Try again in a moment."); return; } studio.mark(); change(made.song); pick(track.id, made.clip); setView("clip"); setNote(`Put “${s.name}” on ${track.name}.`); } else if (track?.kind === "synth") { studio.mark(); change((x) => setSampler(x, track.id, { ...(track.sampler ?? newSampler(s.id)), sample: s.id })); setView("device"); setNote(`${track.name} now plays “${s.name}” across the keys.`); } else usePad("kick", s); }, undefined, () => { if (window.confirm(`Delete “${s.name}” from this browser? Pads that use it go back to a built-in drum.`)) studio.removeSample(s.id); }, undefined, () => transport.hitPad("", { ...newPad("hear", "kick"), sample: s.id }),
               <button className="br-x br-hear" aria-label={`Slice ${s.name} onto pads`} title="Slice it onto pads: a new drum track with one pad for each equal slice, and a clip that plays them in order" onClick={() => { const n = Number(window.prompt(`Cut “${s.name}” into how many equal slices? 4, 8 or 16`, "8")); if (!n) return; const made = sliceToTrack(song, s.id, s.name, n); if (!made) { setNote((SLICE_COUNTS as readonly number[]).includes(n) ? "A song holds eight tracks at most." : "Choose 4, 8 or 16 slices."); return; } studio.mark(); change(made.song); pick(made.track, made.clip); setView("clip"); setNote(`Sliced “${s.name}” into ${n} pads on a new track. Its clip plays them in order: move the hits to rearrange the loop.`); }}>✂</button>))}</ul>}</>}
             {cat === "Audio Effects" && <><p className="br-hint">Double-click an effect to add it to the end of the selected track's chain, or drag it into the chain where you want it.</p><ul>{DEVICES.map((d) => item(d.name, () => { if (back) { const next = addDevice(back.devices, d.kind); if (next === back.devices) { setNote("A track holds eight effects at most."); return; } studio.mark(); setBackDevices(next); setNote(`Added ${d.name} to ${back.name}.`); return; } if (!track) { setNote("Select a track first."); return; } const next = addDevice(track.devices, d.kind); if (next === track.devices) { setNote("A track holds eight effects at most."); return; } studio.mark(); change((s) => setDevices(s, track.id, next)); setView("device"); setNote(`Added ${d.name} to ${track.name}.`); }, d.about, undefined, d.kind))}</ul></>}

@@ -1,7 +1,7 @@
 // The learner's own sound files. They are kept in this browser's own storage (IndexedDB) and nowhere else:
 // nothing here sends a file anywhere.
 export interface StoredSample { id: string; name: string; bytes: ArrayBuffer; added: number }
-export const SAMPLE_MAX_BYTES = 12 * 1024 * 1024, SAMPLES_MOST = 64;
+export const SAMPLE_MAX_BYTES = 12 * 1024 * 1024, SAMPLES_MOST = 300;
 const KINDS = /\.(wav|wave|mp3|ogg|oga|flac|aif|aiff|m4a|aac|webm)$/i;
 
 /** Why a file cannot be taken as a sound, in words for the learner; nothing when it can. */

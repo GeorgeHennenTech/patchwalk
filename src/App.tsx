@@ -9,6 +9,7 @@ import { AskView } from "./ui/AskView";
 import { DriverPage } from "./ui/DriverDiagram";
 import ModelLabs from "./ui/ModelLabs";
 import DawView from "./ui/DawView";
+import RhythmView from "./ui/RhythmView";
 import LibraryView from "./ui/LibraryView";
 import { CompareView } from "./ui/CompareView";
 import { DisplayTable } from "./ui/DisplayTable";
@@ -72,7 +73,7 @@ function SoundType({ analysis }: { analysis: Analysis }) {
 
 export function App() {
   const [state, setState] = useState<State>({ kind: "empty" });
-  const [mode, setMode] = useState<"rebuild" | "play" | "learn" | "ask" | "walks" | "sound" | "studio" | "strings" | "check">("rebuild");
+  const [mode, setMode] = useState<"rebuild" | "play" | "learn" | "ask" | "walks" | "sound" | "studio" | "rhythm" | "strings" | "check">("rebuild");
   const [tab, setTab] = useState<TabId>("lesson");
   // A lesson the guide has pointed to. The counter makes a second click on the same lesson count.
   const [wanted, setWanted] = useState<{ id: string; n: number }>();
@@ -121,6 +122,7 @@ export function App() {
           <button role="tab" aria-selected={mode === "walks"} className={mode === "walks" ? "on" : ""} onClick={() => setMode("walks")}>Library</button>
           <button role="tab" aria-selected={mode === "sound"} className={mode === "sound" ? "on" : ""} onClick={() => setMode("sound")}>Sound systems</button>
           <button role="tab" aria-selected={mode === "studio"} className={mode === "studio" ? "on" : ""} onClick={() => setMode("studio")}>Studio</button>
+          <button role="tab" aria-selected={mode === "rhythm"} className={mode === "rhythm" ? "on" : ""} onClick={() => setMode("rhythm")}>Rhythm</button>
           <button role="tab" aria-selected={mode === "strings"} className={mode === "strings" ? "on" : ""} onClick={() => setMode("strings")}>Physical models</button>
           <button role="tab" aria-selected={mode === "check"} className={mode === "check" ? "on" : ""} onClick={() => setMode("check")}>System check</button>
         </div>}
@@ -147,6 +149,7 @@ export function App() {
       {mode === "walks" && <LibraryView />}
       {mode === "sound" && <DriverPage />}
       {mode === "studio" && <DawView />}
+      {mode === "rhythm" && <RhythmView />}
       {mode === "strings" && <ModelLabs />}
       {mode === "check" && <><SelfTest cards={CARDS} /><DatabaseCheck /></>}
 

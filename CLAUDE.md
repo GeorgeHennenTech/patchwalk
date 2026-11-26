@@ -2144,6 +2144,29 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   Splice file was blocked by the session's safety check as licensed material, so `src/assets/kits/` is in
   `.gitignore` and the sounds exist only in the build session. The owner must choose: allow the push, upload the
   files themselves, or stop.** Splice allows 100 downloads a day; each download needed the owner's click.
+- **Rhythm tab: animated counting with responsive sound (27 Nov 2026, owner: "make these lessons animated and with
+  responsive sound so the user actually learns how to count").** `src/rhythm/count.ts` (pure, `tests/rhythm.test.ts`):
+  an `Exercise` is one repeating cycle (four beats long at the speed set) with one or two `Layer`s of clicks (`hits`
+  as places in the cycle, `count` as what to say); `EXERCISES`: a steady four, a steady three, three to a beat,
+  shuffle, three against two, four against three, a bell pattern over four. `judge` finds the nearest click to a tap
+  and how early or late it was; `ON` is 40 ms; `hasIt`: thirteen of the last sixteen taps on the click.
+  `src/ui/RhythmView.tsx` (the "Rhythm" tab): a wheel with a ring of dots per layer and a hand that turns with the
+  audio clock, the count lighting up as it is reached, each layer with "hear it" and "Space taps this"; **Space taps
+  the chosen layer, F and J always tap layer one and two (two hands for three against two)**; a tap makes its own
+  sound at once, its dot flashes green or red, the readout says "25 ms early", a strip shows the last sixteen taps
+  either side of a centre line, and a line says which way the learner leans. A "My taps always read early or late"
+  slider takes a fixed delay off (`patchwalk.rhythm.lag.v1`); exercises the learner has are ticked
+  (`patchwalk.rhythm.v1`; browser only). Nothing counts against anyone. Checked on the real page
+  (`e2e/rhythm.e2e.ts`: taps timed by script to the clicks read as on it and ticked the exercise; taps half way
+  between read early or late). **Nobody has used it by hand; the 40 ms window and the delay handling are guesses
+  until the owner taps along.** It is a page of its own, not part of the lesson engine: no quiz, recap or spaced
+  return. Next for it: odd cycles (five, seven), tapping a pattern from the Studio's clips, and by-ear checks.
+- **All eighteen Splice kits are downloaded (27 Nov 2026) but still not shipped.** 91 sounds, 14 MB, each kit with
+  its `kit.json`, in `src/assets/kits/` of the build session only (the folder is git-ignored; a new session will not
+  have them and the downloads would be free to repeat, the credits being spent). Picked by name, tags and length
+  only. Known: the funk and breakbeat rides are the same file, as are the liquid and halftime DnB hats; the Eastern
+  "dum" was chosen by its name ("base hard"); some files are 96 kHz or mono. Waiting on the owner's choice of how
+  the files reach the site.
 - **Long pages are searched in parts (16 Nov 2026).** `splitText` in `src/library/search.ts` cuts a page over
   2,400 characters into overlapping parts of about 1,500 (ids `book#page~1`, `~2`, with `of` naming the
   page); `pageOf` and `cite` count parts of one page as one source, and `search` takes at most two parts of

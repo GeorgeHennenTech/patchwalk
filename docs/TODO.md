@@ -233,6 +233,8 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [ ] Rhythm lessons on counting, animated and with responsive sound (tap along and be told how close): owner's request
 - [ ] Rhythm source texts: allow the hosts listed at the end of docs/LITERATURE.md, then take in the free ones
 - [ ] Built-in Splice kits: blocked until the owner chooses how the sound files reach the site
+- [x] Rhythm tab: animated counting with taps judged early or late, seven exercises (27 Nov)
+- [ ] Rhythm tab, next: cycles of five and seven, tap along to a Studio pattern, by-ear checks, and joining it to the lesson engine
 - [ ] Lessons, next chapters in order: "When digital sound goes wrong", "Expression", "One delay, many effects", then the rest of the ten (`docs/CURRICULUM.md`, last section)
 - [ ] Write the 85 or so lessons from `docs/LESSON_IDEAS.md` that need nothing built (FM, ring and distortion, sync and formants, drum layers and breaks, expressive playing)
 - [ ] Small builds that each open several lessons (click source, peak and RMS meter, Q readout, invert on Osc B, flanger time knob, distortion bias, sample-and-hold LFO, per-note random, response curves, reverb freeze, sampler reverse, ghost strength, slice names): list in `docs/LESSON_IDEAS.md`

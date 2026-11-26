@@ -74,14 +74,14 @@ export function readMidi(bytes: Uint8Array): MidiFile | undefined {
 }
 
 /** A drum clip's rows (in pad order) as MIDI notes: pad 1 is C1, pad 2 the key above, and so on. */
-export const hitsToMidi = (rows: Hit[][], offsetSteps = 0): MidiNote[] => rows.flatMap((row, pad) => row.flatMap((h, i) => (h ? [{ note: DRUM_BASE + pad, start: (offsetSteps + i) * TICKS_PER_STEP, length: TICKS_PER_STEP / 2, velocity: HIT_VELOCITY[h] }] : [])));
+export const hitsToMidi = (rows: Hit[][], offsetSteps = 0, /** steps in a bar the rows are written in */ grid = 16): MidiNote[] => rows.flatMap((row, pad) => row.flatMap((h, i) => (h ? [{ note: DRUM_BASE + pad, start: Math.round((offsetSteps + (i * 16) / grid) * TICKS_PER_STEP), length: TICKS_PER_STEP / 2, velocity: HIT_VELOCITY[h] }] : [])));
 export const notesToMidi = (notes: NoteEv[], offsetSteps = 0): MidiNote[] => notes.map((n) => ({ note: n.note, start: (offsetSteps + n.start) * TICKS_PER_STEP, length: n.length * TICKS_PER_STEP, velocity: n.velocity }));
 const stepOf = (ticks: number, ppq: number) => Math.round((ticks / ppq) * 4);
 /** MIDI notes as rows for `pads` pads over `steps` steps. Notes below C1, above the last pad or past the end are left out; the count of those is given back. */
-export function midiToHits(notes: MidiNote[], ppq: number, pads: number, steps: number): { rows: Hit[][]; left: number } {
+export function midiToHits(notes: MidiNote[], ppq: number, pads: number, steps: number, /** steps in a bar to read the notes onto */ grid = 16): { rows: Hit[][]; left: number } {
   const rows = Array.from({ length: pads }, () => Array.from({ length: steps }, () => 0 as Hit));
   let left = 0;
-  for (const n of notes) { const pad = n.note - DRUM_BASE, step = stepOf(n.start, ppq); if (pad < 0 || pad >= pads || step < 0 || step >= steps) { left++; continue; } rows[pad]![step] = hitOf(n.velocity); }
+  for (const n of notes) { const pad = n.note - DRUM_BASE, step = grid === 16 ? stepOf(n.start, ppq) : Math.round((n.start / ppq) * (grid / 4)); if (pad < 0 || pad >= pads || step < 0 || step >= steps) { left++; continue; } rows[pad]![step] = hitOf(n.velocity); }
   return { rows, left };
 }
 /** MIDI notes as a synth clip's notes, snapped to sixteenth steps, within `steps` steps. */
@@ -99,5 +99,5 @@ export const midiBars = (notes: MidiNote[], ppq: number): number => Math.max(1, 
 /** A whole song as a MIDI file: a track per track, clips at their bars. */
 export function songToMidi(s: Song): Uint8Array {
   return writeMidi({ ppq: PPQ, bpm: s.bpm, tracks: s.tracks.flatMap((t) => (t.kind === "audio" ? [] : [t])).map((t) => ({ name: t.name, channel: t.kind === "drums" ? 9 : 0,
-    notes: t.kind === "drums" ? t.clips.flatMap((c) => hitsToMidi(t.pads.map((p) => c.hits[p.id] ?? []), c.start * STEPS_PER_BAR)) : t.clips.flatMap((c) => notesToMidi(c.notes, c.start * STEPS_PER_BAR)) })) });
+    notes: t.kind === "drums" ? t.clips.flatMap((c) => hitsToMidi(t.pads.map((p) => c.hits[p.id] ?? []), c.start * STEPS_PER_BAR, c.grid ?? 16)) : t.clips.flatMap((c) => notesToMidi(c.notes, c.start * STEPS_PER_BAR)) })) });
 }

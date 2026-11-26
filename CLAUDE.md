@@ -2119,6 +2119,31 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
   felt and one clip bar is two bars of music; the comment in `drums.ts` says so. Common shapes written for this page,
   on the built-in drums, not heard by anyone. Not possible yet: anything in three (waltz, 6/8). The owner means these
   patterns to be used by rhythm lessons later.
+- **Rhythms in threes: the triplet grid (27 Nov 2026, owner: "love this... yes begin").** A drum clip can be written
+  on its own grid: `DrumClip.grid` 12 (three steps to a beat) or 24 (six), 16 when left out; `gridOf`, `clipSteps`,
+  `setClipGrid` (hits move to the nearest step; the harder wins), `DRUM_GRIDS` in `song.ts`; `Pattern.grid`.
+  `songEvents` plays a clip in threes cell by cell at its own place inside each sixteenth, **without swing** (swing is
+  a matter of sixteenths). Length, split, join (same grid only), `tidySong`, saved breaks (`Break.grid`) and MIDI in
+  and out (`hitsToMidi` and `midiToHits` take the grid) keep to it. On the page: a **Grid** menu on a drum clip
+  (1/16, 1/8 triplets, 1/16 triplets); the step grid groups its cells by the beat; ten `TRIPLET_STARTERS` under
+  Clips, "In threes" (shuffles, 12/8, swing ride, a bell pattern, three against two, four against three, trap
+  triplet hats). Tested (`tests/song.test.ts`: hits land exactly a third of a beat apart) and on the real page
+  (`e2e/threes.e2e.ts`; eleven browser tests). Nobody has heard it. **The owner's plan for threes, in order: (1) the
+  grid (done), then a clip that loops at its own length against the bar, then bars of other lengths (3/4, 5/4, 7/8);
+  (2) patterns; (3) triplet and dotted settings in the synth lessons; (4) lessons on counting, which the owner wants
+  ANIMATED AND WITH RESPONSIVE SOUND so the learner really learns to count (tap along, be shown and told how close);
+  (5) source texts.** Also wanted by the owner: trap, IDM / drill'n'bass and odd-meter patterns; more on second line,
+  go-go, Motown and soul, Miami bass and electro-funk; the other styles offered that day are dropped unless argued
+  for (clave, dembow, grime and broken beat were argued for; no answer yet). Source texts were researched
+  (`docs/LITERATURE.md`, last section): the helper could open no page, so nothing is confirmed beyond search results.
+- **Built-in drum kits from Splice (26 to 27 Nov 2026): half done, blocked.** The owner approved the credits and
+  said to build the sounds into the site. `src/daw/kits.ts` (`KITS`, `kitFile`, `kitSlots`; a kit is a folder under
+  `src/assets/kits/` with a `kit.json`), a "Kits" list under Drums in the browser and `useKit` in `DawView.tsx` (each
+  sound goes on the first pad of its kind, so the starting patterns fit; a pattern now fills pads that play a file
+  too), `tests/kits.test.ts`; the limit on stored sounds went from 64 to 300. **Not shipped: a push of the first
+  Splice file was blocked by the session's safety check as licensed material, so `src/assets/kits/` is in
+  `.gitignore` and the sounds exist only in the build session. The owner must choose: allow the push, upload the
+  files themselves, or stop.** Splice allows 100 downloads a day; each download needed the owner's click.
 - **Long pages are searched in parts (16 Nov 2026).** `splitText` in `src/library/search.ts` cuts a page over
   2,400 characters into overlapping parts of about 1,500 (ids `book#page~1`, `~2`, with `of` naming the
   page); `pageOf` and `cite` count parts of one page as one source, and `search` takes at most two parts of

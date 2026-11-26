@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { STARTERS, STRENGTH } from "../src/daw/drums";
-import { samplesUsed, addAudioClip, setAudioClip, audioRate, audioBars, type AudioClip, type SongEvent, toggleNotesOff, soloOnly, sliceToTrack, quantizeNotes, snapStep, GRIDS, setMarker, doubleClip, inKey, invertNotes, legatoNotes, reverseNotes, scaleTime, setChance, noteKey as keyOf, addReturn, removeReturn, sendGain, setReturn, setSend, addClip, addTrack, clipOf, clipPattern, duplicateClip, isFree, moveClip, newSong, putNote, removeClip, setClipBars, setNotes, setSongBars, setSongTempo, setTrack, songEvents, tidySong, trackOf, withPattern, MAX_TRACKS, type DrumTrack, type DrumClip, type SynthClip, type Song } from "../src/daw/song";
+import { TRIPLET_STARTERS, STARTERS, STRENGTH } from "../src/daw/drums";
+import { setClipGrid, samplesUsed, addAudioClip, setAudioClip, audioRate, audioBars, type AudioClip, type SongEvent, toggleNotesOff, soloOnly, sliceToTrack, quantizeNotes, snapStep, GRIDS, setMarker, doubleClip, inKey, invertNotes, legatoNotes, reverseNotes, scaleTime, setChance, noteKey as keyOf, addReturn, removeReturn, sendGain, setReturn, setSend, addClip, addTrack, clipOf, clipPattern, duplicateClip, isFree, moveClip, newSong, putNote, removeClip, setClipBars, setNotes, setSongBars, setSongTempo, setTrack, songEvents, tidySong, trackOf, withPattern, MAX_TRACKS, type DrumTrack, type DrumClip, type SynthClip, type Song } from "../src/daw/song";
+import { hitsToMidi, midiToHits } from "../src/daw/midi";
 
 /** A song with one bar of four-on-the-floor on bar 1 and a chord on bars 1 to 2. */
 function demo(): { song: Song; drums: string; synth: string; beat: string; chord: string } {
@@ -517,5 +518,46 @@ describe("audio tracks: sound files on the timeline", () => {
     expect(back.tracks.at(-1)!.kind).toBe("audio"); expect(back.tracks.at(-1)!.clips).toHaveLength(2);
     expect(samplesUsed(back)).toContain("habc");
     expect(tidySong({ ...JSON.parse(JSON.stringify(cut.song)), tracks: [{ kind: "audio", name: "x", clips: [{ start: 0, bars: 1, sample: "../bad", seconds: 3 }] }] })!.tracks[0]!.clips).toHaveLength(0);
+  });
+});
+
+describe("drum clips in threes", () => {
+  const three = () => { const d = demo(), s = withPattern(setClipGrid(d.song, d.drums, d.beat, 12), d.drums, d.beat, TRIPLET_STARTERS[0]!); return { ...d, song: s }; };
+  it("the starters in threes are whole bars of twelve or twenty-four steps with something on the first one", () => {
+    for (const p of TRIPLET_STARTERS) { expect([12, 24]).toContain(p.grid); expect(p.length % p.grid!).toBe(0); for (const l of p.lanes) expect(l.steps).toHaveLength(p.length); expect(p.lanes.some((l) => l.steps[0]! > 0)).toBe(true); }
+    expect(new Set(TRIPLET_STARTERS.map((p) => p.name)).size).toBe(TRIPLET_STARTERS.length);
+  });
+  it("a clip put on the triplet grid has twelve steps a bar, and its hits land a third of a beat apart", () => {
+    const { song, drums, beat } = three(), c = clipOf(trackOf(song, drums), beat) as DrumClip;
+    expect(c.grid).toBe(12); expect(Object.values(c.hits)[0]).toHaveLength(12);
+    const beatSeconds = 60 / song.bpm, hats = songEvents(song, 0, 16).filter((e) => e.kind === "hit" && e.pad.voice === "hat").map((e) => e.at / beatSeconds);
+    // "x.xx.xx.xx.x": cells 0, 2, 3, 5, 6, 8, 9, 11 of twelve
+    expect(hats.map((t) => Math.round(t * 3))).toEqual([0, 2, 3, 5, 6, 8, 9, 11]);
+    for (const t of hats) expect(Math.abs(t * 3 - Math.round(t * 3))).toBeLessThan(1e-6);
+    // every hit of the bar is played exactly once, whichever sixteenth it falls inside
+    const all = songEvents(song, 0, 16).filter((e) => e.kind === "hit").length, cells = Object.values(c.hits).flat().filter(Boolean).length;
+    expect(all).toBe(cells);
+  });
+  it("changing the grid moves hits to the nearest step, and back to sixteenths forgets the grid", () => {
+    const d = demo();                                           // four on the floor: kicks on steps 0, 4, 8, 12
+    const kick = (s: Song) => (clipOf(trackOf(s, d.drums), d.beat) as DrumClip).hits.kick!.map((h, i) => (h ? i : -1)).filter((i) => i >= 0);
+    const t = setClipGrid(d.song, d.drums, d.beat, 12);
+    expect(kick(t)).toEqual([0, 3, 6, 9]);
+    const back = setClipGrid(t, d.drums, d.beat, 16);
+    expect(kick(back)).toEqual([0, 4, 8, 12]); expect((clipOf(trackOf(back, d.drums), d.beat) as DrumClip).grid).toBeUndefined();
+    expect(setClipGrid(d.song, d.drums, d.beat, 7)).toBe(d.song);
+  });
+  it("length, splitting, tidying and MIDI keep to the clip's grid", () => {
+    const { song, drums, beat } = three();
+    const two = setClipBars(song, drums, beat, 2), c2 = clipOf(trackOf(two, drums), beat) as DrumClip;
+    expect(c2.hits.hat).toHaveLength(24); expect(c2.hits.hat!.slice(12)).toEqual(c2.hits.hat!.slice(0, 12));
+    const cut = splitClip(two, drums, beat, 1)!, parts = cut.clips.map((id) => clipOf(trackOf(cut.song, drums), id) as DrumClip);
+    expect(parts.map((p) => [p.grid, p.hits.hat!.length])).toEqual([[12, 12], [12, 12]]);
+    const back = tidySong(JSON.parse(JSON.stringify(two)))!, cb = back.tracks[0]!.clips[0] as DrumClip;
+    expect(cb.grid).toBe(12); expect(cb.hits.hat).toHaveLength(24);
+    // a hat on the second triplet of the beat is 2/3 of a beat in: 320 ticks at 480 a beat
+    const ticks = hitsToMidi([c2.hits.hat!], 0, 12).map((n) => n.start);
+    expect(ticks.slice(0, 3)).toEqual([0, 320, 480]);
+    expect(midiToHits(hitsToMidi([c2.hits.hat!], 0, 12), 480, 1, 24, 12).rows[0]).toEqual(c2.hits.hat);
   });
 });

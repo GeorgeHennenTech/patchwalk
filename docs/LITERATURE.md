@@ -352,3 +352,39 @@ not the whole book), Välimäki and others 2006 (the university's repository ask
 1934 (the repository was down for maintenance), Holzapfel and others 2014 (the archive refused the request),
 Sound On Sound's "Synth Secrets" (the site forbids reproduction), Smith's online book (no licence stated),
 Scavone's and Cook's Stanford theses (scanned, no text), Knowles and Sonion notes (hosts not reachable).
+
+## Rhythm: source texts to get (researched 27 Nov 2026; none read, none taken in)
+
+A helper searched for texts to stand behind the rhythm lessons (threes and polyrhythm, clave, odd meters, American
+styles, trap and IDM, Middle-Eastern rhythms). **It could not open any page: the session's network refused every
+host.** "Seen" means the item showed in search results on a publisher, library, journal or author site; licences
+were not read. Hosts that would need allowing: cgm.cs.mcgill.ca, sites.tufts.edu, richardhodges.com, mtosmt.org,
+archive.bridgesmathart.org, journal.iftawm.org, real.mtak.hu, escholarship.mcgill.ca, maqamworld.com,
+macsphere.mcmaster.ca, core.ac.uk, sites.ualberta.ca.
+
+Free (get these first):
+- Toussaint, "The Euclidean Algorithm Generates Traditional Musical Rhythms" (2005): bell and timeline patterns as
+  evenly spread hits. cgm.cs.mcgill.ca/~godfried/publications/banff.pdf
+- Toussaint, "A Mathematical Analysis of African, Brazilian, and Cuban Clave Rhythms" (Bridges 2002).
+  archive.bridgesmathart.org/2002/bridges2002-157.html
+- Ladzekpo, "Foundation Course in African Dance-Drumming": 3:2, 6:4 and 3:4 cross-rhythm. richardhodges.com/ladzekpo/
+  (licence unseen)
+- Locke, Dagomba Dance Drumming and the Agbadza collection (Tufts): notated parts with audio. sites.tufts.edu/dagomba
+- Polak, "Rhythmic Feel as Meter" (Music Theory Online 16.4, 2010): swing and shuffle as measured timing.
+- Goldberg, "What's the Meter of Elenino Horo?" (2019) and the translation of Hristov on Bulgarian meters (MTO 30.4,
+  2024); Fracile, "The Aksak Rhythm" (2003): odd meters.
+- Duinker, "Good Things Come in Threes: Triplet Flow" (accepted manuscript, 2019): triplets in trap.
+- Adams, "On the Metrical Techniques of Flow in Rap Music" (MTO 15.5, 2009).
+- MaqamWorld's rhythm pages (baladi, maqsum and others, with audio); Frishkopf's chart of rhythms (2009).
+- A 2024 McMaster PhD thesis on the drum machine (808, Miami bass, techno): title not read.
+
+To buy or borrow: Toussaint, *The Geometry of Musical Rhythm* (2nd ed. 2020); Peñalosa, *The Clave Matrix* (2009);
+London, *Hearing in Time* (2012); Agawu, *African Rhythm* (1995); Arom, *African Polyphony and Polyrhythm* (1991);
+Locke, *Drum Gahu*; Riley and Vidacovich, *New Orleans Jazz and Second Line Drumming*; Moore, *Groove Alchemy*;
+Zoro, *The Commandments of R&B Drumming*; Lornell and Stephenson, *The Beat! Go-Go Music from Washington, D.C.*;
+Danielsen, *Presence and Pleasure* and (ed.) *Musical Rhythm in the Age of Digital Reproduction*; Butler,
+*Unlocking the Groove*; Stewart, "Funky Drummer" (Popular Music, 2000); Farraj and Abu Shumays, *Inside Arabic
+Music* (2019); Marcus, *Music in Egypt* (2007).
+
+Thin or nothing found: Miami bass and electro-funk programming (one thesis), trap hat and 808 programming (trade
+tutorials only), drill'n'bass and IDM (one thesis chapter), Motown drumming (one method book), the ayoub rhythm.

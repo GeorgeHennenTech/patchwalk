@@ -228,6 +228,11 @@ for "Forgot password?"; a real MIDI keyboard test; how the 3D views look on thei
 - [x] Studio: 39 more starting drum patterns across the owner's genre list (trip-hop, breaks, big beat, jungle, liquid and halftime DnB, glitch-hop, dubstep, UK garage, footwork, club pop, psydub, reggae and dub, eastern, electro) (26 Nov)
 - [x] Studio: 10 funk and 8 jazz starting patterns (27 Nov)
 - [ ] Studio: clips in three (waltz, 6/8) and a triplet grid for drum clips, so jazz and Afro-Cuban patterns can be written properly
+- [x] Studio: drum clips in threes (a triplet grid, 12 or 24 steps a bar) and ten starting patterns in threes (27 Nov)
+- [ ] Rhythm, next: a clip that loops at its own length against the bar; bars of other lengths (3/4, 5/4, 7/8); trap, IDM and odd-meter patterns
+- [ ] Rhythm lessons on counting, animated and with responsive sound (tap along and be told how close): owner's request
+- [ ] Rhythm source texts: allow the hosts listed at the end of docs/LITERATURE.md, then take in the free ones
+- [ ] Built-in Splice kits: blocked until the owner chooses how the sound files reach the site
 - [ ] Lessons, next chapters in order: "When digital sound goes wrong", "Expression", "One delay, many effects", then the rest of the ten (`docs/CURRICULUM.md`, last section)
 - [ ] Write the 85 or so lessons from `docs/LESSON_IDEAS.md` that need nothing built (FM, ring and distortion, sync and formants, drum layers and breaks, expressive playing)
 - [ ] Small builds that each open several lessons (click source, peak and RMS meter, Q readout, invert on Osc B, flanger time knob, distortion bias, sample-and-hold LFO, per-note random, response curves, reverb freeze, sampler reverse, ghost strength, slice names): list in `docs/LESSON_IDEAS.md`

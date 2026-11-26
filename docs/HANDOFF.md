@@ -681,3 +681,11 @@ is one block at the end of `src/styles.css`. Audio tracks are built as a first v
 the timeline, with warp by speed, gain, transpose, start point and a keep-pitch stretch made once (details in
 `CLAUDE.md`, same date). **Next step:** from the "next ten" in `docs/ABLETON_GAPS.md`, Session View or longer
 songs and more tracks; and for audio, check an exported file, then fades and dragging files onto a lane.
+
+## Rhythm work and Splice kits (27 Nov 2026)
+74 starting drum patterns in sixteenths plus ten in threes; a drum clip can now be on a triplet grid. The owner's
+plan for rhythm is in `CLAUDE.md` ("Rhythms in threes"): next a clip that loops at its own length, odd-length bars,
+then **animated counting lessons with responsive sound**. Built-in Splice kits are coded but blocked: the sound
+files could not be pushed and sit ignored in `src/assets/kits/` of the build session only; the owner has to choose
+how they reach the site. **Next step:** the counting lessons' first screen (two pulses, tap along), and the
+looping-length clip.

@@ -61,6 +61,8 @@ export interface Pattern {
   /** Steps in the pattern: 16 is one bar of sixteenths, 32 is two. */
   /** steps: 16 a bar. The old single-pattern page knew 16 and 32; a Studio clip can be up to four bars. */
   length: number;
+  /** steps in a bar: 16 (sixteenths) when left out; 12 is eighth-note triplets, 24 sixteenth-note triplets */
+  grid?: number;
   lanes: Lane[];
 }
 export const STEPS_PER_BEAT = 4, STEPS_PER_BAR = 16, BPM_MIN = 60, BPM_MAX = 200, SWING_MAX = 75;
@@ -80,8 +82,10 @@ export function emptyPattern(name = "New pattern", length: 16 | 32 = 16): Patter
   return { name, bpm: 120, swing: 0, length, lanes: defaultPads().map((pad) => ({ ...pad, steps: silent(length) })) };
 }
 /** Write a pattern from rows of 16 characters: "x" a hit, "X" an accent, "o" a soft hit, anything else silence. */
-export function fromRows(name: string, bpm: number, rows: Partial<Record<Voice, string>>, swing = 0): Pattern {
-  const p = emptyPattern(name, Object.values(rows).some((r) => r.replace(/\s/g, "").length > 16) ? 32 : 16);
+export function fromRows(name: string, bpm: number, rows: Partial<Record<Voice, string>>, swing = 0, /** steps in a bar, when it is not 16: the rows are then one bar (or two) of that many characters */ grid?: 12 | 24): Pattern {
+  const longest = Math.max(...Object.values(rows).map((r) => r.replace(/\s/g, "").length));
+  const p = grid ? { ...emptyPattern(name), length: longest > grid ? grid * 2 : grid, grid } : emptyPattern(name, longest > 16 ? 32 : 16);
+  if (grid) p.lanes = p.lanes.map((l) => ({ ...l, steps: Array.from({ length: p.length }, () => 0 as Hit) }));
   p.bpm = bpm; p.swing = swing;
   for (const lane of p.lanes) { const row = (rows[lane.voice] ?? "").replace(/\s/g, ""); lane.steps = lane.steps.map((_, i) => (row[i] === "X" ? 3 : row[i] === "x" ? 2 : row[i] === "o" ? 1 : 0)); }
   return p;
@@ -179,6 +183,20 @@ export const GENRE_STARTERS: Pattern[] = [
   fromRows("Breaks: late kick", 130, { kick: "X......x.x......", snare: "....X.......X..o", hat: "x.xxx.x.x.xxx.x.", rim: ".........o......" }, 10),
   fromRows("Breaks: busy snare", 138, { kick: "X.....x...x..x..", snare: "....X.o..o..X.oo", hat: "x.x.x.x.x.x.x.x.", ride: "x...x...x...x..." }, 0),
   fromRows("Breaks: two bars", 134, { kick: "X.........x.....X.x....x..x.....", snare: "....X..o.o..X.......X.......X.xo", hat: "x.x.x.x.x.x.x.x.x.x.x.x.x.x.x.x.", openhat: "..............o...............o." }, 6),
+];
+
+/** Starting points written in threes: twelve steps a bar (three to a beat), or twenty-four (six to a beat). Common shapes, written for this page. */
+export const TRIPLET_STARTERS: Pattern[] = [
+  fromRows("Threes: shuffle", 100, { kick: "X.....x.....", snare: "...X.....X..", hat: "x.xx.xx.xx.x" }, 0, 12),
+  fromRows("Threes: half-time shuffle", 90, { kick: "X........x..", snare: ".o..o.X..o.o", hat: "x.xx.xx.xx.x" }, 0, 12),
+  fromRows("Threes: slow 12/8", 70, { kick: "X.....x..x..", snare: "...X.....X..", hat: "xxxxxxxxxxxx", openhat: "...........o" }, 0, 12),
+  fromRows("Threes: swing ride", 140, { ride: "x..x.xx..x.x", hat: "...x.....x..", kick: "o..o..o..o..", snare: "........o..." }, 0, 12),
+  fromRows("Threes: bell pattern", 110, { rim: "x.x.xx.x.x.x", kick: "X.....x.....", tomlow: "...x.....x..", hat: "x..x..x..x.." }, 0, 12),
+  fromRows("Threes: three against two", 100, { hat: "x.x.x.x.x.x.", rim: "x..x..x..x..", kick: "X.....x....." }, 0, 12),
+  fromRows("Threes: four against three", 100, { rim: "x..x..x..x..", tomhigh: "x...x...x...", kick: "X..........." }, 0, 12),
+  fromRows("Threes: triplet hats (trap)", 140, { kick: "X...........x.....x.....", snare: "............X...........", hat: "x..x..x.x.x.x..x..xxxxxx", openhat: "......................o." }, 0, 24),
+  fromRows("Threes: jungle in triplets", 165, { kick: "X.....x..x..", snare: "...X.o...X.o", hat: "x.xx.xx.xx.x", ride: "x..x..x..x.." }, 0, 12),
+  fromRows("Threes: two bars of shuffle", 96, { kick: "X.....x.....X....x..x...", snare: "...X.....X.....X.....X.o", hat: "x.xx.xx.xx.xx.xx.xx.xx.x" }, 0, 12),
 ];
 
 const withLane = (p: Pattern, index: number, change: (l: Lane) => Lane): Pattern => ({ ...p, lanes: p.lanes.map((l, i) => (i === index ? change(l) : l)) });

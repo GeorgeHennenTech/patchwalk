@@ -20,8 +20,10 @@ export function DrumGrid({ pattern, onChange, step, onAudition, lanes, onSound, 
     onChange(setHit(pattern, lane, i, to));
     if (to) onAudition(lane);
   };
+  // how many steps make a beat: 4 in sixteenths, 3 or 6 when the clip is written in threes
+  const beat = (pattern.grid ?? 16) / 4;
   return (
-    <div className={`drum-grid len${pattern.length}${pattern.length > 32 ? " len32 long" : ""}`} onContextMenu={(e) => e.preventDefault()}>
+    <div className={`drum-grid len${pattern.length}${pattern.length > 32 ? " len32 long" : ""}${pattern.grid ? ` threes g${pattern.grid}` : ""}`} onContextMenu={(e) => e.preventDefault()}>
       {pattern.lanes.map((lane, li) => (lanes && !lanes.includes(lane.voice) ? null : (
         <div className={`drum-lane${lane.mute ? " muted" : ""}${over === li ? " over" : ""}${open === li ? " picked" : ""}`} key={lane.id}
           onDragOver={onFile ? (e) => { if (e.dataTransfer.types.includes("Files")) { e.preventDefault(); setOver(li); } } : undefined}
@@ -32,7 +34,7 @@ export function DrumGrid({ pattern, onChange, step, onAudition, lanes, onSound, 
           <button className={`drum-flag solo${lane.solo ? " on" : ""}`} aria-pressed={lane.solo} onClick={() => onChange(setLane(pattern, li, { solo: !lane.solo }))} title="Solo: hear only this pad" aria-label={`Solo ${lane.name}`}>S</button>
           <div className="drum-cells" role="group" aria-label={`${lane.name} steps`}>
             {lane.steps.map((hit, i) => (
-              <button key={i} className={`cell h${hit}${i % 4 === 0 ? " beat" : ""}${Math.floor(i / 4) % 2 ? " odd" : ""}${i === step ? " now" : ""}`}
+              <button key={i} className={`cell h${hit}${i % beat === 0 ? " beat" : ""}${Math.floor(i / beat) % 2 ? " odd" : ""}${i === step ? " now" : ""}`}
                 aria-label={`${lane.name}, step ${i + 1}, ${WORDS[hit]}`} aria-pressed={hit > 0}
                 onMouseDown={(e) => { e.preventDefault(); (e.currentTarget as HTMLButtonElement).focus(); press(li, i, hit, e.shiftKey || e.button === 2); }}
                 onMouseEnter={() => { if (paint.current !== null && hit !== paint.current) onChange(setHit(pattern, li, i, paint.current)); }}
@@ -49,7 +51,7 @@ export function DrumGrid({ pattern, onChange, step, onAudition, lanes, onSound, 
       )))}
       <div className="drum-lane drum-count" aria-hidden="true">
         <span className="drum-name" /><span className="drum-flag" /><span className="drum-flag" />
-        <div className="drum-cells">{Array.from({ length: pattern.length }, (_, i) => <span key={i} className={`count${i % 4 === 0 ? " beat" : ""}${i === step ? " now" : ""}`}>{i % 4 === 0 ? (i / 4) % 4 + 1 : "·"}</span>)}</div>
+        <div className="drum-cells">{Array.from({ length: pattern.length }, (_, i) => <span key={i} className={`count${i % beat === 0 ? " beat" : ""}${i === step ? " now" : ""}`}>{i % beat === 0 ? (i / beat) % 4 + 1 : "·"}</span>)}</div>
         <span className="drum-clear" />
       </div>
     </div>

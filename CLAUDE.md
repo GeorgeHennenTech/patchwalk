@@ -2097,6 +2097,15 @@ FX rack order, module index-to-name labels, every display conversion. FX paramet
     exported file with an audio track (same code path as playing). Nobody has heard it.** Not built: warp that keeps
     pitch while following tempo changes, warp markers, fades and crossfades you can set, reversing, dragging a file
     from the computer onto a lane, recording sound, a clip longer than 32 bars, looping a clip's file.
+- **Genre drum patterns, and Splice (26 Nov 2026, owner: "give you a bunch of different drum samples, some for boom
+  bap, some for breakbeat... write a few various drum patterns for each genre and save them to the library... use the
+  splice mcp tool").** Built: eight more `GENRE_STARTERS` in `drums.ts` (four "Boom bap: ..." and four "Breaks: ...",
+  two of them two bars), common shapes written for this page, shown under Clips in the Studio's browser. **Not done:
+  the Splice connector is installed on the owner's account but needs reconnecting and is not loaded in the build
+  session, so no sounds were fetched.** Two things to settle before sounds go in: the build session cannot write to
+  the live site's library (patterns ship in code, or the owner saves them from the Studio), and **Splice licenses its
+  sounds to the account holder for use in music, not for passing the sounds on, so they should not go into the
+  library that friends share, nor into the repo, without the owner checking their licence.**
 - **Long pages are searched in parts (16 Nov 2026).** `splitText` in `src/library/search.ts` cuts a page over
   2,400 characters into overlapping parts of about 1,500 (ids `book#page~1`, `~2`, with `of` naming the
   page); `pageOf` and `cite` count parts of one page as one source, and `search` takes at most two parts of

@@ -106,6 +106,16 @@ export const GENRE_STARTERS: Pattern[] = [
   fromRows("Two-step garage", 132, { kick: "X......x..x.....", clap: "....X.......X...", hat: "..x...x...x...x.", rim: ".x.......x......" }, 35),
   fromRows("Club pop", 128, { kick: "X...x...x...x...", clap: "....X.......X...", hat: "x.x.x.x.x.x.x.x.", openhat: "..o...o...o...o." }, 0),
   fromRows("Glitch stutter", 110, { kick: "X.....x...x.....X..x..x...x.....", snare: "....X.......X.......X.......X.xx", hat: "x.xox.x.xxxox.x.x.xox.xxx.x.oooo", tomhigh: "...............x.............o.." }, 15),
+  // Boom bap: slow, swung, a heavy kick and a snare on beats 2 and 4, soft "ghost" hits between
+  fromRows("Boom bap: classic", 90, { kick: "X......x..x.....", snare: "....X.......X...", hat: "x.x.x.x.x.x.x.x." }, 40),
+  fromRows("Boom bap: lazy kick", 86, { kick: "X..o......xo....", snare: "....X.......X...", hat: "x.xox.x.x.xox.x.", openhat: "..............o." }, 50),
+  fromRows("Boom bap: ghost snares", 92, { kick: "X.....x...x..x..", snare: "....X..o.o..X..o", hat: "x.x.x.x.x.x.x.x.", rim: "..............o." }, 45),
+  fromRows("Boom bap: two bars", 88, { kick: "X......x..x.....X..x......x..x..", snare: "....X.......X.......X.......X.o.", hat: "x.x.x.x.x.x.x.x.x.x.x.x.x.x.x.xo", openhat: "..............................o." }, 45),
+  // Breakbeat: a syncopated kick, snares on 2 and 4 with extra hits pushed off the beat
+  fromRows("Breaks: rolling", 132, { kick: "X.x.......x.....", snare: "....X..o....X...", hat: "x.x.x.x.x.x.x.x.", openhat: "......o........." }, 8),
+  fromRows("Breaks: late kick", 130, { kick: "X......x.x......", snare: "....X.......X..o", hat: "x.xxx.x.x.xxx.x.", rim: ".........o......" }, 10),
+  fromRows("Breaks: busy snare", 138, { kick: "X.....x...x..x..", snare: "....X.o..o..X.oo", hat: "x.x.x.x.x.x.x.x.", ride: "x...x...x...x..." }, 0),
+  fromRows("Breaks: two bars", 134, { kick: "X.........x.....X.x....x..x.....", snare: "....X..o.o..X.......X.......X.xo", hat: "x.x.x.x.x.x.x.x.x.x.x.x.x.x.x.x.", openhat: "..............o...............o." }, 6),
 ];
 
 const withLane = (p: Pattern, index: number, change: (l: Lane) => Lane): Pattern => ({ ...p, lanes: p.lanes.map((l, i) => (i === index ? change(l) : l)) });
